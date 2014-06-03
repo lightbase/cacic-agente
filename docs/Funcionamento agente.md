@@ -22,9 +22,10 @@ Então, esse agente basicamente virá para melhorar, obviamente. A princípio pe
 ##*O loop...*
 * Acho que na instalação poderia ser setado um tempo de espera randomico entre 3 e 6 horas, pra não ficar muito demorado e, também, pra não fazer todos rodarem ao mesmo tempo e congestionar o gerente.
 * No loop seria realizado:
->1. O procedimento de checagem das bibliotecas e etc, pra caso alguma esteja faltando ser realizado o download de novo;
->2. O getConfig;
->3. As coletas;
+
+1. >O procedimento de checagem das bibliotecas e etc, pra caso alguma esteja faltando ser realizado o download de novo;
+2. >O getConfig;
+3. >As coletas;
 
 ##*Força Coleta*
 * Aqui vem minha maior dúvida, estava pensando em algum tipo de sincronia em tempo real. Estou dando uma pesquisada ainda, mas isso demandaria uma atualização também no gerente. Então a princípio ficaria o mesmo, seria realizado por meio do getTest de 5 em 5 minutos.
