@@ -6,7 +6,7 @@ A principal mudança que vi foi na coleta, pois além do WMI, podemos fazer tamb
 
 Então, esse agente basicamente virá para melhorar, obviamente. A princípio pensei em algo bem parecido na teoria:
 
-##**O início de tudo, Instalador:**
+#**O início de tudo, Instalador:**
 * O Instalador para Windows acredito que a melhor maneira seria fazer um MSI. Reduz a chance de conflito com firewall e etc, ficando também mais amigável pro usuário, já que a maioria dos instaladores são parecidos.
 * Tentei pensar em algo menos trabalhoso, pois quando instalado por meio do netlogon pode complicar pra instalar na rede, como já presenciamos na PGFN, e também atrasar o login do usuário, então pensei nos seguintes procedimentos:
 1. No windows: Para rodar no netlogon deverá ser passado como parâmetro o servidor para autenticação e o '/silent' pra rodar em segundo plano. Caso não seja netlogon, o usuário irá digitar o servidor em uma das telas de diálogo;
@@ -14,17 +14,17 @@ Então, esse agente basicamente virá para melhorar, obviamente. A princípio pe
 3. Se positivo, cria a árvore de diretórios e faz download do módulo principal e a biblioteca de comunicação (dll ou so);
 4. Cria o serviço para o módulo e o inicia.
 
-##**O módulo principal.**
+#**O módulo principal.**
 * Após a instalação, o módulo principal seria iniciado, coletando as informações de configuração (getConfig) e baixando os módulos necessários, que seriam as .dll (windows) ou .so(linux), para realizar a coleta depois;
 * Faz a verificação das bibliotecas;
 * Inicializa a biblioteca para realizar a coleta que será enviada a princípio pelo mesmo formato de XML do antigo (mas será modificado em uma nova release para json ou algo parecido);
 
-#*O loop...*
+##*O loop...*
 * Acho que na instalação poderia ser setado um tempo de espera randomico entre 3 e 6 horas, pra não ficar muito demorado e, também, pra não fazer todos rodarem ao mesmo tempo e congestionar o gerente.
 * No loop seria realizado:
 1. O procedimento de checagem das bibliotecas e etc, pra caso alguma esteja faltando ser realizado o download de novo;
 2. O getConfig;
 3. As coletas;
 
-#*Força Coleta*
+##*Força Coleta*
 * Aqui vem minha maior dúvida, estava pensando em algum tipo de sincronia em tempo real. Estou dando uma pesquisada ainda, mas isso demandaria uma atualização também no gerente. Então a princípio ficaria o mesmo, seria realizado por meio do getTest de 5 em 5 minutos.
