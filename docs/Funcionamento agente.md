@@ -18,7 +18,7 @@ Tentei pensar em algo menos trabalhoso, pois quando instalado por meio do netlog
   O cacic service funcionará apenas de sustentação do módulo principal, verificando de tempos em tempos a consistência dos binários e executando o módulo principal.
 
 #**O módulo principal.**
-  * Após a instalação, o módulo principal seria iniciado, coletando as informações de configuração (getConfig) e baixando as bibliotecas necessárias, que seriam as .dll (windows) ou .so(linux), para realizar a coleta de software e hardware depois;
+  * Após a instalação, o módulo principal seria iniciado, coletando as informações de configuração (getConfig) e baixando as bibliotecas, que seriam as .dll (windows) ou .so(linux), e módulos exigidos pelo gerente;
   * Faz a verificação das bibliotecas;
   * Inicializa o módulo de coleta (gercols);
   * Se for a primeira coleta ou existir diferença entre a coleta atual e a antiga, os dados serão enviados ao gerente a princípio pelo mesmo formato de XML do antigo (mas será modificado em uma nova release para json ou algo parecido);
