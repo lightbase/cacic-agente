@@ -21,7 +21,7 @@
   * Inicializa o módulo de coleta (gercols);
   * É finalizado.
 
-PS: Há também a coleta da informação de quando um USB for plugado ou retirado. Estava verificando, há uma função no WMI que o próprio windows chama um executável especificado quando algo acontece no usb (http://msdn.microsoft.com/en-us/library/windows/desktop/aa363480%28v=vs.85%29.aspx). Mas estou verificando uma forma mais segura e multiplataforma.
+PS: Há também a coleta da informação de quando um USB for plugado ou retirado. Estava verificando, há uma função no WMI que o próprio windows chama um executável especificado quando algo acontece no usb (http://msdn.microsoft.com/en-us/library/windows/desktop/aa363480%28v=vs.85%29.aspx). Mas estou verificando uma forma mais segura (wmi nem sempre funciona como esperamos, como já foi verificado em outras ocasiões) e multiplataforma.
 
 ##*A coleta*
   A coleta é realizada a cada X horas, onde X é o valor estabelecido pelo gerente. O módulo principal será chamado dentro desse horário, chamando o módulo de coletas que coletará as informações de hardware, pelo WMI ou, caso não consiga, pelos registros (regedit), e também de software pelos registros (regedit).
