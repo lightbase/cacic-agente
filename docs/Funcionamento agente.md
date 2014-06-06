@@ -19,7 +19,9 @@
   * Solicitará informações de configurações do gerente (getConfig);
   * Faz a verificação das bibliotecas e dos módulos e, se necessário, realiza o download via ftp;
   * Inicializa o módulo de coleta (gercols);
-  * É finalizado;
+  * É finalizado.
+
+PS: Há também a coleta da informação de quando um USB for plugado ou retirado. Estava verificando, há uma função no WMI que o próprio windows chama um executável especificado quando algo acontece no usb (http://msdn.microsoft.com/en-us/library/windows/desktop/aa363480%28v=vs.85%29.aspx). Mas estou verificando uma forma mais segura e multiplataforma.
 
 ##*A coleta*
   A coleta é realizada a cada X horas, onde X é o valor estabelecido pelo gerente. O módulo principal será chamado dentro desse horário, chamando o módulo de coletas que coletará as informações de hardware, pelo WMI ou, caso não consiga, pelos registros (regedit), e também de software pelos registros (regedit).
@@ -29,7 +31,8 @@
   * A coleta de hardware por WMI, caso não seja possível é realizada a tentativa pelo regedit;
   * A coleta de software pelo regedit;
   * O envio das coletas é realizado separadamente, um envio pra software, um pra hardware, etc.;
-  * Se não houver coletas anteriores ou a coleta atual for diferente da anterior, o envio das coletas para o gerente;
+  * Se não houver coletas anteriores ou a coleta atual for diferente da anterior, o envio das coletas para o gerente.
+
 
 ##*Força Coleta*
   Aqui vem minha maior dúvida, estava pensando em algum tipo de sincronia em tempo real. Estou dando uma pesquisada ainda, mas isso demandaria uma atualização também no gerente. Então a princípio ficaria o mesmo, seria realizado por meio de uma solicitação do cacicService de getTest de 5 em 5 minutos. Se houver alguma atualização, é chamado o módulo principal executando o procedimento solicitado pelo gerente, como forçar coleta ou executar o mapa.
