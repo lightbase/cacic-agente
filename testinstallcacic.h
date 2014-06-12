@@ -1,16 +1,20 @@
 #ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
 
-class testInstallCacic : public QtTest
+#include <QtTest/QtTest>
+
+class CTestInstallCacic : public QObject
 {
     Q_OBJECT
 public:
-    explicit testInstallCacic(QObject *parent = 0);
+    explicit CTestInstallCacic(QObject *parent = 0);
 
 signals:
 
 public slots:
 
+private slots:
+    void testParametros();
 };
 
 #endif // TESTINSTALLCACIC_H
