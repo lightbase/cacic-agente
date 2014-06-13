@@ -3,11 +3,11 @@
 
 #include <QtTest/QtTest>
 
-class CTestInstallCacic : public QObject
+class CTestCacic : public QObject
 {
     Q_OBJECT
 public:
-    explicit CTestInstallCacic(QObject *parent = 0);
+    explicit CTestCacic(QObject *parent = 0);
 
 signals:
 
@@ -15,6 +15,7 @@ public slots:
 
 private slots:
     void firstTest();
+    void installcacicTest();
 };
 
 #endif // TESTINSTALLCACIC_H

@@ -6,12 +6,13 @@
 
 QT += testlib
 TARGET = cacic-teste
-#CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
 
 
-SOURCES += testinstallcacic.cpp
+SOURCES += \
+    testcacic.cpp
 
-HEADERS += testinstallcacic.h
+HEADERS += \
+    testcacic.h
