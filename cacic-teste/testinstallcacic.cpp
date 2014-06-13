@@ -6,10 +6,11 @@ CTestInstallCacic::CTestInstallCacic(QObject *parent) :
 {
 }
 
-void CTestInstallCacic::testParametros()
+void CTestInstallCacic::firstTest()
 {
     QString str= "Hello";
     QVERIFY(str.toUpper() == "HELLO");
 }
+
 
 

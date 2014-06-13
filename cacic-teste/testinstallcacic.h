@@ -14,7 +14,7 @@ signals:
 public slots:
 
 private slots:
-    void testParametros();
+    void firstTest();
 };
 
 #endif // TESTINSTALLCACIC_H
