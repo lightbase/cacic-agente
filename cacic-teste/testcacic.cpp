@@ -16,7 +16,7 @@ void CTestCacic::installcacicTest()
     installcacicPath = "E:/Lightbase/cacic-projeto-test/build/cacic-test/debug/cacic-teste.exe";
     installcacic.execute(installcacicPath,QStringList() << "--host:");
     if (!installcacic.waitForFinished() and (installcacic.exitCode() == 5))
-        QVERIFY(installcacic.exitCode() == 5);
+        QVERIFY(installcacic.exitStatus() == 5);
     else
         QSKIP("Installcacic ExitCode: " + QString::number(installcacic.exitCode()).toLocal8Bit());
 
