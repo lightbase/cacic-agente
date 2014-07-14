@@ -1,19 +1,19 @@
-#include <installcacic.cpp>
-
-using namespace std;
+#include <QtCore>
+#include <QCoreApplication>
+#include "installcacic.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    InstallCacic CInstallCacic;
-    CInstallCacic.setApp(*a);
 
-    try {
+    InstallCacic *installcacic = new InstallCacic(&a);
 
-       CInstallCacic.runInstall();// TENTAR RODAR COM CONNECT OU ALGO DO TIPO
-    } catch (int e) {
-        cout << "Error: " << e << endl;
-    }
+    // This will cause the application to exit when
+    // the task signals finished.
+    QObject::connect(installcacic, SIGNAL(finished()), &a, SLOT(quit()));
+
+    // This will run the task from the application event loop.
+    QTimer::singleShot(0, installcacic, SLOT(run()));
 
     return a.exec();
 }
