@@ -1,6 +1,6 @@
 #ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
-
+#include "../src/CACIC_comm.h"
 #include <QtTest/QtTest>
 
 class CTestCacic : public QObject
@@ -14,8 +14,7 @@ signals:
 public slots:
 
 private slots:
-    void firstTest();
-    void installcacicTest();
+    void testGetStatus200();
 };
 
 #endif // TESTINSTALLCACIC_H

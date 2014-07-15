@@ -10,24 +10,11 @@ CTestCacic::CTestCacic(QObject *parent) :
 {
 }
 
-void CTestCacic::installcacicTest()
+void CTestCacic::testGetStatus200()
 {
-    QProcess installcacic;
-    QString installcacicPath;
+    CacicComm a;
 
-    installcacicPath = QString("E:/LightBase/cacic-agente-project/builds/install-cacic/debug/install-cacic.exe");
-    installcacic.execute(installcacicPath,QStringList() << "--host");
-    if (installcacic.waitForFinished() and (installcacic.exitCode() == 0))
-        QVERIFY(installcacic.exitCode() == 0);
-    else
-        QSKIP("Installcacic ExitCode: " + QString::number(installcacic.exitCode()).toLocal8Bit());
-
-}
-
-void CTestCacic::firstTest()
-{
-    QString str= "Hello";
-    QVERIFY(str.toUpper() == "HELLO");
+    QVERIFY(a.commStatus("") == 200);
 }
 
 

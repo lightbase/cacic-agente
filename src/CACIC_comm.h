@@ -5,16 +5,15 @@
 
 class CacicComm {
 public:
-    QString comm(QString urlGerente, request, localFolderName);
+
+QString comm(QString urlGerente, QString request, QString localFolderName){
+//    QString retorno        = '0',
+//            gerColsInfPath = localFolderName + "/gercols.inf",
+//            chksisInfPath  = localFolderName + "/chksis.inf";
+    //implementar
+    return "";
+}
 
 };
-
-QString CacicComm::comm(QString urlGerente, request, localFolderName){
-    QString retorno        = '0',
-            gerColsInfPath = localFolderName + "/gercols.inf",
-            chksisInfPath  = localFolderName + "/chksis.inf";
-    //implementar
-    return retorno;
-}
 
 #endif // CACIC_COMM_H
