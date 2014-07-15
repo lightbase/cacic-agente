@@ -9,12 +9,15 @@ class CTestCacic : public QObject
 public:
     explicit CTestCacic(QObject *parent = 0);
 
+    CacicComm a;
+
 signals:
 
 public slots:
 
 private slots:
-    void testGetStatus200();
+    void testCommStatus();
+    void testComm();
 };
 
 #endif // TESTINSTALLCACIC_H

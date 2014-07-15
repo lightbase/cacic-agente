@@ -10,11 +10,17 @@ CTestCacic::CTestCacic(QObject *parent) :
 {
 }
 
-void CTestCacic::testGetStatus200()
+void CTestCacic::testCommStatus()
 {
-    CacicComm a;
+    QVERIFY(a.commStatus(QString ("http://teste.cacic.cc")));
+}
 
-    QVERIFY(a.commStatus("") == 200);
+void CTestCacic::testComm()
+{
+    if (a.commStatus("http://teste.cacic.cc"))
+        QVERIFY(a.comm("http://teste.cacic.cc/ws/get/test") != QString(""));
+    else
+        QSKIP("Teste de comunicação negativo!");
 }
 
 

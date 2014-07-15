@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT += testlib
+QT += network
 TARGET = cacic-teste
 CONFIG   -= app_bundle
 
