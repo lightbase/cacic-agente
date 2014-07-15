@@ -7,6 +7,10 @@ InstallCacic::InstallCacic(QObject *parent) :
 }
 
 void InstallCacic::run() {
+    int code;
     std::cout << "Hello World\n";
-    emit finished();
+    std::cin >> code;
+    emit finished(code);
 }
+
+

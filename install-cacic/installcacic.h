@@ -9,8 +9,10 @@ class InstallCacic : public QObject
 public:
     explicit InstallCacic(QObject *parent = 0);
 
+private:
+
 signals:
-    void finished();
+    void finished(int);
 
 public slots:
     void run();
