@@ -9,7 +9,7 @@ class CTestCacic : public QObject
 public:
     explicit CTestCacic(QObject *parent = 0);
 
-    CacicComm a;
+    CacicComm OCacicComm;
 
 signals:
 
