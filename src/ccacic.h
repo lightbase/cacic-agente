@@ -5,7 +5,8 @@
 #include <QObject>
 #include <QDebug>
 #include <QFile>
-#include <iostream>
+#include <QSettings>
+#include <QDir>
 
 class CCacic : public QObject
 {
@@ -13,7 +14,11 @@ class CCacic : public QObject
 public:
     explicit CCacic(QObject *parent = 0);
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
+    void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
+    bool createFolder(QString path);
+    bool deleteFolder(QString path);
+    bool deleteFile(QString path);
 
 //Geters/seters:
 

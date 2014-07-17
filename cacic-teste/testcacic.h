@@ -14,6 +14,8 @@ public:
 private:
     CacicComm OCacicComm;
     CCacic OCacic;
+    QString testPath;
+    QString testIniPath;
 
 signals:
 
@@ -22,8 +24,11 @@ public slots:
 private slots:
     void testCommStatus();
     void testComm();
-    void testGetValueFromFile();
+    void testGetAndSetValueFromFile();
     void testGetValueFromTags();
+    void testCreateFolder();
+    void testDeleteFolder();
+    void testDeleteFile();
 };
 
 #endif // TESTINSTALLCACIC_H
