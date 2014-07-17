@@ -1,15 +1,19 @@
 #ifndef CCACIC_H
 #define CCACIC_H
 
+#include <QCoreApplication>
 #include <QObject>
+#include <QDebug>
+#include <QFile>
+#include <iostream>
 
 class CCacic : public QObject
 {
     Q_OBJECT
 public:
     explicit CCacic(QObject *parent = 0);
-    QString getValueFromFile();
-    QString getValueFromTags();
+    QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
+    QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
 
 //Geters/seters:
 

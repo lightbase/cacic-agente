@@ -3,6 +3,7 @@
 #include "../src/CACIC_comm.h"
 #include "../src/ccacic.h"
 #include <QtTest/QtTest>
+#include <QDebug>
 
 class CTestCacic : public QObject
 {
@@ -22,6 +23,7 @@ private slots:
     void testCommStatus();
     void testComm();
     void testGetValueFromFile();
+    void testGetValueFromTags();
 };
 
 #endif // TESTINSTALLCACIC_H

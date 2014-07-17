@@ -42,6 +42,13 @@ void CTestCacic::testComm()
 
 void CTestCacic::testGetValueFromFile()
 {
-    QVERIFY(OCacic.getValueFromFile("teste", "teste","E:/Lightbase/teste.txt") != "");
+    QVERIFY( OCacic.getValueFromFile("Teste", "teste","E:/teste.txt") == "Valor de teste");
 }
 
+void CTestCacic::testGetValueFromTags()
+{
+    QString value = "blablab[teste]Valor de teste[/teste]feihgj";
+    QString retorno = OCacic.getValueFromTags(value, "teste");
+    qDebug(retorno.toLocal8Bit());
+    QVERIFY(retorno == "Valor de teste");
+}

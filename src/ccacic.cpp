@@ -4,6 +4,44 @@ CCacic::CCacic(QObject *parent) :
     QObject(parent)
 {
 }
+
+QString CCacic::getValueFromFile(QString sectionName, QString keyName, QString filePath)
+{
+    QFile file(filePath);
+    sectionName = "<" + sectionName + ">";
+    keyName     = keyName + "=";
+    int sizeKeyName = keyName.size();
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+       return "0";
+
+    QString line = file.readLine();
+    while (!file.atEnd()) {
+       if (line.contains(sectionName, Qt::CaseInsensitive)) {
+           line = file.readLine();
+           while (!file.atEnd()){
+               if (line.contains(keyName, Qt::CaseInsensitive)) {
+                   file.close();
+                   return line.mid(sizeKeyName).trimmed();
+               }
+           }
+       } else {
+           line = file.readLine();
+       }
+    }
+    file.close();
+    return "";
+}
+
+QString CCacic::getValueFromTags(QString fullString, QString tag, QString tagType) {
+    QString tagFim = tagType.mid(0,1) + "/" + tag + tagType.mid(1);
+    int tagSize;
+    tag = tagType.mid(0,1) + tag + tagType.mid(1);
+    tagSize = tag.size();
+    return fullString.mid(fullString.indexOf(tag) + tagSize,
+                          fullString.indexOf(tagFim) - (fullString.indexOf(tag) + tagSize)).trimmed();
+}
+
 /*Getters/Setters
  * Begin:
  */
