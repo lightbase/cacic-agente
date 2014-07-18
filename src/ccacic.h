@@ -1,11 +1,18 @@
 #ifndef CCACIC_H
 #define CCACIC_H
-
 #include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
 #include <QFile>
 #include <iostream>
+#include <iomanip>
+#include <crypto++/aes.h>
+#include <crypto++/base64.h>
+#include <crypto++/modes.h>
+#include <crypto++/filters.h>
+#include <crypto++/hex.h>
+#include <crypto++/sha.h>
+#include <crypto++/md5.h>
 
 class CCacic : public QObject
 {
@@ -14,6 +21,8 @@ public:
     explicit CCacic(QObject *parent = 0);
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
+    std::string enCrypt(QString str_in, QString key, QString iv);
+    std::string deCrypt(QString str_in, QString key, QString iv);
 
 //Geters/seters:
 
