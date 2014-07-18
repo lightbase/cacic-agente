@@ -4,16 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT += core
 
-QT       -= gui
+QT -= gui
 
 TARGET = install-cacic
-CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG += console
+CONFIG -= app_bundle
 
 TEMPLATE = app
-
 
 SOURCES += main.cpp \
     installcacic.cpp \

@@ -24,6 +24,8 @@ private slots:
     void testComm();
     void testGetValueFromFile();
     void testGetValueFromTags();
+    void testEnCrypt();
+    void testDeCrypt();
 };
 
 #endif // TESTINSTALLCACIC_H
