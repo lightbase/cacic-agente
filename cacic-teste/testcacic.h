@@ -26,6 +26,8 @@ private slots:
     void testComm();
     void testGetAndSetValueFromFile();
     void testGetValueFromTags();
+    void testEnCrypt();
+    void testDeCrypt();
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();

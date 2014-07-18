@@ -72,4 +72,17 @@ void CTestCacic::testDeleteFolder()
     QVERIFY(!folder.exists());
 }
 
+void CTestCacic::testEnCrypt(){
+    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty";
+    QString IV = "0123456789123456";
+    QString input = "aqui vai a url que sera encriptada";
+    QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
+}
 
+void CTestCacic::testDeCrypt(){
+    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty";
+    QString IV = "0123456789123456asas";
+    QString input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
+    QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
+
+}

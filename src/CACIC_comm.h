@@ -71,10 +71,10 @@ public:
 
         if (reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).isValid()){
             retorno = reply->readAll();
-//            qDebug() << "Status:" << codigoStatus.toInt() << retorno;
+            //            qDebug() << "Status:" << codigoStatus.toInt() << retorno;
         }else{
             retorno = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-//           qDebug() << "Error:" << reason;
+            //           qDebug() << "Error:" << reason;
         }
         return retorno;
     }
@@ -93,11 +93,11 @@ public:
 
         QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
         if (reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).isValid()){
-    //            qDebug() << "Status:" << codigoStatus.toInt() << reason;
+            //            qDebug() << "Status:" << codigoStatus.toInt() << reason;
             return true;
         }else{
             reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-    //            qDebug() << "Error:" << reason;
+            //            qDebug() << "Error:" << reason;
             return false;
         }
     }

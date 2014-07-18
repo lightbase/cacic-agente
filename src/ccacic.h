@@ -1,10 +1,18 @@
 #ifndef CCACIC_H
 #define CCACIC_H
-
 #include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
 #include <QFile>
+#include <iostream>
+#include <iomanip>
+#include <crypto++/aes.h>
+#include <crypto++/base64.h>
+#include <crypto++/modes.h>
+#include <crypto++/filters.h>
+#include <crypto++/hex.h>
+#include <crypto++/sha.h>
+#include <crypto++/md5.h>
 #include <QSettings>
 #include <QDir>
 #include "crypt/aes.h"
@@ -17,6 +25,8 @@ public:
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
+    std::string enCrypt(QString str_in, QString key, QString iv);
+    std::string deCrypt(QString str_in, QString key, QString iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);

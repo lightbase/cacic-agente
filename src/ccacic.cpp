@@ -22,7 +22,8 @@ QString CCacic::getValueFromFile(QString sectionName, QString keyName, QString f
     int sizeKeyName = keyName.size();
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-       return "0";
+        return "0";
+
     while (!file.atEnd()){
         line = file.readLine();
        if (line.contains(sectionName, Qt::CaseInsensitive)) {
@@ -101,6 +102,38 @@ bool CCacic::deleteFile(QString path)
         return true;
 }
 
+std::string CCacic::enCrypt(QString str_in, QString key, QString iv)
+{
+    std::string str_out;
+    CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
+    CryptoPP::StringSource encryptor(str_in.toStdString(), true,
+              new CryptoPP::StreamTransformationFilter(encryption,
+                  new CryptoPP::Base64Encoder(
+                      new CryptoPP::StringSink(str_out),
+                          false // do not append a newline
+                      )
+                  )
+              );
+    qDebug(QString::fromStdString(str_out).toLocal8Bit());
+    return str_out;
+}
+
+std::string CCacic::deCrypt(QString str_in, QString key, QString iv)
+{
+    std::string str_out;
+    CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
+
+    CryptoPP::StringSource decryptor(str_in.toStdString(), true,
+        new CryptoPP::Base64Decoder(
+            new CryptoPP::StreamTransformationFilter(decryption,
+                new CryptoPP::StringSink(str_out)
+            )
+        )
+    );
+    qDebug(QString::fromStdString(str_out).toLocal8Bit());
+    return str_out;
+}
+
 /*Getters/Setters
  * Begin:
  */
@@ -153,8 +186,3 @@ void CCacic::setChksisInfFilePath(const QString &value)
 /*Getters/Setters
  * End.
  */
-
-
-
-
-
