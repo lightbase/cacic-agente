@@ -13,6 +13,8 @@
 #include <crypto++/hex.h>
 #include <crypto++/sha.h>
 #include <crypto++/md5.h>
+#include <QSettings>
+#include <QDir>
 
 class CCacic : public QObject
 {
@@ -20,9 +22,13 @@ class CCacic : public QObject
 public:
     explicit CCacic(QObject *parent = 0);
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
+    void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
     std::string enCrypt(QString str_in, QString key, QString iv);
     std::string deCrypt(QString str_in, QString key, QString iv);
+    bool createFolder(QString path);
+    bool deleteFolder(QString path);
+    bool deleteFile(QString path);
 
 //Geters/seters:
 
