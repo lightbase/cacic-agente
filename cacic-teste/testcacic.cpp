@@ -1,7 +1,4 @@
-#include <QProcess>
-#include <QStringList>
 #include "testcacic.h"
-#include <iostream>
 
 QTEST_MAIN(CTestCacic)
 
@@ -85,4 +82,12 @@ void CTestCacic::testDeCrypt(){
     QString input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
     QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
 
+}
+
+void CTestCacic::testpegarIPInterfaceDeRede(){
+  QVERIFY(OCacicComp.pegarIPInterfaceDeRede() == "10.1.0.89");
+}
+
+void CTestCacic::testpegarMACInterfaceDeRede(){
+   QVERIFY(OCacicComp.pegarMACInterfaceDeRede() == "E0:3F:49:E4:70:12");
 }

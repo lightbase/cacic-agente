@@ -2,8 +2,14 @@
 #define TESTINSTALLCACIC_H
 #include "../src/CACIC_comm.h"
 #include "../src/ccacic.h"
+#include "../src/cacic_computer.h"
 #include <QtTest/QtTest>
 #include <QDebug>
+#include <QList>
+#include <QProcess>
+#include <QStringList>
+#include <iostream>
+#include <QHostAddress>
 
 class CTestCacic : public QObject
 {
@@ -14,6 +20,7 @@ public:
 private:
     CacicComm OCacicComm;
     CCacic OCacic;
+    CACIC_Computer OCacicComp;
     QString testPath;
     QString testIniPath;
 
@@ -31,6 +38,8 @@ private slots:
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();
+    void testpegarIPInterfaceDeRede();
+    void testpegarMACInterfaceDeRede();
 };
 
 #endif // TESTINSTALLCACIC_H

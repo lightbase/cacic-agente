@@ -16,8 +16,10 @@ TEMPLATE = app
 SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
+    ../src/cacic_computer.cpp
 
 HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
-    ../src/CACIC_comm.h
+    ../src/CACIC_comm.h \
+    ../src/cacic_computer.h
