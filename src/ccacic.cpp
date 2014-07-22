@@ -102,8 +102,17 @@ bool CCacic::deleteFile(QString path)
         return true;
 }
 
-std::string CCacic::enCrypt(QString str_in, QString key, QString iv)
-{
+
+/*enCrypt
+ * @parameter QString str_in: string que será encriptada (url).
+ *            QString key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
+ *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
+ *            QString iv: IV (Vetor de Inicialização) deve ser aleatório.
+ *              (http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
+ *              exemplo de iv: 0123456789123456
+ * @return std:string: retorna a string encriptada convertida em base64.
+ * */
+QString CCacic::enCrypt(QString str_in, QString key, QString iv) {
     std::string str_out;
     CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
     CryptoPP::StringSource encryptor(str_in.toStdString(), true,
@@ -114,12 +123,21 @@ std::string CCacic::enCrypt(QString str_in, QString key, QString iv)
                       )
                   )
               );
-    qDebug(QString::fromStdString(str_out).toLocal8Bit());
-    return str_out;
+    //qDebug(QString::fromStdString(str_out).toLocal8Bit());
+    return QString::fromStdString(str_out).toLocal8Bit();
 }
 
-std::string CCacic::deCrypt(QString str_in, QString key, QString iv)
-{
+/*deCrypt
+ * @parameter QString str_in: string encriptada convertida em base64.
+ *            QString key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
+ *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
+ *            QString iv: IV (Vetor de Inicialização) deve ser aleatório.
+ *              *Um IV jamais deve ser utilizado mais de uma vez com a mesma chave.
+ *              *(http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
+ *              *exemplo de iv: 0123456789123456
+ * @return QString: retorna a string desencriptada convertida em base64.
+ * */
+QString CCacic::deCrypt(QString str_in, QString key, QString iv) {
     std::string str_out;
     CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
 
@@ -130,8 +148,7 @@ std::string CCacic::deCrypt(QString str_in, QString key, QString iv)
             )
         )
     );
-    qDebug(QString::fromStdString(str_out).toLocal8Bit());
-    return str_out;
+    return QString::fromStdString(str_out).toLocal8Bit();
 }
 
 /*Getters/Setters

@@ -79,6 +79,12 @@ public:
         return retorno;
     }
 
+
+    /* commStatus
+     * execulta um teste do tipo GET na urlGerente;
+     * @return retorna o resultado da conexão HTTP:
+     *      exemplo: 200 OK
+     */
     bool commStatus(){
         // cria um event-loop temporario
         QEventLoop eventLoop;
