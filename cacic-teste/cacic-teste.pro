@@ -9,7 +9,6 @@ QT += network
 
 TARGET = cacic-teste
 CONFIG -= app_bundle
-LIBS += -L/usr/lib -lcryptopp
 TEMPLATE = app
 
 
@@ -22,4 +21,4 @@ HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/CACIC_comm.h \
-    ../src/cacic_computer.h
+    ../src/cacic_computer.h \
