@@ -6,13 +6,13 @@
 #include <QFile>
 #include <iostream>
 #include <iomanip>
-#include <crypto++/aes.h>
-#include <crypto++/base64.h>
-#include <crypto++/modes.h>
-#include <crypto++/filters.h>
-#include <crypto++/hex.h>
-#include <crypto++/sha.h>
-#include <crypto++/md5.h>
+#include "crypto++/include/aes.h"
+#include "crypto++/include/base64.h"
+#include "crypto++/include/modes.h"
+#include "crypto++/include/filters.h"
+#include "crypto++/include/hex.h"
+#include "crypto++/include/sha.h"
+#include "crypto++/include/md5.h"
 #include <QSettings>
 #include <QDir>
 

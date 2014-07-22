@@ -21,4 +21,4 @@ HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/CACIC_comm.h \
-    ../src/cacic_computer.h
+    ../src/cacic_computer.h \
