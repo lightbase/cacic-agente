@@ -68,15 +68,15 @@ void CTestCacic::testDeleteFolder()
 }
 
 void CTestCacic::testEnCrypt(){
-    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty";
-    QString IV = "0123456789123456";
+    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    QString IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
     QString input = "aqui vai a url que sera encriptada";
     QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
 }
 
 void CTestCacic::testDeCrypt(){
-    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty";
-    QString IV = "0123456789123456asas";
+    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    QString IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
     QString input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
     QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
 

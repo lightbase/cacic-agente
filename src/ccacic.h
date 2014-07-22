@@ -24,8 +24,8 @@ public:
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
-    std::string enCrypt(QString str_in, QString key, QString iv);
-    std::string deCrypt(QString str_in, QString key, QString iv);
+    QString enCrypt(QString str_in, QString key, QString iv);
+    QString deCrypt(QString str_in, QString key, QString iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
