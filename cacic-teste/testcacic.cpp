@@ -91,3 +91,7 @@ void CTestCacic::testpegarIPInterfaceDeRede(){
 void CTestCacic::testpegarMACInterfaceDeRede(){
    QVERIFY(OCacicComp.pegarMACInterfaceDeRede() == "E0:3F:49:E4:70:12");
 }
+
+void CTestCacic::testpegarOS(){
+  QVERIFY(OCacicComp.pegarOS() == "linux");
+}

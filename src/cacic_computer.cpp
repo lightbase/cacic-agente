@@ -31,7 +31,7 @@ std::string CACIC_Computer::pegarIPInterfaceDeRede() {
           break;
         }
     }
-  return result.at(0).toString().toStdString() ;
+  return result.at(0).toString().toStdString();
 }
 
 
@@ -43,4 +43,16 @@ std::string CACIC_Computer::pegarMACInterfaceDeRede(){
           break;
         }
     }
+  return "ERROR MAC";
+}
+
+std::string CACIC_Computer::pegarOS(){
+  QString text;
+  qint32 x=0;
+  //QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
+  QStringList environment = QProcess::systemEnvironment();
+//  foreach (text, environment) {
+//      qDebug() << x << sear;
+//      x++;
+//    }
 }

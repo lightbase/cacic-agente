@@ -40,6 +40,7 @@ private slots:
     void testDeleteFile();
     void testpegarIPInterfaceDeRede();
     void testpegarMACInterfaceDeRede();
+    void testpegarOS();
 };
 
 #endif // TESTINSTALLCACIC_H

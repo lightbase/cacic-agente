@@ -15,7 +15,6 @@
 #include <crypto++/md5.h>
 #include <QSettings>
 #include <QDir>
-#include "crypt/aes.h"
 
 class CCacic : public QObject
 {
