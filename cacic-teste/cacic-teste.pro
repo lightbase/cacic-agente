@@ -10,6 +10,7 @@ QT += network
 TARGET = cacic-teste
 CONFIG -= app_bundle
 TEMPLATE = app
+LIBS += -L/usr/lib -lcryptopp
 
 
 SOURCES += \
