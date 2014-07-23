@@ -15,9 +15,10 @@ public:
   explicit CACIC_Computer(QObject *parent = 0);
   std::string pegarIPInterfaceDeRede();
   std::string pegarMACInterfaceDeRede();
-  void setIp(const std::string &value);
-  void setMac(const std::string &value);
-  void setOs(const std::string &value);
+
+  std::string getIp() const;
+  std::string getMac() const;
+  std::string getOs() const;
 
 private:
   std::string ip;
