@@ -102,7 +102,6 @@ bool CCacic::deleteFile(QString path)
         return true;
 }
 
-
 /*enCrypt
  * @parameter QString str_in: string que será encriptada (url).
  *            QString key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
@@ -116,13 +115,12 @@ QString CCacic::enCrypt(QString str_in, QString key, QString iv) {
     std::string str_out;
     CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
     CryptoPP::StringSource encryptor(str_in.toStdString(), true,
-              new CryptoPP::StreamTransformationFilter(encryption,
-                  new CryptoPP::Base64Encoder(
-                      new CryptoPP::StringSink(str_out),
-                          false // do not append a newline
-                      )
-                  )
-              );
+                                     new CryptoPP::StreamTransformationFilter(encryption,
+                                        new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
+                                            false // do not append a newline
+                                            )
+                                        )
+                                    );
     //qDebug(QString::fromStdString(str_out).toLocal8Bit());
     return QString::fromStdString(str_out).toLocal8Bit();
 }

@@ -38,8 +38,7 @@ private slots:
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();
-    void testpegarIPInterfaceDeRede();
-    void testpegarMACInterfaceDeRede();
+    void testInterfaceDeRede();
     void testpegarOS();
 };
 

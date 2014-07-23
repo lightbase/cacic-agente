@@ -84,16 +84,11 @@ void CTestCacic::testDeCrypt(){
 
 }
 
-void CTestCacic::testpegarIPInterfaceDeRede(){
+void CTestCacic::testInterfaceDeRede(){
 //    qDebug() << QString::fromStdString(OCacicComp.getIp());
-    QVERIFY(OCacicComp.getIp() != "");
-}
-
-void CTestCacic::testpegarMACInterfaceDeRede(){
-//    qDebug() << QString::fromStdString(OCacicComp.getMac());
-    QVERIFY(OCacicComp.getMac() != "");
+    QVERIFY(!OCacicComp.getNetworkInterface().empty());
 }
 
 void CTestCacic::testpegarOS(){
-  QVERIFY(OCacicComp.pegarOS() == "linux");
+    QVERIFY(OCacicComp.getOs() == "Windows_NT");
 }

@@ -2,10 +2,7 @@
 #define CCACIC_H
 #include <QCoreApplication>
 #include <QObject>
-#include <QDebug>
 #include <QFile>
-#include <iostream>
-#include <iomanip>
 #include "crypto++/include/aes.h"
 #include "crypto++/include/base64.h"
 #include "crypto++/include/modes.h"
@@ -15,6 +12,10 @@
 #include "crypto++/include/md5.h"
 #include <QSettings>
 #include <QDir>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QJsonArray>
+#include <QDebug>
 
 class CCacic : public QObject
 {
