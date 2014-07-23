@@ -16,9 +16,10 @@ public:
   std::string pegarIPInterfaceDeRede();
   std::string pegarMACInterfaceDeRede();
   std::string pegarOS();
-  void setIp(const std::string &value);
-  void setMac(const std::string &value);
   void setOs(const std::string &value);
+  std::string getIp() const;
+  std::string getMac() const;
+  std::string getOs() const;
 
 private:
   std::string ip;

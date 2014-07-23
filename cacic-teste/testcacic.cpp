@@ -85,11 +85,13 @@ void CTestCacic::testDeCrypt(){
 }
 
 void CTestCacic::testpegarIPInterfaceDeRede(){
-  QVERIFY(OCacicComp.pegarIPInterfaceDeRede() == "10.1.0.89");
+//    qDebug() << QString::fromStdString(OCacicComp.getIp());
+    QVERIFY(OCacicComp.getIp() != "");
 }
 
 void CTestCacic::testpegarMACInterfaceDeRede(){
-   QVERIFY(OCacicComp.pegarMACInterfaceDeRede() == "E0:3F:49:E4:70:12");
+//    qDebug() << QString::fromStdString(OCacicComp.getMac());
+    QVERIFY(OCacicComp.getMac() != "");
 }
 
 void CTestCacic::testpegarOS(){

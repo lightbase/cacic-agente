@@ -3,35 +3,19 @@
 CACIC_Computer::CACIC_Computer(QObject *parent) :
   QObject(parent)
 {
-}
-
-void CACIC_Computer::setIp(const std::string &value)
-{
-  ip = value;
-}
-
-void CACIC_Computer::setMac(const std::string &value)
-{
-  mac = value;
-}
-
-void CACIC_Computer::setOs(const std::string &value)
-{
-  os = value;
+    ip  = pegarIPInterfaceDeRede();
+    mac = pegarMACInterfaceDeRede();
 }
 
 std::string CACIC_Computer::pegarIPInterfaceDeRede() {
   QNetworkInterface interface;
-  QList<QHostAddress> result;
   QList<QHostAddress> IpList = interface.allAddresses();
   for (int i = 0; i < IpList.size(); i++){
-      if((!IpList.at(i).isLoopback()) & (IpList.at(i).scopeId() == Q_NULLPTR)){
-          result.append(IpList.at(i));
-          setIp(IpList.at(i).toString().toStdString());
-          break;
+      if((!IpList.at(i).isLoopback()) & (IpList.at(i).scopeId() == "")){
+          return IpList.at(i).toString().toStdString();
         }
     }
-  return result.at(0).toString().toStdString();
+  return "";
 }
 
 
@@ -40,8 +24,7 @@ std::string CACIC_Computer::pegarMACInterfaceDeRede(){
       if (!(ni.flags() & ni.IsLoopBack)){
           //qDebug() << ni.hardwareAddress();
           return ni.hardwareAddress().toStdString();
-          break;
-        }
+      }
     }
   return "ERROR MAC";
 }
@@ -55,4 +38,24 @@ std::string CACIC_Computer::pegarOS(){
 //      qDebug() << x << sear;
 //      x++;
 //    }
+  return "";
 }
+
+/*
+ * getters/setters
+ */
+
+std::string CACIC_Computer::getIp() const
+{
+    return ip;
+}
+std::string CACIC_Computer::getMac() const
+{
+    return mac;
+}
+std::string CACIC_Computer::getOs() const
+{
+    return os;
+}
+
+
