@@ -6,25 +6,21 @@
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QtNetwork>
-#include <QHostAddress>
 
 class CACIC_Computer : public QObject
 {
   Q_OBJECT
 public:
-  explicit CACIC_Computer(QObject *parent = 0);
-  std::string pegarIPInterfaceDeRede();
-  std::string pegarMACInterfaceDeRede();
-  std::string pegarOS();
-  void setOs(const std::string &value);
-  std::string getIp() const;
-  std::string getMac() const;
-  std::string getOs() const;
+    explicit CACIC_Computer(QObject *parent = 0);
+
+    std::string pegarOS();
+    std::string getOs() const;
+    QList<QList<std::string>> getNetworkInterface() const;
+    QList<QList<std::string>> networkInterfacesRunning();
 
 private:
-  std::string ip;
-  std::string mac;
-  std::string os;
+     QList<QList<std::string>> networkInterface;
+    std::string os;
 
 signals:
 

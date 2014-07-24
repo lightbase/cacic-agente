@@ -30,6 +30,7 @@ public:
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
+//    void readJson();
 
 //Geters/seters:
 

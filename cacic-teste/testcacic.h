@@ -40,6 +40,7 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testpegarOS();
+//    void testJson();
 };
 
 #endif // TESTINSTALLCACIC_H

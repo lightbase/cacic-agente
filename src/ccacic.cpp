@@ -149,6 +149,33 @@ QString CCacic::deCrypt(QString str_in, QString key, QString iv) {
     return QString::fromStdString(str_out).toLocal8Bit();
 }
 
+//void CCacic::readJson()
+//{
+//    QString val;
+//    QFile file;
+//    file.setFileName("e:/Lightbase/teste.json");
+//    file.open(QIODevice::ReadOnly | QIODevice::Text);
+//    val = file.readAll();
+//    file.close();
+//    qWarning() << val;
+//    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+//    QJsonObject sett2 = d.object();
+//    QJsonValue value = sett2.value(QString("appName"));
+//    qWarning() << value;
+//    QJsonObject item = value.toObject();
+//    qWarning() << tr("QJsonObject of description: ") << item;
+
+//    /* incase of string value get value and convert into string*/
+//    qWarning() << tr("QJsonObject[appName] of description: ") << item["description"];
+//    QJsonValue subobj = item["description"];
+//    qWarning() << subobj.toString();
+
+//    /* incase of array get array and convert into string*/
+//    qWarning() << tr("QJsonObject[appName] of value: ") << item["imp"];
+//    QJsonArray test = item["imp"].toArray();
+//    qWarning() << test[1].toString();
+//}
+
 /*Getters/Setters
  * Begin:
  */

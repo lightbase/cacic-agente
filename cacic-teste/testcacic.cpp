@@ -85,10 +85,14 @@ void CTestCacic::testDeCrypt(){
 }
 
 void CTestCacic::testInterfaceDeRede(){
-//    qDebug() << QString::fromStdString(OCacicComp.getIp());
+//    qDebug() << QString::fromStdString(OCacicComp.getNetworkInterface().at(0).at(0));
     QVERIFY(!OCacicComp.getNetworkInterface().empty());
 }
 
 void CTestCacic::testpegarOS(){
-    QVERIFY(OCacicComp.getOs() == "Windows_NT");
+    QVERIFY((OCacicComp.getOs() == "Windows_NT") || (OCacicComp.getOs() == "linux"));
 }
+
+//void CTestCacic::testJson(){
+//    OCacic.readJson();
+//}

@@ -9,6 +9,7 @@ QT += network
 
 TARGET = cacic-teste
 CONFIG -= app_bundle
+CONFIG += c++11
 TEMPLATE = app
 win32 {
 LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
