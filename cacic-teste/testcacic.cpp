@@ -70,29 +70,32 @@ void CTestCacic::testDeleteFolder()
 }
 
 void CTestCacic::testEnCrypt(){
-    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
-    QString IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
-    QString input = "aqui vai a url que sera encriptada";
+    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
+    std::string input = "aqui vai a url que sera encriptada";
     QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
 }
 
 void CTestCacic::testDeCrypt(){
-    QString key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
-    QString IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
-    QString input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
+    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
+    std::string input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
     QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
 
 }
 
 void CTestCacic::testInterfaceDeRede(){
 //    qDebug() << QString::fromStdString(OCacicComp.getNetworkInterface().at(0).at(0));
-    QVERIFY(!OCacicComp.getNetworkInterface().empty());
+    QVERIFY2(!OCacicComp.getNetworkInterface().empty(), "Nenhuma interface de rede encontrada.");
 }
 
 void CTestCacic::testpegarOS(){
     QVERIFY((OCacicComp.getOs() == "Windows_NT") || (OCacicComp.getOs() == "linux"));
 }
 
-//void CTestCacic::testJson(){
-//    OCacic.readJson();
-//}
+void CTestCacic::testSslConnection()
+{
+    OSslComm.start("127.0.0.1", 8888);
+    QVERIFY(false);
+}
+

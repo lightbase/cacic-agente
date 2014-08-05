@@ -1,5 +1,6 @@
 #ifndef CCACIC_H
 #define CCACIC_H
+
 #include <QCoreApplication>
 #include <QObject>
 #include <QFile>
@@ -12,11 +13,8 @@
 #include "crypto++/include/md5.h"
 #include <QSettings>
 #include <QDir>
-#include <QJsonObject>
-#include <QJsonParseError>
-#include <QJsonArray>
 #include <QDebug>
-
+//#include <jvson.h>
 class CCacic : public QObject
 {
     Q_OBJECT
@@ -25,12 +23,11 @@ public:
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
-    QString enCrypt(QString str_in, QString key, QString iv);
-    QString deCrypt(QString str_in, QString key, QString iv);
+    std::string enCrypt(std::string str_in, std::string key, std::string iv);
+    std::string deCrypt(std::string str_in, std::string key, std::string iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
-//    void readJson();
 
 //Geters/seters:
 

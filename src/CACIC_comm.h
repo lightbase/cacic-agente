@@ -99,7 +99,7 @@ public:
 
         QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
         if (reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).isValid()){
-            //            qDebug() << "Status:" << codigoStatus.toInt() << reason;
+            qDebug() << "Status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << reason;
             return true;
         }else{
             reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();

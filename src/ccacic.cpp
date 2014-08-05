@@ -66,7 +66,8 @@ QString CCacic::getValueFromTags(QString fullString, QString tag, QString tagTyp
     tag = tagType.mid(0,1) + tag + tagType.mid(1);
     tagSize = tag.size();
     return fullString.mid(fullString.indexOf(tag) + tagSize,
-                          fullString.indexOf(tagFim) - (fullString.indexOf(tag) + tagSize)).trimmed();
+                          fullString.indexOf(tagFim) -
+                          (fullString.indexOf(tag) + tagSize)).trimmed();
 }
 /*createFolder
  * @parameter QString path: caminho onde será criado o diretório, sendo criado toda a árvore se necessário.
@@ -103,18 +104,18 @@ bool CCacic::deleteFile(QString path)
 }
 
 /*enCrypt
- * @parameter QString str_in: string que será encriptada (url).
- *            QString key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
+ * @parameter std::string str_in: string que será encriptada (url).
+ *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
  *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
- *            QString iv: IV (Vetor de Inicialização) deve ser aleatório.
+ *            std::string iv: IV (Vetor de Inicialização) deve ser aleatório.
  *              (http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
  *              exemplo de iv: 0123456789123456
  * @return std:string: retorna a string encriptada convertida em base64.
  * */
-QString CCacic::enCrypt(QString str_in, QString key, QString iv) {
+std::string CCacic::enCrypt(std::string str_in, std::string key, std::string iv) {
     std::string str_out;
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
-    CryptoPP::StringSource encryptor(str_in.toStdString(), true,
+    CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+    CryptoPP::StringSource encryptor(str_in, true,
                                      new CryptoPP::StreamTransformationFilter(encryption,
                                         new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
                                             false // do not append a newline
@@ -122,59 +123,32 @@ QString CCacic::enCrypt(QString str_in, QString key, QString iv) {
                                         )
                                     );
     //qDebug(QString::fromStdString(str_out).toLocal8Bit());
-    return QString::fromStdString(str_out).toLocal8Bit();
+    return str_out;
 }
 
 /*deCrypt
- * @parameter QString str_in: string encriptada convertida em base64.
- *            QString key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
+ * @parameter std::string str_in: string encriptada convertida em base64.
+ *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
  *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
- *            QString iv: IV (Vetor de Inicialização) deve ser aleatório.
+ *            std::string iv: IV (Vetor de Inicialização) deve ser aleatório.
  *              *Um IV jamais deve ser utilizado mais de uma vez com a mesma chave.
  *              *(http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
  *              *exemplo de iv: 0123456789123456
  * @return QString: retorna a string desencriptada convertida em base64.
  * */
-QString CCacic::deCrypt(QString str_in, QString key, QString iv) {
+std::string CCacic::deCrypt(std::string str_in, std::string key, std::string iv) {
     std::string str_out;
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.toStdString().c_str(), key.length(), (byte*)iv.toStdString().c_str());
+    CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
 
-    CryptoPP::StringSource decryptor(str_in.toStdString(), true,
-        new CryptoPP::Base64Decoder(
-            new CryptoPP::StreamTransformationFilter(decryption,
-                new CryptoPP::StringSink(str_out)
-            )
-        )
-    );
-    return QString::fromStdString(str_out).toLocal8Bit();
+    CryptoPP::StringSource decryptor(str_in, true,
+                                    new CryptoPP::Base64Decoder(
+                                        new CryptoPP::StreamTransformationFilter(decryption,
+                                            new CryptoPP::StringSink(str_out))
+                                       )
+                                     );
+    return str_out;
 }
 
-//void CCacic::readJson()
-//{
-//    QString val;
-//    QFile file;
-//    file.setFileName("e:/Lightbase/teste.json");
-//    file.open(QIODevice::ReadOnly | QIODevice::Text);
-//    val = file.readAll();
-//    file.close();
-//    qWarning() << val;
-//    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-//    QJsonObject sett2 = d.object();
-//    QJsonValue value = sett2.value(QString("appName"));
-//    qWarning() << value;
-//    QJsonObject item = value.toObject();
-//    qWarning() << tr("QJsonObject of description: ") << item;
-
-//    /* incase of string value get value and convert into string*/
-//    qWarning() << tr("QJsonObject[appName] of description: ") << item["description"];
-//    QJsonValue subobj = item["description"];
-//    qWarning() << subobj.toString();
-
-//    /* incase of array get array and convert into string*/
-//    qWarning() << tr("QJsonObject[appName] of value: ") << item["imp"];
-//    QJsonArray test = item["imp"].toArray();
-//    qWarning() << test[1].toString();
-//}
 
 /*Getters/Setters
  * Begin:

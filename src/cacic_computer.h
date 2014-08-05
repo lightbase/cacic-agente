@@ -6,12 +6,12 @@
 #include <QtSerialPort/QtSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QtNetwork>
+#include <QSysInfo>
 
-class CACIC_Computer : public QObject
+class CACIC_Computer
 {
-  Q_OBJECT
 public:
-    explicit CACIC_Computer(QObject *parent = 0);
+    CACIC_Computer();
 
     std::string pegarOS();
     std::string getOs() const;
@@ -19,14 +19,11 @@ public:
     QList<QList<std::string>> networkInterfacesRunning();
 
 private:
-     QList<QList<std::string>> networkInterface;
+    QList<QList<std::string>> networkInterface;
     std::string os;
-
-signals:
-
-public slots:
-
 
 };
 
+Q_DECLARE_METATYPE(CACIC_Computer)
+Q_DECLARE_METATYPE(CACIC_Computer*)
 #endif // CACIC_COMPUTER_H

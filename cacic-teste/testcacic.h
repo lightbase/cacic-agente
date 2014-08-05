@@ -1,15 +1,16 @@
 #ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
-#include "../src/CACIC_comm.h"
-#include "../src/ccacic.h"
-#include "../src/cacic_computer.h"
+
+#include <cacic_comm.h>
+#include <ccacic.h>
+#include <cacic_computer.h>
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
 #include <QProcess>
 #include <QStringList>
 #include <iostream>
-#include <QHostAddress>
+#include <csslcomm.h>
 
 class CTestCacic : public QObject
 {
@@ -23,6 +24,7 @@ private:
     CACIC_Computer OCacicComp;
     QString testPath;
     QString testIniPath;
+    CSslComm OSslComm;
 
 signals:
 
@@ -40,7 +42,7 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testpegarOS();
-//    void testJson();
+    void testSslConnection();
 };
 
 #endif // TESTINSTALLCACIC_H

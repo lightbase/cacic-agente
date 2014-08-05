@@ -12,9 +12,9 @@ CONFIG -= app_bundle
 CONFIG += c++11
 TEMPLATE = app
 win32 {
-LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+    LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
-LIBS += -L/usr/lib -lcryptopp
+    LIBS += -L/usr/lib -lcryptopp
 }
 
 SOURCES += \
@@ -27,3 +27,5 @@ HEADERS += \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
     ../src/cacic_comm.h
+
+INCLUDEPATH += ../src
