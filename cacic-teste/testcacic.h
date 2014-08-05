@@ -10,7 +10,8 @@
 #include <QProcess>
 #include <QStringList>
 #include <iostream>
-#include <csslcomm.h>
+#include <QHostAddress>
+#include <QJsonObject>
 
 class CTestCacic : public QObject
 {
@@ -24,13 +25,14 @@ private:
     CACIC_Computer OCacicComp;
     QString testPath;
     QString testIniPath;
-    CSslComm OSslComm;
+    QJsonObject session;
 
 signals:
 
 public slots:
 
 private slots:
+    void initTestCase();
     void testCommStatus();
     void testComm();
     void testGetAndSetValueFromFile();
@@ -42,7 +44,9 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testpegarOS();
-    void testSslConnection();
+    void testJson();
+    void testLogin();
+    void cleanupTestCase();
 };
 
 #endif // TESTINSTALLCACIC_H

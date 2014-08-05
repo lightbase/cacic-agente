@@ -11,6 +11,7 @@ QT -= gui
 TARGET = install-cacic
 CONFIG += console
 CONFIG -= app_bundle
+CONFIG += c++11
 
 TEMPLATE = app
 
@@ -21,6 +22,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     installcacic.h \
-    ../src/CACIC_comm.h \
     ../src/ccacic.h \
-    ../src/cacic_computer.h
+    ../src/cacic_computer.h \
+    ../src/cacic_comm.h
