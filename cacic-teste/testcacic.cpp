@@ -55,10 +55,10 @@ void CTestCacic::testCommStatus()
 
 void CTestCacic::testComm()
 {
-
-    if (OCacicComm.commStatus())
-        QVERIFY(OCacic.getValueFromTags(OCacicComm.comm("/ws/get/test"), "Comm_Status", "<>") == QString("OK"));
-    else
+    if (OCacicComm.commStatus()){
+        QJsonObject jsonreply = OCacicComm.comm("/ws/get/test");
+        QVERIFY(OCacic.getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
+    } else
         QSKIP("Teste de comunicação negativo!");
 }
 
@@ -103,8 +103,9 @@ void CTestCacic::testpegarOS(){
 
 void CTestCacic::testLogin(){
     QJsonObject sessionjson = OCacicComm.login();
-    QJsonValue session_str = sessionjson["session"];
-    QVERIFY(session_str.isString());
+    QJsonValue session_str = sessionjson["codestatus"];
+//    qDebug() << session_str.toVariant().toString();
+    QVERIFY(!session_str.isNull());
 }
 
 void CTestCacic::cleanupTestCase()

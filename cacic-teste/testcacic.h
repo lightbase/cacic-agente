@@ -44,7 +44,6 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testpegarOS();
-    void testJson();
     void testLogin();
     void cleanupTestCase();
 };

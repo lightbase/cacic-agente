@@ -52,7 +52,7 @@ std::string CACIC_Computer::pegarOS(){
   foreach (text, environment) {
         if (text.contains("OS=", Qt::CaseInsensitive)){
             if ((QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS8) &&
-                (QSysInfo::windowsVersion() < QSysInfo::WV_WINDOWS8_1))
+                (QSysInfo::windowsVersion() < QSysInfo::WV_WINDOWS8_1));
 //                qDebug () << "win 8";
             else if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS8_1)
 //                qDebug() << "win 8.1";

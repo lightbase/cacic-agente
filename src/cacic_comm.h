@@ -51,18 +51,24 @@ public:
         params.addQueryItem("te_versao_gercols",gercolsVersion);
     }
 
-    QJsonObject comm(QString route, const QJsonObject &json)
+    QJsonObject comm(QString route, const QJsonObject &json = QJsonObject())
     {
-        QString retorno        = "0";
         QByteArray data;
         QUrl url = urlGerente + route;
-
-        //data.append(params.toString());
-
-        // Add JSON
-        QJsonDocument d(json);
-        data.append(d.toVariant().toString());
-
+        QNetworkRequest req(url);
+        req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
+        if (json.empty())
+        {
+            //se não for passado QJson, será mandado os valores do get/test antigo. (Será retirado depois)
+            req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+            data.append(params.toString());
+        } else {
+            // Add JSON
+            QJsonDocument d(json);
+            data.append(d.toVariant().toString());
+            req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        }
+//        qDebug() << QString::fromUtf8(d.toJson().trimmed());
         // cria um event-loop temporario
         QEventLoop eventLoop;
         // "quit()" o event-loop, when the network request "finished()"
@@ -70,36 +76,30 @@ public:
         QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
 
         // a requisição HTTP
-        QNetworkRequest req(url);
-        req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
 
         QNetworkReply *reply = mgr.post(req, data);
         eventLoop.exec(); // sai do looping chamando o "finished()".
 
+        QVariantMap replyValue;
+        replyValue["codestatus"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+
         if (reply->error() == QNetworkReply::NoError) {
-
             QString strReply = (QString)reply->readAll();
-
+            replyValue["reply"] = strReply;
             //parse json
-            qDebug() << "Response:" << strReply;
-            QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
-
-            QJsonObject jsonObj = jsonResponse.object();
-
-            //qDebug() << "Time:" << jsonObj["time"].toString();
-            //qDebug() << "Date:" << jsonObj["date"].toString();
+//            qDebug() << "Response:" << strReply;
 
             delete reply;
-
-            return jsonObj;
         } else {
             //failure
-            qDebug() << "Failure" <<reply->errorString();
+//            qDebug() << "Failure" <<reply->errorString();
+            replyValue["error"] = reply->errorString();
             delete reply;
 
-            return QJsonObject ();
+
         }
+        QJsonObject jsonObj = QJsonObject::fromVariantMap(replyValue);
+        return jsonObj;
     }
 
 
@@ -122,11 +122,11 @@ public:
 
         QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
         if (reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).isValid()){
-            qDebug() << "Status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << reason;
+//            qDebug() << "Status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << reason;
             return true;
         }else{
             reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-            //            qDebug() << "Error:" << reason;
+//              qDebug() << "Error:" << reason;
             return false;
         }
     }
@@ -139,7 +139,7 @@ public:
         QJsonObject loginJson = QJsonObject::fromVariantMap(loginMap);
 
         // Cria conexão e retorna Json da sessão
-        QJsonObject retorno = this->comm("login", loginJson);
+        QJsonObject retorno = this->comm("/ws/get/test", loginJson);
 
         return retorno;
 
