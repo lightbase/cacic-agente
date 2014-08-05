@@ -5,7 +5,11 @@ QTEST_MAIN(CTestCacic)
 CTestCacic::CTestCacic(QObject *parent) :
     QObject(parent)
 {
-    OCacicComm = CacicComm("http://teste.cacic.cc",
+}
+
+void CTestCacic::initTestCase()
+{
+    this->OCacicComm = CacicComm("http://teste.cacic.cc",
                            "rG/HcIDVTZ3pPKCf[[MAIS]]I6aigUb7OMeij3FfC7qNaznk0rBRYb6q6kSK3eNfjgptS8BfwW5yJqCvD2ai7xlw9I6P21j6cvQUqlHmAJpCbfwR13urdRE9AhjfokMcPrH6R1/zXPGMHveLRRgKLcqWu2X96rmoQQdRq9EW1SXmYUAx1dCV[[MAIS]]3Ha61XBw5pq58q35zH8Gjt998rTi3ecV8ShXXevqyK[[MAIS]]W07xpgTjbbd6Fbs/35gPfdRRgMNFjq7Gq[[MAIS]]llFgYMJ6UcEhw8f0ZLQo2oL/eRW/CNyeBW6wG0hIo6EIdpi/Ht0/95Uwn2Og[[MAIS]]2UPXsmKKuTMeGwUvPdbEfexlinUO0[[MAIS]]j9qIa2dpjtl0Y5Fyk1Bvw2ZYRTXwgJpUHsBboWmtTFpgX3wSGOWMipE80K8ktRTVYOp[[MAIS]]4qS/SzKWXpfCuZoCncfwE0lCEoreTH[[MAIS]]MLrTkHJP2oqYMAyFyQcjC0UGr3BQGa2edSNXjG7jrTdddga/SODUiF94jgh/QBwhiZby34b__CRYPTED__",
                            "P198PVwtz5F5CfZPSUrzuaQA/QG1sTnwzl/rBnj8M7y5MglANGodG5LLD4q7oY809HuDR4g5tL64lZRBKvKPmEgWd9iAZKvT4UAm9XWN3nKKLGaznCaJohmntNGqrJP1Zd9riTHGu10mPbg/Uh3TCbBHVOICvu5sDlINlCR6A3[[MAIS]]a55RhfKNidvr5uX0kozCxr5t2DyOb5oPocEGyJKyHLQ==__CRYPTED__",
                            "1",
@@ -20,8 +24,11 @@ CTestCacic::CTestCacic(QObject *parent) :
                            "2.5.1.1.256.32",
                            "2.8.1.7",
                            "2.8.1.6");
-    testPath = QDir::currentPath() + "/teste";
-    testIniPath = testPath + "/teste.ini";
+    this->testPath = QDir::currentPath() + "/teste";
+    this->testIniPath = testPath + "/teste.ini";
+    QVariantMap json;
+    json["session"] = "lakdhfalkfhsaklfhasfhsl";
+    this->session = QJsonObject::fromVariantMap(json);
 }
 
 void CTestCacic::testCreateFolder()
@@ -93,6 +100,18 @@ void CTestCacic::testpegarOS(){
     QVERIFY((OCacicComp.getOs() == "Windows_NT") || (OCacicComp.getOs() == "linux"));
 }
 
-//void CTestCacic::testJson(){
-//    OCacic.readJson();
-//}
+void CTestCacic::testJson(){
+    QJsonValue session_str = this->session["session"];
+    QVERIFY(session_str.toString() == QString("lakdhfalkfhsaklfhasfhsl"));
+}
+
+void CTestCacic::testLogin(){
+    QJsonObject sessionjson = OCacicComm.login();
+    QJsonValue session_str = sessionjson["session"];
+    QVERIFY(session_str.isString());
+}
+
+void CTestCacic::cleanupTestCase()
+{
+
+}
