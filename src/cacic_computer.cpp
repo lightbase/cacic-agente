@@ -48,19 +48,19 @@ QList<QList<std::string>> CACIC_Computer::networkInterfacesRunning(){
  *
  */
 std::string CACIC_Computer::pegarOS(){
-  QString text;
-  QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-  foreach (text, environment) {
-      if (text.contains("OS=Win", Qt::CaseInsensitive)){
+    QString text;
+    QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
+    foreach (text, environment) {
+        if (text.contains("OS=Win", Qt::CaseInsensitive)){
           //qDebug() << "Windows_NT";
-          return "Windows_NT";
-        }else{
-          if (text.contains("SESSION=", Qt::CaseInsensitive)){
-              //qDebug() << "linux";
-              return "linux";
-            }
-        }
+            return "Windows_NT";
+        } else if (text.contains("SESSION=", Qt::CaseInsensitive)){
+          //qDebug() << "linux";
+            return "linux";
+        } else
+            return "0"; //SO desconhecido.
     }
+    return "0";
 }
 
 
@@ -70,38 +70,25 @@ std::string CACIC_Computer::pegarOS(){
  *      retorna uma string o qual dirá qual é o usuario logado no sistema.
 */
 std::string CACIC_Computer::pegarUsu(){
-  QString text;
-  QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-  foreach (text, environment) {
-      if (text.contains("USER=", Qt::CaseInsensitive)){
-          QString x = text;
-          QString s = "USER=";
-          QString e = "\"";
-          int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-          int end = x.indexOf(e, Qt::CaseInsensitive);
-          if(start != -1){
-              QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-              //qDebug() << y;
-              return y.toStdString();
-            }
-        }else{
-          if (text.contains("USERNAME=", Qt::CaseInsensitive)){
-              QString x = text;
-              QString s = "USERNAME=";
-              QString e = "\"";
-              int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-              int end = x.indexOf(e, Qt::CaseInsensitive);
-              if(start != -1){
-                  QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-                  //  qDebug() << y;
-                  return y.toStdString();
-                }
-            }
-        }
-    }
-  return false;
-}
+    QString text, key;
+    std::string retorno;
+    QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
+    foreach (text, environment) {
+        if (text.contains("USER=", Qt::CaseInsensitive))
+            key = "USER=";
+        else if (text.contains("USERNAME=", Qt::CaseInsensitive))
+            key = "USERNAME=";
+        else
+            continue;
 
+        int keySize = key.size();
+//        qDebug() << text.mid(text.indexOf(key) + keySize);
+        retorno = text.mid(text.indexOf(key) + keySize).toStdString();
+        if (retorno != "")
+            return retorno;
+    }
+    return "0";
+}
 /*
  * getters/setters
 */

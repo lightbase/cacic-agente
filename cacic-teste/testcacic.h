@@ -46,6 +46,7 @@ private slots:
   void testPegarUsu();
   void testpegarOS();
   void testLogin();
+  void testSslConnection();
   void cleanupTestCase();
 };
 
