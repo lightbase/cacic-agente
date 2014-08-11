@@ -97,7 +97,7 @@ void CTestCacic::testInterfaceDeRede(){
 }
 
 void CTestCacic::testpegarOS(){
-    QVERIFY((OCacicComp.getOs() == 5) || (OCacicComp.getOs() == 0));
+    QVERIFY((OCacicComp.getOs() == 48) || (OCacicComp.getOs() == 200));
 }
 
 void CTestCacic::testPegarUsu(){
