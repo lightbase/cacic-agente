@@ -12,6 +12,7 @@
 #include <QUrlQuery>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <sslclient.h>
 
 
 class CacicComm {
@@ -49,14 +50,18 @@ public:
         params.addQueryItem("te_so",so);
         params.addQueryItem("te_versao_cacic",cacicVersion);
         params.addQueryItem("te_versao_gercols",gercolsVersion);
+
+
     }
 
-    QJsonObject comm(QString route, const QJsonObject &json = QJsonObject())
+    QJsonObject comm(QString route, const QJsonObject &json = QJsonObject(), bool isSsl = false)
     {
         QByteArray data;
         QUrl url = urlGerente + route;
         QNetworkRequest req(url);
         req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
+        if (isSsl)
+            req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
         if (json.empty())
         {
             //se não for passado QJson, será mandado os valores do get/test antigo. (Será retirado depois)
@@ -79,11 +84,12 @@ public:
 
         QNetworkReply *reply = mgr.post(req, data);
         eventLoop.exec(); // sai do looping chamando o "finished()".
-
         QVariantMap replyValue;
+        //grava o código de retorno
         replyValue["codestatus"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
         if (reply->error() == QNetworkReply::NoError) {
+            //se não houver erro, grava o retorno;
             QString strReply = (QString)reply->readAll();
             replyValue["reply"] = strReply;
             //parse json
@@ -98,6 +104,7 @@ public:
 
 
         }
+        //retorna o json;
         QJsonObject jsonObj = QJsonObject::fromVariantMap(replyValue);
         return jsonObj;
     }
@@ -117,6 +124,7 @@ public:
         // a requisição HTTP
         QUrl url = urlGerente;
         QNetworkRequest req( url );
+        req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
         QNetworkReply *reply = mgr.get(req);
         eventLoop.exec(); // sai do looping chamando o "finished()".
 
@@ -145,8 +153,19 @@ public:
 
     }
 
+    bool sslConnection(QString host, int port) {
+        //cria dados para conexão
+        SslClient client;
+        client.setHost(host);
+        client.setPort(port);
+
+        return client.start();
+        //cria conexão e retorna json
+
+    }
+
 signals:
     void finished(QNetworkReply* reply);
-};
 
+};
 #endif // CACIC_COMM_H

@@ -108,6 +108,17 @@ void CTestCacic::testLogin(){
     QVERIFY(!session_str.isNull());
 }
 
+void CTestCacic::testSslConnection()
+{
+    QVariantMap login;
+    login["user"] = "cacic";
+    login["password"] = "cacic";
+    QJsonObject json = OCacicComm.comm("/ws/get/test", QJsonObject::fromVariantMap(login), true);
+    QJsonValue jsonvalue = json["key"];
+//    qDebug() << jsonvalue.toVariant().toString();
+    QVERIFY(!jsonvalue.isNull());
+}
+
 void CTestCacic::cleanupTestCase()
 {
 

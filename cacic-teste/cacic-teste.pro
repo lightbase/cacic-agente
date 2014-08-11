@@ -20,13 +20,16 @@ win32 {
 SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
-    ../src/cacic_computer.cpp
+    ../src/cacic_computer.cpp \
+    ../src/sslclient.cpp
 
 
 HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
-    ../src/cacic_comm.h
+    ../src/cacic_comm.h \
+    ../src/sslclient.h
 
-INCLUDEPATH += ../src
+INCLUDEPATH += ../src \
+               ../src/crypto++/include/

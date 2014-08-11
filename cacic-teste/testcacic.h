@@ -45,6 +45,7 @@ private slots:
     void testInterfaceDeRede();
     void testpegarOS();
     void testLogin();
+    void testSslConnection();
     void cleanupTestCase();
 };
 
