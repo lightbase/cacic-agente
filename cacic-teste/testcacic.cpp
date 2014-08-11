@@ -97,11 +97,11 @@ void CTestCacic::testInterfaceDeRede(){
 }
 
 void CTestCacic::testpegarOS(){
-  QVERIFY(OCacicComp.getOs() != "0");
+    QVERIFY(OCacicComp.getOs() != 0);
 }
 
 void CTestCacic::testPegarUsu(){
-  QVERIFY(OCacicComp.getUser() != "0");
+    QVERIFY(OCacicComp.getUser() != "0");
 }
 
 void CTestCacic::testLogin(){
@@ -116,8 +116,9 @@ void CTestCacic::testSslConnection()
     QVariantMap login;
     login["user"] = "cacic";
     login["password"] = "cacic";
-    QJsonObject json = OCacicComm.comm("/ws/get/test", QJsonObject::fromVariantMap(login), true);
-    QJsonValue jsonvalue = json["key"];
+    OCacicComm.setUrlSsl("https://teste.cacic.cc");
+    QJsonObject json = OCacicComm.comm("", QJsonObject::fromVariantMap(login), true);
+    QJsonValue jsonvalue = json["reply"];
 //    qDebug() << jsonvalue.toVariant().toString();
     QVERIFY(!jsonvalue.isNull());
 }

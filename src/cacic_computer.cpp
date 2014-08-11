@@ -51,6 +51,7 @@ QList<QList<std::string>> CACIC_Computer::networkInterfacesRunning(){
  * 160 = Windows 8
  * 176 = Windows 8.1
  * 200 = Linux
+ * 0   = unkown
  */
 int CACIC_Computer::pegarOS(){
 #if defined (Q_OS_WIN)
@@ -71,9 +72,10 @@ std::string CACIC_Computer::pegarUsu(){
   QString text;
   QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
   foreach (text, environment) {
-      if (text.contains("USER=", Qt::CaseInsensitive)
-             || text.contains("USERNAME=", Qt::CaseInsensitive) ){
+      if (text.contains("USER="    , Qt::CaseInsensitive) ||
+          text.contains("USERNAME=", Qt::CaseInsensitive) ){
           QStringList split = text.split("=");
+//          qDebug() << split[1];
           return split[1].toStdString();
         }
     }

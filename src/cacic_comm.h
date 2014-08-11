@@ -12,14 +12,13 @@
 #include <QUrlQuery>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <sslclient.h>
-
 
 class CacicComm {
 
 private:
     QUrlQuery params;
     QString urlGerente;
+    QString urlSsl;
     // FIXME: Get from configuration
     QString usuario = "user";
     QString password = "123456";
@@ -57,11 +56,15 @@ public:
     QJsonObject comm(QString route, const QJsonObject &json = QJsonObject(), bool isSsl = false)
     {
         QByteArray data;
-        QUrl url = urlGerente + route;
-        QNetworkRequest req(url);
-        req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
-        if (isSsl)
+        QNetworkRequest req;
+        QUrl url;
+        if (isSsl){
+            url = urlSsl + route;
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+        } else
+            url = urlGerente + route;
+        req.setUrl(url);
+        req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
         if (json.empty())
         {
             //se não for passado QJson, será mandado os valores do get/test antigo. (Será retirado depois)
@@ -83,6 +86,10 @@ public:
         // a requisição HTTP
 
         QNetworkReply *reply = mgr.post(req, data);
+        if (!reply->sslConfiguration().isNull()){
+//            qDebug() << "Eh ssl";
+            reply->ignoreSslErrors();
+        }
         eventLoop.exec(); // sai do looping chamando o "finished()".
         QVariantMap replyValue;
         //grava o código de retorno
@@ -92,7 +99,6 @@ public:
             //se não houver erro, grava o retorno;
             QString strReply = (QString)reply->readAll();
             replyValue["reply"] = strReply;
-            //parse json
 //            qDebug() << "Response:" << strReply;
 
             delete reply;
@@ -153,15 +159,12 @@ public:
 
     }
 
-    bool sslConnection(QString host, int port) {
-        //cria dados para conexão
-        SslClient client;
-        client.setHost(host);
-        client.setPort(port);
+    void setUrlSsl(QString value){
+        this->urlSsl = value;
+    }
 
-        return client.start();
-        //cria conexão e retorna json
-
+    QString getUrlSsl (){
+        return this->urlSsl;
     }
 
 signals:
