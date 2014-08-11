@@ -103,7 +103,7 @@ void CTestCacic::testpegarOS(){
 void CTestCacic::testPegarUsu(){
   //lightbase = user do linux.
   //Usuario = user da vm winxp.
-  QVERIFY(OCacicComp.getUser() == "lightbase" || OCacicComp.getUser() == "Usuario");
+  QVERIFY(OCacicComp.pegarUsu() == "thiroc80" || OCacicComp.pegarUsu() == "Usuario");
 }
 
 void CTestCacic::testLogin(){

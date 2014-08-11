@@ -73,30 +73,10 @@ std::string CACIC_Computer::pegarUsu(){
   QString text;
   QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
   foreach (text, environment) {
-      if (text.contains("USER=", Qt::CaseInsensitive)){
-          QString x = text;
-          QString s = "USER=";
-          QString e = "\"";
-          int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-          int end = x.indexOf(e, Qt::CaseInsensitive);
-          if(start != -1){
-              QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-              //qDebug() << y;
-              return y.toStdString();
-            }
-        }else{
-          if (text.contains("USERNAME=", Qt::CaseInsensitive)){
-              QString x = text;
-              QString s = "USERNAME=";
-              QString e = "\"";
-              int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-              int end = x.indexOf(e, Qt::CaseInsensitive);
-              if(start != -1){
-                  QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-                  //  qDebug() << y;
-                  return y.toStdString();
-                }
-            }
+      if (text.contains("USER=", Qt::CaseInsensitive)
+             || text.contains("USERNAME=", Qt::CaseInsensitive) ){
+          QStringList split = text.split("=");
+          return split[1].toStdString();
         }
     }
   return false;
