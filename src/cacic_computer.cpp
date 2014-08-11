@@ -2,9 +2,9 @@
 
 CACIC_Computer::CACIC_Computer()
 {
-  os  = pegarOS();
-  networkInterface = networkInterfacesRunning();
-  usu = pegarUsu();
+    os  = pegarOS();
+    networkInterface = networkInterfacesRunning();
+    usu = pegarUsu();
 }
 
 /*NetworkInterfacesRunning
@@ -15,52 +15,49 @@ CACIC_Computer::CACIC_Computer()
  *
  */
 QList<QList<std::string>> CACIC_Computer::networkInterfacesRunning(){
-  QNetworkInterface interface;
-  QList<std::string> lista;
-  QList<QList<std::string>> todasInterfaces;
+    QNetworkInterface interface;
+    QList<std::string> lista;
+    QList<QList<std::string>> todasInterfaces;
 
-  foreach (QNetworkInterface in, interface.allInterfaces()) {
-      if (!(bool)(in.flags() & QNetworkInterface::IsLoopBack) &&
-          !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
-          (bool)(in.flags() & QNetworkInterface::IsRunning)){
-          //            qDebug() << in.humanReadableName() << "\n";
-          lista.append(in.humanReadableName().toStdString());
-          //            qDebug() << in.hardwareAddress() << "\n";
-          lista.append(in.hardwareAddress().toStdString());
-          foreach (QNetworkAddressEntry ae, in.addressEntries()){
-              if (ae.ip().scopeId() == ""){
-                  lista.append(ae.ip().toString().toStdString());
+    foreach (QNetworkInterface in, interface.allInterfaces()) {
+        if (!(bool)(in.flags() & QNetworkInterface::IsLoopBack) &&
+                !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
+                (bool)(in.flags() & QNetworkInterface::IsRunning)){
+            //            qDebug() << in.humanReadableName() << "\n";
+            lista.append(in.humanReadableName().toStdString());
+            //            qDebug() << in.hardwareAddress() << "\n";
+            lista.append(in.hardwareAddress().toStdString());
+            foreach (QNetworkAddressEntry ae, in.addressEntries()){
+                if (ae.ip().scopeId() == ""){
+                    lista.append(ae.ip().toString().toStdString());
                 } else {
-                  lista.append(ae.ip().toString().toStdString());
+                    lista.append(ae.ip().toString().toStdString());
                 }
-              //                qDebug() << ae.ip().toString() << "\n";
+                //                qDebug() << ae.ip().toString() << "\n";
             }
-          todasInterfaces.append(lista);
-          lista.clear();
+            todasInterfaces.append(lista);
+            lista.clear();
         }
     }
-  return todasInterfaces;
+    return todasInterfaces;
 }
 
 /*pegarOS
- * @return: std::string;
- *      retorna uma string o qual dirá qual so é.
- *
+ * @return: int;
+ *      retorna um id referente a versão do SO.
+ * 48 = Windows XP
+ * 128 = Windows Vista
+ * 144 = Windows 7
+ * 160 = Windows 8
+ * 176 = Windows 8.1
+ * 200 = Linux
  */
-std::string CACIC_Computer::pegarOS(){
-  QString text;
-  QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-  foreach (text, environment) {
-      if (text.contains("OS=Win", Qt::CaseInsensitive)){
-          //qDebug() << "Windows_NT";
-          return "Windows_NT";
-        }else{
-          if (text.contains("SESSION=", Qt::CaseInsensitive)){
-              //qDebug() << "linux";
-              return "linux";
-            }
-        }
-    }
+int CACIC_Computer::pegarOS(){
+#if defined (Q_OS_WIN)
+    return QSysInfo::WindowsVersion;
+#elif defined (Q_OS_LINUX)
+    return 200;
+#endif
 }
 
 
@@ -70,52 +67,51 @@ std::string CACIC_Computer::pegarOS(){
  *      retorna uma string o qual dirá qual é o usuario logado no sistema.
 */
 std::string CACIC_Computer::pegarUsu(){
-  QString text;
-  QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-  foreach (text, environment) {
-      if (text.contains("USER=", Qt::CaseInsensitive)){
-          QString x = text;
-          QString s = "USER=";
-          QString e = "\"";
-          int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-          int end = x.indexOf(e, Qt::CaseInsensitive);
-          if(start != -1){
-              QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-              //qDebug() << y;
-              return y.toStdString();
+    QString text;
+    QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
+    foreach (text, environment) {
+        if (text.contains("USER=", Qt::CaseInsensitive)){
+            QString x = text;
+            QString s = "USER=";
+            QString e = "\"";
+            int start = x.indexOf(s, 0, Qt::CaseInsensitive);
+            int end = x.indexOf(e, Qt::CaseInsensitive);
+            if(start != -1){
+                QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
+                //qDebug() << y;
+                return y.toStdString();
             }
         }else{
-          if (text.contains("USERNAME=", Qt::CaseInsensitive)){
-              QString x = text;
-              QString s = "USERNAME=";
-              QString e = "\"";
-              int start = x.indexOf(s, 0, Qt::CaseInsensitive);
-              int end = x.indexOf(e, Qt::CaseInsensitive);
-              if(start != -1){
-                  QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
-                  //  qDebug() << y;
-                  return y.toStdString();
+            if (text.contains("USERNAME=", Qt::CaseInsensitive)){
+                QString x = text;
+                QString s = "USERNAME=";
+                QString e = "\"";
+                int start = x.indexOf(s, 0, Qt::CaseInsensitive);
+                int end = x.indexOf(e, Qt::CaseInsensitive);
+                if(start != -1){
+                    QString y = x.mid(start + s.length(), ((end - (start + s.length())) > -1 ? (end - (start + s.length())) : -1));
+                    //  qDebug() << y;
+                    return y.toStdString();
                 }
             }
         }
     }
-  return false;
+    return false;
 }
 
 /*
  * getters/setters
 */
-
-std::string CACIC_Computer::getOs() const
+int CACIC_Computer::getOs() const
 {
-  return os;
+    return os;
 }
 
 std::string CACIC_Computer::getUser() const {
-  return usu;
+    return usu;
 }
 
 QList<QList<std::string>> CACIC_Computer::getNetworkInterface() const
 {
-  return networkInterface;
+    return networkInterface;
 }

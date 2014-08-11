@@ -13,16 +13,16 @@ class CACIC_Computer
 public:
     CACIC_Computer();
 
-    std::string pegarOS();
+    int pegarOS();
     std::string pegarUsu();
-    std::string getOs() const;
+    int getOs() const;
     std::string getUser() const;
     QList<QList<std::string>> getNetworkInterface() const;
     QList<QList<std::string>> networkInterfacesRunning();
 
 private:
     QList<QList<std::string>> networkInterface;
-    std::string os;
+    int os;
     std::string usu;
 
 };
