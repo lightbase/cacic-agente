@@ -79,21 +79,6 @@ void CTestCacic::testDeleteFolder()
     QVERIFY(!folder.exists());
 }
 
-void CTestCacic::testEnCrypt(){
-    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
-    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
-    std::string input = "aqui vai a url que sera encriptada";
-    QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
-}
-
-void CTestCacic::testDeCrypt(){
-    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
-    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
-    std::string input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
-    QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
-
-}
-
 void CTestCacic::testInterfaceDeRede(){
 //    qDebug() << OCacicComp.getNetworkInterface().at(0)["nome"].toString();
     QVERIFY2(!OCacicComp.getNetworkInterface().empty(), "Nenhuma interface de rede encontrada.");
@@ -107,10 +92,15 @@ void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "0");
 }
 
+void CTestCacic::testJsonValueFromJsonString()
+{
+    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
+}
+
 void CTestCacic::testLogin(){
     QJsonObject json = OCacicComm.login();
     QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
-//    qDebug() << sessionvalue.toString();
+    qDebug() << sessionvalue.toString();
     QVERIFY(!sessionvalue.isNull());
 }
 
@@ -122,9 +112,19 @@ void CTestCacic::testSslConnection()
     QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
 }
 
-void CTestCacic::testJsonValueFromJsonString()
-{
-    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
+void CTestCacic::testEnCrypt(){
+    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
+    std::string input = "aqui vai a url que sera encriptada";
+    QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
+}
+
+void CTestCacic::testDeCrypt(){
+    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
+    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
+    std::string input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
+    QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
+
 }
 
 void CTestCacic::cleanupTestCase()

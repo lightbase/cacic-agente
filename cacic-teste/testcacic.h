@@ -37,17 +37,17 @@ private slots:
   void testComm();
   void testGetAndSetValueFromFile();
   void testGetValueFromTags();
-  void testEnCrypt();
-  void testDeCrypt();
   void testCreateFolder();
   void testDeleteFolder();
   void testDeleteFile();
   void testInterfaceDeRede();
   void testPegarUsu();
+  void testJsonValueFromJsonString();
   void testpegarOS();
   void testLogin();
   void testSslConnection();
-  void testJsonValueFromJsonString();
+  void testEnCrypt();
+  void testDeCrypt();
   void cleanupTestCase();
 };
 
