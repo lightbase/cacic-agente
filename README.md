@@ -8,7 +8,7 @@ Instalando no Windows:
 
 Instalando no Linux (Versão utilizada Ubuntu 14.04):
 
-  1 ~$ apt-cache pkgnames | grep -i crypto++
+    1 ~$ apt-cache pkgnames | grep -i crypto++
   
     libcrypto++X-dbg
     libcrypto++-dev
@@ -18,7 +18,7 @@ Instalando no Linux (Versão utilizada Ubuntu 14.04):
   
     *O X é referente a versão do cryptopp. Modifique de acordo com o resultado da busca.
   
-  2 ~$ apt-get install libcrypto++X libcrypto++X-dbg libcrypto++-dev
+    2 ~$ apt-get install libcrypto++X libcrypto++X-dbg libcrypto++-dev
 
 - OpenSSL (https://www.openssl.org/)
 >Encontrado para windows em https://www.openssl.org/related/binaries.html;
