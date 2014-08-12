@@ -30,8 +30,10 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
             foreach (QNetworkAddressEntry ae, in.addressEntries()){
                 if (ae.ip().scopeId() == ""){
                     mapInterface["ipv4"] = ae.ip().toString();
+                    mapInterface["netmask_ipv4"] = ae.netmask().toString();
                 } else {
                     mapInterface["ipv6"] = ae.ip().toString();
+                    mapInterface["netmask_ipv6"] = ae.netmask().toString();
                 }
                 //                qDebug() << ae.ip().toString() << "\n";
             }

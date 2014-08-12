@@ -146,6 +146,11 @@ public:
         }
     }
 
+    /* login
+     * realiza login com usuario e senha
+     * @return retorna json com sessão e chave de criptografia
+     *      exemplo: 200 OK
+     */
     QJsonObject login() {
         // Cria dados de login
         QVariantMap login;
@@ -153,36 +158,34 @@ public:
         login["password"] = this->password;
 //        QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
         // Cria conexão e retorna Json da sessão
-        QJsonObject retorno = this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
-        return retorno;
-
-    }
-
-    void setUrlSsl(QString value){
-        this->urlSsl = value;
+        return this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
     }
 
     QString getUrlSsl (){
         return this->urlSsl;
     }
 
+    void setUrlSsl(QString value){
+        this->urlSsl = value;
+    }
+
     QString getPassword()
     {
-        return password;
+        return this->password;
     }
 
     void setPassword(QString value)
     {
-        password = value;
+        this->password = value;
     }
     QString getUsuario()
     {
-        return usuario;
+        return this->usuario;
     }
 
     void setUsuario(QString value)
     {
-        usuario = value;
+        this->usuario = value;
     }
 
 
