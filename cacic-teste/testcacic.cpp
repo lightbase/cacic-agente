@@ -29,9 +29,9 @@ void CTestCacic::initTestCase()
     OCacicComm.setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
-    QVariantMap json;
-    json["session"] = "lakdhfalkfhsaklfhasfhsl";
-    this->session = QJsonObject::fromVariantMap(json);
+    QVariantMap jsonMap;
+    jsonMap["session"] = "lakdhfalkfhsaklfhasfhsl";
+    this->session = QJsonObject::fromVariantMap(jsonMap);
 }
 
 void CTestCacic::testCreateFolder()
@@ -60,6 +60,7 @@ void CTestCacic::testComm()
 {
     if (OCacicComm.commStatus()){
         QJsonObject jsonreply = OCacicComm.comm("/ws/get/test");
+//        qDebug() << jsonreply["codestatus"].toString();
         QVERIFY(OCacic.getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
     } else
         QSKIP("Teste de comunicação negativo!");
@@ -89,7 +90,7 @@ void CTestCacic::testpegarOS(){
 }
 
 void CTestCacic::testPegarUsu(){
-    QVERIFY(OCacicComp.getUser() != "0");
+    QVERIFY(OCacicComp.getUsuario() != "");
 }
 
 void CTestCacic::testJsonValueFromJsonString()
@@ -98,9 +99,10 @@ void CTestCacic::testJsonValueFromJsonString()
 }
 
 void CTestCacic::testLogin(){
-    QJsonObject json = OCacicComm.login();
-    QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
-    qDebug() << sessionvalue.toString();
+    QJsonObject jsonReply = OCacicComm.login();
+//    QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
+    QJsonValue sessionvalue = jsonReply["reply"];
+//    qDebug() << sessionvalue.toString();
     QVERIFY(!sessionvalue.isNull());
 }
 
@@ -108,8 +110,7 @@ void CTestCacic::testSslConnection()
 {
     QJsonObject json = OCacicComm.comm("", QJsonObject(), true);
     QJsonValue jsonvalue = json["codestatus"];
-//    qDebug() << jsonvalue.toString();
-    QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
+    QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
 }
 
 void CTestCacic::testEnCrypt(){

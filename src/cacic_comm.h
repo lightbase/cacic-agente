@@ -58,6 +58,8 @@ public:
         QByteArray data;
         QNetworkRequest req;
         QUrl url;
+        QString strReply;
+        QJsonObject jsonObj;
         if (isSsl){
             url = urlSsl + route;
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
@@ -91,28 +93,27 @@ public:
             reply->ignoreSslErrors();
         }
         eventLoop.exec(); // sai do looping chamando o "finished()".
-        QVariantMap replyValue;
-        //grava o código de retorno
-        replyValue["codestatus"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+        //grava codigo de retorno
+        jsonObj.insert("codestatus", QJsonValue::fromVariant(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)));
 //        qDebug() << "code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
         if (reply->error() == QNetworkReply::NoError) {
             //se não houver erro, grava o retorno;
-            QString strReply = (QString)reply->readAll();
-            replyValue["reply"] = strReply;
+            strReply = (QString)reply->readAll();
+            jsonObj["reply"] = strReply;
 //            qDebug() << "Response:" << strReply;
 
             delete reply;
         } else {
             //failure
 //            qDebug() << "Failure" <<reply->errorString();
-            replyValue["error"] = reply->errorString();
+            strReply = reply->errorString();
+            jsonObj.insert("error", QJsonValue::fromVariant(strReply));
             delete reply;
 
 
         }
         //retorna o json;
-        QJsonObject jsonObj = QJsonObject::fromVariantMap(replyValue);
         return jsonObj;
     }
 
@@ -158,7 +159,8 @@ public:
         login["password"] = this->password;
 //        QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
         // Cria conexão e retorna Json da sessão
-        return this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
+        QJsonObject retorno = this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
+        return retorno;
     }
 
     QString getUrlSsl (){

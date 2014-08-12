@@ -16,14 +16,15 @@ public:
     int pegarOS();
     std::string pegarUsu();
     int getOs() const;
-    std::string getUser() const;
+    std::string getUsuario() const;
     QList<QVariantMap> getNetworkInterface() const;
     QList<QVariantMap> networkInterfacesRunning();
+    QJsonObject toJsonObject();
 
 private:
     QList<QVariantMap> networkInterface;
     int os;
-    std::string usu;
+    std::string usuario;
 
 };
 

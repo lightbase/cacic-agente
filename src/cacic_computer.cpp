@@ -4,7 +4,7 @@ CACIC_Computer::CACIC_Computer()
 {
     os  = pegarOS();
     networkInterface = networkInterfacesRunning();
-    usu = pegarUsu();
+    usuario = pegarUsu();
 }
 
 /*NetworkInterfacesRunning
@@ -48,6 +48,26 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
 //    }
 
     return listaMap;
+}
+
+QJsonObject CACIC_Computer::toJsonObject()
+{
+//    QJsonObject json;
+//    QJsonValue valor;
+//    QVariant aux;
+//    QJsonArray jsonArray;
+//    aux = this->os;
+//    valor.fromVariant(aux);
+//    json.insert("so", valor);
+//    aux = this->usuario;
+//    valor.fromVariant(aux);
+//    json.insert("usuario", this->usuario);
+//    aux.clear();
+//    foreach(QVariantMap auxMap, this->getNetworkInterface()){
+//        json.insert()
+//    }
+
+//    json.insert("network", network);
 }
 
 /*pegarOS
@@ -97,8 +117,8 @@ int CACIC_Computer::getOs() const
     return os;
 }
 
-std::string CACIC_Computer::getUser() const {
-    return usu;
+std::string CACIC_Computer::getUsuario() const {
+    return usuario;
 }
 
 QList<QVariantMap> CACIC_Computer::getNetworkInterface() const
