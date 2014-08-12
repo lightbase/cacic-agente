@@ -25,6 +25,8 @@ void CTestCacic::initTestCase()
                                  "2.8.1.7",
                                  "2.8.1.6");
     OCacicComm.setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
+    OCacicComm.setUsuario("cacic");
+    OCacicComm.setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
     QVariantMap json;
@@ -106,12 +108,7 @@ void CTestCacic::testPegarUsu(){
 }
 
 void CTestCacic::testLogin(){
-
-    QVariantMap login;
-    login["user"] = "eric";
-    login["password"] = "612ef9b1";
-    OCacicComm.setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
-    QJsonObject json = OCacicComm.comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
+    QJsonObject json = OCacicComm.login();
     QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
 //    qDebug() << sessionvalue.toString();
     QVERIFY(!sessionvalue.isNull());

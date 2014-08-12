@@ -20,8 +20,8 @@ private:
     QString urlGerente;
     QString urlSsl;
     // FIXME: Get from configuration
-    QString usuario = "user";
-    QString password = "123456";
+    QString usuario;
+    QString password;
     std::string session;
 
 public:
@@ -148,14 +148,12 @@ public:
 
     QJsonObject login() {
         // Cria dados de login
-        QVariantMap loginMap;
-        loginMap["user"] = this->usuario;
-        loginMap["password"] = this->password;
-        QJsonObject loginJson = QJsonObject::fromVariantMap(loginMap);
-
+        QVariantMap login;
+        login["user"] = this->usuario;
+        login["password"] = this->password;
+//        QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
         // Cria conexão e retorna Json da sessão
-        QJsonObject retorno = this->comm("/ws/get/test", loginJson);
-
+        QJsonObject retorno = this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
         return retorno;
 
     }
@@ -167,6 +165,26 @@ public:
     QString getUrlSsl (){
         return this->urlSsl;
     }
+
+    QString getPassword()
+    {
+        return password;
+    }
+
+    void setPassword(QString value)
+    {
+        password = value;
+    }
+    QString getUsuario()
+    {
+        return usuario;
+    }
+
+    void setUsuario(QString value)
+    {
+        usuario = value;
+    }
+
 
 signals:
     void finished(QNetworkReply* reply);
