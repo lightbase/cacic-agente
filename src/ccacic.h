@@ -14,7 +14,10 @@
 #include <QSettings>
 #include <QDir>
 #include <QDebug>
-//#include <jvson.h>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
 class CCacic : public QObject
 {
     Q_OBJECT
@@ -28,6 +31,7 @@ public:
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
+    QJsonValue jsonValueFromJsonString(QString json, QString key);
 
 //Geters/seters:
 

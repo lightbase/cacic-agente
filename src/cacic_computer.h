@@ -17,11 +17,11 @@ public:
     std::string pegarUsu();
     int getOs() const;
     std::string getUser() const;
-    QList<QList<std::string>> getNetworkInterface() const;
-    QList<QList<std::string>> networkInterfacesRunning();
+    QList<QVariantMap> getNetworkInterface() const;
+    QList<QVariantMap> networkInterfacesRunning();
 
 private:
-    QList<QList<std::string>> networkInterface;
+    QList<QVariantMap> networkInterface;
     int os;
     std::string usu;
 

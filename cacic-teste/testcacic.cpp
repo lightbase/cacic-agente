@@ -24,6 +24,7 @@ void CTestCacic::initTestCase()
                                  "2.5.1.1.256.32",
                                  "2.8.1.7",
                                  "2.8.1.6");
+    OCacicComm.setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
     QVariantMap json;
@@ -92,7 +93,7 @@ void CTestCacic::testDeCrypt(){
 }
 
 void CTestCacic::testInterfaceDeRede(){
-    //    qDebug() << QString::fromStdString(OCacicComp.getNetworkInterface().at(0).at(0));
+//    qDebug() << OCacicComp.getNetworkInterface().at(0)["nome"].toString();
     QVERIFY2(!OCacicComp.getNetworkInterface().empty(), "Nenhuma interface de rede encontrada.");
 }
 
@@ -105,22 +106,28 @@ void CTestCacic::testPegarUsu(){
 }
 
 void CTestCacic::testLogin(){
-    QJsonObject sessionjson = OCacicComm.login();
-    QJsonValue session_str = sessionjson["codestatus"];
-    //    qDebug() << session_str.toVariant().toString();
-    QVERIFY(!session_str.isNull());
+
+    QVariantMap login;
+    login["user"] = "eric";
+    login["password"] = "612ef9b1";
+    OCacicComm.setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
+    QJsonObject json = OCacicComm.comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
+    QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
+//    qDebug() << sessionvalue.toString();
+    QVERIFY(!sessionvalue.isNull());
 }
 
 void CTestCacic::testSslConnection()
 {
-    QVariantMap login;
-    login["user"] = "cacic";
-    login["password"] = "cacic";
-    OCacicComm.setUrlSsl("https://teste.cacic.cc");
-    QJsonObject json = OCacicComm.comm("", QJsonObject::fromVariantMap(login), true);
-    QJsonValue jsonvalue = json["reply"];
-//    qDebug() << jsonvalue.toVariant().toString();
-    QVERIFY(!jsonvalue.isNull());
+    QJsonObject json = OCacicComm.comm("", QJsonObject(), true);
+    QJsonValue jsonvalue = json["codestatus"];
+//    qDebug() << jsonvalue.toString();
+    QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
+}
+
+void CTestCacic::testJsonValueFromJsonString()
+{
+    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
 }
 
 void CTestCacic::cleanupTestCase()

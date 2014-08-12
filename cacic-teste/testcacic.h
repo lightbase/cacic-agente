@@ -47,6 +47,7 @@ private slots:
   void testpegarOS();
   void testLogin();
   void testSslConnection();
+  void testJsonValueFromJsonString();
   void cleanupTestCase();
 };
 

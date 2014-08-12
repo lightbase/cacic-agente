@@ -103,6 +103,11 @@ bool CCacic::deleteFile(QString path)
         return true;
 }
 
+QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
+{
+    return QJsonDocument::fromJson(json.toUtf8()).object()[key];
+}
+
 /*enCrypt
  * @parameter std::string str_in: string que será encriptada (url).
  *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits

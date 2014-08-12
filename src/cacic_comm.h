@@ -22,6 +22,7 @@ private:
     // FIXME: Get from configuration
     QString usuario = "user";
     QString password = "123456";
+    std::string session;
 
 public:
     CacicComm (){
@@ -34,7 +35,6 @@ public:
                QString so,                  QString cacicVersion,        QString gercolsVersion)
     {
         this->urlGerente = urlGerente;
-
         params.addQueryItem("OperatingSystem", operatingSystem);
         params.addQueryItem("ComputerSystem",computerSystem);
         params.addQueryItem("cs_cipher",csCipher);
@@ -94,6 +94,7 @@ public:
         QVariantMap replyValue;
         //grava o código de retorno
         replyValue["codestatus"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+//        qDebug() << "code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 
         if (reply->error() == QNetworkReply::NoError) {
             //se não houver erro, grava o retorno;

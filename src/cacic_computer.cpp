@@ -14,32 +14,38 @@ CACIC_Computer::CACIC_Computer()
  *      outra lista que conterá todas as interfaces.
  *
  */
-QList<QList<std::string>> CACIC_Computer::networkInterfacesRunning(){
+QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
     QNetworkInterface interface;
-    QList<std::string> lista;
-    QList<QList<std::string>> todasInterfaces;
+    QVariantMap mapInterface;
+    QList<QVariantMap> listaMap;
 
     foreach (QNetworkInterface in, interface.allInterfaces()) {
         if (!(bool)(in.flags() & QNetworkInterface::IsLoopBack) &&
                 !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
                 (bool)(in.flags() & QNetworkInterface::IsRunning)){
             //            qDebug() << in.humanReadableName() << "\n";
-            lista.append(in.humanReadableName().toStdString());
+            mapInterface["nome"] = in.humanReadableName();
             //            qDebug() << in.hardwareAddress() << "\n";
-            lista.append(in.hardwareAddress().toStdString());
+            mapInterface["mac"]  = in.hardwareAddress();
             foreach (QNetworkAddressEntry ae, in.addressEntries()){
                 if (ae.ip().scopeId() == ""){
-                    lista.append(ae.ip().toString().toStdString());
+                    mapInterface["ipv4"] = ae.ip().toString();
                 } else {
-                    lista.append(ae.ip().toString().toStdString());
+                    mapInterface["ipv6"] = ae.ip().toString();
                 }
                 //                qDebug() << ae.ip().toString() << "\n";
             }
-            todasInterfaces.append(lista);
-            lista.clear();
+            listaMap.append(mapInterface);
+            mapInterface.clear();
         }
     }
-    return todasInterfaces;
+//    foreach (QVariantMap each, listaMap){
+
+//        foreach (QVariant eachValue, each.values())
+//            qDebug() << eachValue.toString();
+//    }
+
+    return listaMap;
 }
 
 /*pegarOS
@@ -93,7 +99,7 @@ std::string CACIC_Computer::getUser() const {
     return usu;
 }
 
-QList<QList<std::string>> CACIC_Computer::getNetworkInterface() const
+QList<QVariantMap> CACIC_Computer::getNetworkInterface() const
 {
     return networkInterface;
 }
