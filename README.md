@@ -8,7 +8,6 @@ Instalando no Windows:
 Instalando no Linux (Versão utilizada Ubuntu 14.04):
 
   1 ~$ apt-cache pkgnames | grep -i crypto++
-  
     libcrypto++X-dbg
     libcrypto++-dev
     libcrypto++-doc
