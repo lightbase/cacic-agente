@@ -70,24 +70,32 @@ QJsonObject CACIC_Computer::toJsonObject()
 //    json.insert("network", network);
 }
 
+
 /*pegarOS
  * @return: int;
  *      retorna um id referente a versão do SO.
- * 48 = Windows XP
- * 128 = Windows Vista
- * 144 = Windows 7
- * 160 = Windows 8
- * 176 = Windows 8.1
- * 200 = Linux
- * 0   = unkown
  */
 int CACIC_Computer::pegarOS(){
-#if defined (Q_OS_WIN)
-    return QSysInfo::WindowsVersion;
+
+#if defined (Q_OS_WIN) || defined(Q_OS_CYGWIN)
+    if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_XP)
+        return WIN_XP;
+    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_VISTA)
+        return WIN_VISTA;
+    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS7)
+        return WIN_7;
+    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS8)
+        return WIN_8;
+    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS8_1)
+        return WIN_8_1;
+#elif defined(Q_OS_MAC)
+    return MAC;
 #elif defined (Q_OS_LINUX)
-    return 200;
+
+    //TODO: extrair info de distro do "cat /etc/*release"
+    return LINUX_ARCH;
 #else
-    return 0;
+    return -1;
 #endif
 }
 
@@ -117,7 +125,7 @@ int CACIC_Computer::getOs() const
     return os;
 }
 
-std::string CACIC_Computer::getUsuario() const {
+std::string CACIC_Computer::getUser() const {
     return usuario;
 }
 
