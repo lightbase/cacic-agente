@@ -86,15 +86,8 @@ void CTestCacic::testInterfaceDeRede(){
 }
 
 void CTestCacic::testpegarOS(){
-    QVERIFY(OCacicComp.getOs() == CACIC_Computer::WIN_XP ||
-            OCacicComp.getOs() == CACIC_Computer::WIN_VISTA ||
-            OCacicComp.getOs() == CACIC_Computer::WIN_7 ||
-            OCacicComp.getOs() == CACIC_Computer::WIN_8 ||
-            OCacicComp.getOs() == CACIC_Computer::WIN_8_1 ||
-            OCacicComp.getOs() == CACIC_Computer::MAC ||
-            OCacicComp.getOs() == CACIC_Computer::LINUX_DEBIAN ||
-            OCacicComp.getOs() == CACIC_Computer::LINUX_UBUNTU ||
-            OCacicComp.getOs() == CACIC_Computer::LINUX_ARCH );
+    //basta que seja um retorno válido, não precisa validar todos.
+    QVERIFY(OCacicComp.getOs() != -1 );
 }
 
 void CTestCacic::testPegarUsu(){
