@@ -86,11 +86,19 @@ void CTestCacic::testInterfaceDeRede(){
 }
 
 void CTestCacic::testpegarOS(){
-    QVERIFY(OCacicComp.getOs() != 0);
+    QVERIFY(OCacicComp.getOs() == CACIC_Computer::WIN_XP ||
+            OCacicComp.getOs() == CACIC_Computer::WIN_VISTA ||
+            OCacicComp.getOs() == CACIC_Computer::WIN_7 ||
+            OCacicComp.getOs() == CACIC_Computer::WIN_8 ||
+            OCacicComp.getOs() == CACIC_Computer::WIN_8_1 ||
+            OCacicComp.getOs() == CACIC_Computer::MAC ||
+            OCacicComp.getOs() == CACIC_Computer::LINUX_DEBIAN ||
+            OCacicComp.getOs() == CACIC_Computer::LINUX_UBUNTU ||
+            OCacicComp.getOs() == CACIC_Computer::LINUX_ARCH );
 }
 
 void CTestCacic::testPegarUsu(){
-    QVERIFY(OCacicComp.getUsuario() != "");
+    QVERIFY(OCacicComp.getUser() != "");
 }
 
 void CTestCacic::testJsonValueFromJsonString()
@@ -110,6 +118,7 @@ void CTestCacic::testSslConnection()
 {
     QJsonObject json = OCacicComm.comm("", QJsonObject(), true);
     QJsonValue jsonvalue = json["codestatus"];
+//    qDebug() << jsonvalue.toDouble();
     QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
 }
 
