@@ -102,7 +102,12 @@ bool CCacic::deleteFile(QString path)
     else
         return true;
 }
-
+/*jsonValueFromJsonString
+ * Pega valor da chave desejada em um json em string;
+ * @parameter QString json: json onde será feita a busca;
+ * @parameter QString key: chave onde será pego o json;
+ * @return QJsonValue: valor solicitado;
+ */
 QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
 {
     return QJsonDocument::fromJson(json.toUtf8()).object()[key];
