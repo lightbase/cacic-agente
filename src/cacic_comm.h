@@ -26,7 +26,6 @@ private:
 
 public:
     CacicComm (){
-
     }
 
     CacicComm (QString urlGerente,          QString operatingSystem,     QString computerSystem,  QString csCipher,
@@ -53,15 +52,16 @@ public:
 
     }
 
-    QJsonObject comm(QString route, const QJsonObject &json = QJsonObject(), bool isSsl = false)
+    QJsonObject comm(QString route, bool *ok, const QJsonObject &json = QJsonObject(), bool isSsl = false)
     {
+        *ok = false;
         QByteArray data;
         QNetworkRequest req;
         QUrl url;
         QString strReply;
         QJsonObject jsonObj;
         if (isSsl){
-            url = urlSsl + route;
+            url = urlSsl.isEmpty() ? "https://" + this->urlGerente + route : this->urlSsl + route;
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
         } else
             url = urlGerente + route;
@@ -106,7 +106,7 @@ public:
                                 QJsonValue::fromVariant(replyVariant.toString());
 //            qDebug() << "Response:" << jsonObj["reply"];
 //            qDebug() << "Response:" << strReply;
-
+            *ok = true;
             delete reply;
         } else {
             //failure
@@ -156,14 +156,16 @@ public:
      * @return retorna json com sessão e chave de criptografia
      *      exemplo: 200 OK
      */
-    QJsonObject login() {
+    QJsonObject login(bool *ok) {
+        *ok = false;
         // Cria dados de login
         QVariantMap login;
         login["user"] = this->usuario;
         login["password"] = this->password;
 //        QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
         // Cria conexão e retorna Json da sessão
-        QJsonObject retorno = this->comm("/ws/neo/login", QJsonObject::fromVariantMap(login), true);
+//        qDebug() << "Conectando.";
+        QJsonObject retorno = this->comm("/ws/neo/login", ok, QJsonObject::fromVariantMap(login), true);
         return retorno;
     }
 
@@ -173,6 +175,22 @@ public:
 
     void setUrlSsl(QString value){
         this->urlSsl = value;
+    }
+
+    QString getUrlGerente (){
+        return this->urlGerente;
+    }
+
+    void setUrlGerente(QString value){
+        if (value.contains("http://", Qt::CaseInsensitive)){
+            value = value.mid(value.indexOf("http://") + 7);
+        } else if (value.contains("https://", Qt::CaseInsensitive)){
+            value = value.mid(value.indexOf("https://") + 8);
+        }
+        if (value.endsWith("/")){
+            value.remove(value.size()-1, 1);
+        }
+        this->urlGerente = value;
     }
 
     QString getPassword()

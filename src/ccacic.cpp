@@ -137,15 +137,15 @@ std::string CCacic::enCrypt(std::string str_in, std::string key, std::string iv)
 }
 
 /*deCrypt
- * @parameter std::string str_in: string encriptada convertida em base64.
- *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
- *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
- *            std::string iv: IV (Vetor de Inicialização) deve ser aleatório.
- *              *Um IV jamais deve ser utilizado mais de uma vez com a mesma chave.
- *              *(http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
- *              *exemplo de iv: 0123456789123456
- * @return QString: retorna a string desencriptada convertida em base64.
- * */
+// * @parameter std::string str_in: string encriptada convertida em base64.
+// *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
+// *              *exemplo: qwertyuiopasdfghjklzxcvbnmqwerty
+// *            std::string iv: IV (Vetor de Inicialização) deve ser aleatório.
+// *              *Um IV jamais deve ser utilizado mais de uma vez com a mesma chave.
+// *              *(http://pt.wikipedia.org/wiki/Modo_de_opera%C3%A7%C3%A3o_%28criptografia%29#Vetor_de_inicializa.C3.A7.C3.A3o_.28IV.29)
+// *              *exemplo de iv: 0123456789123456
+// * @return QString: retorna a string desencriptada convertida em base64.
+// * */
 std::string CCacic::deCrypt(std::string str_in, std::string key, std::string iv) {
     std::string str_out;
     CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());

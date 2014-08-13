@@ -12,6 +12,7 @@
 #include <iostream>
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
+#include "../install-cacic/installcacic.h"
 
 class CTestCacic : public QObject
 {
@@ -20,12 +21,12 @@ public:
   explicit CTestCacic(QObject *parent = 0);
 
 private:
-  CacicComm OCacicComm;
-  CCacic OCacic;
-  CACIC_Computer OCacicComp;
-  QString testPath;
-  QString testIniPath;
-  QJsonObject session;
+    CacicComm OCacicComm;
+    CCacic OCacic;
+    CACIC_Computer OCacicComp;
+    QString testPath;
+    QString testIniPath;
+    QJsonObject session;
 
 signals:
 
@@ -48,6 +49,7 @@ private slots:
   void testSslConnection();
   void testEnCrypt();
   void testDeCrypt();
+  void testInstallCacicStart();
   void cleanupTestCase();
 };
 

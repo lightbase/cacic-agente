@@ -58,8 +58,9 @@ void CTestCacic::testCommStatus()
 
 void CTestCacic::testComm()
 {
+    bool ok;
     if (OCacicComm.commStatus()){
-        QJsonObject jsonreply = OCacicComm.comm("/ws/get/test");
+        QJsonObject jsonreply = OCacicComm.comm("/ws/get/test", &ok);
 //        qDebug() << jsonreply["codestatus"].toString();
         QVERIFY(OCacic.getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
     } else
@@ -100,16 +101,18 @@ void CTestCacic::testJsonValueFromJsonString()
 }
 
 void CTestCacic::testLogin(){
-    QJsonObject jsonReply = OCacicComm.login();
+    bool ok;
+    QJsonObject jsonReply = OCacicComm.login(&ok);
     QJsonValue sessionvalue = jsonReply["reply"];
 //    qDebug() << sessionvalue.toObject()["session"].toString();
 //    qDebug() << sessionvalue.toString();
-    QVERIFY(sessionvalue.isObject());
+    QVERIFY(ok);
 }
 
 void CTestCacic::testSslConnection()
 {
-    QJsonObject json = OCacicComm.comm("", QJsonObject(), true);
+    bool ok;
+    QJsonObject json = OCacicComm.comm("", &ok, QJsonObject(), true);
     QJsonValue jsonvalue = json["codestatus"];
 //    qDebug() << jsonvalue.toDouble();
     QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
@@ -128,6 +131,26 @@ void CTestCacic::testDeCrypt(){
     std::string input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
     QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
 
+}
+
+void CTestCacic::testInstallCacicStart()
+{
+//    char *argva[] = {"program name", "-host=teste.cacic.cpp", "-user=asda", "-password=qwesd", NULL};
+//    int argca = sizeof(argva) / sizeof(char*) - 1;
+//    QCoreApplication a(argca, argva);
+
+//    InstallCacic *oInstallCacic = new InstallCacic(&a);
+
+//    QStringList args;
+//    for (int i = 0; i<argca; i++)
+//        args.append(argva[i]);
+//    // This will cause the application to exit when
+//    // the task signals finished.
+//    QObject::connect(oInstallCacic, SIGNAL(finished()), &a, SLOT(quit()));
+
+//    // This will run the task from the application event loop.
+//    QMetaObject::invokeMethod(oInstallCacic, "run", Qt::QueuedConnection, Q_ARG(QStringList, args), Q_ARG(int, argca));
+    QVERIFY(false);
 }
 
 void CTestCacic::cleanupTestCase()

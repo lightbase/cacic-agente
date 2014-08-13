@@ -4,19 +4,19 @@
 #include <QCoreApplication>
 #include <QObject>
 #include <QFile>
-#include <aes.h>
-#include <base64.h>
-#include <modes.h>
-#include <filters.h>
-#include <hex.h>
-#include <sha.h>
-#include <md5.h>
 #include <QSettings>
 #include <QDir>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <aes.h>
+#include <base64.h>
+#include <modes.h>
+//#include <filters.h>
+//#include <hex.h>
+//#include <sha.h>
+//#include <md5.h>
 
 class CCacic : public QObject
 {
