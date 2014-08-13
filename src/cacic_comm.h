@@ -99,8 +99,12 @@ public:
 
         if (reply->error() == QNetworkReply::NoError) {
             //se não houver erro, grava o retorno;
-            strReply = (QString)reply->readAll();
-            jsonObj["reply"] = strReply;
+            QVariant replyVariant = reply->readAll();
+            QJsonDocument replyDocument = QJsonDocument::fromJson(replyVariant.toByteArray());
+            jsonObj["reply"] = (!replyDocument.isNull()) ?
+                                replyDocument.object() :
+                                QJsonValue::fromVariant(replyVariant.toString());
+//            qDebug() << "Response:" << jsonObj["reply"];
 //            qDebug() << "Response:" << strReply;
 
             delete reply;

@@ -100,10 +100,10 @@ void CTestCacic::testJsonValueFromJsonString()
 
 void CTestCacic::testLogin(){
     QJsonObject jsonReply = OCacicComm.login();
-//    QJsonValue sessionvalue = OCacic.jsonValueFromJsonString(json["reply"].toString(), "session");
     QJsonValue sessionvalue = jsonReply["reply"];
+//    qDebug() << sessionvalue.toObject()["session"].toString();
 //    qDebug() << sessionvalue.toString();
-    QVERIFY(!sessionvalue.isNull());
+    QVERIFY(sessionvalue.isObject());
 }
 
 void CTestCacic::testSslConnection()
