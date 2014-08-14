@@ -96,7 +96,7 @@ void CTestCacic::testConsole()
 {
     ConsoleObject console;
 
-    QVERIFY(console("echo teste").toStdString() == "teste");
+    QVERIFY(console("echo teste").toStdString() == "teste\n");
 }
 
 void CTestCacic::testPegarUsu(){

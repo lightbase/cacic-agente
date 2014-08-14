@@ -14,7 +14,7 @@ int OperatingSystem::pegarOS(){
 #if defined (Q_OS_WIN)
     return QSysInfo::WindowsVersion;
 #elif defined (Q_OS_LINUX)
-    return 200;
+    return LINUX_ARCH;
 #else
     return 0;
 #endif
