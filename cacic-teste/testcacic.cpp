@@ -88,7 +88,8 @@ void CTestCacic::testInterfaceDeRede(){
 
 void CTestCacic::testpegarOS(){
     //basta que seja um retorno válido, não precisa validar todos.
-    QVERIFY(OCacicComp.getOs() != -1 );
+
+    QVERIFY(OCacicComp.getOs().getIdSo() != -1 );
 }
 
 void CTestCacic::testConsole()

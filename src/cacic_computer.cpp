@@ -2,7 +2,7 @@
 
 CACIC_Computer::CACIC_Computer()
 {
-    os  = pegarOS();
+    operatingSystem  = OperatingSystem();
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
 }
@@ -70,50 +70,6 @@ QJsonObject CACIC_Computer::toJsonObject()
 //    json.insert("network", network);
 }
 
-
-/*pegarOS
- * @return: int;
- *      retorna um id referente a versão do SO.
- * 48 = Windows XP
- * 128 = Windows Vista
- * 144 = Windows 7
- * 160 = Windows 8
- * 176 = Windows 8.1
- * 200 = Linux
- * 0   = unkown
- */
-int CACIC_Computer::pegarOS(){
-/*Não entendi o que você tentou fazer aqui, mas não funcionou.
- * Você chegou a testar? Comenta o que era pra fazer.
- * ======
- * Não testei, mas quis pegar os valores definidos no enum do QSysInfo
- * para Windows e, em vez de retornar estes valores ( que estão
- * comentados acima), retornar os valores do enum da própria CACIC_Computer.
- */
-//#if defined (Q_OS_WIN) || defined(Q_OS_CYGWIN)
-//    if(QSysInfo::WindowsVersion == QSysInfo::WV_XP)
-//        return WIN_XP;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_VISTA)
-//        return WIN_VISTA;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7)
-//        return WIN_7;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8)
-//        return WIN_8;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8_1)
-//        return WIN_8_1;
-#if defined (Q_OS_WIN)
-    return QSysInfo::WindowsVersion;
-#elif defined(Q_OS_MAC)
-    return MAC;
-#elif defined (Q_OS_LINUX)
-
-    //TODO: extrair info de distro do "cat /etc/*release"
-    return LINUX_ARCH;
-#else
-    return -1;
-#endif
-}
-
 /*
  * PegarUsu()
  * @return: std::string;
@@ -135,9 +91,9 @@ std::string CACIC_Computer::pegarUsu(){
 /*
  * getters/setters
 */
-int CACIC_Computer::getOs() const
+OperatingSystem CACIC_Computer::getOs() const
 {
-    return os;
+    return operatingSystem;
 }
 
 std::string CACIC_Computer::getUser() const {
