@@ -88,14 +88,15 @@ void CTestCacic::testInterfaceDeRede(){
 
 void CTestCacic::testpegarOS(){
     //basta que seja um retorno válido, não precisa validar todos.
-    QVERIFY(OCacicComp.getOs().getIdSo() != -1 );
+    QVERIFY(OCacicComp.getOs().getIdOs() != -1 );
 }
 
 void CTestCacic::testConsole()
 {
     ConsoleObject console;
 
-    QVERIFY(console("echo teste").toStdString() == "teste\n");
+//    QVERIFY(console("echo teste").toStdString() == "teste\n");
+    QVERIFY(false);
 }
 
 void CTestCacic::testPegarUsu(){
@@ -165,7 +166,24 @@ void CTestCacic::testCacicCompToJsonObject()
     QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
+void CTestCacic::testOperatingSystemToJsonObject()
+{
+    QVERIFY(!OCacicComp.getOs().toJsonObject().empty());
+}
+
+void CTestCacic::testJsonToFile()
+{
+    QJsonObject json;
+    json["teste"] = QJsonValue::fromVariant(QString("teste"));
+    QVERIFY(OCacic.setJsonToFile(json, "teste.json"));
+}
+
+void CTestCacic::testJsonFromFile()
+{
+    QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
+}
+
 void CTestCacic::cleanupTestCase()
 {
-
+    OCacic.deleteFile("teste.json");
 }

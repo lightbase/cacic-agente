@@ -2,7 +2,6 @@
 
 CACIC_Computer::CACIC_Computer()
 {
-    operatingSystem  = OperatingSystem();
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
 }
@@ -56,6 +55,7 @@ QJsonObject CACIC_Computer::toJsonObject()
     QJsonObject network;
     int count = 1;
     json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
+    json["operatingSystem"] = this->oOperatingSystem.toJsonObject();
     foreach(QVariantMap auxMap, this->getNetworkInterface()){
         network["network" + QVariant::fromValue(count).toString()] = QJsonObject::fromVariantMap(auxMap);
         count++;
@@ -89,7 +89,7 @@ std::string CACIC_Computer::pegarUsu(){
 */
 OperatingSystem CACIC_Computer::getOs() const
 {
-    return operatingSystem;
+    return oOperatingSystem;
 }
 
 std::string CACIC_Computer::getUser() const {

@@ -32,6 +32,8 @@ public:
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
     QJsonValue jsonValueFromJsonString(QString json, QString key);
+    bool setJsonToFile(QJsonObject json, QString filepath);
+    QJsonObject getJsonFromFile(QString filepath);
 
 //Geters/seters:
 
@@ -50,12 +52,16 @@ public:
     QString getChksisInfFilePath() const;
     void setChksisInfFilePath(const QString &value);
 
+    QString getChaveCrypt() const;
+    void setChaveCrypt(const QString &value);
+
 private:
     QString cacicMainFolder;
     QString mainModuleName;
     QString urlGerente;
     QString gerColsInfFilePath;
     QString chksisInfFilePath;
+    QString chaveCrypt;
 
 signals:
 

@@ -19,7 +19,10 @@ void InstallCacic::run(QStringList argv, int argc) {
         QJsonObject jsonLogin = oCacicComm.login(&ok);
         if (ok){
             //TODO: Conectado. armazenar chave em arquivo e sessao na comm;
-            qDebug() << "Logado";
+            oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
+            QJsonObject configToSave;
+            configToSave["chaveCrypt"] = QJsonValue::fromVariant(oCacic.getChaveCrypt());
+            oCacic.setJsonToFile(configToSave, "cacicTeste.json");
         }
         else
             qDebug() << "falha no login";

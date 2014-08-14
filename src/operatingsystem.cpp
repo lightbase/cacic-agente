@@ -1,5 +1,11 @@
 #include "operatingsystem.h"
 
+OperatingSystem::OperatingSystem()
+{
+    this->idOs = this->coletaIdOs();
+    this->nomeOs = this->coletaNomeOs();
+}
+
 /*pegarOS
  * @return: int;
  *      retorna um id referente a versão do SO.
@@ -10,7 +16,7 @@
  * 176 = Windows 8.1
  * 200 = Linux
  */
-int OperatingSystem::pegarOS(){
+int OperatingSystem::coletaIdOs(){
 #if defined (Q_OS_WIN)
     return QSysInfo::WindowsVersion;
 #elif defined (Q_OS_LINUX)
@@ -20,16 +26,36 @@ int OperatingSystem::pegarOS(){
 #endif
 }
 
-int OperatingSystem::getIdSo() const
+QString OperatingSystem::coletaNomeOs()
 {
-    return idSo;
+    QString text;
+    QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
+    foreach (text, environment) {
+        if (text.contains("OS="    , Qt::CaseInsensitive) ||
+            text.contains("SESSION=", Qt::CaseInsensitive) ){
+            QStringList split = text.split("=");
+  //          qDebug() << split[1];
+            return split[1];
+          }
+      }
+      return "";
 }
 
-void OperatingSystem::setIdSo(int value)
+QJsonObject OperatingSystem::toJsonObject()
 {
-    idSo = value;
+    QJsonObject json;
+    json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));
+    json["nomeOs"] = QJsonValue::fromVariant(this->nomeOs);
+//    qDebug() << json;
+    return json;
 }
 
-OperatingSystem::OperatingSystem()
+QString OperatingSystem::getNomeOs()
 {
+    return this->nomeOs;
+}
+
+int OperatingSystem::getIdOs() const
+{
+    return this->idOs;
 }

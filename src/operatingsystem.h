@@ -3,16 +3,18 @@
 
 #include <QtCore>
 #include <QSysInfo>
+#include <ccacic.h>
 
 class OperatingSystem
 {
 private:
-    int idSo;
-
-    int pegarOS();
+    int idOs;
+    int coletaIdOs();
+    QString nomeOs;
+    QString coletaNomeOs();
 public:
     OperatingSystem();
-
+    QJsonObject toJsonObject();
     enum OsList {
         MAC,
         LINUX_DEBIAN,
@@ -21,8 +23,8 @@ public:
     };
     static const enum OsList OsList;
 
-    int getIdSo() const;
-    void setIdSo(int value);
+    QString getNomeOs();
+    int getIdOs() const;
 };
 
 #endif // OPERATINGSYSTEM_H

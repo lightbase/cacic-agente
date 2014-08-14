@@ -113,6 +113,26 @@ QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
     return QJsonDocument::fromJson(json.toUtf8()).object()[key];
 }
 
+bool CCacic::setJsonToFile(QJsonObject json, QString filepath)
+{
+    QFile configFile(filepath);
+    if (!configFile.open(QIODevice::WriteOnly)){
+        qDebug() << "Não foi possivel abrir o arquivo.";
+    }
+    QJsonDocument docJson(json);
+    return (configFile.write(docJson.toJson()) != -1);
+}
+
+QJsonObject CCacic::getJsonFromFile(QString filepath)
+{
+    QFile configFile(filepath);
+    QJsonObject json;
+    if (!configFile.open(QIODevice::ReadOnly))
+        qDebug() << "Nao foi possivel ler o arquivo";
+    json = QJsonDocument::fromJson(configFile.readAll()).object();
+    return json;
+}
+
 /*enCrypt
  * @parameter std::string str_in: string que será encriptada (url).
  *            std::string key: chave utilizada na encriptação (32 caracteres) 32*8 = 256 bits
@@ -208,6 +228,16 @@ void CCacic::setChksisInfFilePath(const QString &value)
 {
     chksisInfFilePath = value;
 }
+QString CCacic::getChaveCrypt() const
+{
+    return chaveCrypt;
+}
+
+void CCacic::setChaveCrypt(const QString &value)
+{
+    chaveCrypt = value;
+}
+
 
 /*Getters/Setters
  * End.

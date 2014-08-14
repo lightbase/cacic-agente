@@ -22,7 +22,7 @@ private:
     // FIXME: Get from configuration
     QString usuario;
     QString password;
-    std::string session;
+    QString session;
 
 public:
     CacicComm (){
@@ -166,6 +166,7 @@ public:
         // Cria conexão e retorna Json da sessão
 //        qDebug() << "Conectando.";
         QJsonObject retorno = this->comm("/ws/neo/login", ok, QJsonObject::fromVariantMap(login), true);
+        this->session = retorno["reply"].toObject()["session"].toString();
         return retorno;
     }
 

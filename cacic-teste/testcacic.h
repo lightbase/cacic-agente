@@ -53,6 +53,9 @@ private slots:
   void testDeCrypt();
   void testInstallCacicStart();
   void testCacicCompToJsonObject();
+  void testOperatingSystemToJsonObject();
+  void testJsonToFile();
+  void testJsonFromFile();
   void cleanupTestCase();
 };
 

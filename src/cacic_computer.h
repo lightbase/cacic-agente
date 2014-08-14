@@ -7,7 +7,6 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QtNetwork>
 #include <QSysInfo>
-
 #include <operatingsystem.h>
 
 class CACIC_Computer
@@ -23,7 +22,7 @@ public:
 
 private:
 
-    OperatingSystem operatingSystem;
+    OperatingSystem oOperatingSystem;
     int pegarOS();
     std::string pegarUsu();
 
