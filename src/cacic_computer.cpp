@@ -2,7 +2,7 @@
 
 CACIC_Computer::CACIC_Computer()
 {
-    os  = pegarOS();
+    operatingSystem  = OperatingSystem();
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
 }
@@ -66,31 +66,6 @@ QJsonObject CACIC_Computer::toJsonObject()
 }
 
 
-/*pegarOS
- * @return: int;
- *      retorna um id referente a versão do SO.
- * 48 = Windows XP
- * 128 = Windows Vista
- * 144 = Windows 7
- * 160 = Windows 8
- * 176 = Windows 8.1
- * 200 = Linux
- * 0   = unkown
- */
-int CACIC_Computer::pegarOS(){
-#if defined (Q_OS_WIN)
-    return QSysInfo::WindowsVersion;
-#elif defined(Q_OS_MAC)
-    return MAC;
-#elif defined (Q_OS_LINUX)
-
-    //TODO: extrair info de distro do "cat /etc/*release"
-    return LINUX_ARCH;
-#else
-    return -1;
-#endif
-}
-
 /*
  * PegarUsu()
  * @return: std::string;
@@ -112,9 +87,9 @@ std::string CACIC_Computer::pegarUsu(){
 /*
  * getters/setters
 */
-int CACIC_Computer::getOs() const
+OperatingSystem CACIC_Computer::getOs() const
 {
-    return os;
+    return operatingSystem;
 }
 
 std::string CACIC_Computer::getUser() const {

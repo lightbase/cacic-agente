@@ -8,40 +8,26 @@
 #include <QtNetwork/QtNetwork>
 #include <QSysInfo>
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
+#include <operatingsystem.h>
 
 class CACIC_Computer
 {
 public:
     CACIC_Computer();
 
-    int getOs() const;
+    OperatingSystem getOs() const;
     std::string getUser() const;
     QList<QVariantMap> getNetworkInterface() const;
     QList<QVariantMap> networkInterfacesRunning();
     QJsonObject toJsonObject();
 
-    enum OsList {
-        WIN_XP,
-        WIN_VISTA,
-        WIN_7,
-        WIN_8,
-        WIN_8_1,
-        MAC,
-        LINUX_DEBIAN,
-        LINUX_UBUNTU,
-        LINUX_ARCH
-    };
-    static const enum OsList OsList;
-
 private:
+
+    OperatingSystem operatingSystem;
     int pegarOS();
     std::string pegarUsu();
 
     QList<QVariantMap> networkInterface;
-    int os;
     std::string usuario;
 
 };
