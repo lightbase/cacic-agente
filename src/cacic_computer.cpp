@@ -52,22 +52,17 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
 
 QJsonObject CACIC_Computer::toJsonObject()
 {
-//    QJsonObject json;
-//    QJsonValue valor;
-//    QVariant aux;
-//    QJsonArray jsonArray;
-//    aux = this->os;
-//    valor.fromVariant(aux);
-//    json.insert("so", valor);
-//    aux = this->usuario;
-//    valor.fromVariant(aux);
-//    json.insert("usuario", this->usuario);
-//    aux.clear();
-//    foreach(QVariantMap auxMap, this->getNetworkInterface()){
-//        json.insert()
-//    }
-
-//    json.insert("network", network);
+    QJsonObject json;
+    QJsonObject network;
+    int count = 1;
+    json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
+    foreach(QVariantMap auxMap, this->getNetworkInterface()){
+        network["network" + QVariant::fromValue(count).toString()] = QJsonObject::fromVariantMap(auxMap);
+        count++;
+    }
+    json["networkDevices"] = network;
+//    qDebug() << json;
+    return json;
 }
 
 
@@ -83,24 +78,6 @@ QJsonObject CACIC_Computer::toJsonObject()
  * 0   = unkown
  */
 int CACIC_Computer::pegarOS(){
-/*Não entendi o que você tentou fazer aqui, mas não funcionou.
- * Você chegou a testar? Comenta o que era pra fazer.
- * ======
- * Não testei, mas quis pegar os valores definidos no enum do QSysInfo
- * para Windows e, em vez de retornar estes valores ( que estão
- * comentados acima), retornar os valores do enum da própria CACIC_Computer.
- */
-//#if defined (Q_OS_WIN) || defined(Q_OS_CYGWIN)
-//    if(QSysInfo::WindowsVersion == QSysInfo::WV_XP)
-//        return WIN_XP;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_VISTA)
-//        return WIN_VISTA;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7)
-//        return WIN_7;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8)
-//        return WIN_8;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8_1)
-//        return WIN_8_1;
 #if defined (Q_OS_WIN)
     return QSysInfo::WindowsVersion;
 #elif defined(Q_OS_MAC)

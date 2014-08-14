@@ -1,5 +1,4 @@
 #include "installcacic.h"
-#include "iostream"
 
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)

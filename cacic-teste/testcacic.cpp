@@ -88,6 +88,7 @@ void CTestCacic::testInterfaceDeRede(){
 
 void CTestCacic::testpegarOS(){
     //basta que seja um retorno válido, não precisa validar todos.
+    qDebug() << OCacicComp.getOs();
     QVERIFY(OCacicComp.getOs() != -1 );
 }
 
@@ -158,6 +159,11 @@ void CTestCacic::testInstallCacicStart()
 //    // This will run the task from the application event loop.
 //    QMetaObject::invokeMethod(oInstallCacic, "run", Qt::QueuedConnection, Q_ARG(QStringList, args), Q_ARG(int, argca));
     QVERIFY(false);
+}
+
+void CTestCacic::testCacicCompToJsonObject()
+{
+    QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
 void CTestCacic::cleanupTestCase()

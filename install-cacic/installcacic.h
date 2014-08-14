@@ -6,6 +6,7 @@
 #include <cacic_comm.h>
 #include <cacic_computer.h>
 #include <ccacic.h>
+#include "iostream"
 
 class InstallCacic : public QObject
 {

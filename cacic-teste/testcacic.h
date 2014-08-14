@@ -1,10 +1,10 @@
 #ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
 
-#include <../src/cacic_comm.h>
-#include <../src/ccacic.h>
-#include <../src/cacic_computer.h>
-#include <../src/console.h>
+#include <cacic_comm.h>
+#include <ccacic.h>
+#include <cacic_computer.h>
+#include <console.h>
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
@@ -52,6 +52,7 @@ private slots:
   void testEnCrypt();
   void testDeCrypt();
   void testInstallCacicStart();
+  void testCacicCompToJsonObject();
   void cleanupTestCase();
 };
 
