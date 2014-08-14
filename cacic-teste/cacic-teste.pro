@@ -27,7 +27,8 @@ HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
-    ../src/cacic_comm.h
+    ../src/cacic_comm.h \
+    ../src/console.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

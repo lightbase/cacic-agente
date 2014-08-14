@@ -91,6 +91,13 @@ void CTestCacic::testpegarOS(){
     QVERIFY(OCacicComp.getOs() != -1 );
 }
 
+void CTestCacic::testConsole()
+{
+    ConsoleObject console;
+
+    QVERIFY(console("echo teste").toStdString() == "teste");
+}
+
 void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }

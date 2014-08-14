@@ -4,6 +4,7 @@
 #include <../src/cacic_comm.h>
 #include <../src/ccacic.h>
 #include <../src/cacic_computer.h>
+#include <../src/console.h>
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
@@ -42,6 +43,7 @@ private slots:
   void testDeleteFolder();
   void testDeleteFile();
   void testInterfaceDeRede();
+  void testConsole();
   void testPegarUsu();
   void testJsonValueFromJsonString();
   void testpegarOS();

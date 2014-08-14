@@ -85,17 +85,21 @@ QJsonObject CACIC_Computer::toJsonObject()
 int CACIC_Computer::pegarOS(){
 /*Não entendi o que você tentou fazer aqui, mas não funcionou.
  * Você chegou a testar? Comenta o que era pra fazer.
+ * ======
+ * Não testei, mas quis pegar os valores definidos no enum do QSysInfo
+ * para Windows e, em vez de retornar estes valores ( que estão
+ * comentados acima), retornar os valores do enum da própria CACIC_Computer.
  */
 //#if defined (Q_OS_WIN) || defined(Q_OS_CYGWIN)
-//    if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_XP)
+//    if(QSysInfo::WindowsVersion == QSysInfo::WV_XP)
 //        return WIN_XP;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_VISTA)
+//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_VISTA)
 //        return WIN_VISTA;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS7)
+//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS7)
 //        return WIN_7;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS8)
+//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8)
 //        return WIN_8;
-//    else if(QSysInfo::WindowsVersion == QSysInfo::QSysInfo.WinVersion.WV_WINDOWS8_1)
+//    else if(QSysInfo::WindowsVersion == QSysInfo::WV_WINDOWS8_1)
 //        return WIN_8_1;
 #if defined (Q_OS_WIN)
     return QSysInfo::WindowsVersion;
