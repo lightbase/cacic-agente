@@ -112,23 +112,38 @@ QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
 {
     return QJsonDocument::fromJson(json.toUtf8()).object()[key];
 }
-
+/*setJsonToFile
+ * Grava json em um arquivo.
+ * IMPORTANTE: não parei pra olhar a fundo, mas a princípio é necessário ler o arquivo
+ * para pegar o json das informações anteriores, senão informações serão duplicadas ou
+ * excluidas;
+ * @parameter QJsonObject json: json que será gravado
+ * @parameter QString filepath: caminho do arquivo onde será gravado
+ *
+ */
 bool CCacic::setJsonToFile(QJsonObject json, QString filepath)
 {
     QFile configFile(filepath);
     if (!configFile.open(QIODevice::WriteOnly)){
-        qDebug() << "Não foi possivel abrir o arquivo.";
+        return false;
     }
     QJsonDocument docJson(json);
+
     return (configFile.write(docJson.toJson()) != -1);
 }
 
+/*getJsonFromFile
+ * Carrega json de um arquivo.
+ * @return QJsonObject: json que será recuperado
+ * @parameter QString filepath: caminho do arquivo onde será recuperado
+ */
 QJsonObject CCacic::getJsonFromFile(QString filepath)
 {
     QFile configFile(filepath);
     QJsonObject json;
-    if (!configFile.open(QIODevice::ReadOnly))
-        qDebug() << "Nao foi possivel ler o arquivo";
+    if (!configFile.open(QIODevice::ReadOnly)){
+        return json;
+    }
     json = QJsonDocument::fromJson(configFile.readAll()).object();
     return json;
 }
@@ -142,8 +157,9 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
  *              exemplo de iv: 0123456789123456
  * @return std:string: retorna a string encriptada convertida em base64.
  * */
-std::string CCacic::enCrypt(std::string str_in, std::string key, std::string iv) {
+QString CCacic::enCrypt(std::string str_in, std::string iv) {
     std::string str_out;
+    std::string key = this->getChaveCrypt().toStdString();
     CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
     CryptoPP::StringSource encryptor(str_in, true,
                                      new CryptoPP::StreamTransformationFilter(encryption,
@@ -153,7 +169,7 @@ std::string CCacic::enCrypt(std::string str_in, std::string key, std::string iv)
                                         )
                                     );
     //qDebug(QString::fromStdString(str_out).toLocal8Bit());
-    return str_out;
+    return QString::fromStdString(str_out);
 }
 
 /*deCrypt
@@ -166,8 +182,9 @@ std::string CCacic::enCrypt(std::string str_in, std::string key, std::string iv)
 // *              *exemplo de iv: 0123456789123456
 // * @return QString: retorna a string desencriptada convertida em base64.
 // * */
-std::string CCacic::deCrypt(std::string str_in, std::string key, std::string iv) {
+QString CCacic::deCrypt(std::string str_in, std::string iv) {
     std::string str_out;
+    std::string key = this->getChaveCrypt().toStdString();
     CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
 
     CryptoPP::StringSource decryptor(str_in, true,
@@ -176,7 +193,7 @@ std::string CCacic::deCrypt(std::string str_in, std::string key, std::string iv)
                                             new CryptoPP::StringSink(str_out))
                                        )
                                      );
-    return str_out;
+    return QString::fromStdString(str_out);
 }
 
 

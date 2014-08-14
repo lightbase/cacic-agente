@@ -18,20 +18,28 @@ void InstallCacic::run(QStringList argv, int argc) {
         oCacicComm.setPassword(this->argumentos["password"]);
         QJsonObject jsonLogin = oCacicComm.login(&ok);
         if (ok){
-            //TODO: Conectado. armazenar chave em arquivo e sessao na comm;
+            //conectado, grava a chave na classe;
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
-            QJsonObject configToSave;
+            oCacic.setCacicMainFolder("c:/cacic");
+            oCacic.createFolder(oCacic.getCacicMainFolder());
+            //grava chave em arquivo json;
+            QJsonObject configJson = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/cacicTeste.json");
+            QJsonObject configToSave = configJson["configs"].toObject();
             configToSave["chaveCrypt"] = QJsonValue::fromVariant(oCacic.getChaveCrypt());
-            oCacic.setJsonToFile(configToSave, "cacicTeste.json");
+            configJson["configs"] = configToSave;
+            oCacic.setJsonToFile(configJson, oCacic.getCacicMainFolder() + "/cacicTeste.json");
         }
         else
-            qDebug() << "falha no login";
+            std::cout << "Nao foi possivel realizar o login.\n  "
+                      << jsonLogin["error"].toString().toStdString();
     } else {
-        std::cout << "Parametros incorretos. ([obrigatorios] <opcional>)\n";
-        std::cout << "  [-host=url_gerente]       <Descricao aqui>\n";
-        std::cout << "  [-user=usuario]           <Descricao aqui>\n";
-        std::cout << "  [-password=senha]         <Descricao aqui>\n";
-        std::cout << "  <-help>                   <Descricao aqui>\n";
+        std::cout << "\nInstalador do Agente Cacic.\n\n"
+                  << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
+                  << "<-host=url_gerente> <-user=usuario> <-password=senha> [-help]\n\n"
+                  << "  <-host=url_gerente>       url_gerente: Caminho para a aplicação do gerente.\n"
+                  << "  <-user=usuario>           usuario: usuário de login no gerente.\n"
+                  << "  <-password=senha>         senha: senha de login no gerente\n"
+                  << "  [-help]                   Lista todos comandos.\n";
     }
 
     emit finished();

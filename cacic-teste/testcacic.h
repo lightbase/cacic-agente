@@ -28,6 +28,7 @@ private:
     QString testPath;
     QString testIniPath;
     QJsonObject session;
+    QString cripTeste;
 
 signals:
 

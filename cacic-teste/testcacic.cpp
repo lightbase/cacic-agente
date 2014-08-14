@@ -111,9 +111,8 @@ void CTestCacic::testJsonValueFromJsonString()
 void CTestCacic::testLogin(){
     bool ok;
     QJsonObject jsonReply = OCacicComm.login(&ok);
-    QJsonValue sessionvalue = jsonReply["reply"];
-//    qDebug() << sessionvalue.toObject()["session"].toString();
-//    qDebug() << sessionvalue.toString();
+    QJsonObject sessionvalue = jsonReply["reply"].toObject();
+    OCacic.setChaveCrypt(sessionvalue["chavecrip"].toString());
     QVERIFY(ok);
 }
 
@@ -127,17 +126,16 @@ void CTestCacic::testSslConnection()
 }
 
 void CTestCacic::testEnCrypt(){
-    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
     std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
     std::string input = "aqui vai a url que sera encriptada";
-    QVERIFY(OCacic.enCrypt(input, key, IV) == "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==");
+    this->cripTeste = OCacic.enCrypt(input, IV);
+    QVERIFY(!this->cripTeste.isNull());
 }
 
 void CTestCacic::testDeCrypt(){
-    std::string key = "qwertyuiopasdfghjklzxcvbnmqwerty"; //chave de 256 bits (32 caracteres)
     std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
-    std::string input = "Va2WiUrdTVrn93tCrtx0njjU4HDpn7VFCsCVr/+YgaBCVQ==";
-    QVERIFY(OCacic.deCrypt(input, key, IV) == "aqui vai a url que sera encriptada");
+    std::string input = this->cripTeste.toStdString();
+    QVERIFY(OCacic.deCrypt(input, IV) == "aqui vai a url que sera encriptada");
 
 }
 
