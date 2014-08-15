@@ -159,16 +159,18 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
  * */
 QString CCacic::enCrypt(std::string str_in, std::string iv) {
     std::string str_out;
-    std::string key = this->getChaveCrypt().toStdString();
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
-    CryptoPP::StringSource encryptor(str_in, true,
-                                     new CryptoPP::StreamTransformationFilter(encryption,
-                                        new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
-                                            false // do not append a newline
+    if ((!this->getChaveCrypt().isNull())){
+        std::string key = (!this->getChaveCrypt().isNull()) ? this->getChaveCrypt().toStdString() : "";
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+        CryptoPP::StringSource encryptor(str_in, true,
+                                         new CryptoPP::StreamTransformationFilter(encryption,
+                                            new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
+                                                false // do not append a newline
+                                                )
                                             )
-                                        )
-                                    );
-    //qDebug(QString::fromStdString(str_out).toLocal8Bit());
+                                        );
+    }
+//    qDebug() << QString::fromStdString(str_out);
     return QString::fromStdString(str_out);
 }
 
@@ -184,15 +186,17 @@ QString CCacic::enCrypt(std::string str_in, std::string iv) {
 // * */
 QString CCacic::deCrypt(std::string str_in, std::string iv) {
     std::string str_out;
-    std::string key = this->getChaveCrypt().toStdString();
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+    if ((!this->getChaveCrypt().isNull())){
+        std::string key = this->getChaveCrypt().toStdString();
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
 
-    CryptoPP::StringSource decryptor(str_in, true,
-                                    new CryptoPP::Base64Decoder(
-                                        new CryptoPP::StreamTransformationFilter(decryption,
-                                            new CryptoPP::StringSink(str_out))
-                                       )
-                                     );
+        CryptoPP::StringSource decryptor(str_in, true,
+                                        new CryptoPP::Base64Decoder(
+                                            new CryptoPP::StreamTransformationFilter(decryption,
+                                                new CryptoPP::StringSink(str_out))
+                                           )
+                                         );
+    }
     return QString::fromStdString(str_out);
 }
 

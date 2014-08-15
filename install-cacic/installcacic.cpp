@@ -43,7 +43,7 @@ void InstallCacic::run(QStringList argv, int argc) {
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         oCacic.deleteFolder("c:/cacic");
         oCacic.removeRegistry("Lightbase", "Cacic");
-
+        std::cout << "Cacic desinstalado com sucesso.\n";
     } else {
         std::cout << "\nInstalador do Agente Cacic.\n\n"
                   << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"

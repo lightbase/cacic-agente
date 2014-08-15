@@ -62,6 +62,8 @@ private slots:
   void testJsonFromFile();
   void testStartService();
   void testReadConfig();
+  void testSetRegistry();
+  void testRemoveRegistry();
   void cleanupTestCase();
 };
 

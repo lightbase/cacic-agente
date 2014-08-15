@@ -132,7 +132,9 @@ void CTestCacic::testSslConnection()
 {
     bool ok;
     QJsonObject json = OCacicComm.comm("", &ok, QJsonObject(), true);
-    QJsonValue jsonvalue = json["codestatus"];
+    QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
+                            json["codestatus"] :
+                            QJsonValue::fromVariant(-1);
 //    qDebug() << jsonvalue.toDouble();
     QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
 }
@@ -140,8 +142,9 @@ void CTestCacic::testSslConnection()
 void CTestCacic::testEnCrypt(){
     std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
     std::string input = "aqui vai a url que sera encriptada";
+    OCacic.setChaveCrypt("testecript123456");
     this->cripTeste = OCacic.enCrypt(input, IV);
-    QVERIFY(!this->cripTeste.isNull());
+    QVERIFY(!this->cripTeste.isEmpty() && !this->cripTeste.isNull());
 }
 
 void CTestCacic::testDeCrypt(){
@@ -223,6 +226,25 @@ void CTestCacic::testReadConfig()
     // Leitura do arquivo de configuração
 
     QVERIFY(false);
+}
+
+void CTestCacic::testSetRegistry()
+{
+    QVariantMap valueMap;
+    valueMap["teste1"] = QString("Teste 1");
+    valueMap["teste2"] = QString("Teste2");
+    OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
+    QSettings confirmaTeste("Lightbase", "Teste");
+    QVERIFY(confirmaTeste.value("teste1") == QVariant("Teste 1"));
+}
+
+void CTestCacic::testRemoveRegistry()
+{
+    OCacic.removeRegistry("Lightbase", "Teste");
+    QSettings confirmaTeste("Lightbase", "Teste");
+    QVERIFY(confirmaTeste.allKeys().isEmpty());
+    confirmaTeste.clear();
+    confirmaTeste.sync();
 }
 
 void CTestCacic::cleanupTestCase()
