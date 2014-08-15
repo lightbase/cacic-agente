@@ -15,6 +15,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
 #include "../install-cacic/installcacic.h"
+#include "../gercols/gercols.h"
 
 class CTestCacic : public QObject
 {
@@ -26,6 +27,7 @@ private:
     CacicComm OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
+    Gercols OGercols;
     QString testPath;
     QString testIniPath;
     QJsonObject session;
@@ -59,6 +61,7 @@ private slots:
   void testOperatingSystemToJsonObject();
   void testJsonToFile();
   void testJsonFromFile();
+  void testReadConfig();
   void cleanupTestCase();
 };
 

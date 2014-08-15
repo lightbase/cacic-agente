@@ -21,7 +21,8 @@ SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
-    ../src/operatingsystem.cpp
+    ../src/operatingsystem.cpp \
+    ../gercols/gercols.cpp
 
 
 HEADERS += \
@@ -30,7 +31,8 @@ HEADERS += \
     ../src/cacic_computer.h \
     ../src/cacic_comm.h \
     ../src/console.h \
-    ../src/operatingsystem.h
+    ../src/operatingsystem.h \
+    ../gercols/gercols.cpp
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

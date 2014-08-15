@@ -191,7 +191,31 @@ void CTestCacic::testJsonFromFile()
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
+void CTestCacic::testReadConfig()
+{
+
+    // Inicializa um arquivo de configuração stub
+    // que seria parecido com o recebido do Gerente
+    QJsonObject configJson;
+    QJsonObject configHardware;
+    QJsonObject configSoftware;
+
+    configHardware["network_interface"] = QJsonValue::fromVariant(QString(""));
+    configSoftware["operating_system"] = QJsonValue::fromVariant(QString(""));
+
+    configJson["hardware"] = configHardware;
+    configJson["software"] = configSoftware;
+
+    OCacic.setJsonToFile(configJson,"configRequest.json");
+
+    // Leitura do arquivo de configuração
+    OGercols.readConfig();
+
+    QVERIFY(OGercols.getConfigJson() == configJson);
+}
+
 void CTestCacic::cleanupTestCase()
 {
+    OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
 }
