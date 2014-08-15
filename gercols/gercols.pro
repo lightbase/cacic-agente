@@ -25,6 +25,7 @@ SOURCES += \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
+    ../src/ccoleta.cpp \
     ./gercols.cpp
 
 
@@ -33,6 +34,7 @@ HEADERS += \
     ../src/cacic_computer.h \
     ../src/operatingsystem.h \
     ../src/console.h \
+    ../src/ccoleta.h \
     ./gercols.h
 
 INCLUDEPATH += ../src \

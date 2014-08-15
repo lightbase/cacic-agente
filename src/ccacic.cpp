@@ -204,6 +204,21 @@ QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringLi
     return process.errorString();
 }
 
+void CCacic::setValueToRegistry(QString organization, QString application, QVariantMap values)
+{
+    QSettings registry(organization, application);
+    for (QVariantMap::const_iterator i = values.constBegin(); i != values.constEnd(); i++)
+        registry.setValue(i.key(), i.value());
+    registry.sync();
+}
+
+void CCacic::removeRegistry(QString organization, QString application)
+{
+    QSettings registry(organization, application);
+    registry.clear();
+    registry.sync();
+}
+
 /*Getters/Setters
  * Begin:
  */

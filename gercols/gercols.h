@@ -1,15 +1,24 @@
 #ifndef GERCOLS_H
 #define GERCOLS_H
+#include <QtCore>
+#include <ccoleta.h>
+#include <ccacic.h>
 
-#include <QJsonObject>
-
-class Gercols
+class Gercols : public QObject
 {
+    Q_OBJECT
+private:
+    CCacic oCacic;
+    CColeta oColeta;
 public:
-    Gercols();
+    explicit Gercols(QObject *parent = 0);
 
-    void readConfig();
-    QJsonObject getConfigJson();
+public slots:
+    void run();
+
+signals:
+    void finished();
+    void fimColeta();
 };
 
 #endif // GERCOLS_H

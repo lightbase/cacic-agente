@@ -9,7 +9,7 @@ InstallCacic::InstallCacic(QObject *parent) :
 void InstallCacic::run(QStringList argv, int argc) {
     bool ok;
     //valida os parametros repassados
-    validaParametros(argv, argc, &ok);
+    QMap<QString, QString> param = validaParametros(argv, argc, &ok);
     //se tiver usuario, senha e url
     if (ok){
         oCacicComm.setUrlGerente(this->argumentos["host"]);
@@ -21,13 +21,11 @@ void InstallCacic::run(QStringList argv, int argc) {
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
             oCacic.setCacicMainFolder("c:/cacic");
             oCacic.createFolder(oCacic.getCacicMainFolder());
-            //grava chave em arquivo json;
-            QJsonObject configJson = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/cacicTeste.json");
-            QJsonObject configToSave = configJson["configs"].toObject();
-            configToSave["chaveCrypt"] = QJsonValue::fromVariant(oCacic.getChaveCrypt());
-            configJson["configs"] = configToSave;
-            oCacic.setJsonToFile(configJson, oCacic.getCacicMainFolder() + "/cacicTeste.json");
+            //grava chave em registro;
 
+            QVariantMap registro;
+            registro["key"] = oCacic.getChaveCrypt();
+            oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
             //starta o processo do cacic.
 #ifdef Q_OS_WIN
             QString exitStatus = oCacic.startProcess("cacic.exe", true, &ok);
@@ -39,10 +37,13 @@ void InstallCacic::run(QStringList argv, int argc) {
             if (!ok)
                 qDebug() << "Erro ao iniciar o processo.";
 #endif
-        }
-        else
+        } else
             std::cout << "Nao foi possivel realizar o login.\n  "
                       << jsonLogin["error"].toString().toStdString();
+    } else if ((param.contains("default")) && (param["default"] == "uninstall")){
+        oCacic.deleteFolder("c:/cacic");
+        oCacic.removeRegistry("Lightbase", "Cacic");
+
     } else {
         std::cout << "\nInstalador do Agente Cacic.\n\n"
                   << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
@@ -64,6 +65,8 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
         QStringList auxList = aux.split("=");
         if ((auxList.at(0).at(0) == '-') && (auxList.size() > 1))
             map[auxList.at(0).mid(1)] = auxList.at(1);
+        else if (aux.at(0)== '-')
+            map["default"] = aux.mid(1);
     }
     *ok = (bool) map.contains("host") && map.contains("user") && map.contains("password");
     if (*ok){

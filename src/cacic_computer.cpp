@@ -20,11 +20,9 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
 
     foreach (QNetworkInterface in, interface.allInterfaces()) {
         if (!(bool)(in.flags() & QNetworkInterface::IsLoopBack) &&
-                !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
-                (bool)(in.flags() & QNetworkInterface::IsRunning)){
-            //            qDebug() << in.humanReadableName() << "\n";
+            !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
+            (bool)(in.flags() & QNetworkInterface::IsRunning)){
             mapInterface["nome"] = in.humanReadableName();
-            //            qDebug() << in.hardwareAddress() << "\n";
             mapInterface["mac"]  = in.hardwareAddress();
             foreach (QNetworkAddressEntry ae, in.addressEntries()){
                 if (ae.ip().scopeId() == ""){
@@ -34,18 +32,11 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
                     mapInterface["ipv6"] = ae.ip().toString();
                     mapInterface["netmask_ipv6"] = ae.netmask().toString();
                 }
-                //                qDebug() << ae.ip().toString() << "\n";
             }
             listaMap.append(mapInterface);
             mapInterface.clear();
         }
     }
-//    foreach (QVariantMap each, listaMap){
-
-//        foreach (QVariant eachValue, each.values())
-//            qDebug() << eachValue.toString();
-//    }
-
     return listaMap;
 }
 
@@ -61,7 +52,6 @@ QJsonObject CACIC_Computer::toJsonObject()
         count++;
     }
     json["networkDevices"] = network;
-//    qDebug() << json;
     return json;
 }
 

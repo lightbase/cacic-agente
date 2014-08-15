@@ -36,6 +36,9 @@ public:
     bool setJsonToFile(QJsonObject json, QString filepath);
     QJsonObject getJsonFromFile(QString filepath);
     QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());
+    void setValueToRegistry(QString organization, QString application, QVariantMap values);
+    void removeRegistry(QString organization, QString application);
+
 
 //Geters/seters:
 

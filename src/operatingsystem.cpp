@@ -2,8 +2,8 @@
 
 OperatingSystem::OperatingSystem()
 {
-    this->idOs = this->coletaIdOs();
     this->nomeOs = this->coletaNomeOs();
+    this->idOs = this->coletaIdOs();
 }
 
 
@@ -47,6 +47,7 @@ QString OperatingSystem::coletaNomeOs()
     QString text;
     QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
     foreach (text, environment) {
+//        qDebug() << text;
         if (text.contains("OS="    , Qt::CaseInsensitive) ||
             text.contains("SESSION=", Qt::CaseInsensitive) ){
             QStringList split = text.split("=");

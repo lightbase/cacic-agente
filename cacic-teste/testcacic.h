@@ -27,7 +27,6 @@ private:
     CacicComm OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
-    Gercols OGercols;
     QString testPath;
     QString testIniPath;
     QJsonObject session;

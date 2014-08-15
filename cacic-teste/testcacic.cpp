@@ -209,24 +209,20 @@ void CTestCacic::testStartService()
 void CTestCacic::testReadConfig()
 {
 
-    // Inicializa um arquivo de configuração stub
-    // que seria parecido com o recebido do Gerente
-    QJsonObject configJson;
-    QJsonObject configHardware;
-    QJsonObject configSoftware;
+//    // Inicializa um arquivo de configuração stub
+//    // que seria parecido com o recebido do Gerente
+//    QJsonObject configJson;
+//    QJsonObject configHardware;
 
-    configHardware["network_interface"] = QJsonValue::fromVariant(QString(""));
-    configSoftware["operating_system"] = QJsonValue::fromVariant(QString(""));
+//    configHardware["computador"] = OCacicComp.toJsonObject();
 
-    configJson["hardware"] = configHardware;
-    configJson["software"] = configSoftware;
+//    configJson["hardware"] = configHardware;
 
-    OCacic.setJsonToFile(configJson,"configRequest.json");
+//    OCacic.setJsonToFile(configJson,"configRequest.json");
 
     // Leitura do arquivo de configuração
-    OGercols.readConfig();
 
-    QVERIFY(OGercols.getConfigJson() == configJson);
+    QVERIFY(false);
 }
 
 void CTestCacic::cleanupTestCase()
