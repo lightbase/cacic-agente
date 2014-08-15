@@ -52,12 +52,12 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
 QJsonObject CACIC_Computer::toJsonObject()
 {
     QJsonObject json;
-    QJsonObject network;
+    QJsonArray network;
     int count = 1;
     json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
     json["operatingSystem"] = this->oOperatingSystem.toJsonObject();
     foreach(QVariantMap auxMap, this->getNetworkInterface()){
-        network["network" + QVariant::fromValue(count).toString()] = QJsonObject::fromVariantMap(auxMap);
+        network.append(QJsonObject::fromVariantMap(auxMap));
         count++;
     }
     json["networkDevices"] = network;

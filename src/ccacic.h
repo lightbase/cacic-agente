@@ -2,6 +2,7 @@
 #define CCACIC_H
 
 #include <QCoreApplication>
+#include <QProcess>
 #include <QObject>
 #include <QFile>
 #include <QSettings>
@@ -34,6 +35,7 @@ public:
     QJsonValue jsonValueFromJsonString(QString json, QString key);
     bool setJsonToFile(QJsonObject json, QString filepath);
     QJsonObject getJsonFromFile(QString filepath);
+    QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());
 
 //Geters/seters:
 

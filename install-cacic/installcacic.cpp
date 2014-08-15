@@ -7,7 +7,6 @@ InstallCacic::InstallCacic(QObject *parent) :
 }
 
 void InstallCacic::run(QStringList argv, int argc) {
-    QMap<QString, QString> args;
     bool ok;
     //valida os parametros repassados
     validaParametros(argv, argc, &ok);
@@ -28,6 +27,18 @@ void InstallCacic::run(QStringList argv, int argc) {
             configToSave["chaveCrypt"] = QJsonValue::fromVariant(oCacic.getChaveCrypt());
             configJson["configs"] = configToSave;
             oCacic.setJsonToFile(configJson, oCacic.getCacicMainFolder() + "/cacicTeste.json");
+
+            //starta o processo do cacic.
+#ifdef Q_OS_WIN
+            QString exitStatus = oCacic.startProcess("cacic.exe", true, &ok);
+            if (!ok)
+                std::cout << "Erro ao iniciar o processo: "
+                          << exitStatus.toStdString() << "\n";
+#else
+            oCacic.startProcess("cacic.exe", true, &ok);
+            if (!ok)
+                qDebug() << "Erro ao iniciar o processo.";
+#endif
         }
         else
             std::cout << "Nao foi possivel realizar o login.\n  "

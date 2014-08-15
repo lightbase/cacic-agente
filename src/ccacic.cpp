@@ -196,6 +196,13 @@ QString CCacic::deCrypt(std::string str_in, std::string iv) {
     return QString::fromStdString(str_out);
 }
 
+QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments)
+{
+    QProcess process;
+    arguments.empty() ? process.start(pathprogram) : process.start(pathprogram, arguments);
+    *ok = wait ? process.waitForFinished() : process.waitForStarted();
+    return process.errorString();
+}
 
 /*Getters/Setters
  * Begin:

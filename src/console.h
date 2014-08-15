@@ -21,7 +21,7 @@ public:
         options << "-c" << QString::fromStdString(input);
         process->start("/bin/sh", options);
 #elif defined(Q_OS_WIN)
-        process->start(input);
+        process->start(QString::fromStdString(input));
 #endif
         process->waitForFinished();
         QString output = process->readAll();

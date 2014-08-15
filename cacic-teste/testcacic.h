@@ -57,6 +57,7 @@ private slots:
   void testOperatingSystemToJsonObject();
   void testJsonToFile();
   void testJsonFromFile();
+  void testStartService();
   void cleanupTestCase();
 };
 

@@ -96,6 +96,8 @@ void CTestCacic::testConsole()
     ConsoleObject console;
 #if defined(Q_OS_LINUX)
     QVERIFY(console("echo teste").toStdString() == "teste\n");
+#elif defined(Q_OS_WIN)
+    QVERIFY(console("echo teste").toStdString() == "teste");
 #else
     QVERIFY(false);
 #endif
@@ -163,6 +165,7 @@ void CTestCacic::testInstallCacicStart()
 
 void CTestCacic::testCacicCompToJsonObject()
 {
+//    qDebug() << OCacicComp.toJsonObject();
     QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
@@ -181,6 +184,18 @@ void CTestCacic::testJsonToFile()
 void CTestCacic::testJsonFromFile()
 {
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
+}
+
+void CTestCacic::testStartService()
+{
+    bool ok;
+    QString exitStatus;
+#ifdef Q_OS_WIN
+    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic.exe", true, &ok);
+#else
+    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic", &ok);
+#endif
+    QVERIFY(ok);
 }
 
 void CTestCacic::cleanupTestCase()
