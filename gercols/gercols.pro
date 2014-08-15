@@ -23,13 +23,17 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     ../src/ccacic.cpp \
-    ../src/cacic_computer.cpp
+    ../src/cacic_computer.cpp \
+    ../src/operatingsystem.cpp \
+    ./gercols.cpp
 
 
 HEADERS += \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
-    ../src/cacic_comm.h
+    ../src/operatingsystem.h \
+    ../src/console.h \
+    ./gercols.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

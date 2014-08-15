@@ -86,6 +86,14 @@ void CTestCacic::testInterfaceDeRede(){
     QVERIFY2(!OCacicComp.getNetworkInterface().empty(), "Nenhuma interface de rede encontrada.");
 }
 
+void CTestCacic::testcoletaIdOs(){
+    // instancia um OperatingSystem que invoca coletaIdOs() no construtor
+    OperatingSystem OS;
+
+//    QVERIFY(OS.getIdOs() == OperatingSystem::LINUX_ARCH);
+    QVERIFY(OS.getIdOs() != -1);
+}
+
 void CTestCacic::testpegarOS(){
     //basta que seja um retorno válido, não precisa validar todos.
     QVERIFY(OCacicComp.getOs().getIdOs() != -1 );
@@ -198,7 +206,31 @@ void CTestCacic::testStartService()
     QVERIFY(ok);
 }
 
+void CTestCacic::testReadConfig()
+{
+
+    // Inicializa um arquivo de configuração stub
+    // que seria parecido com o recebido do Gerente
+    QJsonObject configJson;
+    QJsonObject configHardware;
+    QJsonObject configSoftware;
+
+    configHardware["network_interface"] = QJsonValue::fromVariant(QString(""));
+    configSoftware["operating_system"] = QJsonValue::fromVariant(QString(""));
+
+    configJson["hardware"] = configHardware;
+    configJson["software"] = configSoftware;
+
+    OCacic.setJsonToFile(configJson,"configRequest.json");
+
+    // Leitura do arquivo de configuração
+    OGercols.readConfig();
+
+    QVERIFY(OGercols.getConfigJson() == configJson);
+}
+
 void CTestCacic::cleanupTestCase()
 {
+    OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
 }

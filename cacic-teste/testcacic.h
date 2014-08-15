@@ -5,6 +5,7 @@
 #include <ccacic.h>
 #include <cacic_computer.h>
 #include <console.h>
+#include <operatingsystem.h>
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
@@ -14,6 +15,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
 #include "../install-cacic/installcacic.h"
+#include "../gercols/gercols.h"
 
 class CTestCacic : public QObject
 {
@@ -25,6 +27,7 @@ private:
     CacicComm OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
+    Gercols OGercols;
     QString testPath;
     QString testIniPath;
     QJsonObject session;
@@ -47,6 +50,7 @@ private slots:
   void testConsole();
   void testPegarUsu();
   void testJsonValueFromJsonString();
+  void testcoletaIdOs();
   void testpegarOS();
   void testLogin();
   void testSslConnection();
@@ -58,6 +62,7 @@ private slots:
   void testJsonToFile();
   void testJsonFromFile();
   void testStartService();
+  void testReadConfig();
   void cleanupTestCase();
 };
 
