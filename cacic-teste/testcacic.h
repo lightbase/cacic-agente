@@ -5,6 +5,7 @@
 #include <ccacic.h>
 #include <cacic_computer.h>
 #include <console.h>
+#include <operatingsystem.h>
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
@@ -47,6 +48,7 @@ private slots:
   void testConsole();
   void testPegarUsu();
   void testJsonValueFromJsonString();
+  void testcoletaIdOs();
   void testpegarOS();
   void testLogin();
   void testSslConnection();

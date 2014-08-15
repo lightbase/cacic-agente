@@ -86,6 +86,14 @@ void CTestCacic::testInterfaceDeRede(){
     QVERIFY2(!OCacicComp.getNetworkInterface().empty(), "Nenhuma interface de rede encontrada.");
 }
 
+void CTestCacic::testcoletaIdOs(){
+    // instancia um OperatingSystem que invoca coletaIdOs() no construtor
+    OperatingSystem OS;
+
+//    QVERIFY(OS.getIdOs() == OperatingSystem::LINUX_ARCH);
+    QVERIFY(OS.getIdOs() != -1);
+}
+
 void CTestCacic::testpegarOS(){
     //basta que seja um retorno válido, não precisa validar todos.
     QVERIFY(OCacicComp.getOs().getIdOs() != -1 );
