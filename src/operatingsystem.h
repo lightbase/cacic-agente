@@ -2,8 +2,12 @@
 #define OPERATINGSYSTEM_H
 
 #include <QtCore>
+#include <QString>
+#include <QStringList>
 #include <QSysInfo>
+
 #include <ccacic.h>
+#include <console.h>
 
 class OperatingSystem
 {

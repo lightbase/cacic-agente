@@ -11,14 +11,18 @@ class ConsoleObject:public std::unary_function<std::string,QString>
 
 public:
 
-#if defined(Q_OS_LINUX)
+
     QString operator() (std::string input)
     {
         QProcess* process = new QProcess();
 
+#if defined(Q_OS_LINUX)
         QStringList options;
         options << "-c" << QString::fromStdString(input);
         process->start("/bin/sh", options);
+#elif defined(Q_OS_WIN)
+        process->start(input);
+#endif
         process->waitForFinished();
         QString output = process->readAll();
 //        qDebug() << output;
@@ -26,7 +30,6 @@ public:
         delete process;
         return output;
     }
-#endif
 };
 
 #endif // CONSOLE_H

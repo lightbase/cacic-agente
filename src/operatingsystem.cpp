@@ -6,6 +6,7 @@ OperatingSystem::OperatingSystem()
     this->nomeOs = this->coletaNomeOs();
 }
 
+
 /*pegarOS
  * @return: int;
  *      retorna um id referente a versão do SO.
@@ -14,13 +15,28 @@ OperatingSystem::OperatingSystem()
  * 144 = Windows 7
  * 160 = Windows 8
  * 176 = Windows 8.1
- * 200 = Linux
+ * [enum] = Linux
  */
 int OperatingSystem::coletaIdOs(){
 #if defined (Q_OS_WIN)
     return QSysInfo::WindowsVersion;
 #elif defined (Q_OS_LINUX)
-    return LINUX_ARCH;
+
+    ConsoleObject console;
+    QStringList catOutput = console("cat /etc/*release").split("\n");
+
+    QString line;
+    foreach(line, catOutput) {
+        if(line.contains("PRETTY_NAME")) {
+            if( line.contains("Arch"))
+                return LINUX_ARCH;
+            else if( line.contains("Debian"))
+                return LINUX_DEBIAN;
+            else if( line.contains("Ubuntu"))
+                return LINUX_UBUNTU;
+        }
+    }
+
 #else
     return 0;
 #endif

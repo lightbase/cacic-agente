@@ -94,9 +94,11 @@ void CTestCacic::testpegarOS(){
 void CTestCacic::testConsole()
 {
     ConsoleObject console;
-
-//    QVERIFY(console("echo teste").toStdString() == "teste\n");
+#if defined(Q_OS_LINUX)
+    QVERIFY(console("echo teste").toStdString() == "teste\n");
+#else
     QVERIFY(false);
+#endif
 }
 
 void CTestCacic::testPegarUsu(){
