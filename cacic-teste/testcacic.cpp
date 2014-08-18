@@ -247,6 +247,10 @@ void CTestCacic::testRemoveRegistry()
     confirmaTeste.sync();
 }
 
+void CTestCacic::testIniciarDaemon(){
+
+}
+
 void CTestCacic::cleanupTestCase()
 {
     OCacic.deleteFile("configRequest.json");

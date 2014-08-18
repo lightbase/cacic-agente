@@ -16,6 +16,7 @@
 #include <QJsonObject>
 #include "../install-cacic/installcacic.h"
 #include "../gercols/gercols.h"
+#include "../cacicD/cacicd.h"
 
 class CTestCacic : public QObject
 {
@@ -31,6 +32,7 @@ private:
     QString testIniPath;
     QJsonObject session;
     QString cripTeste;
+    cacicD OcacicD;
 
 signals:
 
@@ -64,6 +66,7 @@ private slots:
   void testReadConfig();
   void testSetRegistry();
   void testRemoveRegistry();
+  void testIniciarDaemon();
   void cleanupTestCase();
 };
 
