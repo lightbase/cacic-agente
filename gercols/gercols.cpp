@@ -7,6 +7,29 @@ Gercols::Gercols(QObject *parent)
      * quais coletas serao necessárias e realiza a conexão dos sinais com
      * slots de coletas (coletaHardware, coletaSoftware, etc..)
      */
+
+    /* Cria um json de configuração para teste.
+     ******************************************/
+    QJsonObject configTeste;
+    QJsonObject configComputer;
+    configComputer["operating_system"] = "";
+    configComputer["user"] = "";
+    configComputer["network_interface"] = "";
+    configTeste["computer"] = configComputer;
+    configTeste["hardware"] = "";
+    configTeste["software"] = "";
+
+    oCacic.setJsonToFile(configTeste,"configReq.json");
+    /******************************************/
+
+    getConfigJson();
+qDebug() << "TESTE";
+    oColeta = new CColeta();
+    oColeta->setColeta(configReq);
+qDebug() << oColeta->getColeta();
+    QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
+    QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
+
 }
 
 void Gercols::run()
@@ -18,18 +41,23 @@ void Gercols::run()
      */
 
     //Inicializa as classes e seta valores necessários oCacic.setCacicMainFolder(), por exemplo.
+    // ... ainda a ser pensado
 
+    emit iniciaConfiguracao();
     //emite sinal para começar a coleta
+    emit iniciaColeta();
 
-    //aguarda todas as coletas serem realizadas
 
     //salva coleta em json
-    coleta["computador"] = oColeta.getOComputer().toJsonObject();
-    coleta["software"] = QJsonValue::fromVariant(QString("Aqui vai coleta de software"));
-    coleta["hardware"] = QJsonValue::fromVariant(QString("Aqui vai coleta de hardware"));
-    qDebug() << coleta;
+    qDebug() << oColeta->getColeta();
     //salva json em arquivo
-    oCacic.setJsonToFile(coleta, "coleta.json");
+    oCacic.setJsonToFile(oColeta->getColeta(), "coleta.json");
     //emite sinal "finished" pra finalizar a aplicação
     emit finished();
+}
+
+bool Gercols::getConfigJson()
+{
+    configReq = oCacic.getJsonFromFile("configReq.json");
+    oCacic.deleteFile("configReq.json");
 }
