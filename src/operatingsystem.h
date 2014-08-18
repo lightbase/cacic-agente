@@ -6,8 +6,8 @@
 #include <QStringList>
 #include <QSysInfo>
 
-#include <ccacic.h>
-#include <console.h>
+#include "ccacic.h"
+#include "console.h"
 
 class OperatingSystem
 {

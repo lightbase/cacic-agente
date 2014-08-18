@@ -7,7 +7,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QtNetwork>
 #include <QSysInfo>
-#include <operatingsystem.h>
+#include "operatingsystem.h"
 
 class CACIC_Computer
 {

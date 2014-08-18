@@ -11,9 +11,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <aes.h>
-#include <base64.h>
-#include <modes.h>
+#include "../src/crypto++/include/aes.h"
+#include "../src/crypto++/include/base64.h"
+#include "../src/crypto++/include/modes.h"
 //#include <filters.h>
 //#include <hex.h>
 //#include <sha.h>
