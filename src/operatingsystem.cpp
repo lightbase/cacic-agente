@@ -44,18 +44,33 @@ int OperatingSystem::coletaIdOs(){
 
 QString OperatingSystem::coletaNomeOs()
 {
+#if defined(Q_OS_WIN)
     QString text;
     QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
     foreach (text, environment) {
 //        qDebug() << text;
-        if (text.contains("OS="    , Qt::CaseInsensitive) ||
-            text.contains("SESSION=", Qt::CaseInsensitive) ){
+        if (text.contains("OS="    , Qt::CaseInsensitive) ){
             QStringList split = text.split("=");
   //          qDebug() << split[1];
             return split[1];
           }
       }
+#elif defined(Q_OS_LINUX)
+    ConsoleObject console;
+    QStringList catOutput = console("cat /etc/*release").split("\n");
+
+    QString line;
+    foreach(line, catOutput) {
+        if(line.contains("PRETTY_NAME")) {
+            QStringList split = line.split("=");
+
+            QString nomeDistro = split[1].mid(1, split[1].size()-2 );
+            return nomeDistro;
+        }
+    }
+#endif
       return "";
+
 }
 
 QJsonObject OperatingSystem::toJsonObject()
