@@ -6,7 +6,7 @@
 #include <QString>
 #include <QSysInfo>
 
-class ConsoleObject:public std::unary_function<std::string,QString>
+class ConsoleObject:public std::unary_function<QString,QString>
 {
 
 public:
@@ -18,10 +18,10 @@ public:
 
 #if defined(Q_OS_LINUX)
         QStringList options;
-        options << "-c" << QString::fromStdString(input);
+        options << "-c" << input;
         process->start("/bin/sh", options);
 #elif defined(Q_OS_WIN)
-        process->start(QString::fromStdString(input));
+        process->start(input);
 #endif
         process->waitForFinished();
         QString output = process->readAll();
