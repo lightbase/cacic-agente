@@ -12,7 +12,7 @@ class ConsoleObject:public std::unary_function<QString,QString>
 public:
 
 
-    QString operator() (std::string input)
+    QString operator() (QString input)
     {
         QProcess* process = new QProcess();
 
