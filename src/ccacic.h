@@ -11,9 +11,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <aes.h>
-#include <base64.h>
-#include <modes.h>
+#include "../src/crypto++/include/aes.h"
+#include "../src/crypto++/include/base64.h"
+#include "../src/crypto++/include/modes.h"
 //#include <filters.h>
 //#include <hex.h>
 //#include <sha.h>
@@ -37,6 +37,7 @@ public:
     QJsonObject getJsonFromFile(QString filepath);
     QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());
     void setValueToRegistry(QString organization, QString application, QVariantMap values);
+    QVariant getValueFromRegistry(QString organization, QString application, QString key);
     void removeRegistry(QString organization, QString application);
 
 

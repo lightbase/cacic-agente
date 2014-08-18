@@ -216,6 +216,12 @@ void CCacic::setValueToRegistry(QString organization, QString application, QVari
     registry.sync();
 }
 
+QVariant CCacic::getValueFromRegistry(QString organization, QString application, QString key)
+{
+    QSettings registry(organization, application);
+    return registry.value(key);
+}
+
 void CCacic::removeRegistry(QString organization, QString application)
 {
     QSettings registry(organization, application);

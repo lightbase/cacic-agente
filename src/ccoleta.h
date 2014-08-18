@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QDebug>
 #include <cacic_computer.h>
+#include "cacic_computer.h"
 
 
 class CColeta : public QObject
