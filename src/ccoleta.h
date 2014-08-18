@@ -1,6 +1,6 @@
 #ifndef CCOLETA_H
 #define CCOLETA_H
-#include <cacic_computer.h>
+#include "cacic_computer.h"
 
 class CColeta
 {
