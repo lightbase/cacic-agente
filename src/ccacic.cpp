@@ -159,16 +159,18 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
  * */
 QString CCacic::enCrypt(std::string str_in, std::string iv) {
     std::string str_out;
-    std::string key = this->getChaveCrypt().toStdString();
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
-    CryptoPP::StringSource encryptor(str_in, true,
-                                     new CryptoPP::StreamTransformationFilter(encryption,
-                                        new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
-                                            false // do not append a newline
+    if ((!this->getChaveCrypt().isNull())){
+        std::string key = (!this->getChaveCrypt().isNull()) ? this->getChaveCrypt().toStdString() : "";
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+        CryptoPP::StringSource encryptor(str_in, true,
+                                         new CryptoPP::StreamTransformationFilter(encryption,
+                                            new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
+                                                false // do not append a newline
+                                                )
                                             )
-                                        )
-                                    );
-    //qDebug(QString::fromStdString(str_out).toLocal8Bit());
+                                        );
+    }
+//    qDebug() << QString::fromStdString(str_out);
     return QString::fromStdString(str_out);
 }
 
@@ -184,18 +186,42 @@ QString CCacic::enCrypt(std::string str_in, std::string iv) {
 // * */
 QString CCacic::deCrypt(std::string str_in, std::string iv) {
     std::string str_out;
-    std::string key = this->getChaveCrypt().toStdString();
-    CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+    if ((!this->getChaveCrypt().isNull())){
+        std::string key = this->getChaveCrypt().toStdString();
+        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
 
-    CryptoPP::StringSource decryptor(str_in, true,
-                                    new CryptoPP::Base64Decoder(
-                                        new CryptoPP::StreamTransformationFilter(decryption,
-                                            new CryptoPP::StringSink(str_out))
-                                       )
-                                     );
+        CryptoPP::StringSource decryptor(str_in, true,
+                                        new CryptoPP::Base64Decoder(
+                                            new CryptoPP::StreamTransformationFilter(decryption,
+                                                new CryptoPP::StringSink(str_out))
+                                           )
+                                         );
+    }
     return QString::fromStdString(str_out);
 }
 
+QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments)
+{
+    QProcess process;
+    arguments.empty() ? process.start(pathprogram) : process.start(pathprogram, arguments);
+    *ok = wait ? process.waitForFinished() : process.waitForStarted();
+    return process.errorString();
+}
+
+void CCacic::setValueToRegistry(QString organization, QString application, QVariantMap values)
+{
+    QSettings registry(organization, application);
+    for (QVariantMap::const_iterator i = values.constBegin(); i != values.constEnd(); i++)
+        registry.setValue(i.key(), i.value());
+    registry.sync();
+}
+
+void CCacic::removeRegistry(QString organization, QString application)
+{
+    QSettings registry(organization, application);
+    registry.clear();
+    registry.sync();
+}
 
 /*Getters/Setters
  * Begin:

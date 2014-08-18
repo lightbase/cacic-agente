@@ -104,6 +104,8 @@ void CTestCacic::testConsole()
     ConsoleObject console;
 #if defined(Q_OS_LINUX)
     QVERIFY(console("echo teste").toStdString() == "teste\n");
+#elif defined(Q_OS_WIN)
+    QVERIFY(console("echo teste").toStdString() == "teste");
 #else
     QVERIFY(false);
 #endif
@@ -130,7 +132,9 @@ void CTestCacic::testSslConnection()
 {
     bool ok;
     QJsonObject json = OCacicComm.comm("", &ok, QJsonObject(), true);
-    QJsonValue jsonvalue = json["codestatus"];
+    QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
+                            json["codestatus"] :
+                            QJsonValue::fromVariant(-1);
 //    qDebug() << jsonvalue.toDouble();
     QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
 }
@@ -138,8 +142,9 @@ void CTestCacic::testSslConnection()
 void CTestCacic::testEnCrypt(){
     std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
     std::string input = "aqui vai a url que sera encriptada";
+    OCacic.setChaveCrypt("testecript123456");
     this->cripTeste = OCacic.enCrypt(input, IV);
-    QVERIFY(!this->cripTeste.isNull());
+    QVERIFY(!this->cripTeste.isEmpty() && !this->cripTeste.isNull());
 }
 
 void CTestCacic::testDeCrypt(){
@@ -171,6 +176,7 @@ void CTestCacic::testInstallCacicStart()
 
 void CTestCacic::testCacicCompToJsonObject()
 {
+//    qDebug() << OCacicComp.toJsonObject();
     QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
@@ -191,27 +197,54 @@ void CTestCacic::testJsonFromFile()
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
+void CTestCacic::testStartService()
+{
+    bool ok;
+    QString exitStatus;
+#ifdef Q_OS_WIN
+    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic.exe", true, &ok);
+#else
+    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic", &ok);
+#endif
+    QVERIFY(ok);
+}
+
 void CTestCacic::testReadConfig()
 {
 
-    // Inicializa um arquivo de configuração stub
-    // que seria parecido com o recebido do Gerente
-    QJsonObject configJson;
-    QJsonObject configHardware;
-    QJsonObject configSoftware;
+//    // Inicializa um arquivo de configuração stub
+//    // que seria parecido com o recebido do Gerente
+//    QJsonObject configJson;
+//    QJsonObject configHardware;
 
-    configHardware["network_interface"] = QJsonValue::fromVariant(QString(""));
-    configSoftware["operating_system"] = QJsonValue::fromVariant(QString(""));
+//    configHardware["computador"] = OCacicComp.toJsonObject();
 
-    configJson["hardware"] = configHardware;
-    configJson["software"] = configSoftware;
+//    configJson["hardware"] = configHardware;
 
-    OCacic.setJsonToFile(configJson,"configRequest.json");
+//    OCacic.setJsonToFile(configJson,"configRequest.json");
 
     // Leitura do arquivo de configuração
-    OGercols.readConfig();
 
-    QVERIFY(OGercols.getConfigJson() == configJson);
+    QVERIFY(false);
+}
+
+void CTestCacic::testSetRegistry()
+{
+    QVariantMap valueMap;
+    valueMap["teste1"] = QString("Teste 1");
+    valueMap["teste2"] = QString("Teste2");
+    OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
+    QSettings confirmaTeste("Lightbase", "Teste");
+    QVERIFY(confirmaTeste.value("teste1") == QVariant("Teste 1"));
+}
+
+void CTestCacic::testRemoveRegistry()
+{
+    OCacic.removeRegistry("Lightbase", "Teste");
+    QSettings confirmaTeste("Lightbase", "Teste");
+    QVERIFY(confirmaTeste.allKeys().isEmpty());
+    confirmaTeste.clear();
+    confirmaTeste.sync();
 }
 
 void CTestCacic::cleanupTestCase()

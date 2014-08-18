@@ -17,7 +17,9 @@ public:
     QMap<QString, QString> getArgumentos();
     void setArgumentos(QMap<QString, QString> value);
     QMap<QString, QString> validaParametros(QStringList argv, int argc, bool *ok);
+    bool startProcess(QString pathprogram, bool wait, QStringList arguments);
 
+    void registro();
 private:
     QMap<QString, QString> argumentos;
     CacicComm oCacicComm;

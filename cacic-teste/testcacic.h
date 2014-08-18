@@ -27,7 +27,6 @@ private:
     CacicComm OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
-    Gercols OGercols;
     QString testPath;
     QString testIniPath;
     QJsonObject session;
@@ -61,7 +60,10 @@ private slots:
   void testOperatingSystemToJsonObject();
   void testJsonToFile();
   void testJsonFromFile();
+  void testStartService();
   void testReadConfig();
+  void testSetRegistry();
+  void testRemoveRegistry();
   void cleanupTestCase();
 };
 
