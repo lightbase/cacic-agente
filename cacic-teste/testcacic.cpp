@@ -105,6 +105,7 @@ void CTestCacic::testConsole()
 #if defined(Q_OS_LINUX)
     QVERIFY(console("echo teste").toStdString() == "teste\n");
 #elif defined(Q_OS_WIN)
+    qDebug() << console("echo teste");
     QVERIFY(console("echo teste").toStdString() == "teste");
 #else
     QVERIFY(false);
@@ -154,26 +155,6 @@ void CTestCacic::testDeCrypt(){
 
 }
 
-void CTestCacic::testInstallCacicStart()
-{
-//    char *argva[] = {"program name", "-host=teste.cacic.cpp", "-user=asda", "-password=qwesd", NULL};
-//    int argca = sizeof(argva) / sizeof(char*) - 1;
-//    QCoreApplication a(argca, argva);
-
-//    InstallCacic *oInstallCacic = new InstallCacic(&a);
-
-//    QStringList args;
-//    for (int i = 0; i<argca; i++)
-//        args.append(argva[i]);
-//    // This will cause the application to exit when
-//    // the task signals finished.
-//    QObject::connect(oInstallCacic, SIGNAL(finished()), &a, SLOT(quit()));
-
-//    // This will run the task from the application event loop.
-//    QMetaObject::invokeMethod(oInstallCacic, "run", Qt::QueuedConnection, Q_ARG(QStringList, args), Q_ARG(int, argca));
-    QVERIFY(false);
-}
-
 void CTestCacic::testCacicCompToJsonObject()
 {
 //    qDebug() << OCacicComp.toJsonObject();
@@ -204,7 +185,7 @@ void CTestCacic::testStartService()
 #ifdef Q_OS_WIN
     exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic.exe", true, &ok);
 #else
-    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic", &ok);
+    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic", true, &ok);
 #endif
     QVERIFY(ok);
 }
@@ -236,6 +217,11 @@ void CTestCacic::testSetRegistry()
     OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
     QSettings confirmaTeste("Lightbase", "Teste");
     QVERIFY(confirmaTeste.value("teste1") == QVariant("Teste 1"));
+}
+
+void CTestCacic::testGetValueFromRegistry()
+{
+    QVERIFY(OCacic.getValueFromRegistry("Lightbase", "Teste", "teste1") == QVariant("Teste 1"));
 }
 
 void CTestCacic::testRemoveRegistry()
