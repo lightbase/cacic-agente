@@ -19,24 +19,27 @@ void InstallCacic::run(QStringList argv, int argc) {
         if (ok){
             //conectado, grava a chave na classe;
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
+#ifdef Q_OS_WIN
             oCacic.setCacicMainFolder("c:/cacic");
+#elif Q_LINUX
+            oCacic.setCacicMainFolder("/home/cacic");
+#endif
             oCacic.createFolder(oCacic.getCacicMainFolder());
             //grava chave em registro;
 
             QVariantMap registro;
             registro["key"] = oCacic.getChaveCrypt();
+            registro["mainFolder"] = oCacic.getCacicMainFolder();
             oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
             //starta o processo do cacic.
 #ifdef Q_OS_WIN
-            QString exitStatus = oCacic.startProcess("cacic.exe", true, &ok);
+            QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe", true, &ok);
+#else
+            oCacic.startProcess("cacic.exe", true, &ok);
+#endif
             if (!ok)
                 std::cout << "Erro ao iniciar o processo: "
                           << exitStatus.toStdString() << "\n";
-#else
-            oCacic.startProcess("cacic.exe", true, &ok);
-            if (!ok)
-                qDebug() << "Erro ao iniciar o processo.";
-#endif
         } else
             std::cout << "Nao foi possivel realizar o login.\n  "
                       << jsonLogin["error"].toString().toStdString();

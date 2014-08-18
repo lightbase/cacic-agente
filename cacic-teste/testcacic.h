@@ -57,7 +57,6 @@ private slots:
   void testSslConnection();
   void testEnCrypt();
   void testDeCrypt();
-  void testInstallCacicStart();
   void testCacicCompToJsonObject();
   void testOperatingSystemToJsonObject();
   void testJsonToFile();
@@ -65,6 +64,7 @@ private slots:
   void testStartService();
   void testReadConfig();
   void testSetRegistry();
+  void testGetValueFromRegistry();
   void testRemoveRegistry();
   void testIniciarDaemon();
   void cleanupTestCase();
