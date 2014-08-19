@@ -16,6 +16,7 @@ void CColeta::coletaSoftware()
 {
     qDebug() << "coletaSoftware() executado";
     oSoftware.iniciaColeta();
+
 }
 
 void CColeta::configuraColetas(){

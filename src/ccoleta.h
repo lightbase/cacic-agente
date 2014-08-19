@@ -35,10 +35,7 @@ public slots:
 signals:
     void beginComputer();
     void beginHardware();
-    void beginNetworkInterfaces();
-    void beginOperatingSystem();
     void beginSoftware();
-    void beginUser();
     void finished();
 };
 
