@@ -69,8 +69,17 @@ QJsonObject cacic_software::coletaArch()
                 packageJson["version"] = line.split(":")[1].mid(1);
             if(line.contains("Description"))
                 packageJson["description"] = line.split(":")[1].mid(1);
-            if(line.contains("URL"))
-                packageJson["url"] = line.split(":")[1].mid(1);
+            if(line.contains("URL")) {
+                QStringList url = line.split(":");
+                QString urlString;
+
+                for(int i = 1 ; i < url.size() ; ++i){
+                    urlString.append(url[i]);
+                    if(i == 1 ) urlString.append(":");
+                }
+
+                packageJson["url"] = urlString.mid(1);
+            }
             if(line.contains("Installed size"))
                 packageJson["installed_size"] = line.split(":")[1].mid(1);
             if(line.contains("Install Date"))
@@ -101,8 +110,17 @@ QJsonObject cacic_software::coletaDebian()
                 packageJson["version"] = line.split(":")[1].mid(1);
             if(line.contains("Description"))
                 packageJson["description"] = line.split(":")[1].mid(1);
-            if(line.contains("Homepage"))
-                packageJson["url"] = line.split(":")[1].mid(1);
+            if(line.contains("Homepage")) {
+                QStringList url = line.split(":");
+                QString urlString;
+
+                for(int i = 1 ; i < url.size() ; ++i){
+                    urlString.append(url[i]);
+                    if(i == 1 ) urlString.append(":");
+                }
+
+                packageJson["url"] = urlString.mid(1);
+            }
             if(line.contains("Installed-Size"))
                 packageJson["installed_size"] = line.split(":")[1].mid(1);
         }
