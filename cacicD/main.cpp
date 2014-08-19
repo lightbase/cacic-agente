@@ -2,7 +2,7 @@
 #include <QStringList>
 #include <QDir>
 #include <QSettings>
-#include "../src/qtservice/src/qtservice.h"
+#include <qtservice/src/qtservice.h>
 
 int main(int argc, char **argv)
 {

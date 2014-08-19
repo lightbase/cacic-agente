@@ -36,3 +36,6 @@ HEADERS += \
     cacicd.h
 
 include(../src/qtservice/src/qtservice.pri)
+
+INCLUDEPATH += ../src \
+               ../src/crypto++/include/

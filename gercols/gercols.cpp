@@ -22,11 +22,9 @@ Gercols::Gercols(QObject *parent)
     oCacic.setJsonToFile(configTeste,"configReq.json");
     /******************************************/
 
-    getConfigJson();
 qDebug() << "TESTE";
     oColeta = new CColeta();
-    oColeta->setColeta(configReq);
-qDebug() << oColeta->getColeta();
+
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
 
@@ -49,15 +47,9 @@ void Gercols::run()
 
 
     //salva coleta em json
-    qDebug() << oColeta->getColeta();
+    qDebug() << oColeta->toJsonObject();
     //salva json em arquivo
-    oCacic.setJsonToFile(oColeta->getColeta(), "coleta.json");
+    oCacic.setJsonToFile(oColeta->toJsonObject(), "coleta.json");
     //emite sinal "finished" pra finalizar a aplicação
     emit finished();
-}
-
-bool Gercols::getConfigJson()
-{
-    configReq = oCacic.getJsonFromFile("configReq.json");
-    oCacic.deleteFile("configReq.json");
 }

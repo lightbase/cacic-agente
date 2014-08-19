@@ -13,8 +13,6 @@ private:
     CColeta *oColeta;
     QJsonObject configReq;
 
-    bool getConfigJson();
-
 public:
     explicit Gercols(QObject *parent = 0);
 

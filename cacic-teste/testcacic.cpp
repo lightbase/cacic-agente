@@ -237,6 +237,12 @@ void CTestCacic::testIniciarDaemon(){
 
 }
 
+void CTestCacic::testColetaSoftware()
+{
+    OCacicSoftware.iniciaColeta();
+    QVERIFY(!OCacicSoftware.toJsonObject().empty());
+}
+
 void CTestCacic::cleanupTestCase()
 {
     OCacic.deleteFile("configRequest.json");

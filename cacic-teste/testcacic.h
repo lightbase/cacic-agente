@@ -4,6 +4,7 @@
 #include <cacic_comm.h>
 #include <ccacic.h>
 #include <cacic_computer.h>
+#include <cacic_software.h>
 #include <console.h>
 #include <operatingsystem.h>
 #include <QtTest/QtTest>
@@ -28,11 +29,12 @@ private:
     CacicComm OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
+    cacic_software OCacicSoftware;
     QString testPath;
     QString testIniPath;
     QJsonObject session;
     QString cripTeste;
-    cacicD OcacicD;
+//    cacicD OcacicD;
 
 signals:
 
@@ -67,6 +69,7 @@ private slots:
   void testGetValueFromRegistry();
   void testRemoveRegistry();
   void testIniciarDaemon();
+  void testColetaSoftware();
   void cleanupTestCase();
 };
 

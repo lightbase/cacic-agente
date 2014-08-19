@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QDebug>
+#include <ccacic.h>
 #include <cacic_computer.h>
-#include "cacic_computer.h"
+#include <cacic_software.h>
 
 
 class CColeta : public QObject
@@ -13,24 +14,21 @@ class CColeta : public QObject
     Q_OBJECT
 
 private:
-    QJsonObject coleta;
-
+    CCacic oCacic;
     CACIC_Computer oComputer;
+    cacic_software oSoftware;
 
 public:
     explicit CColeta(QObject *parent = 0);
 
-    QJsonObject getColeta() const;
     CACIC_Computer getOComputer() const;
-    void setColeta(QJsonObject config);
+    cacic_software getOSoftware() const;
+
+    QJsonObject toJsonObject();
 
 public slots:
-    void coletaComputer();
     void coletaHardware();
-    void coletaNetworkInterfaces();
-    void coletaOperatingSystem();
     void coletaSoftware();
-    void coletaUser();
     void configuraColetas();
     void run();
 

@@ -1,7 +1,6 @@
 #include "ccacic.h"
 
-CCacic::CCacic(QObject *parent) :
-    QObject(parent)
+CCacic::CCacic()
 {
 }
 /* getValueFromFile

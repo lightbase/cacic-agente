@@ -25,6 +25,7 @@ SOURCES += \
     main.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
+    ../src/cacic_software.cpp \
     ../src/operatingsystem.cpp \
     ../src/ccoleta.cpp \
     ./gercols.cpp
@@ -33,6 +34,7 @@ SOURCES += \
 HEADERS += \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
+    ../src/cacic_software.h \
     ../src/operatingsystem.h \
     ../src/console.h \
     ../src/ccoleta.h \

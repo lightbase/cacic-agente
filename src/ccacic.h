@@ -19,11 +19,10 @@
 //#include <sha.h>
 //#include <md5.h>
 
-class CCacic : public QObject
+class CCacic
 {
-    Q_OBJECT
 public:
-    explicit CCacic(QObject *parent = 0);
+    CCacic();
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
@@ -68,10 +67,6 @@ private:
     QString gerColsInfFilePath;
     QString chksisInfFilePath;
     QString chaveCrypt;
-
-signals:
-
-public slots:
 
 };
 
