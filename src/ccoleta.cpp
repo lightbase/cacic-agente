@@ -34,6 +34,11 @@ cacic_software CColeta::getOSoftware() const
     return oSoftware;
 }
 
+cacic_hardware CColeta::getOHardware() const
+{
+    return oHardware;
+}
+
 void CColeta::run()
 {
     QJsonObject coleta = oCacic.getJsonFromFile("configReq.json");

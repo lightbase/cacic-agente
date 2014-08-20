@@ -23,6 +23,7 @@ SOURCES += \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
     ../src/cacic_software.cpp \
+    ../src/cacic_hardware.cpp \
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -38,10 +39,12 @@ HEADERS += \
     ../src/console.h \
     ../src/operatingsystem.h \
     ../src/cacic_software.h \
+    ../src/cacic_hardware.h \
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \
 #    ../src/qtservice/src/qtunixsocket.h
+    ../src/cacic_hardware.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/
