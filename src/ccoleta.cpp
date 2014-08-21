@@ -8,7 +8,7 @@ CColeta::CColeta(QObject *parent)
 void CColeta::coletaHardware()
 {
     qDebug() << "coletaHardware() executado";
-//    oHardware.iniciaColeta();
+    oHardware.iniciaColeta();
 }
 
 
@@ -55,5 +55,6 @@ QJsonObject CColeta::toJsonObject()
     QJsonObject coletaJson;
     coletaJson["computer"] = oComputer.toJsonObject();
     coletaJson["software"] = oSoftware.toJsonObject();
+    coletaJson["hardware"] = oHardware.toJsonObject();
     return coletaJson;
 }

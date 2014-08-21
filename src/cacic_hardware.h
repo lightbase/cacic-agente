@@ -1,6 +1,9 @@
 #ifndef CACIC_HARDWARE_H
 #define CACIC_HARDWARE_H
 #include <QtCore>
+#include <QJsonArray>
+#include <QJsonArray>
+#include <cmath>
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
@@ -25,6 +28,9 @@ public:
 private:
     QJsonObject coletaWin();
     QJsonObject coletaLinux();
+    void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
+    void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);
+    void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
 
     CCacic oCacic;
     QJsonObject coletaHardware;
