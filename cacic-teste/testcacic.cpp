@@ -248,6 +248,14 @@ void CTestCacic::testColetaHardware()
     OCacicHardware.iniciaColeta();
     QVERIFY(false);
 }
+void CTestCacic::testConvertDouble()
+{
+    double number = 4.0905;
+
+    QString converted = OCacic.convertDouble(number);
+
+    QVERIFY(converted.toDouble() == number);
+}
 
 void CTestCacic::cleanupTestCase()
 {

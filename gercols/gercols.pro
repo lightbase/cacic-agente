@@ -40,7 +40,8 @@ HEADERS += \
     ../src/operatingsystem.h \
     ../src/console.h \
     ../src/ccoleta.h \
-    ./gercols.h
+    ./gercols.h \
+    ../src/cacic_hardware.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

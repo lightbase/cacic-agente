@@ -8,7 +8,7 @@ CColeta::CColeta(QObject *parent)
 void CColeta::coletaHardware()
 {
     qDebug() << "coletaHardware() executado";
-//    oHardware.iniciaColeta();
+    oHardware.iniciaColeta();
 }
 
 
@@ -16,6 +16,7 @@ void CColeta::coletaSoftware()
 {
     qDebug() << "coletaSoftware() executado";
     oSoftware.iniciaColeta();
+
 }
 
 void CColeta::configuraColetas(){
@@ -31,6 +32,11 @@ CACIC_Computer CColeta::getOComputer() const
 cacic_software CColeta::getOSoftware() const
 {
     return oSoftware;
+}
+
+cacic_hardware CColeta::getOHardware() const
+{
+    return oHardware;
 }
 
 void CColeta::run()
@@ -49,5 +55,6 @@ QJsonObject CColeta::toJsonObject()
     QJsonObject coletaJson;
     coletaJson["computer"] = oComputer.toJsonObject();
     coletaJson["software"] = oSoftware.toJsonObject();
+    coletaJson["hardware"] = oHardware.toJsonObject();
     return coletaJson;
 }

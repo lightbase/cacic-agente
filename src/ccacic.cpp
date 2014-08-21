@@ -286,6 +286,14 @@ void CCacic::setChaveCrypt(const QString &value)
     chaveCrypt = value;
 }
 
+QString CCacic::convertDouble(const double &number, const int &precision)
+{
+    std::ostringstream ss;
+    ss.precision(precision);
+    ss << std::fixed << number;
+
+    return QString::fromStdString(ss.str());
+}
 
 /*Getters/Setters
  * End.

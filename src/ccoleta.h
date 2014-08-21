@@ -7,6 +7,7 @@
 #include <ccacic.h>
 #include <cacic_computer.h>
 #include <cacic_software.h>
+#include <cacic_hardware.h>
 
 
 class CColeta : public QObject
@@ -17,12 +18,14 @@ private:
     CCacic oCacic;
     CACIC_Computer oComputer;
     cacic_software oSoftware;
+    cacic_hardware oHardware;
 
 public:
     explicit CColeta(QObject *parent = 0);
 
     CACIC_Computer getOComputer() const;
     cacic_software getOSoftware() const;
+    cacic_hardware getOHardware() const;
 
     QJsonObject toJsonObject();
 
@@ -35,10 +38,7 @@ public slots:
 signals:
     void beginComputer();
     void beginHardware();
-    void beginNetworkInterfaces();
-    void beginOperatingSystem();
     void beginSoftware();
-    void beginUser();
     void finished();
 };
 

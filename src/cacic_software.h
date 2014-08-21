@@ -2,7 +2,8 @@
 #define CACIC_SOFTWARE_H
 #include <QtCore>
 #include <ccacic.h>
-
+#include <console.h>
+#include <operatingsystem.h>
 class cacic_software
 {
 public:
@@ -12,7 +13,9 @@ public:
 
 private:
     QJsonObject coletaWin();
-    void coletaLinux();
+    QJsonObject coletaLinux();
+    QJsonObject coletaArch();
+    QJsonObject coletaDebian();
 
     CCacic oCacic;
     QJsonObject coletaSoftware;

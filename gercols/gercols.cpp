@@ -32,7 +32,7 @@ qDebug() << "TESTE";
 
 void Gercols::run()
 {
-    QJsonObject coleta;
+
     /* Pega configurações do Json de configurações localizado
      * na pasta principal do cacic (deverá ser pega do registro,
      * estou tentando implementar isso no installcacic).

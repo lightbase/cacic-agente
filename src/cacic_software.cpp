@@ -8,8 +8,9 @@ void cacic_software::iniciaColeta()
 {
 #ifdef Q_OS_WIN
     this->coletaSoftware = coletaWin();
-#else
+#elif defined(Q_OS_LINUX)
     this->coletaSoftware = coletaLinux();
+
 #endif
 }
 
@@ -48,10 +49,102 @@ QJsonObject cacic_software::coletaWin()
     return softwaresJson;
 }
 
-void cacic_software::coletaLinux()
+QJsonObject cacic_software::coletaLinux()
 {
 
+    OperatingSystem operatingSystem;
+
+    if( operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH ) {
+        return coletaArch();
+    } else if ( operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
+                operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU ) {
+        return coletaDebian();
+    }
+
+    return QJsonObject();
 }
+
+QJsonObject cacic_software::coletaArch()
+{
+    ConsoleObject console;
+    QJsonObject softwaresJson;
+
+    QStringList packages = console("pacman -Qe").split("\n");
+
+    foreach(QString package, packages) {
+        QString packageName = package.split(" ")[0];
+        QJsonObject packageJson;
+
+        QStringList packageInfo = console(QString("pacman -Qi ").append(packageName)).split("\n");
+//            qDebug() << packageInfo;
+
+        packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
+        foreach(QString line, packageInfo) {
+            if(line.contains("Version"))
+                packageJson["version"] = line.split(":")[1].mid(1);
+            if(line.contains("Description"))
+                packageJson["description"] = line.split(":")[1].mid(1);
+            if(line.contains("URL")) {
+                QStringList url = line.split(":");
+                QString urlString;
+
+                for(int i = 1 ; i < url.size() ; ++i){
+                    urlString.append(url[i]);
+                    if(i == 1 ) urlString.append(":");
+                }
+
+                packageJson["url"] = urlString.mid(1);
+            }
+            if(line.contains("Installed size"))
+                packageJson["installed_size"] = line.split(":")[1].mid(1);
+            if(line.contains("Install Date"))
+                packageJson["install_date"] = line.split(":")[1].mid(1);
+        }
+        softwaresJson[packageName] = packageJson;
+    }
+    return softwaresJson;
+}
+
+QJsonObject cacic_software::coletaDebian()
+{
+    ConsoleObject console;
+    QJsonObject softwaresJson;
+
+    QStringList packages = console("dpkg --get-selections").split("\n");
+
+    foreach(QString package, packages) {
+        QString packageName = package.split(" ")[0];
+        QJsonObject packageJson;
+
+        QStringList packageInfo = console(QString("apt-cache show ").append(packageName)).split("\n");
+//            qDebug() << packageInfo;
+
+        packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
+        foreach(QString line, packageInfo) {
+            if(line.contains("Version"))
+                packageJson["version"] = line.split(":")[1].mid(1);
+            if(line.contains("Description"))
+                packageJson["description"] = line.split(":")[1].mid(1);
+            if(line.contains("Homepage")) {
+                QStringList url = line.split(":");
+                QString urlString;
+
+                for(int i = 1 ; i < url.size() ; ++i){
+                    urlString.append(url[i]);
+                    if(i == 1 ) urlString.append(":");
+                }
+
+                packageJson["url"] = urlString.mid(1);
+            }
+            if(line.contains("Installed-Size"))
+                packageJson["installed_size"] = line.split(":")[1].mid(1);
+        }
+        softwaresJson[packageName] = packageJson;
+    }
+
+    return softwaresJson;
+}
+
 QJsonObject cacic_software::toJsonObject()
 {
     return coletaSoftware;
