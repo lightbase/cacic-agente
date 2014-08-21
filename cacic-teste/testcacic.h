@@ -5,6 +5,7 @@
 #include <ccacic.h>
 #include <cacic_computer.h>
 #include <cacic_software.h>
+#include <cacic_hardware.h>
 #include <console.h>
 #include <operatingsystem.h>
 #include <QtTest/QtTest>
@@ -30,6 +31,7 @@ private:
     CCacic OCacic;
     CACIC_Computer OCacicComp;
     cacic_software OCacicSoftware;
+    cacic_hardware OCacicHardware;
     QString testPath;
     QString testIniPath;
     QJsonObject session;
@@ -70,6 +72,7 @@ private slots:
   void testRemoveRegistry();
   void testIniciarDaemon();
   void testColetaSoftware();
+  void testColetaHardware();
   void cleanupTestCase();
 };
 

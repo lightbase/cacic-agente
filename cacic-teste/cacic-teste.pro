@@ -21,6 +21,7 @@ SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
+    ../src/cacic_hardware.cpp \
     ../src/operatingsystem.cpp \
     ../src/cacic_software.cpp \
 #    ../src/qtservice/src/qtservice.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
+    ../src/cacic_hardware.h \
     ../src/cacic_comm.h \
     ../src/console.h \
     ../src/operatingsystem.h \

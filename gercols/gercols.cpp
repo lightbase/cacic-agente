@@ -45,11 +45,9 @@ void Gercols::run()
     //emite sinal para começar a coleta
     emit iniciaColeta();
 
-
-    //salva coleta em json
-    qDebug() << oColeta->toJsonObject();
     //salva json em arquivo
     oCacic.setJsonToFile(oColeta->toJsonObject(), "coleta.json");
+    oCacic.deleteFile("configReq.json");
     //emite sinal "finished" pra finalizar a aplicação
     emit finished();
 }

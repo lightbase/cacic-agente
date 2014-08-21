@@ -2,6 +2,7 @@
 #define CACIC_SOFTWARE_H
 #include <QtCore>
 #include <ccacic.h>
+
 class cacic_software
 {
 public:
