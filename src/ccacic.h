@@ -11,6 +11,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <sstream>
+#include <iostream>
 #include "../src/crypto++/include/aes.h"
 #include "../src/crypto++/include/base64.h"
 #include "../src/crypto++/include/modes.h"
@@ -38,7 +40,7 @@ public:
     void setValueToRegistry(QString organization, QString application, QVariantMap values);
     QVariant getValueFromRegistry(QString organization, QString application, QString key);
     void removeRegistry(QString organization, QString application);
-
+    QString convertDouble(const double &number, const int &precision = 10);
 
 //Geters/seters:
 
