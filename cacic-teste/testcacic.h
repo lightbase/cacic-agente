@@ -70,6 +70,7 @@ private slots:
   void testRemoveRegistry();
   void testIniciarDaemon();
   void testColetaSoftware();
+  void testConvertDouble();
   void cleanupTestCase();
 };
 
