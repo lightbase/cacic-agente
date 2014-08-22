@@ -23,17 +23,59 @@ QJsonObject cacic_hardware::coletaWin()
 
 QJsonObject cacic_hardware::coletaLinux()
 {
-    QJsonObject coleta;
 
-    return coleta;
-}
+    OperatingSystem operatingSystem;
+    ConsoleObject console;
+
+    QJsonObject hardware;
+
+    QFile lshwFile("lshwJson.json");
+    if( lshwFile.exists() )
+        lshwFile.remove();
+
+    console("lshw -json >> lshwJson.json");
 
 
-QJsonObject cacic_hardware::toJsonObject()
-{
-    QJsonObject coleta;
+    QJsonObject lshwJson = oCacic.getJsonFromFile("lshwJson.json")["children"].toArray().first().toObject();
 
-    return coleta;
+    if( lshwJson.contains("id") && lshwJson["id"] == "core") {
+        if ( lshwJson["children"].isArray() ){
+            qDebug() << "IS ARRAY!!";
+            QJsonArray componentsArray =  lshwJson["children"].toArray();
+
+            foreach(QJsonValue componentValue, componentsArray ) {
+                QJsonObject component = componentValue.toObject();
+
+                /* TODO:
+                 * - Formatar direito as quantidades (memória,clock do cpu)
+                 * com unidades mais amigáveis para humanos em todos métodos.
+                 *
+                 * coletaLinuxMem
+                 * coletaLinuxCpu
+                 * coletaLinuxPci - a fazer
+                 */
+
+                if( component["id"] == "memory" ) {
+                    coletaLinuxMem(hardware,component);
+                } else if ( component["id"] == "cpu" ) {
+                    coletaLinuxCpu(hardware,component);
+                } else if ( component["id"] == "pci" ) {
+                    QJsonArray pciArray = component["children"].toArray();
+
+                    foreach(QJsonValue pciValue, pciArray){
+                        QJsonObject pciObject = pciValue.toObject();
+
+                        coletaLinuxPci(hardware, pciObject);
+                    }
+
+                }
+
+            }
+        }
+
+    }
+
+    return hardware;
 }
 
 int cacic_hardware::wmi()
@@ -188,61 +230,7 @@ int cacic_hardware::wmi()
 //    CoUninitialize();
 
     return 0;   // Program successfully completed.
-=======
 
-    OperatingSystem operatingSystem;
-    ConsoleObject console;
-
-    QJsonObject hardware;
-
-    QFile lshwFile("lshwJson.json");
-    if( lshwFile.exists() )
-        lshwFile.remove();
-
-    console("lshw -json >> lshwJson.json");
-
-
-    QJsonObject lshwJson = oCacic.getJsonFromFile("lshwJson.json")["children"].toArray().first().toObject();
-
-    if( lshwJson.contains("id") && lshwJson["id"] == "core") {
-        if ( lshwJson["children"].isArray() ){
-            qDebug() << "IS ARRAY!!";
-            QJsonArray componentsArray =  lshwJson["children"].toArray();
-
-            foreach(QJsonValue componentValue, componentsArray ) {
-                QJsonObject component = componentValue.toObject();
-
-                /* TODO:
-                 * - Formatar direito as quantidades (memória,clock do cpu)
-                 * com unidades mais amigáveis para humanos em todos métodos.
-                 *
-                 * coletaLinuxMem
-                 * coletaLinuxCpu
-                 * coletaLinuxPci - a fazer
-                 */
-
-                if( component["id"] == "memory" ) {
-                    coletaLinuxMem(hardware,component);
-                } else if ( component["id"] == "cpu" ) {
-                    coletaLinuxCpu(hardware,component);
-                } else if ( component["id"] == "pci" ) {
-                    QJsonArray pciArray = component["children"].toArray();
-
-                    foreach(QJsonValue pciValue, pciArray){
-                        QJsonObject pciObject = pciValue.toObject();
-
-                        coletaLinuxPci(hardware, pciObject);
-                    }
-
-                }
-
-            }
-        }
-
-    }
-
-
-    return hardware;
 }
 
 void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component)
@@ -272,5 +260,4 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
 
 QJsonObject cacic_hardware::toJsonObject() {
     return coletaHardware;
->>>>>>> c87d0f3e5ae47bd0d7f7f8c5f5583bb46dd7235b
 }
