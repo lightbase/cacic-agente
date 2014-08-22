@@ -40,7 +40,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
     if( lshwJson.contains("id") && lshwJson["id"] == "core") {
         if ( lshwJson["children"].isArray() ){
-            qDebug() << "IS ARRAY!!";
+//            qDebug() << "IS ARRAY!!";
             QJsonArray componentsArray =  lshwJson["children"].toArray();
 
             foreach(QJsonValue componentValue, componentsArray ) {
@@ -52,7 +52,7 @@ QJsonObject cacic_hardware::coletaLinux()
                  *
                  * coletaLinuxMem
                  * coletaLinuxCpu
-                 * coletaLinuxPci - a fazer
+                 * coletaLinuxPci
                  */
 
                 if( component["id"] == "memory" ) {
@@ -256,6 +256,46 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson)
 {
 
+    QJsonObject pciMember;
+
+    if ( pciJson["id"] == "multimedia") {
+        pciMember["description"] = pciJson["description"];
+        pciMember["product"] = pciJson["product"];
+        pciMember["vendor"] = pciJson["vendor"];
+
+        hardware["multimedia"] = pciMember;
+    } else if (pciJson["id"].toString().contains("pci:") ) {
+        QJsonArray pciChildren = pciJson["children"].toArray();
+
+        foreach( QJsonValue pciChild, pciChildren ) {
+            QJsonObject pciChildJson = pciChild.toObject();
+
+            if( pciChildJson["id"] == "network" &&
+                   ( pciChildJson["description"].toString().contains("Wireless") ||
+                     pciChildJson["product"].toString().contains("Wireless") )) {
+                pciMember["description"] = pciChildJson["description"];
+                pciMember["product"] = pciChildJson["product"];
+                pciMember["vendor"] = pciChildJson["vendor"];
+                pciMember["logicalname"] = pciChildJson["logicalname"];
+                pciMember["serial"] = pciChildJson["serial"];
+                pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
+
+                hardware["wireless_card"] = pciMember;
+            } else if( pciChildJson["id"] == "network" ) {
+                pciMember["description"] = pciChildJson["description"];
+                pciMember["product"] = pciChildJson["product"];
+                pciMember["vendor"] = pciChildJson["vendor"];
+                pciMember["logicalname"] = pciChildJson["logicalname"];
+                pciMember["serial"] = pciChildJson["serial"];
+                pciMember["capacity"] = QJsonValue::fromVariant(
+                                        oCacic.convertDouble(pciChildJson["capacity"].toDouble(), 0) +
+                                        " bits/s" );
+
+                hardware["ethernet_card"] = pciMember;
+            }
+
+        }
+    }
 }
 
 QJsonObject cacic_hardware::toJsonObject() {

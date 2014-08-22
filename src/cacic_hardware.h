@@ -1,7 +1,6 @@
 #ifndef CACIC_HARDWARE_H
 #define CACIC_HARDWARE_H
 #include <ccacic.h>
-#include <querysink.h>
 #include <QtCore>
 #include <QJsonArray>
 #include <QJsonArray>
@@ -11,6 +10,7 @@
 #include <operatingsystem.h>
 
 #if defined(Q_OS_WIN)
+    #include <querysink.h>
     #define _WIN32_DCOM
     #include <iostream>
     //using namespace std;
@@ -26,8 +26,6 @@ public:
     cacic_hardware();
     void iniciaColeta();
     QJsonObject toJsonObject();
-    QJsonObject coletaWin();
-    QJsonObject coletaLinux();
 
 private:
     int wmi();
