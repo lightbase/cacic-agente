@@ -38,7 +38,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
     QJsonObject lshwJson = oCacic.getJsonFromFile("lshwJson.json")["children"].toArray().first().toObject();
 
-    if( lshwJson.contains("id") && lshwJson["id"] == "core") {
+    if( lshwJson.contains("id") && lshwJson["id"] == QJsonValue::fromVariant(QString("core")) ) {
         if ( lshwJson["children"].isArray() ){
 //            qDebug() << "IS ARRAY!!";
             QJsonArray componentsArray =  lshwJson["children"].toArray();
@@ -55,11 +55,11 @@ QJsonObject cacic_hardware::coletaLinux()
                  * coletaLinuxPci
                  */
 
-                if( component["id"] == "memory" ) {
+                if( component["id"] == QJsonValue::fromVariant(QString("memory")) ) {
                     coletaLinuxMem(hardware,component);
-                } else if ( component["id"] == "cpu" ) {
+                } else if ( component["id"] == QJsonValue::fromVariant(QString("cpu")) ) {
                     coletaLinuxCpu(hardware,component);
-                } else if ( component["id"] == "pci" ) {
+                } else if ( component["id"] == QJsonValue::fromVariant(QString("pci")) ) {
                     QJsonArray pciArray = component["children"].toArray();
 
                     foreach(QJsonValue pciValue, pciArray){
@@ -258,7 +258,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
 
     QJsonObject pciMember;
 
-    if ( pciJson["id"] == "multimedia") {
+    if ( pciJson["id"] == QJsonValue::fromVariant(QString("multimedia")) ) {
         pciMember["description"] = pciJson["description"];
         pciMember["product"] = pciJson["product"];
         pciMember["vendor"] = pciJson["vendor"];
@@ -270,7 +270,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         foreach( QJsonValue pciChild, pciChildren ) {
             QJsonObject pciChildJson = pciChild.toObject();
 
-            if( pciChildJson["id"] == "network" &&
+            if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) &&
                    ( pciChildJson["description"].toString().contains("Wireless") ||
                      pciChildJson["product"].toString().contains("Wireless") )) {
                 pciMember["description"] = pciChildJson["description"];
@@ -281,7 +281,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                 pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
 
                 hardware["wireless_card"] = pciMember;
-            } else if( pciChildJson["id"] == "network" ) {
+            } else if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
                 pciMember["description"] = pciChildJson["description"];
                 pciMember["product"] = pciChildJson["product"];
                 pciMember["vendor"] = pciChildJson["vendor"];
