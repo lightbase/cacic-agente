@@ -1,5 +1,7 @@
 #include "cacic_software.h"
-
+#ifdef Q_OS_WIN
+    using namespace voidrealms::win32;
+#endif
 cacic_software::cacic_software()
 {
 }
@@ -18,33 +20,36 @@ QJsonObject cacic_software::coletaWin()
 {
     QJsonObject softwaresJson;
     QStringList regedit;
-    regedit.append("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall");
-    regedit.append("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall");
+    regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+    regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
     foreach(QString registry, regedit){
-        QSettings softwares(registry, QSettings::NativeFormat);
-    //    qDebug() << softwares.childGroups();
-        foreach (QString group, softwares.childGroups()){
+        VRegistry reg;
+        reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
+        QStringList keys = reg.enum_Keys();
+        foreach(QString key, keys){
             QVariantMap software;
-            softwares.beginGroup(group);
-            qDebug() << softwares.fileName() << softwares.value("DisplayName");
-            if (!softwares.value("DisplayName").isNull())
-                software["DisplayName"] = softwares.value("DisplayName");
-            if (!softwares.value("Publisher").isNull())
-                software["Publisher"] = softwares.value("Publisher");
-            if (!softwares.value("InstallLocation").isNull())
-                software["InstallLocation"] = softwares.value("InstallLocation");
-            if (!softwares.value("InstallDate").isNull())
-                software["InstallDate"] = softwares.value("InstallDate");
-            if (!softwares.value("URLInfoAbout").isNull())
-                software["URLInfoAbout"] = softwares.value("URLInfoAbout");
-            if (!softwares.value("UninstallString").isNull())
-                software["UninstallString"] = software.value("UninstallString");
-            if (!softwares.value("QuietUninstallString").isNull())
-                software["QuietUninstallString"] = software.value("QuietUninstallString");
-            softwares.endGroup();
-            softwaresJson[group] = QJsonObject::fromVariantMap(software);
+            VRegistry subReg;
+            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
+            if (!subReg.get_REG_SZ("DisplayName").isEmpty())
+                software["DisplayName"] = subReg.get_REG_SZ("DisplayName");
+            if (!subReg.get_REG_SZ("Publisher").isEmpty())
+                software["Publisher"] = subReg.get_REG_SZ("Publisher");
+            if (!subReg.get_REG_SZ("InstallLocation").isEmpty())
+                software["InstallLocation"] = subReg.get_REG_SZ("InstallLocation");
+            if (!subReg.get_REG_SZ("InstallDate").isEmpty())
+                software["InstallDate"] = subReg.get_REG_SZ("InstallDate");
+            if (!subReg.get_REG_SZ("URLInfoAbout").isEmpty())
+                software["URLInfoAbout"] = subReg.get_REG_SZ("URLInfoAbout");
+            if (!subReg.get_REG_EXPAND_SZ("UninstallString").isEmpty())
+                software["UninstallString"] = subReg.get_REG_EXPAND_SZ("UninstallString");
+            if (!subReg.get_REG_EXPAND_SZ("QuietUninstallString").isEmpty())
+                software["QuietUninstallString"] = subReg.get_REG_EXPAND_SZ("QuietUninstallString");
+            if (!subReg.get_REG_SZ("DisplayVersion").isEmpty())
+                software["DisplayVersion"] = subReg.get_REG_SZ("DisplayVersion");
+
+            softwaresJson[key] = QJsonObject::fromVariantMap(software);
         }
-//    qDebug() << softwaresJson;
+        qDebug() << softwaresJson;
     }
     return softwaresJson;
 }

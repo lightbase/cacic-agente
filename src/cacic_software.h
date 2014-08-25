@@ -4,6 +4,9 @@
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
+#include <vqtconvert.h>
+#include <vregistry.h>
+
 class cacic_software
 {
 public:

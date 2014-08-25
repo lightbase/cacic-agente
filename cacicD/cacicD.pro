@@ -20,19 +20,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    ../src/cacic_computer.cpp \
     ../src/ccacic.cpp \
-    ../src/ccoleta.cpp \
-    ../src/operatingsystem.cpp \
     cacicd.cpp
 
 HEADERS += \
-    ../src/cacic_comm.h \
-    ../src/cacic_computer.h \
     ../src/ccacic.h \
-    ../src/ccoleta.h \
-    ../src/console.h \
-    ../src/operatingsystem.h \
     cacicd.h
 
 include(../src/qtservice/src/qtservice.pri)

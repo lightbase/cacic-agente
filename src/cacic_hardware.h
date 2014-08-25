@@ -10,7 +10,6 @@
 #include <operatingsystem.h>
 
 #if defined(Q_OS_WIN)
-    #include <querysink.h>
     #define _WIN32_DCOM
     #include <iostream>
     //using namespace std;

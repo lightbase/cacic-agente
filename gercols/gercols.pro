@@ -29,6 +29,8 @@ SOURCES += \
     ../src/cacic_hardware.cpp \
     ../src/operatingsystem.cpp \
     ../src/ccoleta.cpp \
+    ../src/vregistry.cpp \
+    ../src/vqtconvert.cpp \
     ./gercols.cpp
 
 
@@ -40,6 +42,8 @@ HEADERS += \
     ../src/operatingsystem.h \
     ../src/console.h \
     ../src/ccoleta.h \
+    ../src/vregistry.h \
+    ../src/vqtconvert.h \
     ./gercols.h \
     ../src/cacic_hardware.h
 
