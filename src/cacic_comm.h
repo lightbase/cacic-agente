@@ -33,7 +33,7 @@ public:
                QString moduleProgramName,   QString networkConfiguration,QString phpAuthPw,       QString phpAuthUser,
                QString so,                  QString cacicVersion,        QString gercolsVersion)
     {
-        this->urlGerente = urlGerente;
+        this->setUrlGerente(urlGerente);
         params.addQueryItem("OperatingSystem", operatingSystem);
         params.addQueryItem("ComputerSystem",computerSystem);
         params.addQueryItem("cs_cipher",csCipher);
@@ -134,7 +134,7 @@ public:
         QNetworkAccessManager mgr;
         QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
         // a requisição HTTP
-        QUrl url = urlGerente;
+        QUrl url = "http://" + urlGerente;
         QNetworkRequest req( url );
         req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
         QNetworkReply *reply = mgr.get(req);

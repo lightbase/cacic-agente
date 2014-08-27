@@ -7,12 +7,11 @@
 QT       += core
 QT       += network
 QT       -= gui
-QT       += axcontainer
 
-TARGET = gercols
+TARGET    = gercols
 CONFIG   += console
 CONFIG   -= app_bundle
-CONFIG += qt
+CONFIG   += qt
 
 win32 {
     LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
@@ -30,10 +29,10 @@ SOURCES += \
     ../src/cacic_hardware.cpp \
     ../src/operatingsystem.cpp \
     ../src/ccoleta.cpp \
+    ./gercols.cpp \
     ../src/vregistry.cpp \
     ../src/vqtconvert.cpp \
-    ./gercols.cpp
-
+#win32 SOURCES += \ ../src/vregistry.cpp \ ../src/vqtconvert.cpp \
 
 HEADERS += \
     ../src/ccacic.h \
@@ -43,10 +42,10 @@ HEADERS += \
     ../src/operatingsystem.h \
     ../src/console.h \
     ../src/ccoleta.h \
+    ./gercols.h \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
-    ./gercols.h \
-    ../src/cacic_hardware.h
+#win32 HEADERS += \ ../src/vregistry.h \ ../src/vqtconvert.h \
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

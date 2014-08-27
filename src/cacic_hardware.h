@@ -8,7 +8,7 @@
 #include <console.h>
 #include <operatingsystem.h>
 #ifdef Q_OS_WIN
-    #include <QAxObject>
+//    #include <QAxObject>
     #include <windows.h>
 #endif
 

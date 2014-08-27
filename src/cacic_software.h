@@ -5,7 +5,7 @@
 #include <console.h>
 #include <operatingsystem.h>
 
-#if defined(Q_OS_WIN)
+#ifdef Q_OS_WIN
     #include <vqtconvert.h>
     #include <vregistry.h>
 #endif
@@ -18,10 +18,13 @@ public:
     QJsonObject toJsonObject();
 
 private:
+#ifdef Q_OS_WIN
     QJsonObject coletaWin();
+#else
     QJsonObject coletaLinux();
     QJsonObject coletaArch();
     QJsonObject coletaDebian();
+#endif
 
     CCacic oCacic;
     QJsonObject coletaSoftware;

@@ -1,7 +1,5 @@
 #include "cacic_software.h"
-#ifdef Q_OS_WIN
-    using namespace voidrealms::win32;
-#endif
+
 cacic_software::cacic_software()
 {
 }
@@ -10,13 +8,14 @@ void cacic_software::iniciaColeta()
 {
 #ifdef Q_OS_WIN
     this->coletaSoftware = coletaWin();
-#elif defined(Q_OS_LINUX)
+#elif Q_OS_LINUX
     this->coletaSoftware = coletaLinux();
 
 #endif
 }
 
 #if defined(Q_OS_WIN)
+using namespace voidrealms::win32;
 QJsonObject cacic_software::coletaWin()
 {
     QJsonObject softwaresJson;

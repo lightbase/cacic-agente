@@ -14,23 +14,23 @@ void cacic_hardware::iniciaColeta()
 #ifdef Q_OS_WIN
 QJsonObject cacic_hardware::coletaWin()
 {
-    QAxObject *objIWbemLocator = new QAxObject("WbemScripting.SWbemLocator");
-    QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",QString("."),QString("root\\cimv2"));
-    if (objWMIService->isNull())
-    {
-        return QJsonObject();
-    }
-    QAxObject *returnList = objWMIService->querySubObject("ExecQuery(QString&)",QString("select SystemType from win32_computersystem"));
-    QAxObject *enum1 = returnList->querySubObject("_NewEnum");
-    IEnumVARIANT* enumInterface; //to get this, include <windows.h>
-    enum1->queryInterface(IID_IEnumVARIANT, (void**)&enumInterface);
-    enumInterface->Reset(); //start at the beginning of the list.
-    for (int i=0;i<returnList->dynamicCall("Count").toInt();i++){
-        VARIANT *theItem;
-        enumInterface->Next(1,theItem,NULL);
-        QAxObject *item = new QAxObject((IUnknown *)theItem->punkVal);
-        qDebug() << item->dynamicCall("Caption");
-    }
+//    QAxObject *objIWbemLocator = new QAxObject("WbemScripting.SWbemLocator");
+//    QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",QString("."),QString("root\\cimv2"));
+//    if (objWMIService->isNull())
+//    {
+//        return QJsonObject();
+//    }
+//    QAxObject *returnList = objWMIService->querySubObject("ExecQuery(QString&)",QString("select SystemType from win32_computersystem"));
+//    QAxObject *enum1 = returnList->querySubObject("_NewEnum");
+//    IEnumVARIANT* enumInterface; //to get this, include <windows.h>
+//    enum1->queryInterface(IID_IEnumVARIANT, (void**)&enumInterface);
+//    enumInterface->Reset(); //start at the beginning of the list.
+//    for (int i=0;i<returnList->dynamicCall("Count").toInt();i++){
+//        VARIANT *theItem;
+//        enumInterface->Next(1,theItem,NULL);
+//        QAxObject *item = new QAxObject((IUnknown *)theItem->punkVal);
+//        qDebug() << item->dynamicCall("Caption");
+//    }
 
     return QJsonObject();
 }

@@ -1,5 +1,3 @@
-#if defined(Q_OS_WIN)
-
 #ifndef VQTCONVERT_H
 #define VQTCONVERT_H
 
@@ -51,4 +49,3 @@ namespace voidrealms
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
 #endif // VQTCONVERT_H
-#endif

@@ -1,5 +1,3 @@
-#if defined(Q_OS_WIN)
-
 /*
 Wrapper for the Windows Registry
 Version: 1.0
@@ -127,4 +125,3 @@ namespace voidrealms
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
 #endif // VREGISTRY_H
-#endif
