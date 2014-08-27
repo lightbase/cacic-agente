@@ -16,9 +16,6 @@
 #include <iostream>
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
-#include "../install-cacic/installcacic.h"
-#include "../gercols/gercols.h"
-#include "../cacicD/cacicd.h"
 
 class CTestCacic : public QObject
 {
@@ -66,7 +63,6 @@ private slots:
   void testJsonToFile();
   void testJsonFromFile();
   void testStartService();
-  void testReadConfig();
   void testSetRegistry();
   void testGetValueFromRegistry();
   void testRemoveRegistry();

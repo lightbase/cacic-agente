@@ -190,25 +190,6 @@ void CTestCacic::testStartService()
     QVERIFY(ok);
 }
 
-void CTestCacic::testReadConfig()
-{
-
-//    // Inicializa um arquivo de configuração stub
-//    // que seria parecido com o recebido do Gerente
-//    QJsonObject configJson;
-//    QJsonObject configHardware;
-
-//    configHardware["computador"] = OCacicComp.toJsonObject();
-
-//    configJson["hardware"] = configHardware;
-
-//    OCacic.setJsonToFile(configJson,"configRequest.json");
-
-    // Leitura do arquivo de configuração
-
-    QVERIFY(false);
-}
-
 void CTestCacic::testSetRegistry()
 {
     QVariantMap valueMap;

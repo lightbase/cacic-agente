@@ -7,6 +7,7 @@
 QT       += core
 QT       += network
 QT       -= gui
+QT       += axcontainer
 
 TARGET = gercols
 CONFIG   += console

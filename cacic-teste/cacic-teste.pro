@@ -6,7 +6,7 @@
 
 QT += testlib
 QT += network
-
+QT += axcontainer
 TARGET = cacic-teste
 CONFIG -= app_bundle
 CONFIG += c++11
@@ -21,10 +21,11 @@ SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
-    ../src/cacic_hardware.cpp \
     ../src/operatingsystem.cpp \
     ../src/cacic_software.cpp \
     ../src/cacic_hardware.cpp \
+    ../src/vqtconvert.cpp \
+    ../src/vregistry.cpp \
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -36,17 +37,19 @@ HEADERS += \
     testcacic.h \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
-    ../src/cacic_hardware.h \
     ../src/cacic_comm.h \
     ../src/console.h \
     ../src/operatingsystem.h \
     ../src/cacic_software.h \
     ../src/cacic_hardware.h \
+    ../src/vqtconvert.h \
+    ../src/vregistry.h \
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \
 #    ../src/qtservice/src/qtunixsocket.h
-    ../src/cacic_hardware.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/
+
+include(../src/qtservice/src/qtservice.pri)

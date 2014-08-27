@@ -49,7 +49,7 @@ QJsonObject cacic_software::coletaWin()
 
             softwaresJson[key] = QJsonObject::fromVariantMap(software);
         }
-        qDebug() << softwaresJson;
+//        qDebug() << softwaesJson;
     }
     return softwaresJson;
 }

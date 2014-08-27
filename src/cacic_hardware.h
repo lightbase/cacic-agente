@@ -3,20 +3,13 @@
 #include <ccacic.h>
 #include <QtCore>
 #include <QJsonArray>
-#include <QJsonArray>
 #include <cmath>
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
-
-#if defined(Q_OS_WIN)
-    #define _WIN32_DCOM
-    #include <iostream>
-    //using namespace std;
-    #include <wbemidl.h>
+#ifdef Q_OS_WIN
+    #include <QAxObject>
     #include <windows.h>
-    # pragma comment(lib, "wbemuuid.lib")
-
 #endif
 
 class cacic_hardware
@@ -27,12 +20,14 @@ public:
     QJsonObject toJsonObject();
 
 private:
-    int wmi();
+#ifdef Q_OS_WIN
     QJsonObject coletaWin();
+#elif Q_OS_LINUX
     QJsonObject coletaLinux();
     void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
+#endif
 
     CCacic oCacic;
     QJsonObject coletaHardware;
