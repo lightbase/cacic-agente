@@ -13,25 +13,39 @@ void cacic_hardware::iniciaColeta()
 }
 #ifdef Q_OS_WIN
 QJsonObject cacic_hardware::coletaWin()
-{
-//    QAxObject *objIWbemLocator = new QAxObject("WbemScripting.SWbemLocator");
-//    QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",QString("."),QString("root\\cimv2"));
-//    if (objWMIService->isNull())
-//    {
-//        return QJsonObject();
-//    }
-//    QAxObject *returnList = objWMIService->querySubObject("ExecQuery(QString&)",QString("select SystemType from win32_computersystem"));
-//    QAxObject *enum1 = returnList->querySubObject("_NewEnum");
-//    IEnumVARIANT* enumInterface; //to get this, include <windows.h>
-//    enum1->queryInterface(IID_IEnumVARIANT, (void**)&enumInterface);
-//    enumInterface->Reset(); //start at the beginning of the list.
-//    for (int i=0;i<returnList->dynamicCall("Count").toInt();i++){
-//        VARIANT *theItem;
-//        enumInterface->Next(1,theItem,NULL);
-//        QAxObject *item = new QAxObject((IUnknown *)theItem->punkVal);
-//        qDebug() << item->dynamicCall("Caption");
-//    }
+{  
+    QAxObject *objIWbemLocator = new QAxObject("WbemScripting.SWbemLocator");
+    QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",
+                                                                    QString("."),
+                                                                    QString("root\\CIMV2")
+                                                               );
+    QAxObject* returnList = objWMIService->querySubObject("ExecQuery(QString&)",
+                                                                QString("SELECT * FROM Win32_ComputerSystem")
+                                                          );
+    QAxObject *enum1 = returnList->querySubObject("_NewEnum");
+    //ui->textBrowser_4->setHtml(enum1->generateDocumentation());
+    IEnumVARIANT* enumInterface = 0;
+    enum1->queryInterface(IID_IEnumVARIANT, (void**)&enumInterface);
 
+    //ui->textBrowser_4->setHtml(enumInterface->);
+    enumInterface->Reset();
+    // QAxObject *item = 0;
+
+    //qDebug()<<"the count of objinterlist is "<<QString::number(objInterList->dynamicCall("Count").toInt());
+    for (int i = 0; i < returnList->dynamicCall("Count").toInt(); i++) {
+        VARIANT *theItem = (VARIANT*)malloc(sizeof(VARIANT));
+        if (enumInterface->Next(1,theItem,NULL) != S_FALSE){
+            QAxObject *item = new QAxObject((IUnknown *)theItem->punkVal);
+
+            if(item){
+                qDebug() <<" string is "<<item->dynamicCall("ProcessorId").toString();
+                qDebug() <<" string is "<<item->dynamicCall("GetText_(WbemObjectTextFormatEnum)", QVariant(1)).toString();
+            }
+            // item->
+            //QString val =
+            qDebug()<<"item name is "<< item->property("objectName").toString();
+        }
+    }
     return QJsonObject();
 }
 #elif Q_OS_LINUX

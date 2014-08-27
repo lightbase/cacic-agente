@@ -158,6 +158,7 @@ void CTestCacic::testDeCrypt(){
 void CTestCacic::testCacicCompToJsonObject()
 {
 //    qDebug() << OCacicComp.toJsonObject();
+//    OCacic.setJsonToFile(OCacicComp.toJsonObject(), "jsoncomp.json");
     QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
@@ -236,6 +237,15 @@ void CTestCacic::testConvertDouble()
     QString converted = OCacic.convertDouble(number);
 
     QVERIFY(converted.toDouble() == number);
+}
+
+void CTestCacic::testGetTest()
+{
+    bool ok;
+    QJsonObject envio;
+    envio["computador"] = OCacicComp.toJsonObject();
+    OCacicComm.setUrlGerente("http://10.1.0.137/cacic/web/app_dev.php");
+    QVERIFY(ok);
 }
 
 void CTestCacic::cleanupTestCase()

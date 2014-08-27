@@ -6,8 +6,10 @@
 
 QT += testlib
 QT += network
-QT += axcontainer
+
 TARGET = cacic-teste
+
+QT += axcontainer
 CONFIG -= app_bundle
 CONFIG += c++11
 TEMPLATE = app

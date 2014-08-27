@@ -8,8 +8,8 @@
 #include <console.h>
 #include <operatingsystem.h>
 #ifdef Q_OS_WIN
-//    #include <QAxObject>
     #include <windows.h>
+    #include <ActiveQt/ActiveQt>
 #endif
 
 class cacic_hardware
