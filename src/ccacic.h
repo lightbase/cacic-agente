@@ -13,6 +13,7 @@
 #include <QJsonValue>
 #include <sstream>
 #include <iostream>
+#include <string>
 #include "../src/crypto++/include/aes.h"
 #include "../src/crypto++/include/base64.h"
 #include "../src/crypto++/include/modes.h"
@@ -41,6 +42,7 @@ public:
     QVariant getValueFromRegistry(QString organization, QString application, QString key);
     void removeRegistry(QString organization, QString application);
     QString convertDouble(const double &number, const int &precision = 10);
+    std::string genRandomString(const int &len = 32);
 
 //Geters/seters:
 
