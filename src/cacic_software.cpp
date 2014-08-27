@@ -16,6 +16,7 @@ void cacic_software::iniciaColeta()
 #endif
 }
 
+#if defined(Q_OS_WIN)
 QJsonObject cacic_software::coletaWin()
 {
     QJsonObject softwaresJson;
@@ -54,6 +55,7 @@ QJsonObject cacic_software::coletaWin()
     return softwaresJson;
 }
 
+#elif defined(Q_OS_LINUX)
 QJsonObject cacic_software::coletaLinux()
 {
 
@@ -115,10 +117,10 @@ QJsonObject cacic_software::coletaDebian()
     ConsoleObject console;
     QJsonObject softwaresJson;
 
-    QStringList packages = console("dpkg --get-selections").split("\n");
+    QStringList packages = console("dpkg --get-selections | grep -v '\^lib\\|\^fonts'").split("\n");
 
     foreach(QString package, packages) {
-        QString packageName = package.split(" ")[0];
+        QString packageName = package.split("\t")[0];
         QJsonObject packageJson;
 
         QStringList packageInfo = console(QString("apt-cache show ").append(packageName)).split("\n");
@@ -126,11 +128,11 @@ QJsonObject cacic_software::coletaDebian()
 
         packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
         foreach(QString line, packageInfo) {
-            if(line.contains("Version"))
+            if(line.contains("Version:"))
                 packageJson["version"] = line.split(":")[1].mid(1);
-            if(line.contains("Description"))
+            if(line.contains("Description-en:"))
                 packageJson["description"] = line.split(":")[1].mid(1);
-            if(line.contains("Homepage")) {
+            if(line.contains("Homepage:")) {
                 QStringList url = line.split(":");
                 QString urlString;
 
@@ -141,14 +143,16 @@ QJsonObject cacic_software::coletaDebian()
 
                 packageJson["url"] = urlString.mid(1);
             }
-            if(line.contains("Installed-Size"))
+            if(line.contains("Installed-Size:"))
                 packageJson["installed_size"] = line.split(":")[1].mid(1);
         }
         softwaresJson[packageName] = packageJson;
+        int counterPackages = softwaresJson.size();
     }
 
     return softwaresJson;
 }
+#endif
 
 QJsonObject cacic_software::toJsonObject()
 {

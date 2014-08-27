@@ -12,12 +12,12 @@ Gercols::Gercols(QObject *parent)
      ******************************************/
     QJsonObject configTeste;
     QJsonObject configComputer;
-    configComputer["operating_system"] = "";
-    configComputer["user"] = "";
-    configComputer["network_interface"] = "";
+    configComputer["operating_system"] = QJsonValue::fromVariant(QString(""));
+    configComputer["user"] = QJsonValue::fromVariant(QString(""));
+    configComputer["network_interface"] = QJsonValue::fromVariant(QString(""));
     configTeste["computer"] = configComputer;
-    configTeste["hardware"] = "";
-    configTeste["software"] = "";
+    configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
+    configTeste["software"] = QJsonValue::fromVariant(QString(""));
 
     oCacic.setJsonToFile(configTeste,"configReq.json");
     /******************************************/
