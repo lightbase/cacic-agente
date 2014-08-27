@@ -64,7 +64,7 @@ public:
             url = urlSsl.isEmpty() ? "https://" + this->urlGerente + route : this->urlSsl + route;
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
         } else
-            url = urlGerente + route;
+            url = "http://" + urlGerente + route;
         req.setUrl(url);
         req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
         if (json.empty())

@@ -7,15 +7,18 @@ CColeta::CColeta(QObject *parent)
 
 void CColeta::coletaHardware()
 {
-    qDebug() << "coletaHardware() executado";
+
+    qDebug() << "coletaHardware() começando sua execução";
     oHardware.iniciaColeta();
+    qDebug() << "coletaHardware() executado";
 }
 
 
 void CColeta::coletaSoftware()
 {
-    qDebug() << "coletaSoftware() executado";
+    qDebug() << "coletaSoftware() começando sua execução";
     oSoftware.iniciaColeta();
+    qDebug() << "coletaSoftware() executado";
 
 }
 

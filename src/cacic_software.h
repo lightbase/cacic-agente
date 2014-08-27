@@ -4,8 +4,11 @@
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
-#include <vqtconvert.h>
-#include <vregistry.h>
+
+#if defined(Q_OS_WIN)
+    #include <vqtconvert.h>
+    #include <vregistry.h>
+#endif
 
 class cacic_software
 {
