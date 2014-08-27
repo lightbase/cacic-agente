@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core
-
 QT       -= gui
 
 TARGET = cacicD
@@ -21,13 +20,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     ../src/ccacic.cpp \
-    cacicd.cpp
+    cacicd.cpp \
+    ../src/cacic_computer.cpp \
+    ../src/operatingsystem.cpp
 
 HEADERS += \
     ../src/ccacic.h \
-    cacicd.h
+    cacicd.h \
+    ../src/cacic_computer.h \
+    ../src/operatingsystem.h
 
 include(../src/qtservice/src/qtservice.pri)
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/
+

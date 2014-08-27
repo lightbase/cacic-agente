@@ -4,40 +4,34 @@
 #include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
+#include <QDir>
+#include <QTextStream>
+#include <QVariant>
 #include "qtservice.h"
+#include "cacic_comm.h"
+#include "cacic_computer.h"
 
 
 class cacicD : public QtService<QCoreApplication>
 {
 public:
-    /**
-     * @brief cacicD Construtor
-     * @param argc
-     * @param argv
-     */
     cacicD(int argc, char **argv);
-    /**
-     * @brief cacicD Desconstrutor
-     */
     ~cacicD();
-    /**
-     * @brief inicia o serviço
-     */
     void start();
-    /**
-     * @brief pausa o serviço
-     */
     void pause();
-    /**
-     * @brief resume a execução do serviço
-     */
     void resume();
-    /**
-     * @brief para a execução do serviço
-     */
     void stop();
+    QCoreApplication *app;
+    void saveJson(QJsonDocument document, QString fileName);
+    QJsonDocument loadJson(QString fileName);
 
-
+private:
+    QString testPath;
+    QString testIniPath;
+    QJsonObject session;
+    CACIC_Computer OCacic_Computer;
+    bool getTest();
+    bool getConfig();
 };
 
 #endif // CACICD_H
