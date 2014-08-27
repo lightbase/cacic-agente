@@ -4,11 +4,13 @@
 #include <QJsonObject>
 #include <ccoleta.h>
 #include <ccacic.h>
+#include <cacic_comm.h>
 
 class Gercols : public QObject
 {
     Q_OBJECT
 private:
+    CacicComm oCacicComm;
     CCacic oCacic;
     CColeta *oColeta;
     QJsonObject configReq;

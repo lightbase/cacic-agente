@@ -95,9 +95,9 @@ bool CCacic::deleteFolder(QString path)
  */
 bool CCacic::deleteFile(QString path)
 {
-    QDir folder(path);
-    if (folder.exists())
-        return folder.remove(path);
+    QFile file(path);
+    if (file.exists())
+        return file.remove(path);
     else
         return true;
 }
@@ -293,6 +293,23 @@ QString CCacic::convertDouble(const double &number, const int &precision)
     ss << std::fixed << number;
 
     return QString::fromStdString(ss.str());
+}
+
+std::string CCacic::genRandomString(const int &len)
+{
+    char* s;
+
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+
+    for (int i = 0; i < len; ++i) {
+        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    s[len] = 0;
+    return std::string(s);
 }
 
 /*Getters/Setters
