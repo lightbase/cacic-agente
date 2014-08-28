@@ -7,6 +7,8 @@ Tested on: Windows XP SP3
 Bryan Cairns
 */
 
+#if defined(Q_OS_WIN)
+
 #include "vregistry.h"
 #include "windows.h"
 #include "VQTConvert.h"
@@ -475,3 +477,5 @@ namespace voidrealms
 
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
+
+#endif // defined(Q_OS_WIN)

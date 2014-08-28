@@ -48,7 +48,7 @@ QJsonObject cacic_hardware::coletaWin()
     }
     return QJsonObject();
 }
-#elif Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()
 {
 

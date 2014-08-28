@@ -1,3 +1,5 @@
+#if defined(Q_OS_WIN)
+
 #include "vqtconvert.h"
 
 #include <QString>
@@ -58,3 +60,4 @@ namespace voidrealms
 
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
+#endif //defined(Q_OS_WIN)

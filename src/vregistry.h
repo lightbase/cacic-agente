@@ -7,6 +7,7 @@ Tested on: Windows XP SP3
 Bryan Cairns
 */
 
+#if defined(Q_OS_WIN)
 #ifndef VREGISTRY_H
 #define VREGISTRY_H
 
@@ -125,3 +126,4 @@ namespace voidrealms
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
 #endif // VREGISTRY_H
+#endif // defined(Q_OS_WIN)

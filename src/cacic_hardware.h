@@ -22,7 +22,12 @@ public:
 private:
 #ifdef Q_OS_WIN
     QJsonObject coletaWin();
-#elif Q_OS_LINUX
+
+#elif defined(Q_OS_LINUX)
+/* Thiago aqui:
+ * Ao menos nos elif's tem que deixar com o "defined()".
+ * Por isso antes eu preferia deixar todas essas verificações com ele, mesmo tendo o ifdef.
+ */
     QJsonObject coletaLinux();
     void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);

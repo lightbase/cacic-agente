@@ -1,6 +1,3 @@
-#ifndef VQTCONVERT_H
-#define VQTCONVERT_H
-
 /*
 Converts between QT types and Windows Types
 Version: 1.0
@@ -9,6 +6,11 @@ Created with: QT 4.5 and QT Creator 1.2
 Tested on: Windows XP SP3
 Bryan Cairns - August 2009
 */
+
+#if defined(Q_OS_WIN)
+
+#ifndef VQTCONVERT_H
+#define VQTCONVERT_H
 
 #include <QString>
 #include "windows.h"
@@ -49,3 +51,4 @@ namespace voidrealms
     } //end voidrealms::win32 namespace
 } //end voidrealms namespace
 #endif // VQTCONVERT_H
+#endif // defined(Q_OS_WIN)

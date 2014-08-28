@@ -8,7 +8,7 @@ void cacic_software::iniciaColeta()
 {
 #ifdef Q_OS_WIN
     this->coletaSoftware = coletaWin();
-#elif Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
     this->coletaSoftware = coletaLinux();
 
 #endif
