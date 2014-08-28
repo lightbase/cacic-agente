@@ -6,7 +6,7 @@ Created with: QT 4.5 and QT Creator 1.2
 Tested on: Windows XP SP3
 Bryan Cairns
 */
-
+#include <QObject>
 #if defined(Q_OS_WIN)
 #ifndef VREGISTRY_H
 #define VREGISTRY_H

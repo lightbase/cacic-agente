@@ -6,10 +6,8 @@ Created with: QT 4.5 and QT Creator 1.2
 Tested on: Windows XP SP3
 Bryan Cairns
 */
-
-#if defined(Q_OS_WIN)
-
 #include "vregistry.h"
+#if defined(Q_OS_WIN)
 #include "windows.h"
 #include "VQTConvert.h"
 #include <QString>

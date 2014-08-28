@@ -1,6 +1,5 @@
-#if defined(Q_OS_WIN)
-
 #include "vqtconvert.h"
+#if defined(Q_OS_WIN)
 
 #include <QString>
 #include "windows.h"

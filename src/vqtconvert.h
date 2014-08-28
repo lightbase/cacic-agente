@@ -6,7 +6,7 @@ Created with: QT 4.5 and QT Creator 1.2
 Tested on: Windows XP SP3
 Bryan Cairns - August 2009
 */
-
+#include <QObject>
 #if defined(Q_OS_WIN)
 
 #ifndef VQTCONVERT_H

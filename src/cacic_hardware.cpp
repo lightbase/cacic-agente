@@ -14,13 +14,101 @@ void cacic_hardware::iniciaColeta()
 #ifdef Q_OS_WIN
 QJsonObject cacic_hardware::coletaWin()
 {  
+    QJsonObject hardware;
+    QStringList params;
+    QJsonObject wmi;
+    // Win32_ComputerSystem (Caption, Description, Domain, DNSHostName, Manufacturer,
+    //                       Model, Name, PrimaryOwnerName, TotalPhysicalMemory, Workgroup)
+    params << "Caption" << "Description" << "Domain" << "DNSHostName" << "Manufacturer" << "Model"
+           << "Name" << "PrimaryOwnerName" << "TotalPhysicalMemory" << "Workgroup";
+    wmi =  wmiSearch("Win32_ComputerSystem", params);
+    if (!wmi.isEmpty())
+        hardware["ComputerSystem"] = wmiSearch("Win32_ComputerSystem", params);
+    //Win32_PortableBattery
+    //  (Verifica se é notebook)
+    params.clear();
+    hardware["IsNotebook"] = QJsonValue::fromVariant(!wmiSearch("Win32_PortableBattery", params).isEmpty());
+    //Win32_Bios
+    //  (Manufacturer, SMBIOSBIOSVersion, BIOSVersion, Version, SerialNumber, ReleaseDate)
+    params.clear();
+    params << "Manufacturer" << "SMBIOSBIOSVersion" << "BIOSVersion" << "Version" << "SerialNumber" << "ReleaseDate";
+    wmi = wmiSearch("Win32_Bios", params);
+    if (!wmi.isEmpty())
+        hardware["Bios"] = wmi;
+    //Win32_BaseBoard
+    //  (Manufacturer, Model, SerialNumber)
+    params.clear();
+    params << "Manufacturer" << "Model" << "SerialNumber";
+    wmi = wmiSearch("Win32_Baseboard", params);
+    if (!wmi.isEmpty())
+        hardware["BaseBoard"] = wmi;
+    //Win32_SystemEnclosure
+    //  (Manufacturer, ChassisTypes, SerialNumber, SMBIOSAssetTag)
+    //Win32_FloppyDrive
+    //  (Manufacturer, Caption, Description, Name, MediaType, Size)
+    //Win32_DiskDrive
+    //  (Manufacturer, Caption, Description, Name, MediaType, Size, SerialNumber, Model, FirmwareRevision)
+    //Win32_CDROMDrive
+    //  (Manufacturer, Caption, Description, Name, MediaType, Size)
+    //Win32_FloppyController
+    //  (Manufacturer, Caption, Description, Name)
+    //Win32_SCSIController
+    //  (Manufacturer, Caption, Description, Name, HardwareVersion)
+    //Win32_InfraredDevice
+    //  (Manufacturer, Caption, Description, Name)
+    //Win32_USBController
+    //  (Manufacturer, Caption, Description, Name)
+    //Win32_PCMCIAController
+    //  (Manufacturer, Caption, Description, Name)
+    //Win32_VideoController
+    //  (Description, VideoProcessor, AdapterRAM, CurrentHorizontalResolution, CurrentVerticalResolution)
+    //Win32_DesktopMonitor
+    //  (MonitorManufacturer, Caption, Description, MonitorType)
+    //Win32_Printer
+    //  (Name, DriverName, PortName, ServerName, ShareName, HorizontalResolution, VerticalResolution, Comment, Shared, Network)
+    //Win32_PortConnector
+    //  (ExternalReferenceDesignator, PortType, ConnectorType)
+    //Win32_SerialPort
+    //  (Name, Caption, Description, StatusInfo)
+    //Win32_Processor
+    //  (MaxClockSpeed, Name, Architecture, NumberOfCores, SocketDesignation, Manufacturer, Name, Architecture, NumberOfCores
+    //  CurrentClockSpeed, MaxClockSpeed, L2CacheSize, AddressWidth, DataWidth, VoltageCaps, CpuStatus,
+    //  ProcessorId || UniqueId, AddressWidth)
+    //Win32_OperatingSystem
+    //  (Name, Version, CSDVersion, Description, InstallDate, Organization, RegisteredUser, SerialNumber)
+    //Win32_SystemSlot
+    //  (Name, Description, SlotDesignation, CurrentUsage, Status, Shared)
+    //Win32_LogicalDisk
+    //  (Caption, DriveType, Filesystem, VolumeName, ProviderName, Filesystem, VolumeName, Size, FreeSpace)
+    //Win32_PhysicalMemory
+    //  (Caption, Description, BankLabel, DeviceLocator, Capacity, Speed, MemoryTypem, SerialNumber)
+    //Win32_Keyboard
+    //  (Manufacturer, Caption, Description)
+    //Win32_PointingDevice
+    //  (Manufacturer, Caption, Description, PointingType, DeviceInterface)
+    //Win32_PnPSignedDriver
+    //  (Manufacturer, DeviceName, Description, Location, DeviceClass)
+    qDebug() << hardware;
+    return hardware;
+}
+
+QJsonObject cacic_hardware::wmiSearch(QString classe, QStringList params)
+{
+    QJsonObject wmiReturn;
+    QString paramsString;
+    if (!params.empty()){
+        for(int i = 0; i!=params.size();i++)
+            paramsString.append(params.at(i) + ((i != params.size() - 1) ? "," : ""));
+    }
     QAxObject *objIWbemLocator = new QAxObject("WbemScripting.SWbemLocator");
     QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",
                                                                     QString("."),
                                                                     QString("root\\CIMV2")
                                                                );
     QAxObject* returnList = objWMIService->querySubObject("ExecQuery(QString&)",
-                                                                QString("SELECT * FROM Win32_ComputerSystem")
+                                                                QString("SELECT " + ((!paramsString.isEmpty()) ?
+                                                                                     paramsString : "*") +
+                                                                        " FROM " + classe)
                                                           );
     QAxObject *enum1 = returnList->querySubObject("_NewEnum");
     //ui->textBrowser_4->setHtml(enum1->generateDocumentation());
@@ -36,17 +124,45 @@ QJsonObject cacic_hardware::coletaWin()
         VARIANT *theItem = (VARIANT*)malloc(sizeof(VARIANT));
         if (enumInterface->Next(1,theItem,NULL) != S_FALSE){
             QAxObject *item = new QAxObject((IUnknown *)theItem->punkVal);
-
             if(item){
-                qDebug() <<" string is "<<item->dynamicCall("ProcessorId").toString();
-                qDebug() <<" string is "<<item->dynamicCall("GetText_(WbemObjectTextFormatEnum)", QVariant(1)).toString();
+                //pega o retorno da query
+                QString instance = item->dynamicCall("GetObjectText_(int)", QVariant(0)).toString();
+                QStringList instanceList = instance.split("\n\t");
+                //Pra cada linha grava no json os valores com cada tag
+                foreach(QString value, instanceList){
+                    qDebug() << value;
+                    QStringList valueList = value.split("=");
+                    if (valueList.size() > 1){
+                        QString tag = valueList.at(0).trimmed();
+                        QString aux = valueList.at(1).trimmed();
+                        aux.remove("\"");
+                        aux.remove(";");
+                        aux.remove("\n");
+                        //verifica se é lista
+                        qDebug() << aux;
+                        if(aux.contains("{") && aux.contains("}")){
+                            QStringList auxList = aux.split(",");
+                            QJsonArray jList;
+                            foreach(QString valueList, auxList){
+                                if (valueList.contains("{"))
+                                    valueList.remove("{");
+                                else if (valueList.contains("}"))
+                                    valueList.remove("}");
+                                jList.append(valueList.trimmed());
+                            }
+                            wmiReturn[tag] = jList;
+                        } else {
+                            //O último valor sempre volta com "}" no final.
+                            if (aux.contains("}"))
+                                aux.remove("}");
+                            wmiReturn[tag] = QJsonValue::fromVariant(aux.trimmed());
+                        }
+                    }
+                }
             }
-            // item->
-            //QString val =
-            qDebug()<<"item name is "<< item->property("objectName").toString();
         }
     }
-    return QJsonObject();
+    return wmiReturn;
 }
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()

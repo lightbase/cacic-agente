@@ -228,7 +228,7 @@ void CTestCacic::testColetaSoftware()
 void CTestCacic::testColetaHardware()
 {
     OCacicHardware.iniciaColeta();
-    QVERIFY(false);
+    QVERIFY(!OCacicHardware.toJsonObject().isEmpty());
 }
 void CTestCacic::testConvertDouble()
 {
