@@ -16,6 +16,7 @@
 #include <iostream>
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
+#include <ccoleta.h>
 
 class CTestCacic : public QObject
 {
@@ -33,6 +34,7 @@ private:
     QString testIniPath;
     QJsonObject session;
     QString cripTeste;
+    CColeta oColeta;
 //    cacicD OcacicD;
 
 signals:
@@ -71,6 +73,7 @@ private slots:
   void testColetaHardware();
   void testConvertDouble();
   void testGetTest();
+  void testColeta();
   void cleanupTestCase();
 };
 

@@ -9,11 +9,11 @@ QT += network
 
 TARGET = cacic-teste
 
-QT += axcontainer
 CONFIG -= app_bundle
 CONFIG += c++11
 TEMPLATE = app
 win32 {
+    QT += axcontainer
     LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
     LIBS += -L/usr/lib -lcryptopp
@@ -28,6 +28,7 @@ SOURCES += \
     ../src/cacic_hardware.cpp \
     ../src/vqtconvert.cpp \
     ../src/vregistry.cpp \
+    ../src/ccoleta.cpp \
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     ../src/cacic_hardware.h \
     ../src/vqtconvert.h \
     ../src/vregistry.h \
+    ../src/ccoleta.h \
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \

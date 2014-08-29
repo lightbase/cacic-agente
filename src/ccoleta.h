@@ -19,6 +19,8 @@ private:
     CACIC_Computer oComputer;
     cacic_software oSoftware;
     cacic_hardware oHardware;
+    bool hardwareIsFinish;
+    bool softwareIsFinish;
 
 public:
     explicit CColeta(QObject *parent = 0);
@@ -26,19 +28,23 @@ public:
     CACIC_Computer getOComputer() const;
     cacic_software getOSoftware() const;
     cacic_hardware getOHardware() const;
-
+    bool waitToCollect();
     QJsonObject toJsonObject();
 
 public slots:
     void coletaHardware();
     void coletaSoftware();
     void configuraColetas();
+    void hardwareReady();
+    void softwareReady();
     void run();
 
 signals:
     void beginComputer();
     void beginHardware();
     void beginSoftware();
+    void hardwareFinish();
+    void softwareFinish();
     void finished();
 };
 

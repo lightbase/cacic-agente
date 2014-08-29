@@ -22,7 +22,7 @@ public:
 private:
 #ifdef Q_OS_WIN
     QJsonObject coletaWin();
-    QJsonObject wmiSearch(QString classe, QStringList params);
+    QJsonValue wmiSearch(QString classe, QStringList params);
 
 #elif defined(Q_OS_LINUX)
     QJsonObject coletaLinux();

@@ -12,6 +12,7 @@ TARGET    = gercols
 CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   += qt
+CONFIG   += c++11
 
 win32 {
     QT   += axcontainer
@@ -33,7 +34,6 @@ SOURCES += \
     ./gercols.cpp \
     ../src/vregistry.cpp \
     ../src/vqtconvert.cpp \
-#win32 SOURCES += \ ../src/vregistry.cpp \ ../src/vqtconvert.cpp \
 
 HEADERS += \
     ../src/ccacic.h \
@@ -46,7 +46,6 @@ HEADERS += \
     ./gercols.h \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
-#win32 HEADERS += \ ../src/vregistry.h \ ../src/vqtconvert.h \
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

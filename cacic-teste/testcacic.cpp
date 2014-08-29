@@ -101,14 +101,11 @@ void CTestCacic::testpegarOS(){
 
 void CTestCacic::testConsole()
 {
-    ConsoleObject console;
 #if defined(Q_OS_LINUX)
+    ConsoleObject console;
     QVERIFY(console("echo teste").toStdString() == "teste\n");
-#elif defined(Q_OS_WIN)
-    qDebug() << console("echo teste");
-    QVERIFY(console("echo teste").toStdString() == "teste");
 #else
-    QVERIFY(false);
+    QSKIP("Teste desnecessário nessa plataforma");
 #endif
 }
 
@@ -245,11 +242,33 @@ void CTestCacic::testGetTest()
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
     OCacicComm.setUrlGerente("http://10.1.0.137/cacic/web/app_dev.php");
+    OCacicComm.comm("/ws/neo/getTest", &ok, envio);
     QVERIFY(ok);
+}
+
+void CTestCacic::testColeta()
+{
+    QJsonObject configTeste;
+    QJsonObject configComputer;
+    configComputer["operating_system"] = QJsonValue::fromVariant(QString(""));
+    configComputer["user"] = QJsonValue::fromVariant(QString(""));
+    configComputer["network_interface"] = QJsonValue::fromVariant(QString(""));
+    configTeste["computer"] = configComputer;
+    configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
+    configTeste["software"] = QJsonValue::fromVariant(QString(""));
+
+    OCacic.setJsonToFile(configTeste,"configReq.json");
+    oColeta.configuraColetas();
+    oColeta.run();
+    oColeta.waitToCollect();
+//    qDebug() << oColeta.toJsonObject();
+    QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
+            !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
 }
 
 void CTestCacic::cleanupTestCase()
 {
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
+    OCacic.deleteFile("configReq.json");
 }
