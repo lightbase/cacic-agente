@@ -9,6 +9,8 @@
 #include <operatingsystem.h>
 #ifdef Q_OS_WIN
     #include <wmi.h>
+#elif defined(Q_OS_LINUX)
+    #include <unistd.h>
 #endif
 
 class cacic_hardware
@@ -23,10 +25,14 @@ private:
     QJsonObject coletaWin();
 
 #elif defined(Q_OS_LINUX)
+    ConsoleObject console;
+
     QJsonObject coletaLinux();
     void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
+    void coletaLinuxBios(QJsonObject &hardware);
+    void coletaLinuxMotherboard(QJsonObject &hardware);
 #endif
 
     CCacic oCacic;
