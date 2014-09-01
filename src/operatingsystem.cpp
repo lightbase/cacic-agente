@@ -45,16 +45,15 @@ int OperatingSystem::coletaIdOs(){
 QString OperatingSystem::coletaNomeOs()
 {
 #if defined(Q_OS_WIN)
-    QString text;
-    QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-    foreach (text, environment) {
-//        qDebug() << text;
-        if (text.contains("OS="    , Qt::CaseInsensitive) ){
-            QStringList split = text.split("=");
-  //          qDebug() << split[1];
-            return split[1];
-          }
-      }
+    QStringList params;
+    QJsonValue osName;
+    params << "Name";
+    osName = wmi::wmiSearch("Win32_OperatingSystem", params);
+    if (!osName.isNull()){
+        QString retorno = osName.toObject()["Name"].toString();
+        retorno = retorno.left(retorno.indexOf("|"));
+        return retorno;
+    }
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
     QStringList catOutput = console("cat /etc/*release").split("\n");

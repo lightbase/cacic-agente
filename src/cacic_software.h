@@ -4,7 +4,6 @@
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
-
 #ifdef Q_OS_WIN
     #include <vqtconvert.h>
     #include <vregistry.h>

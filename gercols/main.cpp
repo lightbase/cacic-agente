@@ -4,6 +4,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    a.setApplicationName("Gercols");
 
     //crio o objeto que será responsável pela execução
     Gercols *oGercols = new Gercols(&a);

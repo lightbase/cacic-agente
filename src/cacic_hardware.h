@@ -8,8 +8,7 @@
 #include <console.h>
 #include <operatingsystem.h>
 #ifdef Q_OS_WIN
-    #include <windows.h>
-    #include <ActiveQt/ActiveQt>
+    #include <wmi.h>
 #endif
 
 class cacic_hardware
@@ -22,7 +21,6 @@ public:
 private:
 #ifdef Q_OS_WIN
     QJsonObject coletaWin();
-    QJsonValue wmiSearch(QString classe, QStringList params);
 
 #elif defined(Q_OS_LINUX)
     QJsonObject coletaLinux();

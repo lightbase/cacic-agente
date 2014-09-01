@@ -34,6 +34,7 @@ SOURCES += \
     ./gercols.cpp \
     ../src/vregistry.cpp \
     ../src/vqtconvert.cpp \
+    ../src/wmi.cpp \
 
 HEADERS += \
     ../src/ccacic.h \
@@ -46,6 +47,7 @@ HEADERS += \
     ./gercols.h \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
+    ../src/wmi.h \
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

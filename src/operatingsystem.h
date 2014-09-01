@@ -5,9 +5,11 @@
 #include <QString>
 #include <QStringList>
 #include <QSysInfo>
-
 #include "ccacic.h"
 #include "console.h"
+#ifdef Q_OS_WIN
+    #include "wmi.h"
+#endif
 
 class OperatingSystem
 {

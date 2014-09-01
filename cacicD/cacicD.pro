@@ -6,7 +6,7 @@
 
 QT       += core
 QT       -= gui
-
+QT       += network
 TARGET = cacicD
 CONFIG   += console
 CONFIG   -= app_bundle

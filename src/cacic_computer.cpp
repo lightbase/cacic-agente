@@ -14,11 +14,11 @@ CACIC_Computer::CACIC_Computer()
  *
  */
 QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
-    QNetworkInterface interface;
+    QNetworkInterface netInterface;
     QVariantMap mapInterface;
     QList<QVariantMap> listaMap;
 
-    foreach (QNetworkInterface in, interface.allInterfaces()) {
+    foreach (QNetworkInterface in, netInterface.allInterfaces()) {
         if (!(bool)(in.flags() & QNetworkInterface::IsLoopBack) &&
             !(bool)(in.flags() & QNetworkInterface::IsPointToPoint) &&
             (bool)(in.flags() & QNetworkInterface::IsRunning)){
