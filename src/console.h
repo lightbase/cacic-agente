@@ -25,6 +25,7 @@ public:
 #endif
         process->waitForFinished();
         QString output = process->readAll();
+        output.append(process->readAllStandardError());
 //        qDebug() << output;
 
         delete process;

@@ -8,6 +8,25 @@ void cacic_hardware::iniciaColeta()
 #ifdef Q_OS_WIN
     this->coletaHardware = coletaWin();
 #elif defined(Q_OS_LINUX)
+    OperatingSystem operatingSystem;
+
+    // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
+    if( console("lshw").contains("/bin/sh") ){ qDebug() << "lshw nao instalado.";
+        if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
+            console("pacman -S --needed --noconfirm lshw");
+        else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
+               operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU )
+            console("apt-get -y install lshw");
+    }
+
+    if( console("dmidecode").contains("/bin/sh:") ){ qDebug() << "dmidecode nao instalado.";
+        if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
+            qDebug() << console("pacman -S --needed --noconfirm dmidecode");
+        else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
+               operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU )
+            console("apt-get -y install dmidecode");
+    }
+
     this->coletaHardware = coletaLinux();
 #endif
 }
@@ -303,9 +322,6 @@ QJsonValue cacic_hardware::wmiSearch(QString classe, QStringList params)
 QJsonObject cacic_hardware::coletaLinux()
 {
 
-    OperatingSystem operatingSystem;
-    ConsoleObject console;
-
     QJsonObject hardware;
 
     QFile lshwFile("lshwJson.json");
@@ -353,6 +369,10 @@ QJsonObject cacic_hardware::coletaLinux()
         }
 
     }
+
+    if ( getuid() != 0 ) qDebug() << "Coleta de Bios e Motherboard requer root.";
+    coletaLinuxBios(hardware);
+    coletaLinuxMotherboard(hardware);
 
     return hardware;
 }
@@ -421,6 +441,63 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         }
     }
 }
+
+void cacic_hardware::coletaLinuxBios(QJsonObject &hardware)
+{
+
+    QJsonObject bios;
+    QStringList consoleOutput;
+
+    consoleOutput = console("dmidecode -t bios").split("\n");
+    foreach(QString line, consoleOutput){
+        if(line.contains("Vendor:") ){
+                bios["vendor"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Version:")){
+              bios["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Release Date:")){
+              bios["release_date"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Runtime Size:")){
+              bios["runtime_size"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("ROM Size:")){
+              bios["rom_size"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("BIOS Revision:")){
+              bios["revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        }
+    }
+    hardware["bios"] = bios;
+}
+
+void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
+{
+
+    QJsonObject motherboard;
+    QStringList consoleOutput;
+
+    consoleOutput= console("dmidecode -t 2").split("\n");
+//    qDebug() << consoleOutput;
+    foreach(QString line, consoleOutput){
+        if(line.contains("Manufacturer:") ){
+                motherboard["manufacturer"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Product Name:")){
+              motherboard["product_name"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Version:")){
+              motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        }
+    }
+
+    consoleOutput= console("dmidecode -t 10").split("\n");
+    foreach(QString line, consoleOutput){
+        QJsonArray onboardCapabilities;
+
+        if(line.contains("Type:") )
+            onboardCapabilities.append( QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) ) );
+
+        motherboard["onboard_capabilities"] = onboardCapabilities;
+    }
+
+    hardware["motherboard"] = motherboard;
+}
+
 #endif
 QJsonObject cacic_hardware::toJsonObject() {
     return coletaHardware;
