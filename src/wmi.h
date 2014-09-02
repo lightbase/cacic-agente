@@ -2,8 +2,10 @@
 #define WMI_H
 
 #include <ccacic.h>
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <ActiveQt/ActiveQt>
+#endif
 
 class wmi
 {

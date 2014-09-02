@@ -1,4 +1,5 @@
 #include "wmi.h"
+#ifdef Q_OS_WIN
 
 wmi::wmi()
 {
@@ -94,3 +95,4 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
 
     return wmiReturn;
 }
+#endif //def Q_OS_WIN

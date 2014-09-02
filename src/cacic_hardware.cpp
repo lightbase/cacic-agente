@@ -11,7 +11,7 @@ void cacic_hardware::iniciaColeta()
     OperatingSystem operatingSystem;
 
     // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
-    if( console("lshw").contains("/bin/sh") ){ qDebug() << "lshw nao instalado.";
+    if( console("lshw").contains("/bin/sh:") ){ qDebug() << "lshw nao instalado.";
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm lshw");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
@@ -400,14 +400,16 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
     }
 
     consoleOutput= console("dmidecode -t 10").split("\n");
+
+    QVariantList onboardCapabilities;
     foreach(QString line, consoleOutput){
-        QJsonArray onboardCapabilities;
 
         if(line.contains("Type:") )
             onboardCapabilities.append( QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) ) );
 
-        motherboard["onboard_capabilities"] = onboardCapabilities;
     }
+
+    motherboard["onboard_capabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
     hardware["motherboard"] = motherboard;
 }
