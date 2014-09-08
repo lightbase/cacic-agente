@@ -33,6 +33,7 @@ private:
     void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
     void coletaLinuxBios(QJsonObject &hardware);
     void coletaLinuxMotherboard(QJsonObject &hardware);
+    void coletaLinuxIsNotebook(QJsonObject &hardware);
 #endif
 
     CCacic oCacic;

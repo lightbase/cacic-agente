@@ -8,7 +8,7 @@ QT       += core
 
 QT       -= gui
 
-TARGET = cacic-controller
+TARGET = cacic-daemon
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -16,4 +16,4 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp
-include(../src/qtservice/src/qtservice.pri)
+include(../../src/qtservice/src/qtservice.pri)

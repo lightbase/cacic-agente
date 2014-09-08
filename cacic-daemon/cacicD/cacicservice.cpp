@@ -5,7 +5,6 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     try{
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
-        setStartupType(QtServiceController::AutoStartup);
     } catch (...){
         qCritical() << "Error desconhecido no construtor.";
     }
