@@ -35,7 +35,7 @@ void InstallCacic::run(QStringList argv, int argc) {
 #ifdef Q_OS_WIN
             QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe", true, &ok);
 #else
-            oCacic.startProcess("cacic.exe", true, &ok);
+            QString exitStatus = oCacic.startProcess("cacic", true, &ok);
 #endif
             if (!ok)
                 std::cout << "Erro ao iniciar o processo: "
