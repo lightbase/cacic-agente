@@ -212,9 +212,6 @@ void CTestCacic::testRemoveRegistry()
     confirmaTeste.sync();
 }
 
-void CTestCacic::testIniciarDaemon(){
-
-}
 
 void CTestCacic::testColetaSoftware()
 {

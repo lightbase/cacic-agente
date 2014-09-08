@@ -68,7 +68,6 @@ private slots:
   void testSetRegistry();
   void testGetValueFromRegistry();
   void testRemoveRegistry();
-  void testIniciarDaemon();
   void testColetaSoftware();
   void testColetaHardware();
   void testConvertDouble();
