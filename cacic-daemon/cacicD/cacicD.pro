@@ -7,7 +7,7 @@
 QT       += core
 QT       -= gui
 QT       += network
-TARGET = cacicD
+TARGET = cacic-service
 CONFIG   += console
 CONFIG   -= app_bundle
 win32 {
@@ -19,19 +19,20 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    ../src/ccacic.cpp \
+    ../../src/ccacic.cpp \
     cacicd.cpp \
-    ../src/cacic_computer.cpp \
-    ../src/operatingsystem.cpp
+    ../../src/cacic_computer.cpp \
+    ../../src/operatingsystem.cpp
 
 HEADERS += \
-    ../src/ccacic.h \
+    ../../src/ccacic.h \
     cacicd.h \
-    ../src/cacic_computer.h \
-    ../src/operatingsystem.h
+    ../../src/cacic_computer.h \
+    ../../src/operatingsystem.h \
+    ../../src/cacic_comm.h
 
-include(../src/qtservice/src/qtservice.pri)
+include(../../src/qtservice/src/qtservice.pri)
 
-INCLUDEPATH += ../src \
-               ../src/crypto++/include/
+INCLUDEPATH += ../../src \
+               ../../src/crypto++/include/
 
