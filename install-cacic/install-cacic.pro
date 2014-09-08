@@ -7,6 +7,7 @@
 QT += core
 QT += network
 QT -= gui
+QT += axcontainer
 
 TARGET = install-cacic
 CONFIG += console
@@ -25,14 +26,16 @@ SOURCES += main.cpp \
     installcacic.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
-    ../src/operatingsystem.cpp
+    ../src/operatingsystem.cpp \
+    ../src/wmi.cpp
 
 HEADERS += \
     installcacic.h \
     ../src/ccacic.h \
     ../src/cacic_computer.h \
     ../src/cacic_comm.h \
-    ../src/operatingsystem.h
+    ../src/operatingsystem.h \
+    ../src/wmi.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

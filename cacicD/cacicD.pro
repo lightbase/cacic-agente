@@ -7,6 +7,7 @@
 QT       += core
 QT       -= gui
 QT       += network
+QT       += axcontainer
 TARGET = cacicD
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -22,13 +23,15 @@ SOURCES += main.cpp \
     ../src/ccacic.cpp \
     cacicd.cpp \
     ../src/cacic_computer.cpp \
-    ../src/operatingsystem.cpp
+    ../src/operatingsystem.cpp \
+    ../src/wmi.cpp \
 
 HEADERS += \
     ../src/ccacic.h \
     cacicd.h \
     ../src/cacic_computer.h \
     ../src/operatingsystem.h
+    ../src/wmi.h \
 
 include(../src/qtservice/src/qtservice.pri)
 
