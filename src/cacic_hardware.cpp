@@ -287,6 +287,7 @@ QJsonObject cacic_hardware::coletaLinux()
     if ( getuid() != 0 ) qDebug() << "Coleta de Bios e Motherboard requer root.";
     coletaLinuxBios(hardware);
     coletaLinuxMotherboard(hardware);
+    coletaLinuxIsNotebook(hardware);
 
     return hardware;
 }
@@ -412,6 +413,22 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
     motherboard["onboard_capabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
     hardware["motherboard"] = motherboard;
+}
+
+void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
+{
+
+    QStringList consoleOutput;
+
+    consoleOutput= console("dmidecode -t 3").split("\n");
+//    qDebug() << consoleOutput;
+    foreach(QString line, consoleOutput){
+        if(line.contains("Type:")
+                && line.contains("Notebook") ){
+                hardware["is_notebook"] = QJsonValue::fromVariant(QString("true"));
+        }
+    }
+
 }
 
 #endif
