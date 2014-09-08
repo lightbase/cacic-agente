@@ -3,8 +3,6 @@
 #include <QtCore>
 #include <QTimer>
 #include <QDebug>
-#include <QDir>
-#include <QDateTime>
 #include "ccacic.h"
 #include "cacic_comm.h"
 #include "cacic_computer.h"
@@ -15,20 +13,11 @@ class CacicTimer : public QObject
 public:
     CacicTimer();
     QTimer *timer;
-    CacicComm *OCacicComm;
-    CACIC_Computer OCacic_Computer;
-    CCacic *ccacic;
-    void iniciarTimer(int x, QString applicationDirPath);
-    bool getTest();
-    bool getConfig();
-    bool compararHashMD5(QJsonDocument getconfigfile,QJsonDocument getConfig);
-    QString getApplicationDirPath() const;
-    void setApplicationDirPath(const QString &value);
+    void iniciarTimer(int x);
 
-private:
-    void registraFim();
-    void registraInicio();
-    QString applicationDirPath;
+signals:
+    void getTestSi();
+    void getConfigSi();
 
 private slots:
     void mslot();

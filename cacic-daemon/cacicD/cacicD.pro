@@ -7,6 +7,7 @@
 QT       += core
 QT       -= gui
 QT       += network
+QT       += axcontainer
 TARGET = cacic-service
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -21,6 +22,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     ../../src/ccacic.cpp \
     cacicd.cpp \
+    ../../src/wmi.cpp \
     cacictimer.cpp \
     ../../src/cacic_computer.cpp \
     ../../src/operatingsystem.cpp
@@ -29,6 +31,7 @@ HEADERS += \
     ../../src/ccacic.h \
     cacicd.h \
     cacictimer.h \
+    ../../src/wmi.h \
     ../../src/cacic_computer.h \
     ../../src/operatingsystem.h \
     ../../src/cacic_comm.h
