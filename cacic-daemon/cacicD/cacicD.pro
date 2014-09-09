@@ -7,12 +7,13 @@
 QT       += core
 QT       -= gui
 QT       += network
-QT       += axcontainer
+
 TARGET = cacic-service
 CONFIG   += console
 CONFIG   -= app_bundle
 win32 {
     LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+    QT       += axcontainer
 } else {
     LIBS += -L/usr/lib -lcryptopp
 }

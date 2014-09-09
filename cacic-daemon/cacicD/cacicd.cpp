@@ -26,12 +26,11 @@ void cacicD::start() {
         this->app = application();
         qDebug() << "\nServiço iniciado em" << app->applicationDirPath();
         QJsonObject result = ccacic->getJsonFromFile(app->applicationDirPath() + "/getConfig.json");
-        //if(!result.contains("error") && !result.isEmpty()){
-            //Ocacictimer->iniciarTimer(result["codestatus"].toInt(), app->applicationDirPath());
-        Ocacictimer->iniciarTimer(1000, app->applicationDirPath());
-        //}else{
-         //   qDebug() << "getConfig.json não encontrado.";
-        //}
+        if(!result.contains("error") && !result.isEmpty()){
+            Ocacictimer->iniciarTimer(result["codestatus"].toInt(), app->applicationDirPath());
+        }else{
+            qDebug() << "getConfig.json não encontrado.";
+        }
     }catch (...){
         qCritical() << "Error desconhecido ao iniciar o serviço.";
     }
