@@ -19,11 +19,10 @@ Gercols::Gercols(QObject *parent)
     configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
     configTeste["software"] = QJsonValue::fromVariant(QString(""));
 
+    oColeta = new CColeta();
     oCacic.setJsonToFile(configTeste,"configReq.json");
     //Pega chave do registro, que será pega na instalação.
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-
-    oColeta = new CColeta();
 
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));

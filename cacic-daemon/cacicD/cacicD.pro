@@ -26,7 +26,7 @@ SOURCES += main.cpp \
     ../../src/wmi.cpp \
     cacictimer.cpp \
     ../../src/cacic_computer.cpp \
-    ../../src/operatingsystem.cpp
+    ../../src/operatingsystem.cpp \
 
 HEADERS += \
     ../../src/ccacic.h \
@@ -35,7 +35,7 @@ HEADERS += \
     ../../src/wmi.h \
     ../../src/cacic_computer.h \
     ../../src/operatingsystem.h \
-    ../../src/cacic_comm.h
+    ../../src/cacic_comm.h \
 
 include(../../src/qtservice/src/qtservice.pri)
 
