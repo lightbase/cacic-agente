@@ -5,6 +5,8 @@ CacicTimer::CacicTimer()
     OCacicComm = new CacicComm();
     ccacic = new CCacic();
     timer = new QTimer(this);
+    //manager = QLogger::QLoggerManager::getInstance();
+    //manager->addDestination("cacicLog.txt", QStringList("CacicD"), QLogger::LogLevel);
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
 }
 
@@ -16,7 +18,7 @@ void CacicTimer::iniciarTimer(int x, QString applicationDirPath)
 
 void CacicTimer::mslot(){
     if(getTest()){
-        qDebug() << "getTest() success. - " + QDateTime::currentDateTime().toLocalTime().toString();
+        //manager->QLogger::QLog_Trace("ModuleName", "Message: ");
         if(getConfig()){
             qDebug() << "getConfig() success. - " + QDateTime::currentDateTime().toLocalTime().toString();
 

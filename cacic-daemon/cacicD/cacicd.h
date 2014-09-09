@@ -1,10 +1,8 @@
 #ifndef CACICD_H
 #define CACICD_H
-
 #include <QCoreApplication>
 #include "qtservice.h"
 #include "cacictimer.h"
-
 
 class cacicD : public QtService<QCoreApplication>
 {

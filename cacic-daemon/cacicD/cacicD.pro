@@ -11,6 +11,7 @@ QT       += network
 TARGET = cacic-service
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += static
 win32 {
     LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
     QT       += axcontainer
@@ -18,24 +19,25 @@ win32 {
     LIBS += -L/usr/lib -lcryptopp
 }
 TEMPLATE = app
-
+TEMPLATE = lib
 
 SOURCES += main.cpp \
-    ../../src/ccacic.cpp \
-    cacicd.cpp \
-    ../../src/wmi.cpp \
-    cacictimer.cpp \
-    ../../src/cacic_computer.cpp \
-    ../../src/operatingsystem.cpp \
+           cacicd.cpp \
+           cacictimer.cpp \
+           ../../src/ccacic.cpp \
+           ../../src/wmi.cpp \
+           ../../src/cacic_computer.cpp \
+           ../../src/operatingsystem.cpp \
+           ../../src/QLogger.cpp
 
-HEADERS += \
-    ../../src/ccacic.h \
-    cacicd.h \
-    cacictimer.h \
-    ../../src/wmi.h \
-    ../../src/cacic_computer.h \
-    ../../src/operatingsystem.h \
-    ../../src/cacic_comm.h \
+HEADERS += cacicd.h \
+           cacictimer.h \
+           ../../src/ccacic.h \
+           ../../src/wmi.h \
+           ../../src/cacic_computer.h \
+           ../../src/operatingsystem.h \
+           ../../src/cacic_comm.h \
+           ../../src/QLogger.h
 
 include(../../src/qtservice/src/qtservice.pri)
 

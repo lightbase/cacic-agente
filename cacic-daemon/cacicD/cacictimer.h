@@ -8,6 +8,7 @@
 #include "ccacic.h"
 #include "cacic_comm.h"
 #include "cacic_computer.h"
+#include "QLogger.h"
 
 class CacicTimer : public QObject
 {
@@ -18,6 +19,7 @@ public:
     CacicComm *OCacicComm;
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
+    //QLogger::QLoggerManager *manager;
     void iniciarTimer(int x, QString applicationDirPath);
     bool getTest();
     bool getConfig();
