@@ -19,7 +19,7 @@ win32 {
     LIBS += -L/usr/lib -lcryptopp
 }
 TEMPLATE = app
-TEMPLATE = lib
+#TEMPLATE = lib
 
 SOURCES += main.cpp \
            cacicd.cpp \

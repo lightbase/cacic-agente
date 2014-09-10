@@ -24,7 +24,7 @@ cacicD::~cacicD()
 void cacicD::start() {
     try{
         this->app = application();
-        QLogger::QLoggerManager::get
+
         qDebug() << "\nServiço iniciado em" << app->applicationDirPath();
         QJsonObject result = ccacic->getJsonFromFile(app->applicationDirPath() + "/getConfig.json");
         if(!result.contains("error") && !result.isEmpty()){
