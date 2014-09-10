@@ -263,8 +263,28 @@ void CTestCacic::testColeta()
             !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
 }
 
+void CTestCacic::testLogger()
+{
+    QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination("./log.txt","teste",QLogger::DebugLevel);
+
+    QLogger::QLog_Debug("teste", "Teste do módulo logger.");
+
+    QFile logFile("./log.txt");
+    if(logFile.exists()) logFile.open(QIODevice::ReadOnly);
+
+    QVERIFY(logManager &&
+            logFile.exists() &&
+            logFile.readLine().contains("Teste do módulo logger.")
+            );
+
+    logManager->closeLogger();
+    logFile.close();
+}
+
 void CTestCacic::cleanupTestCase()
 {
+    OCacic.deleteFile("log.txt");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("configReq.json");

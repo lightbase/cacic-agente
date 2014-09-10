@@ -30,6 +30,7 @@ SOURCES += \
     ../src/vregistry.cpp \
     ../src/ccoleta.cpp \
     ../src/wmi.cpp \
+    ../src/QLogger.cpp
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     ../src/vregistry.h \
     ../src/ccoleta.h \
     ../src/wmi.h \
+    ../src/QLogger.h
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \

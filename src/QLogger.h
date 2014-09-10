@@ -162,6 +162,7 @@ namespace QLogger
              * @param level The maximum level allowed.
              * @return Returns true if any error have been done.
              */
+            bool addDestination(const QString &fileDest, const QString &modules, LogLevel level);
             bool addDestination(const QString &fileDest, const QStringList &modules, LogLevel level);
             /**
              * @brief Gets the QLoggerWriter instance corresponding to the module <em>module</em>.

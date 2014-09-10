@@ -17,6 +17,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
 #include <ccoleta.h>
+#include <QLogger.h>
 
 class CTestCacic : public QObject
 {
@@ -73,6 +74,7 @@ private slots:
   void testConvertDouble();
   void testGetTest();
   void testColeta();
+  void testLogger();
   void cleanupTestCase();
 };
 
