@@ -266,16 +266,16 @@ void CTestCacic::testColeta()
 void CTestCacic::testLogger()
 {
     QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("./log.txt","teste",QLogger::DebugLevel);
+    logManager->addDestination("log.txt","teste",QLogger::DebugLevel);
 
-    QLogger::QLog_Debug("teste", "Teste do módulo logger.");
+    QLogger::QLog_Debug("teste", "Teste do modulo logger.");
 
-    QFile logFile("./log.txt");
+    QFile logFile("log.txt");
     if(logFile.exists()) logFile.open(QIODevice::ReadOnly);
 
     QVERIFY(logManager &&
             logFile.exists() &&
-            logFile.readLine().contains("Teste do módulo logger.")
+            logFile.readLine().contains("Teste do modulo logger.")
             );
 
     logManager->closeLogger();

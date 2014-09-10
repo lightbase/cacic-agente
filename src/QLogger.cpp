@@ -113,6 +113,7 @@ namespace QLogger
     bool QLoggerManager::addDestination(const QString &fileDest, const QStringList &modules, LogLevel level)
     {
         QLoggerWriter *log;
+
         foreach (QString module, modules)
         {
             if (!moduleDest.contains(module))
@@ -139,13 +140,29 @@ namespace QLogger
 
     void QLoggerWriter::write(const QString &module, const QString &message)
     {
+        QString originalDir = QDir::currentPath();
         QString _fileName = m_fileDestination;
 
         int MAX_SIZE = 1024 * 1024;
 
+
+        QStringList fileDestSplit = _fileName.split("/");
+        QString dirDest;
+
+        for(int i = 0 ; i < fileDestSplit.size() ; ++i )
+        {
+            if( !(i  == fileDestSplit.size() - 1) ) // last fileDestSplit element
+            {
+                dirDest.append(fileDestSplit[i] + "/");
+            }
+        }
+
         QDir dir(QDir::currentPath());
-        if (!dir.exists("logs"))
-            dir.mkdir("logs");
+
+        if (!dir.exists(dirDest))
+            dir.mkdir(dirDest);
+
+//        dir.cd(dirDest);
 
         QFile file(_fileName);
         QString toRemove = _fileName.section('.',-1);
