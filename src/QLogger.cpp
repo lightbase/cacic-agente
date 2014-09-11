@@ -147,21 +147,24 @@ namespace QLogger
 
         int MAX_SIZE = 1024 * 1024;
 
-        fileDestSplit = _fileName.split("/");
-
-        for(int i = 0 ; i < fileDestSplit.size() ; ++i )
+        if (_fileName.contains("/"))
         {
-            if( !(i  == fileDestSplit.size() - 1) ) // last fileDestSplit element
+            fileDestSplit = _fileName.split("/");
+
+            for(int i = 0 ; i < fileDestSplit.size() ; ++i )
             {
-                dirDest.append(fileDestSplit[i] + "/");
+                if( !(i  == fileDestSplit.size() - 1) ) // last fileDestSplit element
+                {
+                    dirDest.append(fileDestSplit[i] + "/");
+                }
             }
+
+
+            QDir dir(QDir::currentPath());
+
+            if (!dir.exists(dirDest))
+                dir.mkdir(dirDest);
         }
-
-        QDir dir(QDir::currentPath());
-
-        if (!dir.exists(dirDest))
-            dir.mkdir(dirDest);
-
 
         QFile file(_fileName);
         QString toRemove = _fileName.section('.',-1);
@@ -169,10 +172,10 @@ namespace QLogger
         bool renamed = false;
         QString newName = fileNameAux + "_%1__%2.log";
 
-        //Renomenem l'arxiu si està ple
+        //Renomeia o arquivo se ele está cheio
         if (file.size() >= MAX_SIZE)
         {
-            //Creem un fixer nou
+            //Cria um novo arquivo
             QDateTime currentTime = QDateTime::currentDateTime();
             newName = newName.arg(currentTime.date().toString("dd_MM_yy")).arg(currentTime.time().toString("hh_mm_ss"));
             renamed = file.rename(_fileName, newName);
@@ -182,6 +185,7 @@ namespace QLogger
         file.setFileName(_fileName);
         if (file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append))
         {
+
             QTextStream out(&file);
             QString dtFormat = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz");
 
@@ -190,8 +194,12 @@ namespace QLogger
 
             QString logLevel = QLoggerManager::levelToText(m_level);
             QString text = QString("[%1] [%2] {%3} %4\n").arg(dtFormat).arg(logLevel).arg(module).arg(message);
+
             out << text;
+
             file.close();
+        } else {
+            qWarning() << "Não foi possível abrir arquivo de log.";
         }
     }
 }
