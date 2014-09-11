@@ -266,25 +266,67 @@ void CTestCacic::testColeta()
 void CTestCacic::testLogger()
 {
     QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("log.txt","teste",QLogger::DebugLevel);
+    logManager->addDestination("log01.txt","teste01",QLogger::DebugLevel);
+    logManager->addDestination("./log02.txt","teste02",QLogger::DebugLevel);
+    logManager->addDestination("../log03.txt","teste03",QLogger::DebugLevel);
+    logManager->addDestination("logs/log04.txt","teste04",QLogger::DebugLevel);
+    logManager->addDestination("./logs/log05.txt","teste05",QLogger::DebugLevel);
+    logManager->addDestination("../logs/log06.txt","teste06",QLogger::DebugLevel);
 
-    QLogger::QLog_Debug("teste", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste01", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste02", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste03", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste04", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste05", "Teste do modulo logger.");
+    QLogger::QLog_Debug("teste06", "Teste do modulo logger.");
 
-    QFile logFile("log.txt");
-    if(logFile.exists()) logFile.open(QIODevice::ReadOnly);
+    QFile logFile01("log01.txt");
+    if(logFile01.exists()) logFile01.open(QIODevice::ReadOnly);
+    QFile logFile02("./log02.txt");
+    if(logFile02.exists()) logFile02.open(QIODevice::ReadOnly);
+    QFile logFile03("../log03.txt");
+    if(logFile03.exists()) logFile03.open(QIODevice::ReadOnly);
+    QFile logFile04("logs/log04.txt");
+    if(logFile04.exists()) logFile04.open(QIODevice::ReadOnly);
+    QFile logFile05("./logs/log05.txt");
+    if(logFile05.exists()) logFile05.open(QIODevice::ReadOnly);
+    QFile logFile06("../logs/log06.txt");
+    if(logFile06.exists()) logFile06.open(QIODevice::ReadOnly);
 
     QVERIFY(logManager &&
-            logFile.exists() &&
-            logFile.readLine().contains("Teste do modulo logger.")
+            logFile01.exists() &&
+            logFile01.readLine().contains("Teste do modulo logger.") &&
+            logFile02.exists() &&
+            logFile02.readLine().contains("Teste do modulo logger.") &&
+            logFile03.exists() &&
+            logFile03.readLine().contains("Teste do modulo logger.") &&
+            logFile04.exists() &&
+            logFile04.readLine().contains("Teste do modulo logger.") &&
+            logFile05.exists() &&
+            logFile05.readLine().contains("Teste do modulo logger.") &&
+            logFile06.exists() &&
+            logFile06.readLine().contains("Teste do modulo logger.")
             );
 
     logManager->closeLogger();
-    logFile.close();
+    logFile01.close();
+    logFile02.close();
+    logFile03.close();
+    logFile04.close();
+    logFile05.close();
+    logFile06.close();
 }
 
 void CTestCacic::cleanupTestCase()
 {
-    OCacic.deleteFile("log.txt");
+    OCacic.deleteFile("log01.txt");
+    OCacic.deleteFile("./log02.txt");
+    OCacic.deleteFile("../log03.txt");
+    OCacic.deleteFile("logs/log04.txt");
+    OCacic.deleteFile("./logs/log05.txt");
+    OCacic.deleteFolder("./logs");
+    OCacic.deleteFile("../logs/log06.txt");
+    OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("configReq.json");

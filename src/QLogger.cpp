@@ -140,14 +140,14 @@ namespace QLogger
 
     void QLoggerWriter::write(const QString &module, const QString &message)
     {
-        QString originalDir = QDir::currentPath();
+
         QString _fileName = m_fileDestination;
+        QStringList fileDestSplit;
+        QString dirDest;
 
         int MAX_SIZE = 1024 * 1024;
 
-
-        QStringList fileDestSplit = _fileName.split("/");
-        QString dirDest;
+        fileDestSplit = _fileName.split("/");
 
         for(int i = 0 ; i < fileDestSplit.size() ; ++i )
         {
@@ -162,7 +162,6 @@ namespace QLogger
         if (!dir.exists(dirDest))
             dir.mkdir(dirDest);
 
-//        dir.cd(dirDest);
 
         QFile file(_fileName);
         QString toRemove = _fileName.section('.',-1);
