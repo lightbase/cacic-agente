@@ -3,10 +3,13 @@
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
-
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination("./log.txt","Install",QLogger::DebugLevel);
 }
 
 void InstallCacic::run(QStringList argv, int argc) {
+
+    QLogger::QLog_Debug("Install", "Inicio de instalacao");
     bool ok;
     //valida os parametros repassados
     QMap<QString, QString> param = validaParametros(argv, argc, &ok);
@@ -21,8 +24,8 @@ void InstallCacic::run(QStringList argv, int argc) {
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
 #ifdef Q_OS_WIN
             oCacic.setCacicMainFolder("c:/cacic/");
-#elif Q_LINUX
-            oCacic.setCacicMainFolder("/home/cacic/");
+#elif defined(Q_OS_LINUX)
+            oCacic.setCacicMainFolder("/home/cacic");
 #endif
             oCacic.createFolder(oCacic.getCacicMainFolder());
             //grava chave em registro;
@@ -59,6 +62,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                   << "  [-help]                   Lista todos comandos.\n";
     }
 
+    logManager->closeLogger();
     emit finished();
 }
 

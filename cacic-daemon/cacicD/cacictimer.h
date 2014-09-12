@@ -23,14 +23,18 @@ public:
     void iniciarTimer(int x, QString applicationDirPath);
     bool getTest();
     bool getConfig();
-    bool compararHashMD5(QJsonDocument getconfigfile,QJsonDocument getConfig);
+    bool Md5IsEqual(QVariant document01,QVariant document02);
     QString getApplicationDirPath() const;
     void setApplicationDirPath(const QString &value);
 
 private:
     void registraFim();
     void registraInicio();
+
+    QJsonObject jsonConfig;
+    QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
+    QStringList moduleList;
 
 private slots:
     void mslot();
