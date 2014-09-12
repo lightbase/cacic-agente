@@ -397,6 +397,8 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
               motherboard["product_name"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Version:")){
               motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Asset Tag:")){
+            motherboard["asset_tag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
 
