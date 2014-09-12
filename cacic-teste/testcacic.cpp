@@ -272,10 +272,9 @@ void CTestCacic::testLogger()
 
     QFile logFile("./log.txt");
     if(logFile.exists()) logFile.open(QIODevice::ReadOnly);
-
     QVERIFY(logManager &&
             logFile.exists() &&
-            logFile.readLine().contains("Teste do módulo logger.")
+            logFile.readLine().contains("Teste")
             );
 
     logManager->closeLogger();
