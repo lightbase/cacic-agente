@@ -36,6 +36,7 @@ void cacicD::start() {
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em ").append(application()->applicationDirPath()).append("."));
 
         QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
+
         if(!result.contains("error") && !result.isEmpty()){
             Ocacictimer->iniciarTimer(result["codestatus"].toInt(), application()->applicationDirPath());
         }else{
