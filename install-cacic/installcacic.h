@@ -7,6 +7,7 @@
 #include <cacic_computer.h>
 #include <ccacic.h>
 #include "iostream"
+#include "QLogger.h"
 
 class InstallCacic : public QObject
 {
@@ -25,6 +26,7 @@ private:
     CacicComm oCacicComm;
     CACIC_Computer oCacicComputer;
     CCacic oCacic;
+    QLogger::QLoggerManager *logManager;
 signals:
     void finished();
 

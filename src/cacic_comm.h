@@ -61,6 +61,10 @@ public:
         QJsonObject jsonObj;
         if (isSsl){
             url = urlSsl.isEmpty() ? "https://" + this->urlGerente + route : this->urlSsl + route;
+            if (!url.isValid()){
+                jsonObj["error"] = QVariant("Invalid Url");
+                return jsonObj;
+            }
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
         } else
             url = "http://" + urlGerente + route;
@@ -150,6 +154,13 @@ public:
         if (*ok)
             this->session = retorno["reply"].toObject()["session"].toString();
         return retorno;
+    }
+
+    bool ftpDownload(QString path){
+        QUrl url(urlGerente);
+        url.setScheme("ftp");
+        url.setPath(path);
+
     }
 
     QString getUrlSsl (){

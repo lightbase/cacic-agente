@@ -7,7 +7,6 @@
 QT += core
 QT += network
 QT -= gui
-QT += axcontainer
 
 TARGET = install-cacic
 CONFIG += console
@@ -16,6 +15,7 @@ CONFIG += c++11
 
 win32 {
     LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+    QT += axcontainer
 } else {
     LIBS += -L/usr/lib -lcryptopp
 }
@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
-    ../src/wmi.cpp
+    ../src/wmi.cpp \
+    ../src/QLogger.cpp
 
 HEADERS += \
     installcacic.h \
@@ -35,7 +36,8 @@ HEADERS += \
     ../src/cacic_computer.h \
     ../src/cacic_comm.h \
     ../src/operatingsystem.h \
-    ../src/wmi.h
+    ../src/wmi.h \
+    ../src/QLogger.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

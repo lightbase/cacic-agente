@@ -47,8 +47,8 @@ QJsonObject cacic_hardware::coletaWin()
     //  (Verifica se é notebook)
     params.clear();
     wmiResult = wmi::wmiSearch("Win32_PortableBattery", params);
+    hardware["IsNotebook"] = QJsonValue::fromVariant(!wmiResult.isNull());
     if (!wmiResult.isNull()){
-        hardware["IsNotebook"] = QJsonValue::fromVariant(!wmiResult.isNull());
         hardware["PortableBattery"] = wmiResult;
     }
     //Win32_Bios
@@ -397,6 +397,10 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
               motherboard["product_name"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Version:")){
               motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Asset Tag:")){
+            motherboard["asset_tag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+        } else if(line.contains("Serial Number:")){
+            motherboard["serial_number"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
 
