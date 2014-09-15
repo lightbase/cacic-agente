@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QDateTime>
+#include <QMap>
 #include "ccacic.h"
 #include "cacic_comm.h"
 #include "cacic_computer.h"
@@ -34,7 +35,9 @@ private:
     QJsonObject jsonConfig;
     QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
-    QStringList moduleList;
+    QString metodoDownload;
+    QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo
+
 
 private slots:
     void mslot();
