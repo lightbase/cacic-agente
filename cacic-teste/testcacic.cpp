@@ -266,6 +266,7 @@ void CTestCacic::testColeta()
 void CTestCacic::testLogger()
 {
     QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination("./log.txt","teste",QLogger::DebugLevel);
     logManager->addDestination("log01.txt","teste01",QLogger::DebugLevel);
     logManager->addDestination("./log02.txt","teste02",QLogger::DebugLevel);
     logManager->addDestination("../log03.txt","teste03",QLogger::DebugLevel);
