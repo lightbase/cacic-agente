@@ -1,29 +1,27 @@
 #include "cacictimer.h"
 
-CacicTimer::CacicTimer()
+CacicTimer::CacicTimer(QString dirpath)
 {
-    OCacicComm = new CacicComm();
-    ccacic = new CCacic();
-    timer = new QTimer(this);
-    //manager = QLogger::QLoggerManager::getInstance();
-    //manager->addDestination("cacicLog.txt", QStringList("CacicD"), QLogger::LogLevel);
+    qDebug() << "iniciou o constructor";
+    definirDirGercols(dirpath);
+    setApplicationDirPath(dirpath);
+    iniciarInstancias();
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
 }
 
-void CacicTimer::iniciarTimer(int x, QString applicationDirPath)
+void CacicTimer::iniciarTimer(int x)
 {
-    setApplicationDirPath(applicationDirPath);
     timer->start(x);
 }
 
 void CacicTimer::mslot(){
+    cMutex->lock();
     if(getTest()){
-        //manager->QLogger::QLog_Trace("ModuleName", "Message: ");
         if(getConfig()){
-            qDebug() << "getConfig() success. - " + QDateTime::currentDateTime().toLocalTime().toString();
-
-            //aqui irá abrir o semaforo e iniciar a coleta.
-
+            QLogger::QLog_Info("Cacic Timer", QString("semáforo fechado."));
+            iniciarGercols();
+            cMutex->unlock();
+            QLogger::QLog_Info("Cacic Timer", QString("semáforo aberto."));
         }else{
             qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
         }
@@ -41,9 +39,9 @@ bool CacicTimer::getTest(){
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
         QJsonObject jsonresult = OCacicComm->comm("/ws/neo/login", &ok, as);
-        if(jsonresult.contains("error")){
-            return false;
-        }
+        //        if(jsonresult.contains("error")){
+        //            return false;
+        //        }
         try{
             ccacic->setJsonToFile(jsonresult, getApplicationDirPath() + "/getTest.json");
             return true;
@@ -66,9 +64,9 @@ bool CacicTimer::getConfig(){
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
         QJsonObject jsonresult = OCacicComm->comm("/ws/neo/login", &ok, as);
-        if(jsonresult.contains("error")){
-            return false;
-        }
+        //        if(jsonresult.contains("error")){
+        //            return false;
+        //        }
         try{
             ccacic->setJsonToFile(jsonresult, getApplicationDirPath() + "/getConfig.json");
             return true;
@@ -86,14 +84,45 @@ void CacicTimer::registraInicio()
 {
 }
 
+QString CacicTimer::getDirProgram() const
+{
+    return dirProgram;
+}
+
 QString CacicTimer::getApplicationDirPath() const
 {
     return applicationDirPath;
 }
 
+void CacicTimer::setDirProgram(const QString &value)
+{
+    dirProgram = value;
+}
+
+
+void CacicTimer::iniciarGercols()
+{
+
+    QProcess proc;
+    proc.children();
+    proc.execute(getDirProgram());
+    if(proc.atEnd()){
+
+    }
+    //    QString retorno = ccacic->startProcess(getDirProgram(),true,ok);
+    //    qDebug() << retorno;
+    QLogger::QLog_Info("Cacic Timer","processo finalizado.");
+    //    if (myProcess.waitForFinished(-1)){
+    //        qDebug() << "erro:" << myProcess.errorString();
+    //    }else{
+    //        qDebug() << "não deu erro:" << myProcess.readAll();
+    //        QLogger::QLog_Info("Cacic Timer","processo está aberto.");
+    //    }
+}
+
 void CacicTimer::setApplicationDirPath(const QString &value)
 {
-    applicationDirPath = value;
+    this->applicationDirPath = value;
 }
 
 
@@ -111,4 +140,23 @@ bool CacicTimer::compararHashMD5(QJsonDocument getconfigfile,QJsonDocument getCo
     }else{
         return false;
     }
+}
+
+void CacicTimer::iniciarInstancias(){
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(getApplicationDirPath().append("/log.txt"),"Cacic Timer",QLogger::InfoLevel);
+    logManager->addDestination(getApplicationDirPath().append("/log.txt"),"Cacic Timer",QLogger::ErrorLevel);
+    OCacicComm = new CacicComm();
+    ccacic = new CCacic();
+    timer = new QTimer(this);
+    cMutex = new QMutex(QMutex::Recursive);
+    QLogger::QLog_Info("Cacic Timer", QString("terminou as instancias"));
+}
+
+void CacicTimer::definirDirGercols(QString applicationDirPath){
+#if defined (Q_OS_WIN)
+    setDirProgram(applicationDirPath.append("\cacic-gercols.exe"));
+#elif defined (Q_OS_LINUX)
+    setDirProgram(applicationDirPath.append("/cacic-gercols"));
+#endif
 }

@@ -5,7 +5,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     try{
         this->createApplication(argc, argv);
 
-        Ocacictimer = new CacicTimer();
+        Ocacictimer = new CacicTimer(application()->applicationDirPath());
         ccacic = new CCacic;
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
@@ -31,18 +31,15 @@ cacicD::~cacicD()
 void cacicD::start() {
     try{
         qDebug() << "Inicio do daemon";
-
         qDebug() << "\nServiço iniciado em" << application()->applicationDirPath();
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em ").append(application()->applicationDirPath()).append("."));
-
-        QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
+        QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath().append("/getConfig.json"));
         if(!result.contains("error") && !result.isEmpty()){
-            Ocacictimer->iniciarTimer(result["codestatus"].toInt(), application()->applicationDirPath());
+            Ocacictimer->iniciarTimer(result["codestatus"].toInt());
         }else{
             qDebug() << "getConfig.json não encontrado.";
         }
-
-        QLogger::QLog_Info("Cacic Daemon", "Serviço finalizado.");
+        //QLogger::QLog_Info("Cacic Daemon", "Serviço finalizado.");
     }catch (...){
         qCritical() << "Error desconhecido ao iniciar o serviço.";
     }
