@@ -11,8 +11,8 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         setServiceFlags(QtService::Default);
 
         logManager = QLogger::QLoggerManager::getInstance();
-        logManager->addDestination(application()->applicationDirPath().append("/log.txt"),"Cacic Daemon",QLogger::InfoLevel);
-        logManager->addDestination(application()->applicationDirPath().append("/log.txt"),"Cacic Daemon",QLogger::ErrorLevel);
+        logManager->addDestination(application()->applicationDirPath() + "/cacicLog.txt","Cacic Daemon",QLogger::InfoLevel);
+        logManager->addDestination(application()->applicationDirPath() + "/cacicLog.txt","Cacic Daemon",QLogger::ErrorLevel);
     } catch (...){
         qCritical() << "Error desconhecido no construtor.";
     }
@@ -34,9 +34,6 @@ void cacicD::start() {
         qDebug() << "\nServiço iniciado em" << application()->applicationDirPath();
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em ").append(application()->applicationDirPath()).append("."));
         QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath().append("/getConfig.json"));
-
-        QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
-
         if(!result.contains("error") && !result.isEmpty()){
             Ocacictimer->iniciarTimer(result["codestatus"].toInt());
         }else{

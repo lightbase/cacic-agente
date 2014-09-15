@@ -62,7 +62,7 @@ public:
         if (isSsl){
             url = urlSsl.isEmpty() ? "https://" + this->urlGerente + route : this->urlSsl + route;
             if (!url.isValid()){
-                jsonObj["error"] = QVariant("Invalid Url");
+                jsonObj["error"] = QVariant("Invalid Url").toJsonValue();
                 return jsonObj;
             }
             req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
