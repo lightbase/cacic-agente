@@ -22,93 +22,14 @@ void CacicTimer::iniciarTimer(int x)
 }
 
 void CacicTimer::mslot(){
-    QLogger::QLog_Info("Cacic Daemon (Timer)", QString("mslot();"));
     cMutex->lock();
     QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo fechado."));
-
     if(getTest()){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
-
         if(getConfig()){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
-
-            // Compara o novo arquivo de configuração com um antigo e se forem diferentes
-            // mantem o mais recente; caso iguais simplesmente apaga o novo.
-            QFile *fileOld;
-            QFile *fileNew;
-
-            fileOld = new QFile(getApplicationDirPath().append("/getConfig.json"));
-            fileNew = new QFile(getApplicationDirPath().append("/getConfigNew.json"));
-            if( fileOld->exists() && fileNew->exists() ){
-                if( Md5IsEqual(QVariant::fromValue(fileOld), QVariant::fromValue(fileNew)) ) {
-                    fileNew->remove();
-                } else {
-                    // Renomeia getConfigNew.json para getConfig.json
-                    fileOld->remove();
-                    fileNew->rename("getConfigNew.json","getConfig.json");
-                }
-                jsonConfig = ccacic->getJsonFromFile(getApplicationDirPath().append("/getConfig.json"));
-            } else if( fileOld->exists() ){
-                jsonConfig = ccacic->getJsonFromFile(getApplicationDirPath().append("/getConfig.json"));
-            } else {
-                QLogger::QLog_Error("Cacic Daemon (Timer)", "Arquivo de configuração não criado.");
-            }
-            delete fileOld;
-            delete fileNew;
-
-            lerArquivoConfig(jsonConfig);
-
-            int countExecNotFound = 0;
-            QMap<QString, QString>::const_iterator mapIterator = moduleMap.constBegin();
-            while (mapIterator != moduleMap.constEnd()) {
-                QString nomeModulo = mapIterator.value();
-                QString hashModulo = mapIterator.key();
-
-                // Calcula hash do binario atual
-#if defined(Q_OS_WIN)
-                fileOld = new QFile(getApplicationDirPath().append("/").append(modulo).append(".exe"));
-#else
-                fileOld = new QFile(getApplicationDirPath().append("/").append(nomeModulo));
-#endif
-                if(!fileOld->exists()) {
-                    QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Módulo ").append(nomeModulo).append(" não encontrado."));
-
-                    countExecNotFound++;
-                    if( countExecNotFound == moduleMap.size() ) {
-                        QLogger::QLog_Error("Cacic Daemon (Timer)", "Não foi possível encontrar nenhum módulo executável!");
-                        return;
-                    }
-                    continue;
-                }
-
-                QString oldMd5 = QString(QCryptographicHash::hash(fileOld->readAll(),QCryptographicHash::Md5).toHex());
-
-                if ( oldMd5 != hashModulo ) {
-
-                    fileOld->rename(getApplicationDirPath().append("/").append(nomeModulo),
-                                    getApplicationDirPath().append("/").append("nomeModulo").append("Old") );
-
-                    // Download nova versão do executável
-                    QList<QMap<QString,QString> >::const_iterator metodosIterator = metodosDownload.constBegin();
-                    bool downloadSucess = false;
-                    while ( !downloadSucess && metodosIterator != metodosDownload.constEnd() ) {
-
-                        if( metodosIterator->value("tipo") == "ftp" || metodosIterator->value("tipo") == "" ) {
-                            if ( OCacicComm->ftpDownload( metodosIterator->value("url"), metodosIterator->value("path") )  )
-                                downloadSucess = true;
-
-                        } else if ( metodosIterator->value("tipo") == "http" ) {
-                            if( OCacicComm->httpDownload( metodosIterator->value("url"), metodosIterator->value("path") )  )
-                                downloadSucess = true;
-                        }
-                        metodosIterator++;
-                    }
-                    fileOld->remove();
-                    delete fileOld;
-                }
-
-                mapIterator++;
-            }
+            verificarModulos();
+            iniciarGercols();
         }else{
             qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
             QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
@@ -117,7 +38,6 @@ void CacicTimer::mslot(){
         qDebug() << "getTest() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
     }
-
     cMutex->unlock();
     QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo aberto."));
 }
@@ -276,4 +196,72 @@ void CacicTimer::definirDirGercols(QString appDirPath){
 #elif defined (Q_OS_LINUX)
     setDirProgram(appDirPath + "/cacic-gercols");
 #endif
+}
+
+void CacicTimer::verificarModulos(){
+    // Compara o novo arquivo de configuração com um antigo e se forem diferentes
+    // mantem o mais recente; caso iguais simplesmente apaga o novo.
+    QFile *fileOld;
+    QFile *fileNew;
+    fileOld = new QFile(this->applicationDirPath + "/getConfig.json");
+    fileNew = new QFile(this->applicationDirPath + "/getConfigNew.json");
+    if( fileOld->exists() && fileNew->exists() ){
+        if( Md5IsEqual(QVariant::fromValue(fileOld), QVariant::fromValue(fileNew)) ) {
+            fileNew->remove();
+        } else {
+            // Renomeia getConfigNew.json para getConfig.json
+            fileOld->remove();
+            fileNew->rename("getConfigNew.json","getConfig.json");
+        }
+        jsonConfig = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    } else if( fileOld->exists() ){
+        jsonConfig = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    } else {
+        QLogger::QLog_Error("Cacic Daemon (Timer)", "Arquivo de configuração não criado.");
+    }
+    delete fileOld;
+    delete fileNew;
+    lerArquivoConfig(jsonConfig);
+    int countExecNotFound = 0;
+    QMap<QString, QString>::const_iterator mapIterator = moduleMap.constBegin();
+    while (mapIterator != moduleMap.constEnd()) {
+        QString nomeModulo = mapIterator.value();
+        QString hashModulo = mapIterator.key();
+        // Calcula hash do binario atual
+#if defined(Q_OS_WIN)
+        fileOld = new QFile(this->applicationDirPath + "/" + modulo + ".exe");
+#else
+        fileOld = new QFile(this->applicationDirPath + "/" + nomeModulo);
+#endif
+        if(!fileOld->exists()) {
+            QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Módulo ").append(nomeModulo).append(" não encontrado."));
+            countExecNotFound++;
+            if( countExecNotFound == moduleMap.size() ) {
+                QLogger::QLog_Error("Cacic Daemon (Timer)", "Não foi possível encontrar nenhum módulo executável!");
+                return;
+            }
+            continue;
+        }
+        QString oldMd5 = QString(QCryptographicHash::hash(fileOld->readAll(),QCryptographicHash::Md5).toHex());
+        if ( oldMd5 != hashModulo ) {
+            fileOld->rename(this->applicationDirPath + "/" + nomeModulo,
+                            this->applicationDirPath + "/" + nomeModulo + "Old");
+            // Download nova versão do executável
+            QList<QMap<QString,QString> >::const_iterator metodosIterator = metodosDownload.constBegin();
+            bool downloadSucess = false;
+            while ( !downloadSucess && metodosIterator != metodosDownload.constEnd() ) {
+                if( metodosIterator->value("tipo") == "ftp" || metodosIterator->value("tipo") == "" ) {
+                    if ( OCacicComm->ftpDownload( metodosIterator->value("url"), metodosIterator->value("path") )  )
+                        downloadSucess = true;
+                } else if ( metodosIterator->value("tipo") == "http" ) {
+                    if( OCacicComm->httpDownload( metodosIterator->value("url"), metodosIterator->value("path") )  )
+                        downloadSucess = true;
+                }
+                metodosIterator++;
+            }
+            fileOld->remove();
+            delete fileOld;
+        }
+        mapIterator++;
+    }
 }

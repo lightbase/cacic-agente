@@ -36,9 +36,9 @@ public:
 private:
     void registraFimColeta(QString msg);
     void registraInicioColeta();
+    void verificarModulos();
     QLogger::QLoggerManager *logManager;
     QString dirProgram;
-    //QProcess *myProcess;
     QString applicationDirPath;
     QString getDirProgram() const;
     void iniciarGercols();
