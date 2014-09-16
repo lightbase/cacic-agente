@@ -24,16 +24,18 @@ public:
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
     QMutex *cMutex;
+
     void iniciarTimer(int x);
     bool getTest();
     bool getConfig();
     bool Md5IsEqual(QVariant document01,QVariant document02);
     void setApplicationDirPath(const QString &value);
+    QString getApplicationDirPath();
     void setDirProgram(const QString &value);
 
 private:
-    void registraFim(QString msg);
-    void registraInicio();
+    void registraFimColeta(QString msg);
+    void registraInicioColeta();
     QLogger::QLoggerManager *logManager;
     QString dirProgram;
     //QProcess *myProcess;
@@ -41,9 +43,11 @@ private:
     QString getDirProgram() const;
     void iniciarGercols();
     void iniciarInstancias();
+    void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirGercols(QString appDirPath);
     QJsonObject jsonConfig;
-    QString metodoDownload;
+
+    QList<QMap<QString,QString> > metodosDownload;
     QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo
 
 private slots:

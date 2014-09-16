@@ -161,6 +161,19 @@ public:
         url.setScheme("ftp");
         url.setPath(path);
 
+        return false;
+    }
+
+    bool ftpDownload(QString urlServer, QString path){
+        QUrl url(urlServer);
+        url.setScheme("ftp");
+        url.setPath(path);
+
+        return false;
+    }
+
+    bool httpDownload( QString urlServer, QString path ){
+        return false;
     }
 
     QString getUrlSsl (){
