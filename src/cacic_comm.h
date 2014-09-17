@@ -13,9 +13,11 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-class CacicComm {
+class CacicComm : public QObject{
 
+    Q_OBJECT
 private:
+    QFile *fileHandler;
     QUrlQuery params;
     QString urlGerente;
     QString urlSsl;
@@ -165,11 +167,29 @@ public:
     }
 
     bool ftpDownload(QString urlServer, QString path){
+        QNetworkAccessManager manager;
+        QNetworkRequest req;
+        QNetworkReply *reply;
+
+        QStringList splitPath = path.split("/");
+
+        fileHandler = new QFile(splitPath[splitPath.size() - 1]);
+        if( !fileHandler->open(QIODevice::WriteOnly) ) {
+            return false;
+        }
+
+        QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(ftpDownloadFinished(QNetworkReply*)) );
+//        QObject::connect(reply, SIGNAL(finished()), this, SIGNAL(finished(reply)) );
+//        QObject::connect(this, SIGNAL(finished(reply)), this, SLOT(ftpDownloadFinished(reply)) );
+
         QUrl url(urlServer);
         url.setScheme("ftp");
         url.setPath(path);
+        req.setUrl(url);
 
-        return false;
+        reply = manager.get(req);
+
+        return true;
     }
 
     bool httpDownload( QString urlServer, QString path ){
@@ -221,5 +241,15 @@ public:
 signals:
     void finished(QNetworkReply* reply);
 
+private slots:
+
+    void ftpDownloadFinished(QNetworkReply* reply)
+    {
+        qDebug() << "Entrou no SLOT.";
+
+        QTextStream out(fileHandler);
+        out << reply->readAll();
+        fileHandler->close();
+    }
 };
 #endif // CACIC_COMM_H
