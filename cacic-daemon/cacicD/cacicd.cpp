@@ -34,7 +34,8 @@ void cacicD::start() {
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em ").append(application()->applicationDirPath()).append("."));
         QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath().append("/getConfig.json"));
         if(!result.contains("error") && !result.isEmpty()){
-            Ocacictimer->iniciarTimer(result["codestatus"].toInt());
+            Ocacictimer->setPeriodicidadeExecucao(result["codestatus"].toInt());
+            Ocacictimer->iniciarTimer();
         }else{
             QLogger::QLog_Error("Cacic Daemon", QString("getConfig.json não encontrado."));
         }
@@ -66,6 +67,7 @@ void cacicD::stop()
 {
     try{
         QLogger::QLog_Info("Cacic Daemon", QString("Serviço parado."));
+        this->application()->quit();
     } catch (...){
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido ao parar o serviço."));
     }

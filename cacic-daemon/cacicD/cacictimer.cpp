@@ -16,12 +16,24 @@ CacicTimer::~CacicTimer()
     delete OCacicComm;
 }
 
-void CacicTimer::iniciarTimer(int x)
+void CacicTimer::reiniciarTimer(){
+    timer->stop();
+    timer->start(getPeriodicidadeExecucao());
+}
+
+
+void CacicTimer::iniciarTimer()
 {
-    timer->start(x);
+    timer->start(getPeriodicidadeExecucao());
 }
 
 void CacicTimer::mslot(){
+    try{
+        verificarPeriodicidadeJson();
+    }catch (...){
+        QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));
+
+    }
     cMutex->lock();
     QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo fechado."));
     if(getTest()){
@@ -190,6 +202,20 @@ void CacicTimer::iniciarInstancias(){
     OCacicComm->setPassword("cacic123");
 }
 
+void CacicTimer::verificarPeriodicidadeJson()
+{
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        if(getPeriodicidadeExecucao() != result["codestatus"].toInt()){
+            setPeriodicidadeExecucao(result["codestatus"].toInt());
+            reiniciarTimer();
+        }
+    }else{
+        QLogger::QLog_Error("Cacic Daemon (Timer)", QString("getConfig.json com erro ou vazio"));
+    }
+}
+
+
 void CacicTimer::definirDirGercols(QString appDirPath){
 #if defined (Q_OS_WIN)
     setDirProgram(appDirPath + "\cacic-gercols.exe");
@@ -197,6 +223,16 @@ void CacicTimer::definirDirGercols(QString appDirPath){
     setDirProgram(appDirPath + "/cacic-gercols");
 #endif
 }
+int CacicTimer::getPeriodicidadeExecucao() const
+{
+    return periodicidadeExecucao;
+}
+
+void CacicTimer::setPeriodicidadeExecucao(int value)
+{
+    periodicidadeExecucao = value;
+}
+
 
 void CacicTimer::verificarModulos(){
     // Compara o novo arquivo de configuração com um antigo e se forem diferentes

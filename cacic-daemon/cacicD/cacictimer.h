@@ -24,29 +24,32 @@ public:
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
     QMutex *cMutex;
-
-    void iniciarTimer(int x);
+    void iniciarTimer();
     bool getTest();
     bool getConfig();
     bool Md5IsEqual(QVariant document01,QVariant document02);
     void setApplicationDirPath(const QString &value);
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);
+    void setPeriodicidadeExecucao(int value);
 
 private:
     void registraFimColeta(QString msg);
     void registraInicioColeta();
     void verificarModulos();
+    void reiniciarTimer();
     QLogger::QLoggerManager *logManager;
     QString dirProgram;
     QString applicationDirPath;
     QString getDirProgram() const;
     void iniciarGercols();
     void iniciarInstancias();
+    void verificarPeriodicidadeJson();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirGercols(QString appDirPath);
     QJsonObject jsonConfig;
-
+    int periodicidadeExecucao;
+    int getPeriodicidadeExecucao() const;
     QList<QMap<QString,QString> > metodosDownload;
     QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo
 
