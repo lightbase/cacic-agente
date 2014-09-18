@@ -323,9 +323,9 @@ void CTestCacic::testFtpDownload()
     OCacicComm->ftpDownload("ftp://ftp.unicamp.br", "/pub/gnu/Licenses/gpl-2.0.txt");
     QFile downloaded("gpl-2.0.txt");
 
-    QVERIFY( !downloaded.open(QIODevice::ReadOnly) &&
-             downloaded.exists() &&
-             downloaded.readAll() != "" );
+    QVERIFY( downloaded.open(QIODevice::ReadOnly) );
+    QVERIFY( downloaded.exists() );
+    QVERIFY( downloaded.readAll() != "" );
 }
 
 void CTestCacic::cleanupTestCase()

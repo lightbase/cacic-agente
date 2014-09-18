@@ -24,6 +24,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
            cacicd.cpp \
            cacictimer.cpp \
+           ../../src/cacic_comm.cpp \
            ../../src/ccacic.cpp \
            ../../src/wmi.cpp \
            ../../src/cacic_computer.cpp \
