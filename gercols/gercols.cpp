@@ -16,6 +16,7 @@ Gercols::Gercols(QObject *parent)
 
     oCacic.setJsonToFile(configTeste,"configReq.json");
     /*************************************************************************/
+
     oColeta = new CColeta;
     //Pega chave do registro, que será pega na instalação.
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
@@ -32,7 +33,11 @@ void Gercols::run()
     //emite sinal para começar a coleta
     emit iniciaColeta();
 
+    /* Json de teste sendo excluído
+     */
     oCacic.deleteFile("configReq.json");
+    /***********************************/
+
     oColeta->waitToCollect();
     //salva json em arquivo
     if (!oColeta->toJsonObject().isEmpty())

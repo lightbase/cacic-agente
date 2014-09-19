@@ -257,7 +257,7 @@ void CacicTimer::verificarModulos(){
     }
     delete fileOld;
     delete fileNew;
-    lerArquivoConfig(jsonConfig);
+    lerArquivoConfig(jsonConfig["agentcomputer"].toObject());
     int countExecNotFound = 0;
     QMap<QString, QString>::const_iterator mapIterator = moduleMap.constBegin();
     while (mapIterator != moduleMap.constEnd()) {
