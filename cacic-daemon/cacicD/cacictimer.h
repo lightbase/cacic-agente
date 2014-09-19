@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QDir>
 #include <QDateTime>
+#include <QMutex>
+#include <QProcess>
 #include <QMap>
 #include "ccacic.h"
 #include "cacic_comm.h"
@@ -15,29 +17,42 @@ class CacicTimer : public QObject
 {
     Q_OBJECT
 public:
-    CacicTimer();
+    CacicTimer(QString dirpath);
+    ~CacicTimer();
     QTimer *timer;
     CacicComm *OCacicComm;
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
-    //QLogger::QLoggerManager *manager;
-    void iniciarTimer(int x, QString applicationDirPath);
+    QMutex *cMutex;
+    void iniciarTimer();
     bool getTest();
     bool getConfig();
     bool Md5IsEqual(QVariant document01,QVariant document02);
-    QString getApplicationDirPath() const;
     void setApplicationDirPath(const QString &value);
+    QString getApplicationDirPath();
+    void setDirProgram(const QString &value);
+    void setPeriodicidadeExecucao(int value);
 
 private:
-    void registraFim();
-    void registraInicio();
-
-    QJsonObject jsonConfig;
+    void registraFimColeta(QString msg);
+    void registraInicioColeta();
+    QStringList verificarModulos();
+    void reiniciarTimer();
     QLogger::QLoggerManager *logManager;
+    QString dirProgram;
     QString applicationDirPath;
-    QString metodoDownload;
+    QString getDirProgram() const;
+    void iniciarModulo();
+    void iniciarInstancias();
+    void verificarPeriodicidadeJson();
+    void lerArquivoConfig( const QJsonObject &jsonConfig);
+    void definirDirGercols(QString appDirPath);
+    void definirDirMapas(QString appDirPath);
+    QJsonObject jsonConfig;
+    int periodicidadeExecucao;
+    int getPeriodicidadeExecucao() const;
+    QList<QMap<QString,QString> > metodosDownload;
     QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo
-
 
 private slots:
     void mslot();

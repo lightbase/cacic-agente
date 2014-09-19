@@ -26,7 +26,7 @@ public:
   explicit CTestCacic(QObject *parent = 0);
 
 private:
-    CacicComm OCacicComm;
+    CacicComm *OCacicComm;
     CCacic OCacic;
     CACIC_Computer OCacicComp;
     cacic_software OCacicSoftware;
@@ -75,6 +75,7 @@ private slots:
   void testGetTest();
   void testColeta();
   void testLogger();
+  void testFtpDownload();
   void cleanupTestCase();
 };
 

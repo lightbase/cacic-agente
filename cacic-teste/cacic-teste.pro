@@ -23,6 +23,7 @@ SOURCES += \
     testcacic.cpp \
     ../src/ccacic.cpp \
     ../src/cacic_computer.cpp \
+    ../src/cacic_comm.cpp \
     ../src/operatingsystem.cpp \
     ../src/cacic_software.cpp \
     ../src/cacic_hardware.cpp \

@@ -9,7 +9,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 
 void CTestCacic::initTestCase()
 {
-    this->OCacicComm = CacicComm("http://teste.cacic.cc",
+    this->OCacicComm = new CacicComm("http://teste.cacic.cc",
                                  "rG/HcIDVTZ3pPKCf[[MAIS]]I6aigUb7OMeij3FfC7qNaznk0rBRYb6q6kSK3eNfjgptS8BfwW5yJqCvD2ai7xlw9I6P21j6cvQUqlHmAJpCbfwR13urdRE9AhjfokMcPrH6R1/zXPGMHveLRRgKLcqWu2X96rmoQQdRq9EW1SXmYUAx1dCV[[MAIS]]3Ha61XBw5pq58q35zH8Gjt998rTi3ecV8ShXXevqyK[[MAIS]]W07xpgTjbbd6Fbs/35gPfdRRgMNFjq7Gq[[MAIS]]llFgYMJ6UcEhw8f0ZLQo2oL/eRW/CNyeBW6wG0hIo6EIdpi/Ht0/95Uwn2Og[[MAIS]]2UPXsmKKuTMeGwUvPdbEfexlinUO0[[MAIS]]j9qIa2dpjtl0Y5Fyk1Bvw2ZYRTXwgJpUHsBboWmtTFpgX3wSGOWMipE80K8ktRTVYOp[[MAIS]]4qS/SzKWXpfCuZoCncfwE0lCEoreTH[[MAIS]]MLrTkHJP2oqYMAyFyQcjC0UGr3BQGa2edSNXjG7jrTdddga/SODUiF94jgh/QBwhiZby34b__CRYPTED__",
                                  "P198PVwtz5F5CfZPSUrzuaQA/QG1sTnwzl/rBnj8M7y5MglANGodG5LLD4q7oY809HuDR4g5tL64lZRBKvKPmEgWd9iAZKvT4UAm9XWN3nKKLGaznCaJohmntNGqrJP1Zd9riTHGu10mPbg/Uh3TCbBHVOICvu5sDlINlCR6A3[[MAIS]]a55RhfKNidvr5uX0kozCxr5t2DyOb5oPocEGyJKyHLQ==__CRYPTED__",
                                  "1",
@@ -24,9 +24,9 @@ void CTestCacic::initTestCase()
                                  "2.5.1.1.256.32",
                                  "2.8.1.7",
                                  "2.8.1.6");
-    OCacicComm.setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
-    OCacicComm.setUsuario("cacic");
-    OCacicComm.setPassword("cacic123");
+    OCacicComm->setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
+    OCacicComm->setUsuario("cacic");
+    OCacicComm->setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
     QVariantMap jsonMap;
@@ -53,14 +53,14 @@ void CTestCacic::testGetValueFromTags()
 
 void CTestCacic::testCommStatus()
 {
-    QVERIFY(OCacicComm.commStatus());
+    QVERIFY(OCacicComm->commStatus());
 }
 
 void CTestCacic::testComm()
 {
     bool ok;
-    if (OCacicComm.commStatus()){
-        QJsonObject jsonreply = OCacicComm.comm("/ws/get/test", &ok);
+    if (OCacicComm->commStatus()){
+        QJsonObject jsonreply = OCacicComm->comm("/ws/get/test", &ok);
 //        qDebug() << jsonreply["codestatus"].toString();
         QVERIFY(OCacic.getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
     } else
@@ -120,7 +120,7 @@ void CTestCacic::testJsonValueFromJsonString()
 
 void CTestCacic::testLogin(){
     bool ok;
-    QJsonObject jsonReply = OCacicComm.login(&ok);
+    QJsonObject jsonReply = OCacicComm->login(&ok);
     QJsonObject sessionvalue = jsonReply["reply"].toObject();
     OCacic.setChaveCrypt(sessionvalue["chavecrip"].toString());
     QVERIFY(ok);
@@ -129,7 +129,7 @@ void CTestCacic::testLogin(){
 void CTestCacic::testSslConnection()
 {
     bool ok;
-    QJsonObject json = OCacicComm.comm("", &ok, QJsonObject(), true);
+    QJsonObject json = OCacicComm->comm("", &ok, QJsonObject(), true);
     QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
                             json["codestatus"] :
                             QJsonValue::fromVariant(-1);
@@ -239,8 +239,8 @@ void CTestCacic::testGetTest()
     bool ok;
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
-    OCacicComm.setUrlGerente("http://10.1.0.137/cacic/web/app_dev.php");
-    OCacicComm.comm("/ws/neo/getTest", &ok, envio);
+    OCacicComm->setUrlGerente("http://10.1.0.137/cacic/web/app_dev.php");
+    OCacicComm->comm("/ws/neo/getTest", &ok, envio);
     QVERIFY(ok);
 }
 
@@ -319,8 +319,19 @@ void CTestCacic::testLogger()
     logFile06.close();
 }
 
+void CTestCacic::testFtpDownload()
+{
+    OCacicComm->ftpDownload("ftp://ftp.unicamp.br", "/pub/gnu/Licenses/gpl-2.0.txt");
+    QFile downloaded("gpl-2.0.txt");
+
+    QVERIFY( downloaded.open(QIODevice::ReadOnly) );
+    QVERIFY( downloaded.exists() );
+    QVERIFY( downloaded.readAll() != "" );
+}
+
 void CTestCacic::cleanupTestCase()
 {
+//    OCacic.deleteFile("gpl-2.0.txt");
     OCacic.deleteFile("log01.txt");
     OCacic.deleteFile("./log02.txt");
     OCacic.deleteFile("../log03.txt");
