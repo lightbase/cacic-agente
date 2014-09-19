@@ -66,6 +66,7 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
                                     valueList.remove("{");
                                 if (valueList.contains("}"))
                                     valueList.remove("}");
+                                if (!valueList.trimmed().isEmpty())
                                 jList.append(valueList.trimmed());
                             }
                             itemWmi[tag] = jList;
@@ -73,7 +74,8 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
                             //O último valor sempre volta com "}" no final.
                             if (aux.contains("}"))
                                 aux.remove("}");
-                            itemWmi[tag] = QJsonValue::fromVariant(aux.trimmed());
+                            if (!aux.trimmed().isEmpty())
+                                itemWmi[tag] = QJsonValue::fromVariant(aux.trimmed());
                         }
                     }
                 } // foreach(QString value, instanceList)

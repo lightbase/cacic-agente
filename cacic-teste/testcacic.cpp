@@ -182,6 +182,7 @@ void CTestCacic::testStartService()
     QString exitStatus;
 #ifdef Q_OS_WIN
     exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic.exe", true, &ok);
+    qDebug() << exitStatus;
 #else
     exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic", true, &ok);
 #endif
