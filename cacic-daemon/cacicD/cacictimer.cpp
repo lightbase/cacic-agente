@@ -2,7 +2,6 @@
 
 CacicTimer::CacicTimer(QString dirpath)
 {
-    definirDirGercols(dirpath);
     setApplicationDirPath(dirpath);
     iniciarInstancias();
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
@@ -40,8 +39,21 @@ void CacicTimer::mslot(){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
         if(getConfig()){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
-            verificarModulos();
-            iniciarGercols();
+            QStringList nomesModulos = verificarModulos();
+
+            if ( !nomesModulos.empty() ) {
+
+                foreach( QString nome, nomesModulos ) {
+                    if( nome == "gercols" ) {
+                        definirDirGercols(getApplicationDirPath());
+                        iniciarModulo();
+                    } else if( nome == "mapas" ) {
+                        definirDirMapas(getApplicationDirPath());
+                        iniciarModulo();
+                    }
+                }
+            }
+
         }else{
             qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
             QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
@@ -148,7 +160,7 @@ void CacicTimer::setDirProgram(const QString &value)
 }
 
 
-void CacicTimer::iniciarGercols()
+void CacicTimer::iniciarModulo()
 {
     registraInicioColeta();
     QDir::setCurrent(this->applicationDirPath);
@@ -223,6 +235,15 @@ void CacicTimer::definirDirGercols(QString appDirPath){
     setDirProgram(appDirPath + "/cacic-gercols");
 #endif
 }
+
+void CacicTimer::definirDirMapas(QString appDirPath){
+#if defined (Q_OS_WIN)
+    setDirProgram(appDirPath + "\cacic-mapas.exe");
+#elif defined (Q_OS_LINUX)
+    setDirProgram(appDirPath + "/cacic-mapas");
+#endif
+}
+
 int CacicTimer::getPeriodicidadeExecucao() const
 {
     return periodicidadeExecucao;
@@ -234,7 +255,7 @@ void CacicTimer::setPeriodicidadeExecucao(int value)
 }
 
 
-void CacicTimer::verificarModulos(){
+QStringList CacicTimer::verificarModulos(){
     // Compara o novo arquivo de configuração com um antigo e se forem diferentes
     // mantem o mais recente; caso iguais simplesmente apaga o novo.
     QFile *fileOld;
@@ -258,6 +279,9 @@ void CacicTimer::verificarModulos(){
     delete fileOld;
     delete fileNew;
     lerArquivoConfig(jsonConfig["agentcomputer"].toObject());
+
+    QStringList nomesModulos;
+
     int countExecNotFound = 0;
     QMap<QString, QString>::const_iterator mapIterator = moduleMap.constBegin();
     while (mapIterator != moduleMap.constEnd()) {
@@ -274,7 +298,7 @@ void CacicTimer::verificarModulos(){
             countExecNotFound++;
             if( countExecNotFound == moduleMap.size() ) {
                 QLogger::QLog_Error("Cacic Daemon (Timer)", "Não foi possível encontrar nenhum módulo executável!");
-                return;
+                return QStringList();
             }
             continue;
         }
@@ -298,6 +322,11 @@ void CacicTimer::verificarModulos(){
             fileOld->remove();
             delete fileOld;
         }
+
+        nomesModulos.append(nomeModulo);
+
         mapIterator++;
     }
+
+    return nomesModulos;
 }
