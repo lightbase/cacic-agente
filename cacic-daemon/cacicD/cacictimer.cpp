@@ -47,6 +47,11 @@ void CacicTimer::mslot(){
                     if( nome == "gercols" ) {
                         definirDirGercols(getApplicationDirPath());
                         iniciarModulo();
+
+                        //Envio do json gerado na coleta
+                        bool ok;
+                        QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
+                        OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
                     } else if( nome == "mapas" ) {
                         definirDirMapas(getApplicationDirPath());
                         iniciarModulo();
@@ -75,7 +80,7 @@ bool CacicTimer::getTest(){
         bool ok;
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
-        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/login", &ok, as);
+        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/test", &ok, as);
         //        if(jsonresult.contains("error")){
         //            return false;
         //        }
@@ -97,7 +102,7 @@ bool CacicTimer::getConfig(){
         bool ok;
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
-        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/login", &ok, as);
+        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as);
         //        if(jsonresult.contains("error")){
         //            return false;
         //        }

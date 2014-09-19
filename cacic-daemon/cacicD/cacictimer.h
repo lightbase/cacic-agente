@@ -36,17 +36,18 @@ public:
 private:
     void registraFimColeta(QString msg);
     void registraInicioColeta();
-    void verificarModulos();
+    QStringList verificarModulos();
     void reiniciarTimer();
     QLogger::QLoggerManager *logManager;
     QString dirProgram;
     QString applicationDirPath;
     QString getDirProgram() const;
-    void iniciarGercols();
+    void iniciarModulo();
     void iniciarInstancias();
     void verificarPeriodicidadeJson();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirGercols(QString appDirPath);
+    void definirDirMapas(QString appDirPath);
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
     int getPeriodicidadeExecucao() const;
