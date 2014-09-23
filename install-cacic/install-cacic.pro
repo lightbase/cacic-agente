@@ -25,6 +25,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     installcacic.cpp \
     ../src/ccacic.cpp \
+    ../src/cacic_comm.cpp \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
     ../src/wmi.cpp \
