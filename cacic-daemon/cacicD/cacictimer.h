@@ -48,7 +48,7 @@ private:
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
     QJsonObject jsonConfig;
-    int periodicidadeExecucao;
+    int periodicidadeExecucao = 14400; // 4*3600. Tempo default de execução.
     int getPeriodicidadeExecucao() const;
     QList<QMap<QString,QString> > metodosDownload;
     QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo

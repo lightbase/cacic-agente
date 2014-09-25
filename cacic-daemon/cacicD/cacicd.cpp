@@ -38,8 +38,11 @@ void cacicD::start() {
             Ocacictimer->setPeriodicidadeExecucao(result["reply"].toObject()["nu_intervalo_exec"].toInt() * 3600);
             Ocacictimer->iniciarTimer();
         }else{
-            //TODO: deve iniciar com um timer default (4 horas é um tempo bom), pra não ficar freezado pra sempre.
+            //Iniciar com um timer default (4 horas), pra não ficar freezado pra sempre.
             QLogger::QLog_Error("Cacic Daemon", QString("Problemas com o arquivo getConfig.json"));
+            QLogger::QLog_Info("Cacic Daemon", QString("Inicializando periodicidade de execução do serviço com tempo padrão."));
+
+            Ocacictimer->iniciarTimer();
         }
     }catch (...){
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido ao iniciar o serviço."));
