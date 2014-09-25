@@ -221,7 +221,8 @@ void CacicTimer::verificarPeriodicidadeJson()
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
         if(getPeriodicidadeExecucao() != result["nu_intervalo_exec"].toInt()){
-            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt()); //segundo alteração do eduardo, o nome da variável ficou o mesmo de antes. me corrijam se estiver errado
+            //segundo alteração do eduardo, o nome da variável ficou o mesmo de antes. me corrijam se estiver errado. 3600 por ser tratado em horas.
+            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt() * 3600);
             reiniciarTimer();
         }
     }else{
