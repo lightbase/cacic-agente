@@ -23,7 +23,7 @@ public:
     void registro();
 private:
     QMap<QString, QString> argumentos;
-    CacicComm oCacicComm;
+    CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
     CCacic oCacic;
     QLogger::QLoggerManager *logManager;

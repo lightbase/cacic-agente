@@ -10,15 +10,18 @@ InstallCacic::InstallCacic(QObject *parent) :
 void InstallCacic::run(QStringList argv, int argc) {
 
     QLogger::QLog_Debug("Install", "Inicio de instalacao");
+
+    oCacicComm = new CacicComm();
+
     bool ok;
     //valida os parametros repassados
     QMap<QString, QString> param = validaParametros(argv, argc, &ok);
     //se tiver usuario, senha e url
     if (ok){
-        oCacicComm.setUrlGerente(this->argumentos["host"]);
-        oCacicComm.setUsuario(this->argumentos["user"]);
-        oCacicComm.setPassword(this->argumentos["password"]);
-        QJsonObject jsonLogin = oCacicComm.login(&ok);
+        oCacicComm->setUrlGerente(this->argumentos["host"]);
+        oCacicComm->setUsuario(this->argumentos["user"]);
+        oCacicComm->setPassword(this->argumentos["password"]);
+        QJsonObject jsonLogin = oCacicComm->login(&ok);
         if (ok){
             //conectado, grava a chave na classe;
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());

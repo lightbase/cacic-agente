@@ -31,7 +31,6 @@ void CacicTimer::mslot(){
         verificarPeriodicidadeJson();
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));
-
     }
     cMutex->lock();
     QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo fechado."));
@@ -42,25 +41,18 @@ void CacicTimer::mslot(){
             QStringList nomesModulos = verificarModulos();
 
             if ( !nomesModulos.empty() ) {
-
                 foreach( QString nome, nomesModulos ) {
-                    if( nome == "gercols" ) {
-                        definirDirGercols(getApplicationDirPath());
-                        //iniciarModulo não se refere à aplicação 'gercols'
-                        iniciarModulo();
+                    definirDirModulo(getApplicationDirPath(), nome);
+                    iniciarModulo(getDirProgram());
 
+                    if(nome == "cacic-gercols"){
                         //Envio do json gerado na coleta
                         bool ok;
                         QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
                         OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
-                    } else if( nome == "mapas" ) {
-                        definirDirMapas(getApplicationDirPath());
-                        //iniciarModulo não se refere à aplicação 'mapas'
-                        iniciarModulo();
                     }
                 }
             }
-
         }else{
             qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
             QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
@@ -169,13 +161,13 @@ void CacicTimer::setDirProgram(const QString &value)
 }
 
 
-void CacicTimer::iniciarModulo()
+void CacicTimer::iniciarModulo(QString modulo)
 {
     registraInicioColeta();
     QDir::setCurrent(this->applicationDirPath);
     QProcess proc;
     proc.setWorkingDirectory(this->applicationDirPath);
-    proc.execute(getDirProgram());
+    proc.execute(modulo);
     if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
         registraFimColeta("SUCESSO");
     }else{
@@ -229,7 +221,7 @@ void CacicTimer::verificarPeriodicidadeJson()
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
         if(getPeriodicidadeExecucao() != result["nu_intervalo_exec"].toInt()){
-            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt());
+            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt()); //segundo alteração do eduardo, o nome da variável ficou o mesmo de antes. me corrijam se estiver errado
             reiniciarTimer();
         }
     }else{
@@ -238,19 +230,11 @@ void CacicTimer::verificarPeriodicidadeJson()
 }
 
 
-void CacicTimer::definirDirGercols(QString appDirPath){
+void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
 #if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "\\cacic-gercols.exe");
+    setDirProgram(appDirPath + "\\" + nome + ".exe");
 #elif defined (Q_OS_LINUX)
-    setDirProgram(appDirPath + "/cacic-gercols");
-#endif
-}
-
-void CacicTimer::definirDirMapas(QString appDirPath){
-#if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "\\cacic-mapas.exe");
-#elif defined (Q_OS_LINUX)
-    setDirProgram(appDirPath + "/cacic-mapas");
+    setDirProgram(appDirPath + "/"+ nome);
 #endif
 }
 

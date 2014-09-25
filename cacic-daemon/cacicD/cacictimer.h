@@ -42,12 +42,11 @@ private:
     QString dirProgram;
     QString applicationDirPath;
     QString getDirProgram() const;
-    void iniciarModulo();
+    void iniciarModulo(QString modulo);
     void iniciarInstancias();
     void verificarPeriodicidadeJson();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
-    void definirDirGercols(QString appDirPath);
-    void definirDirMapas(QString appDirPath);
+    void definirDirModulo(QString appDirPath, QString nome);
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
     int getPeriodicidadeExecucao() const;
