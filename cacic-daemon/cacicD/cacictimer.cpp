@@ -228,12 +228,13 @@ void CacicTimer::iniciarInstancias(){
 
 void CacicTimer::verificarPeriodicidadeJson()
 {
-    //adaptar ao getConfig.
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
-        if(getPeriodicidadeExecucao() != result["nu_intervalo_exec"].toInt()){
-            //segundo alteração do eduardo, o nome da variável ficou o mesmo de antes. me corrijam se estiver errado. 3600 por ser tratado em horas.
-            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt() * 3600);
+
+        QJsonObject agenteConfigJson = result["agentcomputer"].toObject();
+        QJsonObject configuracoes = agenteConfigJson["configuracoes"].toObject();
+        if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toInt()){
+            setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toInt() * 3600);
             reiniciarTimer();
         }
     }else{
