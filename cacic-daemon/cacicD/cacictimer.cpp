@@ -46,6 +46,7 @@ void CacicTimer::mslot(){
                 foreach( QString nome, nomesModulos ) {
                     if( nome == "gercols" ) {
                         definirDirGercols(getApplicationDirPath());
+                        //iniciarModulo não se refere à aplicação 'gercols'
                         iniciarModulo();
 
                         //Envio do json gerado na coleta
@@ -54,6 +55,7 @@ void CacicTimer::mslot(){
                         OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
                     } else if( nome == "mapas" ) {
                         definirDirMapas(getApplicationDirPath());
+                        //iniciarModulo não se refere à aplicação 'mapas'
                         iniciarModulo();
                     }
                 }
@@ -85,8 +87,9 @@ bool CacicTimer::getTest(){
         //            return false;
         //        }
         try{
-            ccacic->setJsonToFile(jsonresult, this->applicationDirPath + "/getTest.json");
-            return true;
+            ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
+                                  this->applicationDirPath + "/getTest.json");
+            return true; //acho que seria melhor retornar a variável 'ok'. Se der erro na conexão eu acho que não cai no catch.
         } catch (...) {
             qDebug() << "Erro ao salvar o arquivo de configurações.";
             return false;
@@ -107,8 +110,9 @@ bool CacicTimer::getConfig(){
         //            return false;
         //        }
         try{
-            ccacic->setJsonToFile(jsonresult, this->applicationDirPath + "/getConfigNew.json");
-            return true;
+            ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
+                                  this->applicationDirPath + "/getConfigNew.json");
+            return true; //mesma observação do getTest
         } catch (...) {
             qDebug() << "Erro ao salvar o arquivo de configurações.";
             return false;
@@ -221,10 +225,11 @@ void CacicTimer::iniciarInstancias(){
 
 void CacicTimer::verificarPeriodicidadeJson()
 {
+    //adaptar ao getConfig.
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
-        if(getPeriodicidadeExecucao() != result["codestatus"].toInt()){
-            setPeriodicidadeExecucao(result["codestatus"].toInt());
+        if(getPeriodicidadeExecucao() != result["nu_intervalo_exec"].toInt()){
+            setPeriodicidadeExecucao(result["nu_intervalo_exec"].toInt());
             reiniciarTimer();
         }
     }else{
@@ -235,7 +240,7 @@ void CacicTimer::verificarPeriodicidadeJson()
 
 void CacicTimer::definirDirGercols(QString appDirPath){
 #if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "\cacic-gercols.exe");
+    setDirProgram(appDirPath + "\\cacic-gercols.exe");
 #elif defined (Q_OS_LINUX)
     setDirProgram(appDirPath + "/cacic-gercols");
 #endif
@@ -243,7 +248,7 @@ void CacicTimer::definirDirGercols(QString appDirPath){
 
 void CacicTimer::definirDirMapas(QString appDirPath){
 #if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "\cacic-mapas.exe");
+    setDirProgram(appDirPath + "\\cacic-mapas.exe");
 #elif defined (Q_OS_LINUX)
     setDirProgram(appDirPath + "/cacic-mapas");
 #endif

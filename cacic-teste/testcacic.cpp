@@ -259,6 +259,7 @@ void CTestCacic::testColeta()
     oColeta.configuraColetas();
     oColeta.run();
     oColeta.waitToCollect();
+//    OCacic.setJsonToFile(oColeta.toJsonObject(), "/home/eric/coleta.json");
 //    qDebug() << oColeta.toJsonObject();
     QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
             !oColeta.toJsonObject()["hardware"].toObject().isEmpty());

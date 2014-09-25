@@ -59,7 +59,7 @@ QJsonObject CACIC_Computer::toJsonObject()
 /*
  * PegarUsu()
  * @return: std::string;
- *      retorna o usuario logado no sistema.
+ *      retorna o usuario logado no sistema. (erro, retorna o usuário que está executando.)
 */
 std::string CACIC_Computer::pegarUsu(){
   QString text;

@@ -37,6 +37,7 @@ void cacicD::start() {
             Ocacictimer->setPeriodicidadeExecucao(result["codestatus"].toInt());
             Ocacictimer->iniciarTimer();
         }else{
+            //TODO: deve iniciar com um timer default (4 horas é um tempo bom), pra não ficar freezado pra sempre.
             QLogger::QLog_Error("Cacic Daemon", QString("getConfig.json não encontrado."));
         }
         //QLogger::QLog_Info("Cacic Daemon", "Serviço finalizado.");

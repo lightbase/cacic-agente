@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QStringList>
-#include <QtSerialPort/QtSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
+//#include <QtSerialPort/QtSerialPort>
+//#include <QtSerialPort/QSerialPortInfo>
 #include <QtNetwork/QtNetwork>
 #include <QSysInfo>
 #include "operatingsystem.h"
