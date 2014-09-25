@@ -9,17 +9,6 @@ QT       += network
 QT       -= gui
 
 TARGET    = gercols
-CONFIG   += console
-CONFIG   -= app_bundle
-CONFIG   += qt
-CONFIG   += c++11
-
-win32 {
-    QT   += axcontainer
-    LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
-} else {
-    LIBS += -L/usr/lib -lcryptopp
-}
 
 TEMPLATE = app
 
@@ -49,5 +38,24 @@ HEADERS += \
     ../src/vqtconvert.h \
     ../src/wmi.h \
 
+CONFIG   += console
+CONFIG   -= app_bundle
+CONFIG   += qt
+CONFIG   += c++11
+CONFIG += static
+
+win32 {
+    QT   += axcontainer
+    LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+} else {
+    LIBS += -L/usr/lib -lcryptopp
+}
+
+
+
 INCLUDEPATH += ../src \
                ../src/crypto++/include/
+
+DEFINES += STATIC
+    message("Static build.")
+}

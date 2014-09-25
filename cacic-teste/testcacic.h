@@ -45,7 +45,7 @@ public slots:
 private slots:
   void initTestCase();
   void testCommStatus();
-  void testComm();
+//  void testComm();
   void testGetAndSetValueFromFile();
   void testGetValueFromTags();
   void testCreateFolder();
