@@ -14,6 +14,7 @@ class InstallCacic : public QObject
     Q_OBJECT
 public:
     explicit InstallCacic(QObject *parent = 0);
+    ~InstallCacic();
 
     QMap<QString, QString> getArgumentos();
     void setArgumentos(QMap<QString, QString> value);
