@@ -120,10 +120,6 @@ void CacicTimer::lerArquivoConfig ( const QJsonObject& jsonConfig )
     /* lê json de configurações e armazena quais módulos executáveis.
      * E faz o mesmo tipo de comparação de hashs, com o fim de:
      * ou mantem o binário do módulo ou baixa um novo.
-     *
-     * Aqui estou assumindo um formato do .json em que:
-     * há a key modulos contem uma lista com o nome dos executaveis e os seus valores hash md5
-     * há a key metodo que explicita o método de download dos executaveis
      */
     foreach( QJsonValue individualModule, jsonConfig["modulos"].toArray() ) {
         QString moduloKey, moduloValue;
@@ -134,12 +130,27 @@ void CacicTimer::lerArquivoConfig ( const QJsonObject& jsonConfig )
         moduleMap.insert(moduloKey, moduloValue);
     }
 
-    foreach (QJsonValue individualMetodo, jsonConfig["metodoDownload"].toArray() ) {
+    if ( jsonConfig["metodoDownload"].isArray() ) {
+
+        foreach (QJsonValue individualMetodo, jsonConfig["metodoDownload"].toArray() ) {
+            QMap<QString, QString> newEntry;
+
+            newEntry.insert(QString("tipo"), individualMetodo.toObject()["tipo"].toString() );
+            newEntry.insert(QString("url"), individualMetodo.toObject()["url"].toString() );
+            newEntry.insert(QString("path"), individualMetodo.toObject()["path"].toString() );
+            newEntry.insert(QString("usuario"), individualMetodo.toObject()["usario"].toString() );
+            newEntry.insert(QString("senha"), individualMetodo.toObject()["senha"].toString() );
+
+            metodosDownload.append( newEntry );
+        }
+    } else {
         QMap<QString, QString> newEntry;
 
-        newEntry.insert(QString("tipo"), individualMetodo.toObject()["tipo"].toString() );
-        newEntry.insert(QString("url"), individualMetodo.toObject()["url"].toString() );
-        newEntry.insert(QString("path"), individualMetodo.toObject()["path"].toString() );
+        newEntry.insert(QString("tipo"), jsonConfig["metodoDownload"].toObject()["tipo"].toString() );
+        newEntry.insert(QString("url"), jsonConfig["metodoDownload"].toObject()["url"].toString() );
+        newEntry.insert(QString("path"), jsonConfig["metodoDownload"].toObject()["path"].toString() );
+        newEntry.insert(QString("usuario"), jsonConfig["metodoDownload"].toObject()["usario"].toString() );
+        newEntry.insert(QString("senha"), jsonConfig["metodoDownload"].toObject()["senha"].toString() );
 
         metodosDownload.append( newEntry );
     }
@@ -255,8 +266,10 @@ QStringList CacicTimer::verificarModulos(){
     // mantem o mais recente; caso iguais simplesmente apaga o novo.
     QFile *fileOld;
     QFile *fileNew;
+
     fileOld = new QFile(this->applicationDirPath + "/getConfig.json");
     fileNew = new QFile(this->applicationDirPath + "/getConfigNew.json");
+
     if( fileOld->exists() && fileNew->exists() ){
         if( Md5IsEqual(QVariant::fromValue(fileOld), QVariant::fromValue(fileNew)) ) {
             fileNew->remove();
@@ -278,29 +291,41 @@ QStringList CacicTimer::verificarModulos(){
     QStringList nomesModulos;
 
     int countExecNotFound = 0;
-    QMap<QString, QString>::const_iterator mapIterator = moduleMap.constBegin();
-    while (mapIterator != moduleMap.constEnd()) {
-        QString nomeModulo = mapIterator.value();
-        QString hashModulo = mapIterator.key();
+    QMap<QString, QString>::const_iterator moduloIterator = moduleMap.constBegin();
+    while (moduloIterator != moduleMap.constEnd()) {
+        QString nomeModulo = moduloIterator.value();
+        QString hashModulo = moduloIterator.key();
         // Calcula hash do binario atual
 #if defined(Q_OS_WIN)
-        fileOld = new QFile(this->applicationDirPath + "/" + modulo + ".exe");
+        fileOld = new QFile(this->applicationDirPath + "/" + nomeModulo + ".exe");
 #else
         fileOld = new QFile(this->applicationDirPath + "/" + nomeModulo);
 #endif
         if(!fileOld->exists()) {
             QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Módulo ").append(nomeModulo).append(" não encontrado."));
             countExecNotFound++;
+
             if( countExecNotFound == moduleMap.size() ) {
                 QLogger::QLog_Error("Cacic Daemon (Timer)", "Não foi possível encontrar nenhum módulo executável!");
                 return QStringList();
             }
+
+            // pula para o próximo módulo no moduloMap
+            moduloIterator++;
             continue;
         }
+
         QString oldMd5 = QString(QCryptographicHash::hash(fileOld->readAll(),QCryptographicHash::Md5).toHex());
         if ( oldMd5 != hashModulo ) {
+
+#if defined(Q_OS_WIN)
+            fileOld->rename(this->applicationDirPath + "/" + nomeModulo + ".exe",
+                            this->applicationDirPath + "/" + nomeModulo + "Old.exe");
+#elif defined(Q_OS_LINUX)
             fileOld->rename(this->applicationDirPath + "/" + nomeModulo,
                             this->applicationDirPath + "/" + nomeModulo + "Old");
+#endif
+
             // Download nova versão do executável
             QList<QMap<QString,QString> >::const_iterator metodosIterator = metodosDownload.constBegin();
             bool downloadSucess = false;
@@ -320,7 +345,7 @@ QStringList CacicTimer::verificarModulos(){
 
         nomesModulos.append(nomeModulo);
 
-        mapIterator++;
+        moduloIterator++;
     }
 
     return nomesModulos;
