@@ -7,6 +7,11 @@ InstallCacic::InstallCacic(QObject *parent) :
     logManager->addDestination("./log.txt","Install",QLogger::DebugLevel);
 }
 
+InstallCacic::~InstallCacic()
+{
+    logManager->closeLogger();
+}
+
 void InstallCacic::run(QStringList argv, int argc) {
 
     QLogger::QLog_Debug("Install", "Inicio de instalacao");
@@ -65,7 +70,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                   << "  [-help]                   Lista todos comandos.\n";
     }
 
-    logManager->closeLogger();
+
     emit finished();
 }
 
