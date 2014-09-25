@@ -34,8 +34,12 @@ void cacicD::start() {
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + application()->applicationDirPath() + "."));
         QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
         if(!result.contains("error") && !result.isEmpty()){
+
+            QJsonObject agenteConfigJson = result["agentcomputer"].toObject();
+            QJsonObject configuracoes = agenteConfigJson["configuracoes"].toObject();
+
             //o valor nu_intervalo_exec vem em horas. Se não me engano, o valor que o timer aceita é em segundos,por isso 3600
-            Ocacictimer->setPeriodicidadeExecucao(result["reply"].toObject()["nu_intervalo_exec"].toInt() * 3600);
+            Ocacictimer->setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toInt() * 3600);
             Ocacictimer->iniciarTimer();
         }else{
             //Iniciar com um timer default (4 horas), pra não ficar freezado pra sempre.
