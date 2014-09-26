@@ -13,11 +13,34 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
 
-win32 {
-    LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
-    QT += axcontainer
+release {
+#Descomentar essas linhas se quiser bibliotecas estáticas
+#    CONFIG += static
+#    CONFIG += staticlib
+#    message("Release build.")
+}
+
+static {
+    DEFINES += STATIC
+    message("Static build.")
+
+    win32 {
+        LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+        QT += axcontainer
+    } else {
+        DEPENDPATH += ../lib
+        LIBS += ../lib/libcryptopp.a
+        LIBS += ../lib/libQt5Core.a
+        LIBS += ../lib/libQt5Network.a
+    }
+
 } else {
-    LIBS += -L/usr/lib -lcryptopp
+    win32 {
+        LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+        QT += axcontainer
+    } else {
+        LIBS += -L/usr/lib -lcryptopp
+    }
 }
 
 TEMPLATE = app
