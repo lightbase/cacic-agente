@@ -44,7 +44,8 @@ QJsonObject CacicComm::comm(QString route, bool *ok, const QJsonObject &json, bo
         }
         req.setSslConfiguration(QSslConfiguration::defaultConfiguration());
     } else
-        url = "http://" + urlGerente + route;
+        url = "http://" + this->urlGerente + route;
+
     req.setUrl(url);
     req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
     if (json.empty()){

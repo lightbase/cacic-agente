@@ -29,6 +29,12 @@ void CacicTimer::iniciarTimer()
 void CacicTimer::mslot(){
     try{
         verificarPeriodicidadeJson();
+        bool ok;
+        QJsonObject resposta = OCacicComm->login(&ok);
+        if(resposta.isEmpty() || resposta.contains("error")){
+            //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
+            resposta = OCacicComm->login(&ok);
+        }
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));
     }
@@ -38,21 +44,20 @@ void CacicTimer::mslot(){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
         if(getConfig()){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
-            QStringList nomesModulos = verificarModulos();
+            //QStringList nomesModulos = verificarModulos();
+            //if ( !nomesModulos.empty() ) {
+            //    foreach( QString nome, nomesModulos ) {
+            definirDirModulo(getApplicationDirPath(), "gercols");
+            iniciarModulo(getDirProgram());
 
-            if ( !nomesModulos.empty() ) {
-                foreach( QString nome, nomesModulos ) {
-                    definirDirModulo(getApplicationDirPath(), nome);
-                    iniciarModulo(getDirProgram());
-
-                    if(nome == "cacic-gercols"){
-                        //Envio do json gerado na coleta
-                        bool ok;
-                        QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
-                        OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
-                    }
-                }
-            }
+            //            if(nome == "gercols"){
+            //                // Envio do json gerado na coleta
+            //                bool ok;
+            //                QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
+            //                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
+            //            }
+            // }
+            //}
         }else{
             qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
             QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
@@ -74,10 +79,13 @@ bool CacicTimer::getTest(){
         bool ok;
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
-        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/test", &ok, as);
-        //        if(jsonresult.contains("error")){
-        //            return false;
-        //        }
+        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, false);
+        if(!ok){
+            jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, false); // mais uma vez pra garantir.
+        }
+        if(jsonresult.contains("error")){
+            return false;
+        }
         try{
             ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                                   this->applicationDirPath + "/getTest.json");
@@ -97,10 +105,13 @@ bool CacicTimer::getConfig(){
         bool ok;
         QJsonObject as;
         as["computador"] = OCacic_Computer.toJsonObject();
-        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as);
-        //        if(jsonresult.contains("error")){
-        //            return false;
-        //        }
+        QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, false);
+        if(!ok){
+            jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, false); // mais uma vez pra garantir.
+        }
+        if(jsonresult.contains("error")){
+            return false;
+        }
         try{
             ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                                   this->applicationDirPath + "/getConfigNew.json");
@@ -182,7 +193,6 @@ void CacicTimer::iniciarModulo(QString modulo)
     if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
         registraFimColeta("SUCESSO");
     }else{
-        proc.waitForFinished(120000);
         if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
             registraFimColeta("ERRO");
             proc.kill();
@@ -221,7 +231,8 @@ void CacicTimer::iniciarInstancias(){
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     OCacicComm = new CacicComm();
-    OCacicComm->setUrlSsl("https://10.1.0.137/cacic/web/app_dev.php");
+    OCacicComm->setUrlSsl("https://teste.cacic.cc");
+    OCacicComm->setUrlGerente("teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
 }
@@ -230,11 +241,10 @@ void CacicTimer::verificarPeriodicidadeJson()
 {
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
-
         QJsonObject agenteConfigJson = result["agentcomputer"].toObject();
         QJsonObject configuracoes = agenteConfigJson["configuracoes"].toObject();
-        if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toInt()){
-            setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toInt() * 3600);
+        if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
+            setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
             reiniciarTimer();
         }
     }else{

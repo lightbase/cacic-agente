@@ -57,5 +57,3 @@ INCLUDEPATH += ../src \
                ../src/crypto++/include/
 
 DEFINES += STATIC
-    message("Static build.")
-}

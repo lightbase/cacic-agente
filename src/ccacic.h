@@ -17,10 +17,6 @@
 #include "../src/crypto++/include/aes.h"
 #include "../src/crypto++/include/base64.h"
 #include "../src/crypto++/include/modes.h"
-//#include <filters.h>
-//#include <hex.h>
-//#include <sha.h>
-//#include <md5.h>
 
 class CCacic
 {
