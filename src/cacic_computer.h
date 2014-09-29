@@ -8,6 +8,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QSysInfo>
 #include "operatingsystem.h"
+#include "console.h"
 
 class CACIC_Computer
 {
@@ -25,6 +26,8 @@ private:
     OperatingSystem oOperatingSystem;
     int pegarOS();
     std::string pegarUsu();
+
+    ConsoleObject console;
 
     QList<QVariantMap> networkInterface;
     std::string usuario;
