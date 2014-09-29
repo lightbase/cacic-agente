@@ -216,11 +216,7 @@ bool CacicTimer::Md5IsEqual(QVariant document01,QVariant document02){
                                        (document01.toByteArray()),QCryptographicHash::Md5).toHex());
     QString getconfigMD52 = QString(QCryptographicHash::hash(
                                         (document02.toByteArray()),QCryptographicHash::Md5).toHex());
-    if(getconfigMD5 == getconfigMD52){
-        return true;
-    }else{
-        return false;
-    }
+    return getconfigMD5 == getconfigMD52;
 }
 
 void CacicTimer::iniciarInstancias(){

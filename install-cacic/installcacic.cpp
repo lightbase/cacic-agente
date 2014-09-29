@@ -4,7 +4,7 @@ InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("./log.txt","Install",QLogger::DebugLevel);
+    logManager->addDestination("./install.log","Install",QLogger::DebugLevel);
 }
 
 InstallCacic::~InstallCacic()
@@ -28,31 +28,51 @@ void InstallCacic::run(QStringList argv, int argc) {
         oCacicComm->setPassword(this->argumentos["password"]);
         QJsonObject jsonLogin = oCacicComm->login(&ok);
         if (ok){
+            QJsonObject jsonComm;
+            QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
             //conectado, grava a chave na classe;
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
+            jsonComm["computador"] = oCacicComputer.toJsonObject();
+            QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
+            qDebug () << configs;
+            if (ok){
+                oCacicComm->setUrlGerente(configs["reply"].toObject()["applicationUrl"].toString());
 #ifdef Q_OS_WIN
-            oCacic.setCacicMainFolder("c:/cacic/");
+                oCacic.setCacicMainFolder(configs["reply"].toObject()["cacic_main_folder"].isString() ?
+                                          configs["reply"].toObject()["cacic_main_folder"].toString() :
+                                          "c:/cacic/");
 #elif defined(Q_OS_LINUX)
-            oCacic.setCacicMainFolder("/home/cacic");
+                oCacic.setCacicMainFolder(configs["reply"].toObject()["cacic_main_folder"].isString() ?
+                                          configs["reply"].toObject()["cacic_main_folder"].toString() :
+                                          "/usr/cacic");
 #endif
-            oCacic.createFolder(oCacic.getCacicMainFolder());
-            //grava chave em registro;
 
-            QVariantMap registro;
-            registro["key"] = oCacic.getChaveCrypt();
-            registro["mainFolder"] = oCacic.getCacicMainFolder();
-            oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
-            //starta o processo do cacic.
+                oCacic.createFolder(oCacic.getCacicMainFolder());
+                //grava chave em registro;
+                QVariantMap registro;
+                registro["key"] = oCacic.getChaveCrypt();
+                registro["mainFolder"] = oCacic.getCacicMainFolder();
+                oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+                //starta o processo do cacic.
 
-            //TO DO: Fazer download do serviço
-#ifdef Q_OS_WIN
-            QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe", false, &ok);
-#else
-            QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic", false, &ok);
-#endif
-            if (!ok)
-                std::cout << "Erro ao iniciar o processo: "
-                          << exitStatus.toStdString() << "\n";
+                //TO DO: Fazer download do serviço
+    #ifdef Q_OS_WIN
+                oCacicComm->ftpDownload("agentes/cacic.exe");
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe", false, &ok, QStringList("-install"));
+    #else
+                oCacicComm->ftpDownload("agentes/cacic");
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic", false, &ok, QStringList("-install"));
+    #endif
+                if (!ok)
+                    std::cout << "Erro ao iniciar o processo: "
+                              << exitStatus.toStdString() << "\n";
+                else {
+                    std::cout << "Instalação realizada com sucesso.";
+                }
+            } else {
+                std::cout << "Falha ao pegar configurações: " << configs["error"].toString();
+            }
+
         } else
             std::cout << "Nao foi possivel realizar o login.\n  "
                       << jsonLogin["error"].toString().toStdString();
