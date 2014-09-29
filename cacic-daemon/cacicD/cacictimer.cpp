@@ -38,36 +38,52 @@ void CacicTimer::mslot(){
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));
     }
-    cMutex->lock();
-    QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo fechado."));
+
+    verificarEIniciarQMutex();
+
     if(getTest()){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
         if(getConfig()){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
             //QStringList nomesModulos = verificarModulos();
             //if ( !nomesModulos.empty() ) {
-            //    foreach( QString nome, nomesModulos ) {
+            // foreach( QString nome, nomesModulos ) {
             definirDirModulo(getApplicationDirPath(), "gercols");
-            iniciarModulo(getDirProgram());
-
-            //            if(nome == "gercols"){
-            //                // Envio do json gerado na coleta
-            //                bool ok;
-            //                QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
-            //                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta );
-            //            }
-            // }
+            cacicthread->setCMutex(cMutex);
+            cacicthread->setModuloDirPath(getDirProgram());
+            cacicthread->start(QThread::NormalPriority);
+            //if(nome == "gercols"){
+            // Envio do json gerado na coleta
+            //    bool ok;
+            //    QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
+            //    OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
             //}
+            // }
+            // }
         }else{
-            qDebug() << "getConfig() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
             QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
         }
     }else{
-        qDebug() << "getTest() failed. - " + QDateTime::currentDateTime().toLocalTime().toString();
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
     }
-    cMutex->unlock();
-    QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Semáforo aberto."));
+}
+
+void CacicTimer::verificarEIniciarQMutex(){
+    if(!cacicthread->isRunning()){
+        cMutex->lock();
+        QLogger::QLog_Info("Cacic Daemon (Timer)", "Semáforo fechado com sucesso.");
+    }else{
+        QLogger::QLog_Info("Cacic Daemon (Timer)", "Possivelmente o gercols travou e será finalizado.");
+        try{
+            cacicthread->terminate();
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Gercols finalizado com sucesso.");
+        }catch (...){
+            QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha ao finalizar gercols.");
+            return;
+        }
+        cMutex->lock();
+        QLogger::QLog_Info("Cacic Daemon (Timer)", "Semáforo fechado com sucesso.");
+    }
 }
 
 QString CacicTimer::getApplicationDirPath() {
@@ -167,11 +183,6 @@ void CacicTimer::lerArquivoConfig ( const QJsonObject& jsonConfig )
     }
 }
 
-void CacicTimer::registraInicioColeta()
-{
-    QLogger::QLog_Info("Cacic Daemon (Timer)","Coleta iniciada em: " + QDateTime::currentDateTime().toLocalTime().toString());
-}
-
 QString CacicTimer::getDirProgram() const
 {
     return dirProgram;
@@ -183,33 +194,11 @@ void CacicTimer::setDirProgram(const QString &value)
 }
 
 
-void CacicTimer::iniciarModulo(QString modulo)
-{
-    registraInicioColeta();
-    QDir::setCurrent(this->applicationDirPath);
-    QProcess proc;
-    proc.setWorkingDirectory(this->applicationDirPath);
-    proc.execute(modulo);
-    if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
-        registraFimColeta("SUCESSO");
-    }else{
-        if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
-            registraFimColeta("ERRO");
-            proc.kill();
-        }
-    }
-}
-
 void CacicTimer::setApplicationDirPath(const QString &value)
 {
     this->applicationDirPath = value;
 }
 
-
-void CacicTimer::registraFimColeta(QString msg)
-{
-    QLogger::QLog_Info("Cacic Daemon (Timer)","Coleta finalizada com " + msg + " em: " + QDateTime::currentDateTime().toLocalTime().toString());
-}
 
 bool CacicTimer::Md5IsEqual(QVariant document01,QVariant document02){
     QString getconfigMD5 = QString(QCryptographicHash::hash(
@@ -230,6 +219,7 @@ void CacicTimer::iniciarInstancias(){
     ccacic = new CCacic();
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
+    cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
     OCacicComm->setUrlSsl("https://teste.cacic.cc");
     OCacicComm->setUrlGerente("teste.cacic.cc");

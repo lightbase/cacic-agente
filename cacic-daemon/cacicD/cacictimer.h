@@ -12,6 +12,7 @@
 #include "cacic_comm.h"
 #include "cacic_computer.h"
 #include "QLogger.h"
+#include  "cacicthread.h"
 
 class CacicTimer : public QObject
 {
@@ -34,15 +35,14 @@ public:
     void setPeriodicidadeExecucao(int value);
 
 private:
-    void registraFimColeta(QString msg);
-    void registraInicioColeta();
+    void verificarEIniciarQMutex();
     QStringList verificarModulos();
     void reiniciarTimer();
     QLogger::QLoggerManager *logManager;
+    CacicThread *cacicthread;
     QString dirProgram;
     QString applicationDirPath;
     QString getDirProgram() const;
-    void iniciarModulo(QString modulo);
     void iniciarInstancias();
     void verificarPeriodicidadeJson();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
