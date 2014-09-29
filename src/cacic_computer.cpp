@@ -45,6 +45,7 @@ QJsonObject CACIC_Computer::toJsonObject()
     QJsonObject json;
     QJsonArray network;
     int count = 1;
+
     json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
     json["operatingSystem"] = this->oOperatingSystem.toJsonObject();
     foreach(QVariantMap auxMap, this->getNetworkInterface()){
@@ -62,16 +63,25 @@ QJsonObject CACIC_Computer::toJsonObject()
  *      retorna o usuario logado no sistema. (erro, retorna o usuário que está executando.)
 */
 std::string CACIC_Computer::pegarUsu(){
+#if defined(Q_OS_WINDOWS)
   QString text;
   QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
   foreach (text, environment) {
       if (text.contains("USER="    , Qt::CaseInsensitive) ||
           text.contains("USERNAME=", Qt::CaseInsensitive) ){
           QStringList split = text.split("=");
-//          qDebug() << split[1];
+
           return split[1].toStdString();
         }
     }
+
+#elif defined(Q_OS_LINUX)
+
+    QString user = console("who").split(" ")[0];
+    return user.toStdString();
+
+#endif
+
     return "0";
 }
 /*
