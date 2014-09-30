@@ -19,26 +19,29 @@ win32 {
     LIBS += -L/usr/lib -lcryptopp
 }
 TEMPLATE = app
-#TEMPLATE = lib
 
 SOURCES += main.cpp \
            cacicd.cpp \
            cacictimer.cpp \
+           cacicthread.cpp \
            ../../src/cacic_comm.cpp \
            ../../src/ccacic.cpp \
            ../../src/wmi.cpp \
            ../../src/cacic_computer.cpp \
            ../../src/operatingsystem.cpp \
-           ../../src/QLogger.cpp
+           ../../src/QLogger.cpp \
+
 
 HEADERS += cacicd.h \
            cacictimer.h \
+           cacicthread.h \
            ../../src/ccacic.h \
            ../../src/wmi.h \
            ../../src/cacic_computer.h \
            ../../src/operatingsystem.h \
            ../../src/cacic_comm.h \
-           ../../src/QLogger.h
+           ../../src/QLogger.h \
+
 
 include(../../src/qtservice/src/qtservice.pri)
 
