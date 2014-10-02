@@ -58,10 +58,21 @@ void InstallCacic::run(QStringList argv, int argc) {
                 //TO DO: Fazer download do serviço
     #ifdef Q_OS_WIN
                 oCacicComm->ftpDownload("agentes/cacic.exe");
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe", false, &ok, QStringList("-install"));
+
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe",
+                                                         false,
+                                                         &ok,
+                                                         QStringList("-install");
     #else
                 oCacicComm->ftpDownload("agentes/cacic");
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic", false, &ok, QStringList("-install"));
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic",
+                                                         false,
+                                                         &ok,
+                                                         QStringList("-install",
+                                                                     "cacic",
+                                                                      !configs["reply"].toObject()["te_senha_adm_agente"].isNull() ?
+                                                                      configs["reply"].toObject()["te_senha_adm_agente"].toString :
+                                                                     "ADMINCACIC");
     #endif
                 if (!ok)
                     std::cout << "Erro ao iniciar o processo: "
@@ -70,7 +81,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                     std::cout << "Instalação realizada com sucesso.";
                 }
             } else {
-                std::cout << "Falha ao pegar configurações: " << configs["error"].toString();
+                std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString();
             }
 
         } else

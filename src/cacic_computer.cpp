@@ -53,6 +53,8 @@ QJsonObject CACIC_Computer::toJsonObject()
         count++;
     }
     json["networkDevices"] = network;
+    json["nmComputador"] = QJsonValue::fromVariant(QString("TODO"));
+    json["versaoAgente"] = QJsonValue::fromVariant(QString("TODO"));
     return json;
 }
 
