@@ -57,15 +57,15 @@ void InstallCacic::run(QStringList argv, int argc) {
 
                 //TO DO: Fazer download do serviço
     #ifdef Q_OS_WIN
-                oCacicComm->ftpDownload("agentes/cacic.exe");
+                oCacicComm->ftpDownload("agentes/cacic-service.exe");
 
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic.exe",
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service.exe",
                                                          false,
                                                          &ok,
                                                          QStringList("-install");
     #else
-                oCacicComm->ftpDownload("agentes/cacic");
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic",
+                oCacicComm->ftpDownload("agentes/cacic-service");
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service",
                                                          false,
                                                          &ok,
                                                          QStringList("-install",

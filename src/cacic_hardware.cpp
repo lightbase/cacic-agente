@@ -10,6 +10,10 @@ void cacic_hardware::iniciaColeta()
 #elif defined(Q_OS_LINUX)
     OperatingSystem operatingSystem;
 
+
+    // Como criaremos pacotes agora, todas essas verificações podiam só
+    // ser incluídas como dependências.
+
     // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
     if( console("lshw").contains("/bin/sh:") ){ qDebug() << "lshw nao instalado.";
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
@@ -288,6 +292,7 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxBios(hardware);
     coletaLinuxMotherboard(hardware);
     coletaLinuxIsNotebook(hardware);
+    coletaLinuxPrinters(hardware);
 
     return hardware;
 }
@@ -431,6 +436,33 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
                 && line.contains("Notebook") ){
                 hardware["is_notebook"] = QJsonValue::fromVariant(QString("true"));
         }
+    }
+
+}
+
+void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
+{
+    QStringList consoleOutput;
+
+    if( console("lpstat").contains("/bin/sh:") ) { // Cups não instalado
+        return;
+    } else {
+
+        consoleOutput = console("lpstat -a").split("\n");
+        consoleOutput.removeLast(); // remover o último elemento que é somente vazio
+
+        if( consoleOutput[0].contains("No destination") )
+            return;
+
+        QJsonArray printersList;
+        foreach(QString line, consoleOutput ) {
+
+            if ( line.split(" ")[1] == QString("accepting") ) {
+                QString printerName = line.split(" ")[0];
+                printersList.append(QJsonValue::fromVariant(printerName));
+            }
+        }
+        hardware["printers"] = printersList;
     }
 
 }

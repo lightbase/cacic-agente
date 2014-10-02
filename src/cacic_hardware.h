@@ -34,6 +34,7 @@ private:
     void coletaLinuxBios(QJsonObject &hardware);
     void coletaLinuxMotherboard(QJsonObject &hardware);
     void coletaLinuxIsNotebook(QJsonObject &hardware);
+    void coletaLinuxPrinters(QJsonObject &hardware);
 #endif
 
     CCacic oCacic;
