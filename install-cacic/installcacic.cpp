@@ -65,14 +65,22 @@ void InstallCacic::run(QStringList argv, int argc) {
                                                          QStringList("-install");
     #else
                 oCacicComm->ftpDownload("agentes/cacic-service");
+
+                QJsonObject configsJson = configs["reply"].toObject();
+                QString senhaAgente;
+                if ( !configsJson["te_senha_adm_agente"].isNull() )
+                    senhaAgente = configsJson["te_senha_adm_agente"].toString();
+                else
+                    senhaAgente = QString("ADMINCACIC");
+
+                QStringList arguments;
+                arguments.append(QString("-install"));
+                arguments.append(QString("cacic"));
+                arguments.append(senhaAgente);
                 QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service",
                                                          false,
                                                          &ok,
-                                                         QStringList("-install",
-                                                                     "cacic",
-                                                                      !configs["reply"].toObject()["te_senha_adm_agente"].isNull() ?
-                                                                      configs["reply"].toObject()["te_senha_adm_agente"].toString :
-                                                                     "ADMINCACIC");
+                                                         arguments);
     #endif
                 if (!ok)
                     std::cout << "Erro ao iniciar o processo: "
