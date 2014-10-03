@@ -27,10 +27,10 @@ public:
     QJsonObject comm(QString route, bool *ok, const QJsonObject &json = QJsonObject(), bool isSsl = false);
     bool commStatus();
     QJsonObject login(bool *ok);
-    bool ftpDownload(const QString &path);
-    bool ftpDownload(const QString &urlServer, const QString &path);
-    bool httpDownload(const QString &path);
-    bool httpDownload(const QString &urlServer, const QString &path);
+    bool ftpDownload(const QString &path, const QString &pathDownload);
+    bool ftpDownload(const QString &urlServer, const QString &path, const QString &pathDownload);
+    bool httpDownload(const QString &path, const QString &pathDownload);
+    bool httpDownload(const QString &urlServer, const QString &path,const QString &pathDownload);
     QString getUrlSsl ();
     void setUrlSsl(QString value);
     QString getUrlGerente ();
@@ -51,8 +51,8 @@ private slots:
 
 private:
 
-    bool fileDownload(const QString &mode, const QString &path);
-    bool fileDownload(const QString &mode, const QString &urlServer, const QString &path);
+    bool fileDownload(const QString &mode, const QString &path, const QString &pathDownload);
+    bool fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload);
 
     QUrlQuery params;
     QString urlGerente;

@@ -6,6 +6,7 @@
 #include "cacictimer.h"
 #include "QLogger.h"
 
+#define APP_VERSION "3.0"
 
 class cacicD : public QtService<QCoreApplication>
 {

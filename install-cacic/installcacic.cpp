@@ -25,7 +25,7 @@ void InstallCacic::run(QStringList argv, int argc) {
     if (ok){
         oCacicComm->setUrlGerente(this->argumentos["host"]);
         oCacicComm->setUsuario(this->argumentos["user"]);
-        oCacicComm->setPassword(this->argumentos["password"]);
+        oCacicComm->setPassword(this->argumentos["pass"]);
         QJsonObject jsonLogin = oCacicComm->login(&ok);
         if (ok){
             QJsonObject jsonComm;
@@ -57,14 +57,14 @@ void InstallCacic::run(QStringList argv, int argc) {
 
                 //TO DO: Fazer download do serviço
     #ifdef Q_OS_WIN
-                oCacicComm->ftpDownload("agentes/cacic-service.exe");
+                oCacicComm->ftpDownload("agentes/cacic-service.exe", oCacic.getCacicMainFolder());
 
                 QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service.exe",
                                                          false,
                                                          &ok,
                                                          QStringList("-install");
     #else
-                oCacicComm->ftpDownload("agentes/cacic-service");
+                oCacicComm->ftpDownload("agentes/cacic-service", oCacic.getCacicMainFolder());
 
                 QJsonObject configsJson = configs["reply"].toObject();
                 QString senhaAgente;
@@ -86,15 +86,15 @@ void InstallCacic::run(QStringList argv, int argc) {
                     std::cout << "Erro ao iniciar o processo: "
                               << exitStatus.toStdString() << "\n";
                 else {
-                    std::cout << "Instalação realizada com sucesso.";
+                    std::cout << "Instalação realizada com sucesso." << "\n";
                 }
             } else {
-                std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString();
+                std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString() << "\n";
             }
 
         } else
             std::cout << "Nao foi possivel realizar o login.\n  "
-                      << jsonLogin["error"].toString().toStdString();
+                      << jsonLogin["error"].toString().toStdString() << "\n";
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         oCacic.deleteFolder("c:/cacic");
         oCacic.removeRegistry("Lightbase", "Cacic");
@@ -105,7 +105,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                   << "<-host=url_gerente> <-user=usuario> <-password=senha> [-help]\n\n"
                   << "  <-host=url_gerente>       url_gerente: Caminho para a aplicação do gerente.\n"
                   << "  <-user=usuario>           usuario: usuário de login no gerente.\n"
-                  << "  <-password=senha>         senha: senha de login no gerente\n"
+                  << "  <-pass=senha>             senha: senha de login no gerente\n"
                   << "  [-help]                   Lista todos comandos.\n";
     }
 
@@ -124,7 +124,7 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
         else if (aux.at(0)== '-')
             map["default"] = aux.mid(1);
     }
-    *ok = (bool) map.contains("host") && map.contains("user") && map.contains("password");
+    *ok = (bool) map.contains("host") && map.contains("user") && map.contains("pass");
     if (*ok){
         this->argumentos = map;
     }

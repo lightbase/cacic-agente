@@ -323,7 +323,7 @@ void CTestCacic::testLogger()
 
 void CTestCacic::testFtpDownload()
 {
-    OCacicComm->ftpDownload("ftp://ftp.unicamp.br", "/pub/gnu/Licenses/gpl-2.0.txt");
+    OCacicComm->ftpDownload("ftp://ftp.unicamp.br", "/pub/gnu/Licenses/gpl-2.0.txt", "");
     QFile downloaded("gpl-2.0.txt");
 
     QVERIFY( downloaded.open(QIODevice::ReadOnly) );

@@ -9,6 +9,7 @@
 #include <QSysInfo>
 #include "operatingsystem.h"
 #include "console.h"
+#include <sys/utsname.h>
 
 class CACIC_Computer
 {
@@ -31,6 +32,7 @@ private:
 
     QList<QVariantMap> networkInterface;
     std::string usuario;
+    std::string computerName;
 
 };
 

@@ -2,8 +2,12 @@
 
 CACIC_Computer::CACIC_Computer()
 {
+    struct utsname sysName;
+    uname(&sysName);
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
+    computerName = sysName.nodename;
+//    qDebug() << sysName.nodename << sysName.machine << sysName.sysname << sysName.release << sysName.version;
 }
 
 /*NetworkInterfacesRunning
@@ -53,8 +57,8 @@ QJsonObject CACIC_Computer::toJsonObject()
         count++;
     }
     json["networkDevices"] = network;
-    json["nmComputador"] = QJsonValue::fromVariant(QString("TODO"));
-    json["versaoAgente"] = QJsonValue::fromVariant(QString("TODO"));
+    json["nmComputador"] = QJsonValue::fromVariant(QString::fromStdString(this->computerName));
+    json["versaoAgente"] = QJsonValue::fromVariant(QString("3.0 (manual)"));
     return json;
 }
 

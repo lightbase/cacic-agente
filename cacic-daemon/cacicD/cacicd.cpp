@@ -4,7 +4,6 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 {
     try{
         this->createApplication(argc, argv);
-
         Ocacictimer = new CacicTimer(application()->applicationDirPath());
         ccacic = new CCacic;
         setServiceDescription("Cacic Daemon");

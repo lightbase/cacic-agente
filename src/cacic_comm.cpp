@@ -139,7 +139,7 @@ QJsonObject CacicComm::login(bool *ok) {
  * Faz o download de um arquivo usando o protocolo mode
  * a partir da url do gerente e do caminho até o arquivo.
  */
-bool CacicComm::fileDownload(const QString &mode, const QString &path){
+bool CacicComm::fileDownload(const QString &mode, const QString &path, const QString &pathDownload){
     QEventLoop eventLoop;
     QNetworkAccessManager manager;
     QNetworkRequest request;
@@ -150,7 +150,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path){
 
     QStringList splitPath = path.split("/");
 
-    fileHandler = new QFile(splitPath[splitPath.size() - 1]);
+    fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
         return false;
@@ -176,7 +176,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path){
  * Faz o download de um arquivo usando o protocolo mode
  * a partir da url recebida e do caminho até o arquivo.
  */
-bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path){
+bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload){
     QEventLoop eventLoop;
     QNetworkAccessManager manager;
     QNetworkRequest request;
@@ -187,7 +187,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 
     QStringList splitPath = path.split("/");
 
-    fileHandler = new QFile(splitPath[splitPath.size() - 1]);
+    fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
         return false;
@@ -208,20 +208,20 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     return true;
 }
 
-bool CacicComm::ftpDownload( const QString &path ){
-    return fileDownload("ftp", path);
+bool CacicComm::ftpDownload( const QString &path, const QString &pathDownload ){
+    return fileDownload("ftp", path, pathDownload);
 }
 
-bool CacicComm::ftpDownload( const QString &urlServer, const QString &path ){
-    return fileDownload("ftp", urlServer, path);
+bool CacicComm::ftpDownload( const QString &urlServer, const QString &path, const QString &pathDownload ){
+    return fileDownload("ftp", urlServer, path, pathDownload);
 }
 
-bool CacicComm::httpDownload( const QString &path ){
-    return fileDownload("http", path);
+bool CacicComm::httpDownload( const QString &path, const QString &pathDownload ){
+    return fileDownload("http", path, pathDownload);
 }
 
-bool CacicComm::httpDownload( const QString &urlServer, const QString &path ){
-    return fileDownload("http", urlServer, path);
+bool CacicComm::httpDownload( const QString &urlServer, const QString &path,const QString &pathDownload ){
+    return fileDownload("http", urlServer, path, pathDownload);
 }
 
 QString CacicComm::getUrlSsl (){

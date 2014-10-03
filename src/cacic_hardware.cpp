@@ -375,11 +375,11 @@ void cacic_hardware::coletaLinuxBios(QJsonObject &hardware)
         } else if(line.contains("Version:")){
               bios["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Release Date:")){
-              bios["release_date"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+              bios["releaseDate"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Runtime Size:")){
-              bios["runtime_size"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+              bios["runtimeSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("ROM Size:")){
-              bios["rom_size"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+              bios["romSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("BIOS Revision:")){
               bios["revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
@@ -399,13 +399,13 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
         if(line.contains("Manufacturer:") ){
                 motherboard["manufacturer"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Product Name:")){
-              motherboard["product_name"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+              motherboard["productName"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Version:")){
               motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Asset Tag:")){
-            motherboard["asset_tag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            motherboard["assetTag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Serial Number:")){
-            motherboard["serial_number"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            motherboard["serialNumber"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
 
@@ -419,7 +419,7 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 
     }
 
-    motherboard["onboard_capabilities"] = QJsonValue::fromVariant(onboardCapabilities);
+    motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
     hardware["motherboard"] = motherboard;
 }
@@ -433,8 +433,8 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
 //    qDebug() << consoleOutput;
     foreach(QString line, consoleOutput){
         if(line.contains("Type:")
-                && line.contains("Notebook") ){
-                hardware["is_notebook"] = QJsonValue::fromVariant(QString("true"));
+                && (line.contains("Notebook") || line.contains("Portable")) ){
+                hardware["isNotebook"] = QJsonValue::fromVariant(QString("true"));
         }
     }
 
