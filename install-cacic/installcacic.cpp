@@ -4,7 +4,8 @@ InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("./install.log","Install",QLogger::DebugLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Install Cacic",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Install Cacic",QLogger::ErrorLevel);
 }
 
 InstallCacic::~InstallCacic()
@@ -14,7 +15,7 @@ InstallCacic::~InstallCacic()
 
 void InstallCacic::run(QStringList argv, int argc) {
 
-    QLogger::QLog_Debug("Install", "Inicio de instalacao");
+    QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
 
     oCacicComm = new CacicComm();
 
@@ -130,6 +131,16 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
     }
     return map;
 }
+QString InstallCacic::getApplicationDirPath() const
+{
+    return applicationDirPath;
+}
+
+void InstallCacic::setApplicationDirPath(const QString &value)
+{
+    applicationDirPath = value;
+}
+
 
 QMap<QString, QString> InstallCacic::getArgumentos()
 {

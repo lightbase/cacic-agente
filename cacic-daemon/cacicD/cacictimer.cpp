@@ -33,11 +33,16 @@ void CacicTimer::mslot(){
         QJsonObject resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
             //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no primeiro login.");
             resposta = OCacicComm->login(&ok);
             if(resposta.isEmpty() || resposta.contains("error")){
-                QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no login.");
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no segundo login.");
                 return;
+            }else{
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
             }
+        }else{
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
         }
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));

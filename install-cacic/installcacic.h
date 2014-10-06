@@ -20,14 +20,16 @@ public:
     void setArgumentos(QMap<QString, QString> value);
     QMap<QString, QString> validaParametros(QStringList argv, int argc, bool *ok);
     bool startProcess(QString pathprogram, bool wait, QStringList arguments);
-
     void registro();
+    void setApplicationDirPath(const QString &value);
+
 private:
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
     CCacic oCacic;
     QLogger::QLoggerManager *logManager;
+    QString applicationDirPath;
 signals:
     void finished();
 
