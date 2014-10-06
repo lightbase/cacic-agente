@@ -35,7 +35,6 @@ void InstallCacic::run(QStringList argv, int argc) {
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
             jsonComm["computador"] = oCacicComputer.toJsonObject();
             QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
-            qDebug () << configs;
             if (ok){
                 oCacicComm->setUrlGerente(configs["reply"].toObject()["applicationUrl"].toString());
 #ifdef Q_OS_WIN
