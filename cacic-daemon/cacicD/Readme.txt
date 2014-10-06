@@ -11,4 +11,4 @@ Para instalar um serviço no Linux (TESTADO no Ubuntu 14.04):
 	2- criar um link simbolico para /etc/rc2.d/S99cacic
 		* sudo ln -s /etc/init.d/cacic /etc/rc2.d/S99cacic
 	3- iniciar o serviço.
-		* /bin/bash -vx /etc/init.d/cacic start
+		* sudo /etc/init.d/cacic start
