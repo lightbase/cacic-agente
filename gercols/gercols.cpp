@@ -3,19 +3,19 @@
 Gercols::Gercols(QObject *parent)
 {
 
-    /* Cria um json de configuração para teste.
-     *************************************************************************/
-    QJsonObject configTeste;
-    QJsonObject configComputer;
-    configComputer["operating_system"] = QJsonValue::fromVariant(QString(""));
-    configComputer["user"] = QJsonValue::fromVariant(QString(""));
-    configComputer["network_interface"] = QJsonValue::fromVariant(QString(""));
-    configTeste["computer"] = configComputer;
-    configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
-    configTeste["software"] = QJsonValue::fromVariant(QString(""));
+//     Cria um json de configuração para teste.
+//     *************************************************************************/
+//    QJsonObject configTeste;
+//    QJsonObject configComputer;
+//    configComputer["operating_system"] = QJsonValue::fromVariant(QString(""));
+//    configComputer["user"] = QJsonValue::fromVariant(QString(""));
+//    configComputer["network_interface"] = QJsonValue::fromVariant(QString(""));
+//    configTeste["computer"] = configComputer;
+//    configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
+//    configTeste["software"] = QJsonValue::fromVariant(QString(""));
 
-    oCacic.setJsonToFile(configTeste,"configReq.json");
-    /*************************************************************************/
+//    oCacic.setJsonToFile(configTeste,"configReq.json");
+//    /************************************************************************
 
     oColeta = new CColeta;
     //Pega chave do registro, que será pega na instalação.
@@ -35,7 +35,7 @@ void Gercols::run()
 
     /* Json de teste sendo excluído
      */
-    oCacic.deleteFile("configReq.json");
+//    oCacic.deleteFile("configReq.json");
     /***********************************/
 
     oColeta->waitToCollect();

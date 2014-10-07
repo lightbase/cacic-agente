@@ -132,10 +132,10 @@ void CTestCacic::testSslConnection()
     bool ok;
     QJsonObject json = OCacicComm->comm("", &ok, QJsonObject(), true);
     QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
-                json["codestatus"] :
-        QJsonValue::fromVariant(-1);
-    //    qDebug() << jsonvalue.toDouble();
-    QVERIFY(jsonvalue.toDouble() == 200 || jsonvalue.toDouble() == 302);
+                           json["codestatus"] :
+                           QJsonValue::fromVariant("-1");
+//    qDebug()<< jsonvalue.toDouble();
+    QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
 }
 
 void CTestCacic::testEnCrypt(){
@@ -240,8 +240,9 @@ void CTestCacic::testGetTest()
     bool ok;
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
+    qDebug() << envio;
     OCacicComm->setUrlGerente("http://teste.cacic.cc");
-    OCacicComm->comm("/ws/neo/getTest", &ok, envio);
+    OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
 

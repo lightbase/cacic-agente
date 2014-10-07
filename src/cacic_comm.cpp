@@ -68,7 +68,7 @@ QJsonObject CacicComm::comm(QString route, bool *ok, const QJsonObject &json, bo
     }
     eventLoop.exec(); // sai do looping chamando o "finished()".
 
-    jsonObj.insert("codestatus", QJsonValue::fromVariant(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)));
+    jsonObj.insert("codestatus", QJsonValue::fromVariant(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()));
 
     if (reply->error() == QNetworkReply::NoError) {
         //se não houver erro, grava o retorno;

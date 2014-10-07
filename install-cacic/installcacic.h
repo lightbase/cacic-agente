@@ -6,6 +6,7 @@
 #include <cacic_comm.h>
 #include <cacic_computer.h>
 #include <ccacic.h>
+#include <stdlib.h>
 #include "iostream"
 #include "QLogger.h"
 

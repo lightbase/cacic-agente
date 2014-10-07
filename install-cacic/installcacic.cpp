@@ -93,8 +93,9 @@ void InstallCacic::run(QStringList argv, int argc) {
             }
 
         } else
-            std::cout << "Nao foi possivel realizar o login.\n  "
-                      << jsonLogin["error"].toString().toStdString() << "\n";
+            std::cout << "Nao foi possivel realizar o login.\n"
+                      << "  Código: " << jsonLogin["codestatus"].toString().toStdString() << "\n"
+                      << "  " << jsonLogin["error"].toString().toStdString() << "\n";
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         oCacic.deleteFolder("c:/cacic");
         oCacic.removeRegistry("Lightbase", "Cacic");

@@ -43,14 +43,16 @@ bool CColeta::waitToCollect()
 void CColeta::run()
 {
     /* Versão do json de testes */
-    QJsonObject coleta = oCacic.getJsonFromFile("configReq.json");
-
-    if( coleta.contains("hardware") ){
+    QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json");
+    qDebug() << coleta;
+    QJsonObject actions = coleta["reply"].toObject()["agentecomputer"].toObject()["actions"].toObject();
+    if( actions.contains("col_hard") ){
         this->hardwareIsFinish = false;
         emit beginHardware();
     } else
         this->hardwareIsFinish = true;
-    if ( coleta.contains("software") ){
+
+    if ( actions.contains("col_soft") ){
         this->softwareIsFinish = false;
         emit beginSoftware();
     } else

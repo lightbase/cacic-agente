@@ -102,9 +102,9 @@ QJsonObject cacic_software::coletaArch()
                 packageJson["url"] = urlString.mid(1);
             }
             if(line.contains("Installed size"))
-                packageJson["installed_size"] = line.split(":")[1].mid(1);
+                packageJson["installedSize"] = line.split(":")[1].mid(1);
             if(line.contains("Install Date"))
-                packageJson["install_date"] = line.split(":")[1].mid(1);
+                packageJson["installDate"] = line.split(":")[1].mid(1);
         }
         softwaresJson[packageName] = packageJson;
     }
