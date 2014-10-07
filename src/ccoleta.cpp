@@ -44,40 +44,20 @@ void CColeta::run()
 {
     /* Versão do json de testes */
     QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json");
-    qDebug() << coleta;
-    QJsonObject actions = coleta["reply"].toObject()["agentecomputer"].toObject()["actions"].toObject();
-    if( actions.contains("col_hard") ){
+//    qDebug() << coleta;
+    QJsonObject actions = coleta["reply"].toObject()["agentcomputer"].toObject()["actions"].toObject();
+//    qDebug() << actions["col_hard"] << actions["col_soft"];
+    if( actions.contains("col_hard") && actions["col_hard"].toBool()){
         this->hardwareIsFinish = false;
         emit beginHardware();
     } else
         this->hardwareIsFinish = true;
 
-    if ( actions.contains("col_soft") ){
+    if ( actions.contains("col_soft") && actions["col_soft"].toBool()){
         this->softwareIsFinish = false;
         emit beginSoftware();
     } else
         this->softwareIsFinish = true;
-    /************************************************************/
-
-
-    /* Versão do json definitiva, obtiva através do getConfig()
-    QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject();
-
-    foreach ( QJsonValue action, coleta["actions"].toArray() ){
-        QJsonObject jsonAction = action.toObject();
-
-        if( jsonAction.contains("col_hard") && jsonAction["col_hard"] == QJsonValue.fromVariant(QString("true")) ){
-            this->hardwareIsFinish = false;
-            emit beginHardware();
-        } else
-            this->hardwareIsFinish = true;
-        if ( jsonAction.contains("col_soft") && jsonAction["col_soft"] == QJsonValue.fromVariant(QString("true")) ){
-            this->softwareIsFinish = false;
-            emit beginSoftware();
-        } else
-            this->softwareIsFinish = true;
-    }
-    /************************************************************/
 
 }
 

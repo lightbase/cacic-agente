@@ -294,6 +294,7 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxIsNotebook(hardware);
     coletaLinuxPrinters(hardware);
 
+    lshwFile.remove();
     return hardware;
 }
 
@@ -434,7 +435,9 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
     foreach(QString line, consoleOutput){
         if(line.contains("Type:")
                 && (line.contains("Notebook") || line.contains("Portable")) ){
-                hardware["isNotebook"] = QJsonValue::fromVariant(QString("true"));
+                QJsonObject notebook;
+                notebook["value"] = QJsonValue::fromVariant(true);
+                hardware["isNotebook"] = notebook;
         }
     }
 
