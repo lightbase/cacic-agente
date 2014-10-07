@@ -133,16 +133,6 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
     }
     return map;
 }
-QString InstallCacic::getApplicationDirPath() const
-{
-    return applicationDirPath;
-}
-
-void InstallCacic::setApplicationDirPath(const QString &value)
-{
-    applicationDirPath = value;
-}
-
 
 QMap<QString, QString> InstallCacic::getArgumentos()
 {

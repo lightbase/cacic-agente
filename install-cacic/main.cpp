@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
     for (int i = 0; i<argc; i++)
         args.append(argv[i]);
     InstallCacic *installcacic = new InstallCacic(&a);
-    installcacic->setApplicationDirPath(a.applicationDirPath());
 
     // This will cause the application to exit when
     // the task signals finished.

@@ -21,8 +21,6 @@ public:
     QMap<QString, QString> validaParametros(QStringList argv, int argc, bool *ok);
     bool startProcess(QString pathprogram, bool wait, QStringList arguments);
     void registro();
-    void setApplicationDirPath(const QString &value);
-    QString getApplicationDirPath() const;
 
 private:
     QMap<QString, QString> argumentos;
