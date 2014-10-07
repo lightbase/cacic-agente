@@ -51,7 +51,10 @@ QJsonObject cacic_hardware::coletaWin()
     //  (Verifica se é notebook)
     params.clear();
     wmiResult = wmi::wmiSearch("Win32_PortableBattery", params);
-    hardware["IsNotebook"] = QJsonValue::fromVariant(!wmiResult.isNull());
+    QJsonObject notebook;
+    notebook["Value"] = QJsonValue::fromVariant(!wmiResult.isNull());
+    hardware["IsNotebook"] = notebook;
+    delete notebook;
     if (!wmiResult.isNull()){
         hardware["PortableBattery"] = wmiResult;
     }
