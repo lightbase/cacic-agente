@@ -3,8 +3,12 @@
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
+    QDir dir;
+    this->applicationDirPath = dir.currentPath();
+
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("./install.log","Install",QLogger::DebugLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Install Cacic",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Install Cacic",QLogger::ErrorLevel);
 }
 
 InstallCacic::~InstallCacic()
@@ -14,7 +18,7 @@ InstallCacic::~InstallCacic()
 
 void InstallCacic::run(QStringList argv, int argc) {
 
-    QLogger::QLog_Debug("Install", "Inicio de instalacao");
+    QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
 
     oCacicComm = new CacicComm();
 
@@ -34,7 +38,6 @@ void InstallCacic::run(QStringList argv, int argc) {
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
             jsonComm["computador"] = oCacicComputer.toJsonObject();
             QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
-            qDebug () << configs;
             if (ok){
                 oCacicComm->setUrlGerente(configs["reply"].toObject()["applicationUrl"].toString());
 #ifdef Q_OS_WIN

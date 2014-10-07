@@ -33,7 +33,16 @@ void CacicTimer::mslot(){
         QJsonObject resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
             //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no primeiro login.");
             resposta = OCacicComm->login(&ok);
+            if(resposta.isEmpty() || resposta.contains("error")){
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no segundo login.");
+                return;
+            }else{
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
+            }
+        }else{
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
         }
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Não foi possivel verificar a periodicidade no getConfig.json"));
@@ -45,27 +54,27 @@ void CacicTimer::mslot(){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
         if(getConfig()){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
-            //QStringList nomesModulos = verificarModulos();
-            //if ( !nomesModulos.empty() ) {
-            // foreach( QString nome, nomesModulos ) {
+            //            QStringList nomesModulos = verificarModulos();
+            //            if ( !nomesModulos.empty() ) {
+            //             foreach( QString nome, nomesModulos ) {
             definirDirModulo(getApplicationDirPath(), "gercols");
             cacicthread->setCMutex(cMutex);
             cacicthread->setModuloDirPath(getDirProgram());
             cacicthread->start(QThread::NormalPriority);
-            //if(nome == "gercols"){
-            // Envio do json gerado na coleta
-            //    bool ok;
-            //    QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
-            //    OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-            //}
-            // }
-            // }
-        }else{
-            QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
-        }
+            //            if(nome == "gercols"){
+            //             //Envio do json gerado na coleta
+            //                bool ok;
+            //                QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
+            //                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+            //            }
+            //             }
+      //  }
     }else{
-        QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
+        QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
     }
+}else{
+QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
+}
 }
 
 void CacicTimer::verificarEIniciarQMutex(){
@@ -210,8 +219,8 @@ bool CacicTimer::Md5IsEqual(QVariant document01,QVariant document02){
 
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/cacicLog.txt","Cacic Daemon (Timer)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/cacicLog.txt","Cacic Daemon (Timer)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Timer)",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
