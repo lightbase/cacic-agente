@@ -240,7 +240,7 @@ void CTestCacic::testGetTest()
     bool ok;
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
-    qDebug() << envio;
+//    qDebug() << envio;
     OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
@@ -248,21 +248,14 @@ void CTestCacic::testGetTest()
 
 void CTestCacic::testColeta()
 {
-    QJsonObject configTeste;
-    QJsonObject configComputer;
-    configComputer["operating_system"] = QJsonValue::fromVariant(QString(""));
-    configComputer["user"] = QJsonValue::fromVariant(QString(""));
-    configComputer["network_interface"] = QJsonValue::fromVariant(QString(""));
-    configTeste["computer"] = configComputer;
-    configTeste["hardware"] = QJsonValue::fromVariant(QString(""));
-    configTeste["software"] = QJsonValue::fromVariant(QString(""));
-
-    OCacic.setJsonToFile(configTeste,"configReq.json");
+    bool ok;
+    QJsonObject configEnvio;
+    configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
+    OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio), "getConfig.json");
     oColeta.configuraColetas();
     oColeta.run();
     oColeta.waitToCollect();
-    //    OCacic.setJsonToFile(oColeta.toJsonObject(), "/home/eric/coleta.json");
-    //    qDebug() << oColeta.toJsonObject();
+
     QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
             !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
 }
@@ -332,6 +325,15 @@ void CTestCacic::testFtpDownload()
     QVERIFY( downloaded.readAll() != "" );
 }
 
+void CTestCacic::testEnviaColeta()
+{
+    bool ok;
+    QJsonObject coletaEnvio = oColeta.toJsonObject();
+//    qDebug() << coletaEnvio;
+    qDebug() << OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
+    QVERIFY(ok);
+}
+
 void CTestCacic::cleanupTestCase()
 {
     //    OCacic.deleteFile("gpl-2.0.txt");
@@ -345,5 +347,5 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-    OCacic.deleteFile("configReq.json");
+    OCacic.deleteFile("getConfig.json");
 }

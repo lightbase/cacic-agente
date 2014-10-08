@@ -76,6 +76,7 @@ private slots:
   void testColeta();
   void testLogger();
   void testFtpDownload();
+  void testEnviaColeta();
   void cleanupTestCase();
 };
 
