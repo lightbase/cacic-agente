@@ -24,6 +24,11 @@ void CacicThread::iniciarModulo()
     proc.execute(this->moduloDirPath);
     if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
         registraFimColeta("SUCESSO");
+        if(enviarColeta()){
+            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Coleta enviada com sucesso."));
+        }else{
+            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Erro ao enviar a coleta."));
+        }
     }else{
         if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
             registraFimColeta("ERRO");
@@ -33,6 +38,35 @@ void CacicThread::iniciarModulo()
     cMutex->unlock();
     QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Semáforo aberto com sucesso."));
 }
+
+void CacicThread::setOCacicComm(CacicComm *value)
+{
+    OCacicComm = value;
+}
+
+void CacicThread::setCcacic(CCacic *value)
+{
+    ccacic = value;
+}
+
+
+void CacicThread::setNomeModulo(const QString &value)
+{
+    nomeModulo = value;
+}
+
+bool CacicThread::enviarColeta()
+{
+    if(this->nomeModulo == "gercols" ){
+        //Envio do json gerado na coleta
+        bool ok = false;
+        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+        this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+        return &ok;
+    }
+    return false;
+}
+
 
 void CacicThread::setCMutex(QMutex *value)
 {

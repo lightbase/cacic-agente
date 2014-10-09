@@ -57,25 +57,31 @@ void CacicTimer::mslot(){
             //            QStringList nomesModulos = verificarModulos();
             //            if ( !nomesModulos.empty() ) {
             //             foreach( QString nome, nomesModulos ) {
-            definirDirModulo(getApplicationDirPath(), "gercols");
+            QString nome = "gercols";
+            definirDirModulo(getApplicationDirPath(), nome);
+            cacicthread->setCcacic(ccacic);
+            cacicthread->setOCacicComm(OCacicComm);
+            cacicthread->setNomeModulo(nome);
             cacicthread->setCMutex(cMutex);
             cacicthread->setModuloDirPath(getDirProgram());
             cacicthread->start(QThread::NormalPriority);
-            //            if(nome == "gercols"){
-            //             //Envio do json gerado na coleta
-            //                bool ok;
-            //                QJsonObject jsonColeta = ccacic->getJsonFromFile("coleta.json");
-            //                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-            //            }
-            //             }
-      //  }
+//            if(nome == "gercols" ){
+//                //Envio do json gerado na coleta
+//                bool ok = false;
+//                QJsonObject jsonColeta = ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+//                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+//                if(&ok){
+//                    QLogger::QLog_Info("Cacic Daemon (Timer)", QString("coleta enviada com sucesso."));
+//                }
+//            }
+        }else{
+            QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
+        }
     }else{
-        QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
+        QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
     }
-}else{
-QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest().");
 }
-}
+
 
 void CacicTimer::verificarEIniciarQMutex(){
     if(!cacicthread->isRunning()){
