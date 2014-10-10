@@ -246,18 +246,14 @@ void CTestCacic::testGetTest()
     QVERIFY(ok);
 }
 
-void CTestCacic::testColeta()
+void CTestCacic::testGetConfig()
 {
     bool ok;
     QJsonObject configEnvio;
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
-    OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio), "getConfig.json");
-    oColeta.configuraColetas();
-    oColeta.run();
-    oColeta.waitToCollect();
+    OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio)["reply"].toObject(), "getConfig.json");
 
-    QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
-            !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
+    QVERIFY(ok);
 }
 
 void CTestCacic::testLogger()
@@ -334,6 +330,12 @@ void CTestCacic::testEnviaColeta()
     QVERIFY(ok);
 }
 
+void CTestCacic::testGetModulesValues()
+{
+    oCheckModules = new CheckModules(QDir::currentPath());
+    QVERIFY(false);
+}
+
 void CTestCacic::cleanupTestCase()
 {
     //    OCacic.deleteFile("gpl-2.0.txt");
@@ -347,5 +349,5 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-    OCacic.deleteFile("getConfig.json");
+//    OCacic.deleteFile("getConfig.json");
 }

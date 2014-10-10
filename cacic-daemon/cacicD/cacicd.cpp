@@ -40,7 +40,7 @@ void cacicD::start() {
             //o valor nu_intervalo_exec vem em minutos. O valor que o timer aceita é em milisegundos,por isso 60000
             Ocacictimer->setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
             Ocacictimer->iniciarTimer();
-        }else{
+        } else {
             //Iniciar com um timer default (4 horas), pra não ficar freezado pra sempre.
             QLogger::QLog_Error("Cacic Daemon", QString("Problemas com o arquivo getConfig.json"));
             QLogger::QLog_Info("Cacic Daemon", QString("Inicializando periodicidade de execução do serviço com tempo padrão."));

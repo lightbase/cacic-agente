@@ -18,6 +18,7 @@
 #include <QJsonObject>
 #include <ccoleta.h>
 #include <QLogger.h>
+#include <checkmodules.h>
 
 class CTestCacic : public QObject
 {
@@ -36,6 +37,7 @@ private:
     QJsonObject session;
     QString cripTeste;
     CColeta oColeta;
+    CheckModules *oCheckModules;
 //    cacicD OcacicD;
 
 signals:
@@ -73,10 +75,11 @@ private slots:
   void testColetaHardware();
   void testConvertDouble();
   void testGetTest();
-  void testColeta();
+  void testGetConfig();
   void testLogger();
   void testFtpDownload();
   void testEnviaColeta();
+  void testGetModulesValues();
   void cleanupTestCase();
 };
 

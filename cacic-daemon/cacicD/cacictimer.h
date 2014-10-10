@@ -35,7 +35,7 @@ public:
     void setPeriodicidadeExecucao(int value);
 
 private:
-    void verificarEIniciarQMutex();
+    bool verificarEIniciarQMutex();
     QStringList verificarModulos();
     void reiniciarTimer();
     QLogger::QLoggerManager *logManager;
@@ -50,8 +50,6 @@ private:
     QJsonObject jsonConfig;
     int periodicidadeExecucao = 14400; // 4*3600. Tempo default de execução.
     int getPeriodicidadeExecucao() const;
-    QList<QMap<QString,QString> > metodosDownload;
-    QMap<QString, QString> moduleMap; // key = hash md5, value = nome do modulo
 
 private slots:
     void mslot();
