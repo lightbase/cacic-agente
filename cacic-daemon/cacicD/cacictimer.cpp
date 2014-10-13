@@ -66,15 +66,6 @@ void CacicTimer::mslot(){
                 cacicthread->setCMutex(cMutex);
                 cacicthread->setModuloDirPath(getDirProgram());
                 cacicthread->start(QThread::NormalPriority);
-    //            if(nome == "gercols" ){
-    //                //Envio do json gerado na coleta
-    //                bool ok = false;
-    //                QJsonObject jsonColeta = ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
-    //                OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-    //                if(&ok){
-    //                    QLogger::QLog_Info("Cacic Daemon (Timer)", QString("coleta enviada com sucesso."));
-    //                }
-    //            }
             }else{
                 QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
             }
@@ -89,6 +80,7 @@ bool CacicTimer::verificarEIniciarQMutex(){
     if(!cacicthread->isRunning()){
         cMutex->lock();
         QLogger::QLog_Info("Cacic Daemon (Timer)", "Semáforo fechado com sucesso.");
+        return true;
     }else{
         QLogger::QLog_Info("Cacic Daemon (Timer)", "Possivelmente o gercols travou e será finalizado.");
         try{
