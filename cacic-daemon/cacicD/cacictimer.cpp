@@ -177,13 +177,7 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 }
 
 
-bool CacicTimer::Md5IsEqual(QVariant document01,QVariant document02){
-    QString getconfigMD5 = QString(QCryptographicHash::hash(
-                                       (document01.toByteArray()),QCryptographicHash::Md5).toHex());
-    QString getconfigMD52 = QString(QCryptographicHash::hash(
-                                        (document02.toByteArray()),QCryptographicHash::Md5).toHex());
-    return getconfigMD5 == getconfigMD52;
-}
+
 
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();

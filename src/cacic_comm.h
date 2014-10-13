@@ -20,10 +20,10 @@ class CacicComm : public QObject{
 public:
 
     CacicComm ();
-    CacicComm (QString urlGerente,          QString operatingSystem,     QString computerSystem,  QString csCipher,
-               QString csDebug,             QString csCompress,          QString httpUserAgent,   QString moduleFolderName,
-               QString moduleProgramName,   QString networkConfiguration,QString phpAuthPw,       QString phpAuthUser,
-               QString so,                  QString cacicVersion,        QString gercolsVersion);
+    CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
+               const QString &csDebug,             const QString &csCompress,          const QString &httpUserAgent,   const QString &moduleFolderName,
+               const QString &moduleProgramName,   const QString &networkConfiguration,const QString &phpAuthPw,       const QString &phpAuthUser,
+               const QString &so,                  const QString &cacicVersion,        const QString &gercolsVersion);
     QJsonObject comm(QString route, bool *ok, const QJsonObject &json = QJsonObject(), bool isSsl = false);
     bool commStatus();
     QJsonObject login(bool *ok);
@@ -32,18 +32,20 @@ public:
     bool httpDownload(const QString &path, const QString &pathDownload);
     bool httpDownload(const QString &urlServer, const QString &path,const QString &pathDownload);
     QString getUrlSsl ();
-    void setUrlSsl(QString value);
+    void setUrlSsl(const QString &value);
     QString getUrlGerente ();
     void setUrlGerente(QString value);
     QString getPassword();
-    void setPassword(QString value);
+    void setPassword(const QString &value);
     QString getUsuario();
-    void setUsuario(QString value);
-
-
+    void setUsuario(const QString &value);
+    QString getFtpUser() const;
+    void setFtpUser(const QString &value);
+    QString getFtpPass() const;
+    void setFtpPass(const QString &value);
 
 signals:
-//    void finished(QNetworkReply* reply);
+    void finished(QNetworkReply* reply);
 
 private slots:
 
@@ -60,6 +62,8 @@ private:
     QString usuario;
     QString password;
     QString session;
+    QString ftpUser;
+    QString ftpPass;
 
     QFile *fileHandler;
 

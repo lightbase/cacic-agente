@@ -17,6 +17,7 @@
 #include "../src/crypto++/include/aes.h"
 #include "../src/crypto++/include/base64.h"
 #include "../src/crypto++/include/modes.h"
+#include <QCryptographicHash>
 
 class CCacic
 {
@@ -60,6 +61,8 @@ public:
     QString getChaveCrypt() const;
     void setChaveCrypt(const QString &value);
 
+    bool Md5IsEqual(QVariant document01, QVariant document02);
+    bool Md5IsEqual(QVariant document01, QString document02);
 private:
     QString cacicMainFolder;
     QString mainModuleName;

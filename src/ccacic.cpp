@@ -199,6 +199,22 @@ QString CCacic::deCrypt(std::string str_in, std::string iv) {
     return QString::fromStdString(str_out);
 }
 
+bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
+    QString file1 = QString(QCryptographicHash::hash(
+                                       (document01.toByteArray()),QCryptographicHash::Md5).toHex());
+    QString file2 = QString(QCryptographicHash::hash(
+                                        (document02.toByteArray()),QCryptographicHash::Md5).toHex());
+    return file1 == file2;
+}
+
+bool CCacic::Md5IsEqual(QVariant document01,QString document02){
+    QString file1 = QString(QCryptographicHash::hash(
+                                       (document01.toByteArray()),QCryptographicHash::Md5).toHex());
+    QString file2 = document02;
+    return file1 == file2;
+}
+
+
 QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments)
 {
     QProcess process;

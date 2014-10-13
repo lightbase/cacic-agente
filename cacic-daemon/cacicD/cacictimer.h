@@ -28,7 +28,6 @@ public:
     void iniciarTimer();
     bool getTest();
     bool getConfig();
-    bool Md5IsEqual(QVariant document01,QVariant document02);
     void setApplicationDirPath(const QString &value);
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);

@@ -4,10 +4,10 @@ CacicComm::CacicComm ()
 {
 }
 
-CacicComm::CacicComm (QString urlGerente,          QString operatingSystem,     QString computerSystem,  QString csCipher,
-           QString csDebug,             QString csCompress,          QString httpUserAgent,   QString moduleFolderName,
-           QString moduleProgramName,   QString networkConfiguration,QString phpAuthPw,       QString phpAuthUser,
-           QString so,                  QString cacicVersion,        QString gercolsVersion)
+CacicComm::CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
+                      const QString &csDebug,             const QString &csCompress,          const QString &httpUserAgent,   const QString &moduleFolderName,
+                      const QString &moduleProgramName,   const QString &networkConfiguration,const QString &phpAuthPw,       const QString &phpAuthUser,
+                      const QString &so,                  const QString &cacicVersion,        const QString &gercolsVersion)
 {
     this->setUrlGerente(urlGerente);
     params.addQueryItem("OperatingSystem", operatingSystem);
@@ -159,6 +159,11 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     QUrl url(urlGerente);
     url.setScheme(mode);
     url.setPath(path);
+    if (!this->ftpUser.isEmpty())
+        url.setUserName(ftpUser);
+    if (!this->ftpPass.isEmpty())
+        url.setPassword(ftpPass);
+
     request.setUrl(url);
 
     reply = manager.get(request);
@@ -196,6 +201,11 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     QUrl url(urlServer);
     url.setScheme(mode);
     url.setPath(path);
+    if (!this->ftpUser.isEmpty())
+        url.setUserName(ftpUser);
+    if (!this->ftpPass.isEmpty())
+        url.setPassword(ftpPass);
+
     request.setUrl(url);
 
     reply = manager.get(request);
@@ -206,6 +216,38 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     delete reply;
 
     return true;
+}
+
+void CacicComm::fileDownloadFinished(QNetworkReply* reply)
+{
+    if (reply->size() > 0){
+        QTextStream out(fileHandler);
+        out << reply->readAll();
+        fileHandler->close();
+        reply->close();
+    } else {
+        qDebug() << "Falha ao baixar arquivo.";
+    }
+}
+
+QString CacicComm::getFtpPass() const
+{
+    return ftpPass;
+}
+
+void CacicComm::setFtpPass(const QString &value)
+{
+    ftpPass = value;
+}
+
+QString CacicComm::getFtpUser() const
+{
+    return ftpUser;
+}
+
+void CacicComm::setFtpUser(const QString &value)
+{
+    ftpUser = value;
 }
 
 bool CacicComm::ftpDownload( const QString &path, const QString &pathDownload ){
@@ -228,7 +270,7 @@ QString CacicComm::getUrlSsl (){
     return this->urlSsl;
 }
 
-void CacicComm::setUrlSsl(QString value){
+void CacicComm::setUrlSsl(const QString &value){
     this->urlSsl = value;
 }
 
@@ -251,7 +293,7 @@ QString CacicComm::getPassword()
     return this->password;
 }
 
-void CacicComm::setPassword(QString value)
+void CacicComm::setPassword(const QString &value)
 {
     this->password = value;
 }
@@ -260,15 +302,9 @@ QString CacicComm::getUsuario()
     return this->usuario;
 }
 
-void CacicComm::setUsuario(QString value)
+void CacicComm::setUsuario(const QString &value)
 {
     this->usuario = value;
 }
 
-void CacicComm::fileDownloadFinished(QNetworkReply* reply)
-{
-    QTextStream out(fileHandler);
-    out << reply->readAll();
-    fileHandler->close();
-    reply->close();
-}
+

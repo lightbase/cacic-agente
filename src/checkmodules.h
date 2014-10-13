@@ -13,7 +13,10 @@ public:
     bool start();
 private:
     CCacic oCacic;
+    CacicComm oCacicComm;
+    QString applicationUrl;
     QVariantMap modules; //modules["name"] = hash;
+    bool verificaModulo(const QString &moduloName, const QString &moduloHash);
 //    void lerArquivoConfig(const QJsonObject& jsonConfig);
 };
 

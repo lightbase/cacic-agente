@@ -333,12 +333,13 @@ void CTestCacic::testEnviaColeta()
 void CTestCacic::testGetModulesValues()
 {
     oCheckModules = new CheckModules(QDir::currentPath());
+    oCheckModules->start();
     QVERIFY(false);
 }
 
 void CTestCacic::cleanupTestCase()
 {
-    //    OCacic.deleteFile("gpl-2.0.txt");
+        OCacic.deleteFile("gpl-2.0.txt");
     OCacic.deleteFile("log01.txt");
     OCacic.deleteFile("./log02.txt");
     OCacic.deleteFile("../log03.txt");
@@ -349,5 +350,5 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-//    OCacic.deleteFile("getConfig.json");
+    OCacic.deleteFile("getConfig.json");
 }
