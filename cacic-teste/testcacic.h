@@ -71,11 +71,11 @@ private slots:
   void testSetRegistry();
   void testGetValueFromRegistry();
   void testRemoveRegistry();
-  void testColetaSoftware();
-  void testColetaHardware();
   void testConvertDouble();
   void testGetTest();
   void testGetConfig();
+  void testColetaSoftware();
+  void testColetaHardware();
   void testLogger();
   void testFtpDownload();
   void testEnviaColeta();

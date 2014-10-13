@@ -7,7 +7,8 @@ CheckModules::CheckModules(const QString &workingPath)
     configFile = oCacic.getJsonFromFile(workingPath + "/getConfig.json");
     if (!configFile.isEmpty()) {
         //pega url do gerente.
-        this->applicationUrl = configFile["agentcomputer"].toObject()["applicationUrl"].toString();
+        this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
+        qDebug() << applicationUrl;
         QJsonArray modulos;
         //pega o jsonarray dos módulos
         modulos = configFile["agentcomputer"].toObject()["modulos"].toArray();

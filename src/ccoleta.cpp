@@ -44,8 +44,8 @@ void CColeta::run()
     /* Versão do json de testes */
     QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json");
 //    qDebug() << coleta;
-    QJsonObject actions = coleta["reply"].toObject()["agentcomputer"].toObject()["actions"].toObject();
-//    qDebug() << actions["col_hard"] << actions["col_soft"];
+    QJsonObject actions = coleta["agentcomputer"].toObject()["actions"].toObject();
+//    qDebug() << actions["col_hard"].toBool() << actions["col_soft"].toBool();
     if( actions.contains("col_hard") && actions["col_hard"].toBool()){
         this->hardwareIsFinish = false;
         emit beginHardware();
@@ -64,7 +64,7 @@ QJsonObject CColeta::toJsonObject()
 {
     QJsonObject coletaJson;
     if (this->hardwareIsFinish && this->softwareIsFinish){
-        coletaJson["computer"] = oComputer.toJsonObject();
+        coletaJson["computador"] = oComputer.toJsonObject();
         coletaJson["software"] = oSoftware.toJsonObject();
         coletaJson["hardware"] = oHardware.toJsonObject();
     }

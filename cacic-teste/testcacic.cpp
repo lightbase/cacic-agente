@@ -9,7 +9,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 
 void CTestCacic::initTestCase()
 {
-    this->OCacicComm = new CacicComm("https://teste.cacic.cc",
+    this->OCacicComm = new CacicComm("https://teste.cacic.cc/app_dev.php",
                                      "rG/HcIDVTZ3pPKCf[[MAIS]]I6aigUb7OMeij3FfC7qNaznk0rBRYb6q6kSK3eNfjgptS8BfwW5yJqCvD2ai7xlw9I6P21j6cvQUqlHmAJpCbfwR13urdRE9AhjfokMcPrH6R1/zXPGMHveLRRgKLcqWu2X96rmoQQdRq9EW1SXmYUAx1dCV[[MAIS]]3Ha61XBw5pq58q35zH8Gjt998rTi3ecV8ShXXevqyK[[MAIS]]W07xpgTjbbd6Fbs/35gPfdRRgMNFjq7Gq[[MAIS]]llFgYMJ6UcEhw8f0ZLQo2oL/eRW/CNyeBW6wG0hIo6EIdpi/Ht0/95Uwn2Og[[MAIS]]2UPXsmKKuTMeGwUvPdbEfexlinUO0[[MAIS]]j9qIa2dpjtl0Y5Fyk1Bvw2ZYRTXwgJpUHsBboWmtTFpgX3wSGOWMipE80K8ktRTVYOp[[MAIS]]4qS/SzKWXpfCuZoCncfwE0lCEoreTH[[MAIS]]MLrTkHJP2oqYMAyFyQcjC0UGr3BQGa2edSNXjG7jrTdddga/SODUiF94jgh/QBwhiZby34b__CRYPTED__",
                                      "P198PVwtz5F5CfZPSUrzuaQA/QG1sTnwzl/rBnj8M7y5MglANGodG5LLD4q7oY809HuDR4g5tL64lZRBKvKPmEgWd9iAZKvT4UAm9XWN3nKKLGaznCaJohmntNGqrJP1Zd9riTHGu10mPbg/Uh3TCbBHVOICvu5sDlINlCR6A3[[MAIS]]a55RhfKNidvr5uX0kozCxr5t2DyOb5oPocEGyJKyHLQ==__CRYPTED__",
                                      "1",
@@ -24,7 +24,7 @@ void CTestCacic::initTestCase()
                                      "2.5.1.1.256.32",
                                      "2.8.1.7",
                                      "2.8.1.6");
-    OCacicComm->setUrlSsl("https://teste.cacic.cc");
+    OCacicComm->setUrlSsl("https://teste.cacic.cc/app_dev.php");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
@@ -214,18 +214,6 @@ void CTestCacic::testRemoveRegistry()
     confirmaTeste.sync();
 }
 
-
-void CTestCacic::testColetaSoftware()
-{
-    OCacicSoftware.iniciaColeta();
-    QVERIFY(!OCacicSoftware.toJsonObject().empty());
-}
-
-void CTestCacic::testColetaHardware()
-{
-    OCacicHardware.iniciaColeta();
-    QVERIFY(!OCacicHardware.toJsonObject().isEmpty());
-}
 void CTestCacic::testConvertDouble()
 {
     double number = 4.0905;
@@ -254,6 +242,19 @@ void CTestCacic::testGetConfig()
     OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio)["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
+}
+
+void CTestCacic::testColetaSoftware()
+{
+    oColeta.configuraColetas();
+    oColeta.run();
+    oColeta.waitToCollect();
+    QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+}
+
+void CTestCacic::testColetaHardware()
+{
+    QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
 }
 
 void CTestCacic::testLogger()
@@ -339,7 +340,7 @@ void CTestCacic::testGetModulesValues()
 
 void CTestCacic::cleanupTestCase()
 {
-        OCacic.deleteFile("gpl-2.0.txt");
+    OCacic.deleteFile("gpl-2.0.txt");
     OCacic.deleteFile("log01.txt");
     OCacic.deleteFile("./log02.txt");
     OCacic.deleteFile("../log03.txt");
@@ -351,4 +352,5 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("getConfig.json");
+    OCacic.deleteFolder("./temp");
 }

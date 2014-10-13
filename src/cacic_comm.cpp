@@ -225,9 +225,8 @@ void CacicComm::fileDownloadFinished(QNetworkReply* reply)
         out << reply->readAll();
         fileHandler->close();
         reply->close();
-    } else {
-        qDebug() << "Falha ao baixar arquivo.";
-    }
+    } else
+        qDebug() << "Falha ao baixar arquivo :" << reply->errorString();
 }
 
 QString CacicComm::getFtpPass() const
