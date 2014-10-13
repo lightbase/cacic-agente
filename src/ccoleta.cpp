@@ -11,7 +11,6 @@ void CColeta::coletaHardware()
     oHardware.iniciaColeta();
     qDebug() << "coletaHardware() executado";
     emit hardwareFinish();
-    emit beginSoftware();
 }
 
 
@@ -28,7 +27,6 @@ void CColeta::configuraColetas(){
     QObject::connect(this, SIGNAL(beginSoftware()), this, SLOT(coletaSoftware()));
     QObject::connect(this, SIGNAL(softwareFinish()), this, SLOT(softwareReady()));
     QObject::connect(this, SIGNAL(hardwareFinish()), this, SLOT(hardwareReady()));
-    emit beginHardware();
 }
 
 bool CColeta::waitToCollect()
