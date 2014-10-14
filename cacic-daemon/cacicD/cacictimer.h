@@ -13,6 +13,7 @@
 #include "cacic_computer.h"
 #include "QLogger.h"
 #include  "cacicthread.h"
+#include "checkmodules.h"
 
 class CacicTimer : public QObject
 {
@@ -37,18 +38,20 @@ private:
     bool verificarEIniciarQMutex();
     QStringList verificarModulos();
     void reiniciarTimer();
-    QLogger::QLoggerManager *logManager;
-    CacicThread *cacicthread;
-    QString dirProgram;
-    QString applicationDirPath;
     QString getDirProgram() const;
     void iniciarInstancias();
     void verificarPeriodicidadeJson();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
+    int getPeriodicidadeExecucao() const;
+
+    QLogger::QLoggerManager *logManager;
+    CacicThread *cacicthread;
+    CheckModules *checkModules;
+    QString dirProgram;
+    QString applicationDirPath;
     QJsonObject jsonConfig;
     int periodicidadeExecucao = 14400; // 4*3600. Tempo default de execução.
-    int getPeriodicidadeExecucao() const;
 
 private slots:
     void mslot();
