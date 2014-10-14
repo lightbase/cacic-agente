@@ -13,6 +13,7 @@ CacicTimer::~CacicTimer()
     delete logManager;
     delete ccacic;
     delete OCacicComm;
+    delete checkModules;
 }
 
 void CacicTimer::reiniciarTimer(){
@@ -58,6 +59,10 @@ void CacicTimer::mslot(){
                 //            QStringList nomesModulos = verificarModulos();
                 //            if ( !nomesModulos.empty() ) {
                 //             foreach( QString nome, nomesModulos ) {
+
+                checkModules = new CheckModules(this->applicationDirPath);
+                checkModules->start();
+
                 QString nome = "gercols";
                 definirDirModulo(getApplicationDirPath(), nome);
                 cacicthread->setCcacic(ccacic);
@@ -66,6 +71,7 @@ void CacicTimer::mslot(){
                 cacicthread->setCMutex(cMutex);
                 cacicthread->setModuloDirPath(getDirProgram());
                 cacicthread->start(QThread::NormalPriority);
+
             }else{
                 QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na obtenção do arquivo de configuração.");
             }
@@ -184,6 +190,7 @@ void CacicTimer::iniciarInstancias(){
     OCacicComm->setUrlGerente("teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
+
 }
 
 void CacicTimer::verificarPeriodicidadeJson()
