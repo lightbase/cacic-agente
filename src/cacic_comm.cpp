@@ -192,7 +192,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 
     QStringList splitPath = path.split("/");
 
-    fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
+    fileHandler = new QFile(pathDownload + "/" + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
         return false;
