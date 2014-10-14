@@ -26,6 +26,10 @@ CheckModules::CheckModules(const QString &workingPath)
     }
 }
 
+QVariantMap CheckModules::getModules() const {
+    return modules;
+}
+
 bool CheckModules::start(){
     if (!modules.isEmpty()){
         QVariantMap::const_iterator i = modules.constBegin();
