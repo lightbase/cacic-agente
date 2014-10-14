@@ -106,7 +106,7 @@ void InstallCacic::run(QStringList argv, int argc) {
     } else {
         std::cout << "\nInstalador do Agente Cacic.\n\n"
                   << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
-                  << "<-host=url_gerente> <-user=usuario> <-password=senha> [-help]\n\n"
+                  << "<-host=url_gerente> <-user=usuario> <-pass=senha> [-help]\n\n"
                   << "  <-host=url_gerente>       url_gerente: Caminho para a aplicação do gerente.\n"
                   << "  <-user=usuario>           usuario: usuário de login no gerente.\n"
                   << "  <-pass=senha>             senha: senha de login no gerente\n"
