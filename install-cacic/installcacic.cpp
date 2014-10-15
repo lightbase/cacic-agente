@@ -39,14 +39,15 @@ void InstallCacic::run(QStringList argv, int argc) {
             jsonComm["computador"] = oCacicComputer.toJsonObject();
             QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
             if (ok){
-                oCacicComm->setUrlGerente(configs["reply"].toObject()["applicationUrl"].toString());
+                QJsonObject configsJson = configs["reply"].toObject();
+                oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
 #ifdef Q_OS_WIN
-                oCacic.setCacicMainFolder(configs["reply"].toObject()["cacic_main_folder"].isString() ?
-                                          configs["reply"].toObject()["cacic_main_folder"].toString() :
+                oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
+                                          configsJson["cacic_main_folder"].toString() :
                                           "c:/cacic/");
 #elif defined(Q_OS_LINUX)
-                oCacic.setCacicMainFolder(configs["reply"].toObject()["cacic_main_folder"].isString() ?
-                                          configs["reply"].toObject()["cacic_main_folder"].toString() :
+                oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
+                                          configsJson["cacic_main_folder"].toString() :
                                           "/usr/cacic");
 #endif
 
@@ -59,28 +60,35 @@ void InstallCacic::run(QStringList argv, int argc) {
                 //starta o processo do cacic.
 
                 //TO DO: Fazer download do serviço
+                QJsonObject metodoDownload;
+                metodoDownload = configsJson["agentcomputer"].toObject()["metodoDownload"].toObject();
     #ifdef Q_OS_WIN
-                oCacicComm->ftpDownload("agentes/cacic-service.exe", oCacic.getCacicMainFolder());
+                oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
+                                         metodoDownload["url"].toString(),
+                                         metodoDownload["path"].toString() + "/cacic-service.exe",
+                                         oCacic.getCacicMainFolder());
 
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service.exe",
+                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
                                                          false,
                                                          &ok,
                                                          QStringList("-install");
     #else
-                oCacicComm->ftpDownload("agentes/cacic-service", oCacic.getCacicMainFolder());
 
-                QJsonObject configsJson = configs["reply"].toObject();
-                QString senhaAgente;
-                if ( !configsJson["te_senha_adm_agente"].isNull() )
-                    senhaAgente = configsJson["te_senha_adm_agente"].toString();
-                else
-                    senhaAgente = QString("ADMINCACIC");
+                oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
+                                         metodoDownload["url"].toString(),
+                                         metodoDownload["path"].toString() + "/cacic-service",
+                                        oCacic.getCacicMainFolder());
+
+                QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
+                if ((!fileService.exists() || !fileService.size() > 0)) {
+                    this->uninstall();
+                    return;
+                }
+                fileService.close();
 
                 QStringList arguments;
-                arguments.append(QString("-install"));
-                arguments.append(QString("cacic"));
-                arguments.append(senhaAgente);
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "cacic-service",
+                arguments.append(QString("start"));
+                QString exitStatus = oCacic.startProcess("/etc/init.d/cacic",
                                                          false,
                                                          &ok,
                                                          arguments);
@@ -91,6 +99,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 else {
                     std::cout << "Instalação realizada com sucesso." << "\n";
                 }
+
             } else {
                 std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString() << "\n";
             }
@@ -100,9 +109,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                       << "  Código: " << jsonLogin["codestatus"].toString().toStdString() << "\n"
                       << "  " << jsonLogin["error"].toString().toStdString() << "\n";
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
-        oCacic.deleteFolder("c:/cacic");
-        oCacic.removeRegistry("Lightbase", "Cacic");
-        std::cout << "Cacic desinstalado com sucesso.\n";
+        this->uninstall();
     } else {
         std::cout << "\nInstalador do Agente Cacic.\n\n"
                   << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
@@ -133,6 +140,14 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
         this->argumentos = map;
     }
     return map;
+}
+
+void InstallCacic::uninstall()
+{
+    oCacic.deleteFolder("c:/cacic");
+    oCacic.removeRegistry("Lightbase", "Cacic");
+    std::cout << "\nCacic desinstalado com sucesso.\n";
+    emit finished();
 }
 
 QMap<QString, QString> InstallCacic::getArgumentos()

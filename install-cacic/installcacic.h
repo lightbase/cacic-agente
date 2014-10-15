@@ -24,6 +24,7 @@ public:
     void registro();
 
 private:
+    void uninstall();
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;

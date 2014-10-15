@@ -326,6 +326,7 @@ void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
+    OCacic.setJsonToFile(oColeta.toJsonObject(), "coleta.json");
 //    qDebug() << coletaEnvio;
     qDebug() << OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);

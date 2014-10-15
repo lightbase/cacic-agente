@@ -11,6 +11,7 @@ public:
     CheckModules(const QString &workingPath);
 //    QStringList verificaModulos();
     bool start();
+    QVariantMap getModules() const;
 private:
     CCacic oCacic;
     CacicComm oCacicComm;

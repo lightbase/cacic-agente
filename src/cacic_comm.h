@@ -31,6 +31,9 @@ public:
     bool ftpDownload(const QString &urlServer, const QString &path, const QString &pathDownload);
     bool httpDownload(const QString &path, const QString &pathDownload);
     bool httpDownload(const QString &urlServer, const QString &path,const QString &pathDownload);
+    bool fileDownload(const QString &mode, const QString &path, const QString &pathDownload);
+    bool fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload);
+
     QString getUrlSsl ();
     void setUrlSsl(const QString &value);
     QString getUrlGerente ();
@@ -52,9 +55,6 @@ private slots:
     void fileDownloadFinished(QNetworkReply* reply);
 
 private:
-
-    bool fileDownload(const QString &mode, const QString &path, const QString &pathDownload);
-    bool fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload);
 
     QUrlQuery params;
     QString urlGerente;

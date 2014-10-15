@@ -65,8 +65,8 @@ QJsonObject CColeta::toJsonObject()
     QJsonObject coletaJson;
     if (this->hardwareIsFinish && this->softwareIsFinish){
         coletaJson["computador"] = oComputer.toJsonObject();
-        coletaJson["software"] = oSoftware.toJsonObject();
         coletaJson["hardware"] = oHardware.toJsonObject();
+        coletaJson["software"] = oSoftware.toJsonObject();
     }
     return coletaJson;
 }
