@@ -14,11 +14,7 @@ CheckModules::CheckModules(const QString &workingPath)
         modulos = configFile["agentcomputer"].toObject()["modulos"].toArray();
         foreach (QJsonValue modulo, modulos){
             //grava o nome com o hash de cada modulo
-#ifdef Q_OS_WIN
-            modules[modulo.toObject()["nome"].toString().append(".exe")] = modulo.toObject()["hash"].toString();
-#else
             modules[modulo.toObject()["nome"].toString()] = modulo.toObject()["hash"].toString();
-#endif
         }
     }
     //TODO: Completar constructor. Agora que tenho os nomes dos módulos e os hashs, fazer a verificação.
