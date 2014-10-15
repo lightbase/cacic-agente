@@ -79,19 +79,11 @@ void InstallCacic::run(QStringList argv, int argc) {
                                          metodoDownload["path"].toString() + "/cacic-service",
                                         oCacic.getCacicMainFolder());
 
-                oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
-                                         metodoDownload["url"].toString(),
-                                         metodoDownload["path"].toString() + "/cacic-script.sh",
-                                         oCacic.getCacicMainFolder());
-
-                QFile fileScript(oCacic.getCacicMainFolder()+"/cacic-script.sh");
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
-                if ((!fileScript.exists()  || !fileScript.size()  > 0) &&
-                    (!fileService.exists() || !fileService.size() > 0)) {
+                if ((!fileService.exists() || !fileService.size() > 0)) {
                     this->uninstall();
                     return;
                 }
-                fileScript.close();
                 fileService.close();
 
                 QStringList arguments;
