@@ -152,7 +152,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
 
     fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
-        qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
+        qDebug() << "fileDownload: fileHandler nâo pode abrir arquivo.";
         return false;
     }
 
