@@ -9,8 +9,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 
 void CTestCacic::initTestCase()
 {
-
-    OCacicComm = new CacicComm();
+    this->OCacicComm = new CacicComm();
     OCacicComm->setUrlGerente("http://10.209.134.100/cacic/app_dev.php");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
@@ -164,19 +163,6 @@ void CTestCacic::testJsonFromFile()
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
-void CTestCacic::testStartService()
-{
-    bool ok;
-    QString exitStatus;
-#ifdef Q_OS_WIN
-    exitStatus = OCacic.startProcess("../../install-cacic/debug/install-cacic.exe", true, &ok);
-    qDebug() << exitStatus;
-#else
-    exitStatus = OCacic.startProcess("../install-cacic/debug/install-cacic", true, &ok);
-#endif
-    QVERIFY(ok);
-}
-
 void CTestCacic::testSetRegistry()
 {
     QVariantMap valueMap;
@@ -216,6 +202,7 @@ void CTestCacic::testGetTest()
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
 //    qDebug() << envio;
+//    OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
@@ -298,23 +285,43 @@ void CTestCacic::testLogger()
     logFile06.close();
 }
 
-void CTestCacic::testFtpDownload()
+void CTestCacic::testDownload()
 {
-    OCacicComm->ftpDownload("ftp://ftp.unicamp.br", "/pub/gnu/Licenses/gpl-2.0.txt", "");
-    QFile downloaded("gpl-2.0.txt");
+    QJsonObject ftp;
+    ftp = OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+    OCacicComm->setFtpPass(ftp["senha"].toString());
+    OCacicComm->setFtpUser(ftp["usuario"].toString());
+    OCacicComm->fileDownload(ftp["tipo"].toString(),
+                             ftp["url"].toString(),
+                             "/" + ftp["path"].toString() + "install-cacic",
+                             "");
+    QFile downloaded("cacic-service");
 
     QVERIFY( downloaded.open(QIODevice::ReadOnly) );
     QVERIFY( downloaded.exists() );
     QVERIFY( downloaded.readAll() != "" );
 }
 
+void CTestCacic::testStartService()
+{
+    bool ok;
+    QString exitStatus;
+#ifdef Q_OS_WIN
+    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
+    qDebug() << exitStatus;
+#else
+    exitStatus = OCacic.startProcess("./install-cacic", false, &ok);
+//    qDebug() << exitStatus;
+#endif
+    QVERIFY(ok);
+}
 void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
     OCacic.setJsonToFile(oColeta.toJsonObject(), "coleta.json");
 //    qDebug() << coletaEnvio;
-    qDebug() << OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
+    OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);
 }
 
@@ -338,6 +345,6 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-    OCacic.deleteFile("getConfig.json");
+//    OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
 }

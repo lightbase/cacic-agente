@@ -192,15 +192,16 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 
     QStringList splitPath = path.split("/");
 
-    fileHandler = new QFile(pathDownload + "/" + splitPath[splitPath.size() - 1]);
+    fileHandler = new QFile((!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1]);
+
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
-        return false;
     }
 
-    QUrl url(urlServer);
-    url.setScheme(mode);
-    url.setPath(path);
+    QUrl url(mode + "://" + (urlServer.endsWith("/") ? urlServer : urlServer + "/") + path);
+//    url.setScheme(mode);
+//    url.setUrl(urlServer);
+//    url.setPath(path);
     if (!this->ftpUser.isEmpty())
         url.setUserName(ftpUser);
     if (!this->ftpPass.isEmpty())
@@ -223,6 +224,8 @@ void CacicComm::fileDownloadFinished(QNetworkReply* reply)
     if (reply->size() > 0){
         QTextStream out(fileHandler);
         out << reply->readAll();
+        fileHandler->setPermissions(QFileDevice::ExeOwner);
+//        qDebug() << fileHandler->permissions();
         fileHandler->close();
         reply->close();
     } else
