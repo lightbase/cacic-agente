@@ -224,7 +224,10 @@ void CacicComm::fileDownloadFinished(QNetworkReply* reply)
     if (reply->size() > 0){
         QTextStream out(fileHandler);
         out << reply->readAll();
-        fileHandler->setPermissions(QFileDevice::ExeOwner);
+        fileHandler->setPermissions(QFileDevice::ExeOwner |
+                                    QFileDevice::WriteOwner |
+                                    QFileDevice::ReadOwner |
+                                    QFileDevice::ExeUser);
 //        qDebug() << fileHandler->permissions();
         fileHandler->close();
         reply->close();

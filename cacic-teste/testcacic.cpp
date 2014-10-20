@@ -327,9 +327,18 @@ void CTestCacic::testEnviaColeta()
 
 void CTestCacic::testGetModulesValues()
 {
+    bool ok = true;
     oCheckModules = new CheckModules(QDir::currentPath());
     oCheckModules->start();
-    QVERIFY(false);
+    QVariantMap modules = oCheckModules->getModules();
+    QVariantMap::const_iterator i = modules.constBegin();
+    if (!modules.empty()) {
+        do {
+            QFile modulo("./temp/" + i.key());
+            ok = modulo.exists() && ok;
+        } while (i!=modules.constEnd());
+    }
+    QVERIFY(ok);
 }
 
 void CTestCacic::cleanupTestCase()
@@ -345,6 +354,7 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-//    OCacic.deleteFile("getConfig.json");
+    OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
+    OCacic.deleteFile("./install-cacic");
 }

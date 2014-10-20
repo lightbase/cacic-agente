@@ -8,7 +8,7 @@ CheckModules::CheckModules(const QString &workingPath)
     if (!configFile.isEmpty()) {
         //pega url do gerente.
         this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
-        qDebug() << applicationUrl;
+//        qDebug() << applicationUrl;
         QJsonArray modulos;
         //pega o jsonarray dos módulos
         modulos = configFile["agentcomputer"].toObject()["modulos"].toObject()["cacic"].toArray();
@@ -21,7 +21,7 @@ CheckModules::CheckModules(const QString &workingPath)
 
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
     if (!tempPath.exists()){
-        qDebug() << "criando diretório temporário";
+//        qDebug() << "criando diretório temporário";
         tempPath.mkdir(oCacic.getCacicMainFolder() + "/temp");
     }
 }
@@ -33,11 +33,11 @@ QVariantMap CheckModules::getModules() const {
 bool CheckModules::start(){
     if (!modules.isEmpty()){
         QVariantMap::const_iterator i = modules.constBegin();
-        while (i != modules.constEnd()){
-            qDebug() << "Módulo: " << i.key() << " | Hash: " << i.value().toString();
+        do {
+//            qDebug() << "Módulo: " << i.key() << " | Hash: " << i.value().toString();
             this->verificaModulo(i.key(), i.value().toString());
             i++;
-        }
+        } while (i != modules.constEnd());
     }
     return true;
 }
@@ -56,7 +56,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         metodoDownload = oCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
         oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
         oCacicComm.setFtpPass(metodoDownload["senha"].toString());
-        qDebug() << moduloName << "ftp download";
+
         downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
                                             this->applicationUrl,
                                             metodoDownload["path"].toString() + "/" + moduloName,
@@ -65,7 +65,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         if (downloadOk){
             //faz uma verificação do novo módulo.
             novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
-            if (!(novoModulo->exists() && novoModulo->size()>1 && oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
+            if (!(novoModulo->exists() && novoModulo->size()>1)){
                 qDebug() << moduloName << "falha no download..";
                 novoModulo->remove();
                 return false;
