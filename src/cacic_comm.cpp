@@ -176,20 +176,9 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     return true;
 }
 
-/* fileDownload( QString urlServer, QString path )
- *
- * Faz o download de um arquivo usando o protocolo mode
- * a partir da url recebida e do caminho até o arquivo.
- */
-bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload){
-    QEventLoop eventLoop;
-    QNetworkAccessManager manager;
-    QNetworkRequest request;
-    QNetworkReply *reply;
 
-    QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloadFinished(QNetworkReply*)) );
-    QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()) );
-
+bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload)
+{
     QStringList splitPath = path.split("/");
 
     fileHandler = new QFile((!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1]);
@@ -212,32 +201,47 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     if (!this->ftpPass.isEmpty())
         url.setPassword(ftpPass);
 
-    request.setUrl(url);
+    return startRequest(url);
+}
 
-    reply = manager.get(request);
+bool CacicComm::startRequest(QUrl url)
+{
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager qnam;
+
+    reply = qnam.get(QNetworkRequest(url));
+    connect(reply, SIGNAL(finished()),
+            this, SLOT(fileDownloadFinished()));
+    connect(reply, SIGNAL(readyRead()),
+            this, SLOT(fileDownloadReadyRead()));
+    connect(this, SIGNAL(quitLoop()),
+            &eventLoop, SLOT(quit()) );
 
     eventLoop.exec();
-
-    delete fileHandler;
-    delete reply;
 
     return true;
 }
 
-void CacicComm::fileDownloadFinished(QNetworkReply* reply)
+void CacicComm::fileDownloadFinished()
 {
-    if (reply->size() > 0){
-        QTextStream out(fileHandler);
-        out << reply->readAll();
-        fileHandler->setPermissions(QFileDevice::ExeOwner |
-                                    QFileDevice::WriteOwner |
-                                    QFileDevice::ReadOwner |
-                                    QFileDevice::ExeUser);
-//        qDebug() << fileHandler->permissions();
-        fileHandler->close();
-        reply->close();
-    } else
-        qDebug() << "Falha ao baixar arquivo :" << reply->errorString();
+    fileHandler->flush();
+    fileHandler->close();
+
+    reply->close();
+
+    delete reply;
+    reply = 0;
+
+    delete fileHandler;
+    fileHandler = 0;
+    emit quitLoop();
+}
+
+void CacicComm::fileDownloadReadyRead()
+{
+    if (fileHandler)
+        fileHandler->write(reply->readAll());
 }
 
 QString CacicComm::getFtpPass() const

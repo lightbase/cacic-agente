@@ -359,5 +359,5 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
-    OCacic.deleteFile("./install-cacic");
+//    OCacic.deleteFile("./install-cacic");
 }
