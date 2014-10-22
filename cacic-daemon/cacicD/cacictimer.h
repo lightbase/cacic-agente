@@ -33,6 +33,7 @@ public:
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);
     void setPeriodicidadeExecucao(int value);
+    bool comunicarGerente();
 
 private:
     bool verificarEIniciarQMutex();
@@ -40,10 +41,11 @@ private:
     void reiniciarTimer();
     QString getDirProgram() const;
     void iniciarInstancias();
-    void verificarPeriodicidadeJson();
+    void verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
+    void iniciarThread();
 
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
@@ -51,7 +53,8 @@ private:
     QString dirProgram;
     QString applicationDirPath;
     QJsonObject jsonConfig;
-    int periodicidadeExecucao = 14400; // 4*3600. Tempo default de execução.
+    int periodicidadeExecucao;
+    const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
 
 private slots:
     void mslot();
