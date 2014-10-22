@@ -289,13 +289,14 @@ void CTestCacic::testDownload()
 {
     QJsonObject ftp;
     ftp = OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+
     OCacicComm->setFtpPass(ftp["senha"].toString());
     OCacicComm->setFtpUser(ftp["usuario"].toString());
     OCacicComm->fileDownload(ftp["tipo"].toString(),
                              ftp["url"].toString(),
-                             "/" + ftp["path"].toString() + "install-cacic",
+                             ftp["path"].toString() + "install-cacic",
                              "");
-    QFile downloaded("cacic-service");
+    QFile downloaded("install-cacic");
 
     QVERIFY( downloaded.open(QIODevice::ReadOnly) );
     QVERIFY( downloaded.exists() );
@@ -306,6 +307,7 @@ void CTestCacic::testStartService()
 {
     bool ok;
     QString exitStatus;
+
 #ifdef Q_OS_WIN
     exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
     qDebug() << exitStatus;
@@ -315,6 +317,7 @@ void CTestCacic::testStartService()
 #endif
     QVERIFY(ok);
 }
+
 void CTestCacic::testEnviaColeta()
 {
     bool ok;
