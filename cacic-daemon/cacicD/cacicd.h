@@ -5,6 +5,7 @@
 #include "qtservice.h"
 #include "cacictimer.h"
 #include "QLogger.h"
+#include "checkmodules.h"
 
 #define APP_VERSION "3.0"
 
@@ -15,6 +16,7 @@ public:
     QLogger::QLoggerManager *logManager;
     CacicTimer *Ocacictimer;
     CCacic *ccacic;
+    CheckModules *OcheckModules;
     cacicD(int argc, char **argv);
     ~cacicD();
 

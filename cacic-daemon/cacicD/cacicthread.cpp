@@ -57,6 +57,10 @@ void CacicThread::setNomeModulo(const QString &value)
 
 bool CacicThread::enviarColeta()
 {
+    /*
+     * fazer verificação se é preciso enviar a coleta;
+     *
+     */
     if(this->nomeModulo == "gercols" ){
         //Envio do json gerado na coleta
         bool ok = false;
