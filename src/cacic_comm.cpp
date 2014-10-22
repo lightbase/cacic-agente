@@ -198,7 +198,12 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
     }
 
-    QUrl url(mode + "://" + (urlServer.endsWith("/") ? urlServer : urlServer + "/") + path);
+    QString urlParsed = urlServer;
+    if ( urlParsed.startsWith("http://") || urlParsed.startsWith("ftp://") ) {
+        int indexHost = urlParsed.indexOf(":") + 3;
+        urlParsed = urlParsed.mid(indexHost);
+    }
+    QUrl url(mode + "://" + (urlParsed.endsWith("/") ? urlParsed : urlParsed + "/") + path);
 //    url.setScheme(mode);
 //    url.setUrl(urlServer);
 //    url.setPath(path);
