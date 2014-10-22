@@ -56,7 +56,7 @@ private slots:
     void testInterfaceDeRede();
     void testConsole();
     void testPegarUsu();
-    void testJsonValueFromJsonString();
+//    void testJsonValueFromJsonString();
     void testcoletaIdOs();
     void testpegarOS();
     void testLogin();

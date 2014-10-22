@@ -99,10 +99,10 @@ void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }
 
-void CTestCacic::testJsonValueFromJsonString()
-{
-    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
-}
+//void CTestCacic::testJsonValueFromJsonString()
+//{
+//    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
+//}
 
 void CTestCacic::testLogin(){
     bool ok;
@@ -202,7 +202,6 @@ void CTestCacic::testGetTest()
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
 //    qDebug() << envio;
-//    OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
@@ -219,15 +218,21 @@ void CTestCacic::testGetConfig()
 
 void CTestCacic::testColetaSoftware()
 {
-    oColeta.configuraColetas();
-    oColeta.run();
-    oColeta.waitToCollect();
-    QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool()){
+        oColeta.configuraColetas();
+        oColeta.run();
+        oColeta.waitToCollect();
+        QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+    } else
+        QSKIP("Ação coleta de software desativada.");
 }
 
 void CTestCacic::testColetaHardware()
 {
-    QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
+    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool())
+        QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
+    else
+        QSKIP("Ação coleta de hardware desativada.");
 }
 
 void CTestCacic::testLogger()
@@ -293,13 +298,13 @@ void CTestCacic::testDownload()
     OCacicComm->setFtpUser(ftp["usuario"].toString());
     OCacicComm->fileDownload(ftp["tipo"].toString(),
                              ftp["url"].toString(),
-                             "/" + ftp["path"].toString() + "install-cacic",
+                             ftp["path"].toString() + "install-cacic",
                              "");
-    QFile downloaded("cacic-service");
+    QFile downloaded("install-cacic");
 
-    QVERIFY( downloaded.open(QIODevice::ReadOnly) );
-    QVERIFY( downloaded.exists() );
-    QVERIFY( downloaded.readAll() != "" );
+    QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
+             downloaded.exists()                  &&
+             (downloaded.size() > 0) );
 }
 
 void CTestCacic::testStartService()

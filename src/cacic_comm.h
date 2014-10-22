@@ -51,7 +51,6 @@ signals:
     void finished(QNetworkReply* reply);
 
 private slots:
-
     void fileDownloadFinished(QNetworkReply* reply);
 
 private:

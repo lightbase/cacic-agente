@@ -56,7 +56,12 @@ void InstallCacic::run(QStringList argv, int argc) {
                 QVariantMap registro;
                 registro["key"] = oCacic.getChaveCrypt();
                 registro["mainFolder"] = oCacic.getCacicMainFolder();
+                registro["applicationUrl"] = oCacic.getUrlGerente();
+                registro["usuario"] = oCacicComm->getUsuario();
+                registro["senha"] = oCacicComm->getPassword();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+
+                oCacic.setJsonToFile(configsJson, oCacic.getCacicMainFolder());
                 //starta o processo do cacic.
 
                 //TO DO: Fazer download do serviço
