@@ -48,11 +48,13 @@ public:
     void setFtpPass(const QString &value);
 
 signals:
-    void finished(QNetworkReply* reply);
+    void quitLoop();
+//    void fileDownloadFinished();
 
 private slots:
-    void fileDownloadFinished(QNetworkReply* reply);
-
+    bool startRequest(QUrl url);
+    void fileDownloadFinished();
+    void fileDownloadReadyRead();
 private:
 
     QUrlQuery params;
@@ -65,6 +67,7 @@ private:
     QString ftpPass;
 
     QFile *fileHandler;
+    QNetworkReply *reply;
 
 };
 #endif // CACIC_COMM_H
