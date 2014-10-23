@@ -6,10 +6,7 @@
 #include "cacictimer.h"
 #include "QLogger.h"
 #include "checkmodules.h"
-<<<<<<< HEAD
 #include "ccacic.h"
-=======
->>>>>>> 3bba07f0e727b7333683c2d175316686f95d8b9e
 
 #define APP_VERSION "3.0"
 

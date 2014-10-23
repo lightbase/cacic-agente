@@ -195,9 +195,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
         urlParsed = urlParsed.mid(indexHost);
     }
     QUrl url(mode + "://" + (urlParsed.endsWith("/") ? urlParsed : urlParsed + "/") + path);
-//    url.setScheme(mode);
-//    url.setUrl(urlServer);
-//    url.setPath(path);
+
     if (!this->ftpUser.isEmpty())
         url.setUserName(ftpUser);
     if (!this->ftpPass.isEmpty())

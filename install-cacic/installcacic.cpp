@@ -48,8 +48,8 @@ void InstallCacic::run(QStringList argv, int argc) {
                     "c:/cacic/");
 #elif defined(Q_OS_LINUX)
                 oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
-                            configsJson["cacic_main_folder"].toString() :
-                    "/usr/share/cacic");
+                                          configsJson["cacic_main_folder"].toString() :
+                                          "/usr/share/cacic");
 #endif
 
                 oCacic.createFolder(oCacic.getCacicMainFolder());
@@ -65,12 +65,12 @@ void InstallCacic::run(QStringList argv, int argc) {
                 registro["senha"] = oCacicComm->getPassword();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
 
-                oCacic.setJsonToFile(configsJson, oCacic.getCacicMainFolder());
+                oCacic.setJsonToFile(configsJson, oCacic.getCacicMainFolder() + "/getConfig.json");
                 //starta o processo do cacic.
 
                 //TO DO: Fazer download do serviço
                 QJsonObject metodoDownload;
-                metodoDownload = configsJson["agentcomputer"].toObject()["metodoDownload"].toObject();
+                metodoDownload = configsJson["metodoDownload"].toObject();
                 oCacicComm->setFtpPass(metodoDownload["senha"].toString());
                 oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
 #ifdef Q_OS_WIN
@@ -89,7 +89,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                         metodoDownload["url"].toString(),
                         metodoDownload["path"].toString() + "cacic-service",
                         oCacic.getCacicMainFolder());
-
+                qDebug() << metodoDownload["path"].toString() + "cacic-service";
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     std::cout << "Falha ao baixar arquivo.\n";

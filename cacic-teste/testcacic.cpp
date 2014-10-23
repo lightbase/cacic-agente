@@ -212,7 +212,9 @@ void CTestCacic::testGetConfig()
     bool ok;
     QJsonObject configEnvio;
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
-    OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio)["reply"].toObject(), "getConfig.json");
+    QJsonObject getConfig = OCacicComm->comm("/ws/neo/config", &ok, configEnvio);
+//    qDebug() << getConfig;
+    OCacic.setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
 }
@@ -343,8 +345,8 @@ void CTestCacic::testGetModulesValues()
     QVariantMap::const_iterator i = modules.constBegin();
     if (!modules.empty()) {
         do {
-            QFile modulo("./temp/" + i.key());
-            ok = modulo.exists() && ok;
+            ok = QDir::exists("./temp/" + i.key()) && ok;
+            i++;
         } while (i!=modules.constEnd());
     }
 
