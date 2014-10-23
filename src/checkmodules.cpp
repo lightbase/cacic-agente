@@ -31,15 +31,20 @@ QVariantMap CheckModules::getModules() const {
 }
 
 bool CheckModules::start(){
+    bool ok = true;
     if (!modules.isEmpty()){
         QVariantMap::const_iterator i = modules.constBegin();
         do {
 //            qDebug() << "Módulo: " << i.key() << " | Hash: " << i.value().toString();
-            this->verificaModulo(i.key(), i.value().toString());
+            ok = (this->verificaModulo(i.key(), i.value().toString()) && ok);
             i++;
         } while (i != modules.constEnd());
+    } else {
+        //força download do gercols.
+        return this->verificaModulo("gercols", "gtgytt");
     }
-    return true;
+
+    return ok;
 }
 
 bool CheckModules::verificaModulo(const QString &moduloName, const QString &moduloHash)
@@ -48,6 +53,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
+
     //verifica se o módulo existe, se o tamaho é maior que 1 byte e se o hash é igual ao informado pelo json
     if (!(modulo->exists() && modulo->size()>1 && oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
         QFile *novoModulo;
@@ -60,17 +66,17 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
                                             this->applicationUrl,
                                             metodoDownload["path"].toString() + moduloName,
-                                            oCacic.getCacicMainFolder() + "temp/");
+                                            oCacic.getCacicMainFolder() + "/temp");
 
+        novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
         if (downloadOk){
             //faz uma verificação do novo módulo.
-            novoModulo = new QFile(oCacic.getCacicMainFolder() + "temp/" + moduloName);
             if (!(novoModulo->exists() && novoModulo->size()>1)){
-                qDebug() << moduloName << "falha no download..";
+//                qDebug() << moduloName << "falha no download..";
                 novoModulo->remove();
                 return false;
             } else {
-                qDebug() << moduloName << "Sucesso!";
+//                qDebug() << moduloName << "Sucesso!";
                 return true;
             }
         } else {

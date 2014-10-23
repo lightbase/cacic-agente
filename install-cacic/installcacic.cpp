@@ -92,13 +92,10 @@ void InstallCacic::run(QStringList argv, int argc) {
 
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
                 if ((!fileService.exists() || !fileService.size() > 0)) {
+                    std::cout << "Falha ao baixar arquivo.\n";
                     this->uninstall();
                     return;
                 }
-
-                fileService.setPermissions( fileService.permissions() |
-                                            QFileDevice::ExeUser |
-                                            QFileDevice::ExeOther);
 
                 fileService.close();
 

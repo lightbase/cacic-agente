@@ -61,7 +61,7 @@ bool CacicThread::enviarColeta()
      * fazer verificação se é preciso enviar a coleta;
      *
      */
-    if(this->nomeModulo == "gercols" ){
+    if(this->nomeModulo == "gercols" && QFile::exists("coleta.json")){
         //Envio do json gerado na coleta
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");

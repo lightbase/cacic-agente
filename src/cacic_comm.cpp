@@ -185,6 +185,8 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
+        qDebug() << fileHandler->errorString();
+        return false;
     }
 
     QString urlParsed = urlServer;
@@ -200,7 +202,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
         url.setUserName(ftpUser);
     if (!this->ftpPass.isEmpty())
         url.setPassword(ftpPass);
-
+    qDebug() << url;
     startRequest(url);
 
     return true;
@@ -227,11 +229,13 @@ void CacicComm::fileDownloadFinished()
 {
     fileHandler->flush();
 
-    fileHandler->setPermissions(QFileDevice::ReadOwner |
-                                QFileDevice::WriteOwner|
-                                QFileDevice::ExeOwner  |
-                                QFileDevice::ReadUser  |
-                                QFileDevice::ExeUser);
+    if (fileHandler->exists() && fileHandler->size() > 0){
+        fileHandler->setPermissions( fileHandler->permissions() |
+                                    QFileDevice::ExeUser |
+                                    QFileDevice::ExeOther);
+    } else {
+        fileHandler->remove();
+    }
     fileHandler->close();
 
     reply->close();

@@ -37,7 +37,7 @@ public:
 
 private:
     bool verificarEIniciarQMutex();
-    QStringList verificarModulos();
+    bool verificarModulos();
     void reiniciarTimer();
     QString getDirProgram() const;
     void iniciarInstancias();

@@ -71,6 +71,21 @@ bool CacicTimer::verificarEIniciarQMutex(){
     }
 }
 
+bool CacicTimer::verificarModulos()
+{
+    QDir dir("./temp");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i<list.size(); i++){
+        if (QFile::exists(list.at(i).fileName())){
+            QFile::remove(list.at(i).fileName());
+        }
+        QFile::rename(list.at(i).absoluteFilePath(), list.at(i).fileName());
+    }
+}
+
 void CacicTimer::iniciarThread(){
     //checkModules = new CheckModules(this->applicationDirPath);
     //checkModules->start();
