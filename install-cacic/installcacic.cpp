@@ -65,7 +65,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 registro["senha"] = oCacicComm->getPassword();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
 
-                oCacic.setJsonToFile(configsJson, oCacic.getCacicMainFolder() + "/getConfig.json");
+                oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
                 //starta o processo do cacic.
 
                 //TO DO: Fazer download do serviço
@@ -98,15 +98,12 @@ void InstallCacic::run(QStringList argv, int argc) {
                 }
 
                 fileService.close();
-
-                QStringList arguments;
-                arguments.append(QString("start"));
+                ConsoleObject console;
+                std::cout << console("/etc/init.d/cacic start").toStdString();
 
 #endif
                 if (!ok) {
-                    std::cout << "Erro ao iniciar o processo: "
-                              << exitStatus.toStdString() << "\n";
-                    QLogger::QLog_Info("Install Cacic", QString("Erro ao iniciar o processo") + exitStatus);
+                    QLogger::QLog_Info("Install Cacic", QString("Erro ao iniciar o processo"));
                 } else {
                     std::cout << "Instalação realizada com sucesso." << "\n";
                     QLogger::QLog_Info("Install Cacic", QString("Instalação realizada com sucesso."));

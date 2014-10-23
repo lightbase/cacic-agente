@@ -52,8 +52,7 @@ SOURCES += main.cpp \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
     ../src/wmi.cpp \
-    ../src/QLogger.cpp \
-    ../src/
+    ../src/QLogger.cpp
 
 HEADERS += \
     installcacic.h \
@@ -62,7 +61,8 @@ HEADERS += \
     ../src/cacic_comm.h \
     ../src/operatingsystem.h \
     ../src/wmi.h \
-    ../src/QLogger.h
+    ../src/QLogger.h \
+    ../src/console.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/
