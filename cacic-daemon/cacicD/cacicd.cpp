@@ -31,6 +31,7 @@ cacicD::~cacicD()
 void cacicD::start() {
     try{
         if(Ocacictimer->comunicarGerente()){
+            OcheckModules->start();
             QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + application()->applicationDirPath() + "."));
             QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
             if(!result.contains("error") && !result.isEmpty()){
@@ -42,7 +43,11 @@ void cacicD::start() {
                 Ocacictimer->setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
                 Ocacictimer->iniciarTimer(true);
             }
+<<<<<<< HEAD
             //delete OcheckModules;
+=======
+            delete OcheckModules;
+>>>>>>> 3bba07f0e727b7333683c2d175316686f95d8b9e
         }else{
             QLogger::QLog_Error("Cacic Daemon", QString("Problemas com o arquivo getConfig.json"));
             QLogger::QLog_Info("Cacic Daemon", QString("Inicializando periodicidade de execução do serviço com tempo padrão."));
