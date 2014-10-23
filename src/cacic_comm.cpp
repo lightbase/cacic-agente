@@ -202,7 +202,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
         url.setUserName(ftpUser);
     if (!this->ftpPass.isEmpty())
         url.setPassword(ftpPass);
-    qDebug() << url;
+
     startRequest(url);
 
     return true;
