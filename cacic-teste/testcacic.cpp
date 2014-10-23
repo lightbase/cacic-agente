@@ -345,23 +345,25 @@ void CTestCacic::testGetModulesValues()
     QVariantMap::const_iterator i = modules.constBegin();
     if (!modules.empty()) {
         do {
-            ok = QDir::exists("./temp/" + i.key()) && ok;
+            QFile modulo("./temp/" + i.key());
+            ok = modulo.exists() && ok;
             i++;
         } while (i!=modules.constEnd());
     }
 
-    QDir dir("./temp");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
-    dir.setSorting(QDir::Size | QDir::Reversed);
+        QDir dir("./temp");
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
+        dir.setSorting(QDir::Size | QDir::Reversed);
 
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i<list.size(); i++){
-        if (QFile::exists(list.at(i).fileName())){
-//            qDebug () << list.at(i).absoluteFilePath() << "to" << list.at(i).fileName();
-            QFile::remove(list.at(i).fileName());
+        QFileInfoList list = dir.entryInfoList();
+        for (int i = 0; i<list.size(); i++){
+            QFile novoModulo(list.at(i).filePath());
+            if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+                QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
+            }
+            novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+            novoModulo.close();
         }
-        QFile::rename(list.at(i).absoluteFilePath(), list.at(i).fileName());
-    }
 
     QVERIFY(ok);
 }
@@ -380,7 +382,8 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("getConfig.json");
-    OCacic.deleteFolder("./temp");
-    OCacic.deleteFile("./install-cacic");
-    OCacic.deleteFile("./gercols");
+//    OCacic.deleteFolder("./temp");
+//    OCacic.deleteFile("./install-cacic");
+//    OCacic.deleteFile("./gercols");
+    OCacic.deleteFile("./coleta.json");
 }

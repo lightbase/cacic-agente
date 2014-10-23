@@ -72,11 +72,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         if (downloadOk){
             //faz uma verificação do novo módulo.
             if (!(novoModulo->exists() && novoModulo->size()>1)){
-//                qDebug() << moduloName << "falha no download..";
+                qDebug() << moduloName << "falha no download..";
                 novoModulo->remove();
                 return false;
             } else {
-//                qDebug() << moduloName << "Sucesso!";
+                qDebug() << moduloName << "Sucesso!";
                 return true;
             }
         } else {

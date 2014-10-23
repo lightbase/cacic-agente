@@ -52,7 +52,8 @@ SOURCES += main.cpp \
     ../src/cacic_computer.cpp \
     ../src/operatingsystem.cpp \
     ../src/wmi.cpp \
-    ../src/QLogger.cpp
+    ../src/QLogger.cpp \
+    ../src/
 
 HEADERS += \
     installcacic.h \

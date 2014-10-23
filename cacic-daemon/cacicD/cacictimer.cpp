@@ -26,6 +26,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 {
     if(conexaoGerente){
         checkModules->start();
+        verificarModulos();
         verificarPeriodicidade();
         timer->start(getPeriodicidadeExecucao());
     }else{
@@ -79,11 +80,14 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        if (QFile::exists(list.at(i).fileName())){
-            QFile::remove(list.at(i).fileName());
+        QFile novoModulo(list.at(i).filePath());
+        if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+            QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
         }
-        QFile::rename(list.at(i).absoluteFilePath(), list.at(i).fileName());
+        novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+        novoModulo.close();
     }
+    return true;
 }
 
 void CacicTimer::iniciarThread(){
