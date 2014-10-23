@@ -4,6 +4,7 @@
 #include <ccacic.h>
 #include <cacic_comm.h>
 #include <cacic_computer.h>
+#include "QLogger.h"
 
 class CheckModules
 {

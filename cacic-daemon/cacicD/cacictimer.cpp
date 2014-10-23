@@ -38,6 +38,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 void CacicTimer::mslot(){
     if(comunicarGerente()){
         checkModules->start();
+        verificarModulos();
         if (verificarEIniciarQMutex()) {
             iniciarThread();
             if(verificarPeriodicidade()){
@@ -80,12 +81,14 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        QFile novoModulo(list.at(i).filePath());
-        if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
-            QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
+        if(!list.at(i).fileName() == "cacic-service"){
+            QFile novoModulo(list.at(i).filePath());
+            if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+                QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
+            }
+            novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+            novoModulo.close();
         }
-        novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
-        novoModulo.close();
     }
     return true;
 }
