@@ -5,7 +5,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     try{
         this->createApplication(argc, argv);
         Ocacictimer = new CacicTimer(application()->applicationDirPath());
-        ccacic = new CCacic;
+        ccacic = new CCacic();
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
         OcheckModules = new CheckModules(application()->applicationDirPath());
@@ -41,14 +41,18 @@ void cacicD::start() {
 
                 //o valor nu_intervalo_exec vem em minutos. O valor que o timer aceita é em milisegundos,por isso 60000
                 Ocacictimer->setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
-                Ocacictimer->iniciarTimer();
+                Ocacictimer->iniciarTimer(true);
             }
+<<<<<<< HEAD
+            //delete OcheckModules;
+=======
             delete OcheckModules;
+>>>>>>> 3bba07f0e727b7333683c2d175316686f95d8b9e
         }else{
             QLogger::QLog_Error("Cacic Daemon", QString("Problemas com o arquivo getConfig.json"));
             QLogger::QLog_Info("Cacic Daemon", QString("Inicializando periodicidade de execução do serviço com tempo padrão."));
             Ocacictimer->setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000); // em minutos !!!!
-            Ocacictimer->iniciarTimer();
+            Ocacictimer->iniciarTimer(false);
         }
     }catch (...){
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido ao iniciar o serviço."));

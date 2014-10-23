@@ -22,24 +22,27 @@ void CacicTimer::reiniciarTimer(){
 }
 
 
-void CacicTimer::iniciarTimer()
+void CacicTimer::iniciarTimer(bool conexaoGerente)
 {
-    if(!comunicarGerente()){
-        //reiniciarTimer();
-        return;
+    if(conexaoGerente){
+        checkModules->start();
+        verificarPeriodicidade();
+        timer->start(getPeriodicidadeExecucao());
+    }else{
+        timer->start(this->periodicidadeExecucaoPadrao * 60000);
     }
-    verificarPeriodicidade();
-    timer->start(getPeriodicidadeExecucao());
+
 }
 
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-        verificarPeriodicidade();
+        checkModules->start();
         if (verificarEIniciarQMutex()) {
             iniciarThread();
+            if(verificarPeriodicidade()){
+                reiniciarTimer();
+            }
         }
-    }else{
-        reiniciarTimer();
     }
 }
 
@@ -190,14 +193,14 @@ void CacicTimer::iniciarInstancias(){
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
     //OCacicComm->setUrlSsl();
+    checkModules = new CheckModules(this->applicationDirPath);
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "aplicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-
 }
 
-void CacicTimer::verificarPeriodicidade()
+bool CacicTimer::verificarPeriodicidade()
 {
     QJsonObject agenteConfigJson;
     QJsonObject configuracoes;
@@ -207,11 +210,12 @@ void CacicTimer::verificarPeriodicidade()
         configuracoes = agenteConfigJson["configuracoes"].toObject();
         if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
             setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
-            reiniciarTimer();
+            return true;
         }
     }else{
         setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
         QLogger::QLog_Error("Cacic Daemon (Timer)", QString("getConfig.json com erro ou vazio"));
+        return false;
     }
 }
 

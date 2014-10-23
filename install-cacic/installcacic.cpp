@@ -36,25 +36,29 @@ void InstallCacic::run(QStringList argv, int argc) {
             QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
             //conectado, grava a chave na classe;
             oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
+
             jsonComm["computador"] = oCacicComputer.toJsonObject();
             QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
             if (ok){
-                QJsonObject configsJson = configs["reply"].toObject();
+                QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
                 oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
 #ifdef Q_OS_WIN
                 oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
-                                          configsJson["cacic_main_folder"].toString() :
-                                          "c:/cacic/");
+                            configsJson["cacic_main_folder"].toString() :
+                    "c:/cacic/");
 #elif defined(Q_OS_LINUX)
                 oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
-                                          configsJson["cacic_main_folder"].toString() :
-                                          "/usr/share/cacic");
+                            configsJson["cacic_main_folder"].toString() :
+                    "/usr/share/cacic");
 #endif
 
                 oCacic.createFolder(oCacic.getCacicMainFolder());
                 //grava chave em registro;
                 QVariantMap registro;
                 registro["key"] = oCacic.getChaveCrypt();
+                registro["aplicationUrl"] = oCacicComm->getUrlGerente();
+                registro["password"] = oCacicComm->getPassword();
+                registro["usuario"] = oCacicComm->getUsuario();
                 registro["mainFolder"] = oCacic.getCacicMainFolder();
                 registro["applicationUrl"] = oCacic.getUrlGerente();
                 registro["usuario"] = oCacicComm->getUsuario();
@@ -69,28 +73,33 @@ void InstallCacic::run(QStringList argv, int argc) {
                 metodoDownload = configsJson["agentcomputer"].toObject()["metodoDownload"].toObject();
                 oCacicComm->setFtpPass(metodoDownload["senha"].toString());
                 oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-    #ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
                 oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
-                                         metodoDownload["url"].toString(),
-                                         metodoDownload["path"].toString() + "cacic-service.exe",
-                                         oCacic.getCacicMainFolder());
+                        metodoDownload["url"].toString(),
+                        metodoDownload["path"].toString() + "/cacic-service.exe",
+                        oCacic.getCacicMainFolder());
 
                 QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
                                                          false,
                                                          &ok,
                                                          QStringList("-install");
-    #else
+        #else
 
                 oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
-                                         metodoDownload["url"].toString(),
-                                         metodoDownload["path"].toString() + "cacic-service",
-                                        oCacic.getCacicMainFolder());
+                        metodoDownload["url"].toString(),
+                        metodoDownload["path"].toString() + "cacic-service",
+                        oCacic.getCacicMainFolder());
 
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     this->uninstall();
                     return;
                 }
+
+                fileService.setPermissions( fileService.permissions() |
+                                            QFileDevice::ExeUser |
+                                            QFileDevice::ExeOther);
+
                 fileService.close();
 
                 QStringList arguments;
@@ -99,7 +108,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                                                          false,
                                                          &ok,
                                                          arguments);
-    #endif
+#endif
                 if (!ok) {
                     std::cout << "Erro ao iniciar o processo: "
                               << exitStatus.toStdString() << "\n";
