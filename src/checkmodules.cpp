@@ -59,12 +59,12 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
 
         downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
                                             this->applicationUrl,
-                                            metodoDownload["path"].toString() + "/" + moduloName,
-                                            oCacic.getCacicMainFolder() + "/temp/");
+                                            metodoDownload["path"].toString() + moduloName,
+                                            oCacic.getCacicMainFolder() + "temp/");
 
         if (downloadOk){
             //faz uma verificação do novo módulo.
-            novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
+            novoModulo = new QFile(oCacic.getCacicMainFolder() + "temp/" + moduloName);
             if (!(novoModulo->exists() && novoModulo->size()>1)){
                 qDebug() << moduloName << "falha no download..";
                 novoModulo->remove();

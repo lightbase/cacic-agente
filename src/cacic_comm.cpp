@@ -201,10 +201,12 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     if (!this->ftpPass.isEmpty())
         url.setPassword(ftpPass);
 
-    return startRequest(url);
+    startRequest(url);
+
+    return true;
 }
 
-bool CacicComm::startRequest(QUrl url)
+void CacicComm::startRequest(QUrl url)
 {
 
     QEventLoop eventLoop;
@@ -219,13 +221,17 @@ bool CacicComm::startRequest(QUrl url)
             &eventLoop, SLOT(quit()) );
 
     eventLoop.exec();
-
-    return true;
 }
 
 void CacicComm::fileDownloadFinished()
 {
     fileHandler->flush();
+
+    fileHandler->setPermissions(QFileDevice::ReadOwner |
+                                QFileDevice::WriteOwner|
+                                QFileDevice::ExeOwner  |
+                                QFileDevice::ReadUser  |
+                                QFileDevice::ExeUser);
     fileHandler->close();
 
     reply->close();

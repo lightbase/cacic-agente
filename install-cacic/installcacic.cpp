@@ -72,7 +72,7 @@ void InstallCacic::run(QStringList argv, int argc) {
     #ifdef Q_OS_WIN
                 oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                                          metodoDownload["url"].toString(),
-                                         metodoDownload["path"].toString() + "/cacic-service.exe",
+                                         metodoDownload["path"].toString() + "cacic-service.exe",
                                          oCacic.getCacicMainFolder());
 
                 QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",

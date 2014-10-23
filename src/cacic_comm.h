@@ -52,7 +52,7 @@ signals:
 //    void fileDownloadFinished();
 
 private slots:
-    bool startRequest(QUrl url);
+    void startRequest(QUrl url);
     void fileDownloadFinished();
     void fileDownloadReadyRead();
 private:

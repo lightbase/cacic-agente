@@ -160,6 +160,7 @@ void CTestCacic::testJsonToFile()
 
 void CTestCacic::testJsonFromFile()
 {
+//    qDebug() << OCacic.getJsonFromFile("teste123.json");
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
@@ -317,7 +318,7 @@ void CTestCacic::testStartService()
     exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
     qDebug() << exitStatus;
 #else
-    exitStatus = OCacic.startProcess("./install-cacic", false, &ok);
+    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
 //    qDebug() << exitStatus;
 #endif
     QVERIFY(ok);
@@ -357,12 +358,12 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFile("../log03.txt");
     OCacic.deleteFile("logs/log04.txt");
     OCacic.deleteFile("./logs/log05.txt");
-    OCacic.deleteFolder("./logs");
+    OCacic.deleteFolder("./Logs");
     OCacic.deleteFile("../logs/log06.txt");
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
-//    OCacic.deleteFile("./install-cacic");
+    OCacic.deleteFile("./install-cacic");
 }
