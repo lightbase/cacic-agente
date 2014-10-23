@@ -5,6 +5,8 @@
 #include "qtservice.h"
 #include "cacictimer.h"
 #include "QLogger.h"
+#include "checkmodules.h"
+#include "ccacic.h"
 
 #define APP_VERSION "3.0"
 
@@ -15,6 +17,7 @@ public:
     QLogger::QLoggerManager *logManager;
     CacicTimer *Ocacictimer;
     CCacic *ccacic;
+    CheckModules *OcheckModules;
     cacicD(int argc, char **argv);
     ~cacicD();
 
@@ -24,7 +27,7 @@ public:
     void stop();
 
 private:
-    const int periodicidadeExecucaoPadrao = 240; // valor padrão em minutos.
+    const int periodicidadeExecucaoPadrao = 5; // valor padrão em minutos.
 
 };
 #endif // CACICD_H
