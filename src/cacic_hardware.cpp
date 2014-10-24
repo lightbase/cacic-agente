@@ -3,8 +3,8 @@ cacic_hardware::cacic_hardware()
 {
     QDir dir;
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.txt","Gercols (hardware)",QLogger::InfoLevel);
-    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.txt","Gercols (hardware)",QLogger::ErrorLevel);
+    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.log","Gercols (hardware)",QLogger::InfoLevel);
+    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.log","Gercols (hardware)",QLogger::ErrorLevel);
 }
 
 cacic_hardware::~cacic_hardware()

@@ -4,8 +4,8 @@ CheckModules::CheckModules(const QString &workingPath)
 {
 
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(workingPath + "/Logs/cacicLog.txt","CheckModules",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacicLog.txt","CheckModules",QLogger::ErrorLevel);
+    logManager->addDestination(workingPath + "/Logs/cacicLog.log","CheckModules",QLogger::InfoLevel);
+    logManager->addDestination(workingPath + "/Logs/cacicLog.log","CheckModules",QLogger::ErrorLevel);
 
     oCacic.setCacicMainFolder(workingPath);
     QJsonObject configFile;

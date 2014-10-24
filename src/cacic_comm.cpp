@@ -27,7 +27,7 @@ CacicComm::CacicComm (const QString &urlGerente,          const QString &operati
 
     QDir dir;
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination( dir.currentPath() + "/Logs/cacicLog.txt","Cacic Comm",QLogger::InfoLevel);
+    logManager->addDestination( dir.currentPath() + "/Logs/cacicLog.log","Cacic Comm",QLogger::InfoLevel);
 
 }
 
