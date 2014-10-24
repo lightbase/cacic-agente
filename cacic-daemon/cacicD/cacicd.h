@@ -6,6 +6,7 @@
 #include "cacictimer.h"
 #include "QLogger.h"
 #include "checkmodules.h"
+#include "ccacic.h"
 
 #define APP_VERSION "3.0"
 
@@ -26,7 +27,7 @@ public:
     void stop();
 
 private:
-    const int periodicidadeExecucaoPadrao = 240; // valor padrão em minutos.
+    const int periodicidadeExecucaoPadrao = 5; // valor padrão em minutos.
 
 };
 #endif // CACICD_H

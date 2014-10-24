@@ -13,7 +13,7 @@ Gercols::Gercols(QObject *parent)
 
 void Gercols::run()
 {
-    qDebug() << "run...";
+
     emit iniciaConfiguracao();
     //emite sinal para começar a coleta
     emit iniciaColeta();
@@ -23,8 +23,7 @@ void Gercols::run()
     if (!oColeta->toJsonObject().isEmpty())
         oCacic.setJsonToFile(oColeta->toJsonObject(), "coleta.json");
     else
-        qDebug() << "Erro ao realizar coleta.";
-
+        //log
     //O processo de criptografia e IV será tratado depois.
 
     //emite sinal "finished" pra finalizar a aplicação

@@ -107,10 +107,10 @@ bool CCacic::deleteFile(QString path)
  * @parameter QString key: chave onde será pego o json;
  * @return QJsonValue: valor solicitado;
  */
-QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
-{
-    return QJsonDocument::fromJson(json.toUtf8()).object()[key];
-}
+//QJsonValue CCacic::jsonValueFromJsonString(QString json, QString key)
+//{
+//    return QJsonDocument::fromJson(json.toUtf8()).object()[key];
+//}
 /*setJsonToFile
  * Grava json em um arquivo.
  * IMPORTANTE: não parei pra olhar a fundo, mas a princípio é necessário ler o arquivo
@@ -169,7 +169,7 @@ QString CCacic::enCrypt(std::string str_in, std::string iv) {
                                             )
                                         );
     }
-//    qDebug() << QString::fromStdString(str_out);
+
     return QString::fromStdString(str_out);
 }
 

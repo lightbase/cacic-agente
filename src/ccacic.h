@@ -31,7 +31,7 @@ public:
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
-    QJsonValue jsonValueFromJsonString(QString json, QString key);
+//    QJsonValue jsonValueFromJsonString(QString json, QString key);
     bool setJsonToFile(QJsonObject json, QString filepath);
     QJsonObject getJsonFromFile(QString filepath);
     QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());

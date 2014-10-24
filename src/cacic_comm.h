@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
@@ -12,6 +13,7 @@
 #include <QUrlQuery>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include "QLogger.h"
 
 class CacicComm : public QObject{
 
@@ -52,8 +54,7 @@ signals:
 //    void fileDownloadFinished();
 
 private slots:
-
-    bool startRequest(QUrl url);
+    void startRequest(QUrl url);
     void fileDownloadFinished();
     void fileDownloadReadyRead();
 private:
@@ -69,6 +70,8 @@ private:
 
     QFile *fileHandler;
     QNetworkReply *reply;
+
+    QLogger::QLoggerManager *logManager;
 
 };
 #endif // CACIC_COMM_H

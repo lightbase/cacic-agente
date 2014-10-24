@@ -22,24 +22,29 @@ void CacicTimer::reiniciarTimer(){
 }
 
 
-void CacicTimer::iniciarTimer()
+void CacicTimer::iniciarTimer(bool conexaoGerente)
 {
-    if(!comunicarGerente()){
-        //reiniciarTimer();
-        return;
+    if(conexaoGerente){
+        checkModules->start();
+        verificarModulos();
+        verificarPeriodicidade();
+        timer->start(getPeriodicidadeExecucao());
+    }else{
+        timer->start(this->periodicidadeExecucaoPadrao * 60000);
     }
-    verificarPeriodicidade();
-    timer->start(getPeriodicidadeExecucao());
+
 }
 
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-        verificarPeriodicidade();
+        checkModules->start();
+        verificarModulos();
         if (verificarEIniciarQMutex()) {
             iniciarThread();
+            if(verificarPeriodicidade()){
+                reiniciarTimer();
+            }
         }
-    }else{
-        reiniciarTimer();
     }
 }
 
@@ -66,6 +71,26 @@ bool CacicTimer::verificarEIniciarQMutex(){
         QLogger::QLog_Info("Cacic Daemon (Timer)", "Semáforo fechado com sucesso.");
         return true;
     }
+}
+
+bool CacicTimer::verificarModulos()
+{
+    QDir dir("./temp");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i<list.size(); i++){
+        if(!(list.at(i).fileName() == QString("cacic-service"))){
+            QFile novoModulo(list.at(i).filePath());
+            if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+                QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
+            }
+            novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+            novoModulo.close();
+        }
+    }
+    return true;
 }
 
 void CacicTimer::iniciarThread(){
@@ -135,7 +160,7 @@ bool CacicTimer::getTest(){
                               this->applicationDirPath + "/getTest.json");
         return ok;
     } catch (...) {
-        qDebug() << "Erro ao salvar o arquivo de configurações.";
+        QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
         return false;
     }
 }
@@ -156,7 +181,7 @@ bool CacicTimer::getConfig(){
                               this->applicationDirPath + "/getConfig.json");
         return ok;
     } catch (...) {
-        qDebug() << "Erro ao salvar o arquivo de configurações.";
+        QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
         return false;
     }
 }
@@ -182,22 +207,22 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Timer)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Timer)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Cacic Daemon (Timer)",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
     //OCacicComm->setUrlSsl();
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "aplicationUrl").toString());
+    checkModules = new CheckModules(this->applicationDirPath);
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-
 }
 
-void CacicTimer::verificarPeriodicidade()
+bool CacicTimer::verificarPeriodicidade()
 {
     QJsonObject agenteConfigJson;
     QJsonObject configuracoes;
@@ -207,11 +232,12 @@ void CacicTimer::verificarPeriodicidade()
         configuracoes = agenteConfigJson["configuracoes"].toObject();
         if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
             setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
-            reiniciarTimer();
+            return true;
         }
     }else{
         setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
         QLogger::QLog_Error("Cacic Daemon (Timer)", QString("getConfig.json com erro ou vazio"));
+        return false;
     }
 }
 

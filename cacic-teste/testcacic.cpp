@@ -99,10 +99,10 @@ void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }
 
-void CTestCacic::testJsonValueFromJsonString()
-{
-    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
-}
+//void CTestCacic::testJsonValueFromJsonString()
+//{
+//    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
+//}
 
 void CTestCacic::testLogin(){
     bool ok;
@@ -160,6 +160,7 @@ void CTestCacic::testJsonToFile()
 
 void CTestCacic::testJsonFromFile()
 {
+//    qDebug() << OCacic.getJsonFromFile("teste123.json");
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
@@ -202,7 +203,6 @@ void CTestCacic::testGetTest()
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
 //    qDebug() << envio;
-//    OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
@@ -212,22 +212,30 @@ void CTestCacic::testGetConfig()
     bool ok;
     QJsonObject configEnvio;
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
-    OCacic.setJsonToFile(OCacicComm->comm("/ws/neo/config", &ok, configEnvio)["reply"].toObject(), "getConfig.json");
+    QJsonObject getConfig = OCacicComm->comm("/ws/neo/config", &ok, configEnvio);
+//    qDebug() << getConfig;
+    OCacic.setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
 }
 
 void CTestCacic::testColetaSoftware()
 {
-    oColeta.configuraColetas();
-    oColeta.run();
-    oColeta.waitToCollect();
-    QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool()){
+        oColeta.configuraColetas();
+        oColeta.run();
+        oColeta.waitToCollect();
+        QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+    } else
+        QSKIP("Ação coleta de software desativada.");
 }
 
 void CTestCacic::testColetaHardware()
 {
-    QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
+    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool())
+        QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
+    else
+        QSKIP("Ação coleta de hardware desativada.");
 }
 
 void CTestCacic::testLogger()
@@ -298,9 +306,9 @@ void CTestCacic::testDownload()
                              "");
     QFile downloaded("install-cacic");
 
-    QVERIFY( downloaded.open(QIODevice::ReadOnly) );
-    QVERIFY( downloaded.exists() );
-    QVERIFY( downloaded.readAll() != "" );
+    QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
+             downloaded.exists()                  &&
+             (downloaded.size() > 0) );
 }
 
 void CTestCacic::testStartService()
@@ -312,7 +320,7 @@ void CTestCacic::testStartService()
     exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
     qDebug() << exitStatus;
 #else
-    exitStatus = OCacic.startProcess("./install-cacic", false, &ok);
+    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
 //    qDebug() << exitStatus;
 #endif
     QVERIFY(ok);
@@ -339,8 +347,24 @@ void CTestCacic::testGetModulesValues()
         do {
             QFile modulo("./temp/" + i.key());
             ok = modulo.exists() && ok;
+            i++;
         } while (i!=modules.constEnd());
     }
+
+        QDir dir("./temp");
+        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
+        dir.setSorting(QDir::Size | QDir::Reversed);
+
+        QFileInfoList list = dir.entryInfoList();
+        for (int i = 0; i<list.size(); i++){
+            QFile novoModulo(list.at(i).filePath());
+            if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+                QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
+            }
+            novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+            novoModulo.close();
+        }
+
     QVERIFY(ok);
 }
 
@@ -352,12 +376,14 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFile("../log03.txt");
     OCacic.deleteFile("logs/log04.txt");
     OCacic.deleteFile("./logs/log05.txt");
-    OCacic.deleteFolder("./logs");
+    OCacic.deleteFolder("./Logs");
     OCacic.deleteFile("../logs/log06.txt");
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     OCacic.deleteFile("getConfig.json");
-    OCacic.deleteFolder("./temp");
+//    OCacic.deleteFolder("./temp");
 //    OCacic.deleteFile("./install-cacic");
+//    OCacic.deleteFile("./gercols");
+    OCacic.deleteFile("./coleta.json");
 }

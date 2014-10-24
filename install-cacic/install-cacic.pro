@@ -61,7 +61,8 @@ HEADERS += \
     ../src/cacic_comm.h \
     ../src/operatingsystem.h \
     ../src/wmi.h \
-    ../src/QLogger.h
+    ../src/QLogger.h \
+    ../src/console.h
 
 INCLUDEPATH += ../src \
                ../src/crypto++/include/

@@ -61,7 +61,7 @@ bool CacicThread::enviarColeta()
      * fazer verificação se é preciso enviar a coleta;
      *
      */
-    if(this->nomeModulo == "gercols" ){
+    if(this->nomeModulo == "gercols" && QFile::exists("coleta.json")){
         //Envio do json gerado na coleta
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
@@ -89,6 +89,6 @@ void CacicThread::registraFimColeta(QString msg)
 
 void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Thread)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Thread)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Cacic Daemon (Thread)",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Cacic Daemon (Thread)",QLogger::ErrorLevel);
 }

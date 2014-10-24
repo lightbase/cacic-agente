@@ -26,7 +26,7 @@ public:
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
     QMutex *cMutex;
-    void iniciarTimer();
+    void iniciarTimer(bool conexaoGerente);
     bool getTest();
     bool getConfig();
     void setApplicationDirPath(const QString &value);
@@ -37,11 +37,11 @@ public:
 
 private:
     bool verificarEIniciarQMutex();
-    QStringList verificarModulos();
+    bool verificarModulos();
     void reiniciarTimer();
     QString getDirProgram() const;
     void iniciarInstancias();
-    void verificarPeriodicidade();
+    bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
@@ -54,7 +54,7 @@ private:
     QString applicationDirPath;
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
-    const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
+    const int periodicidadeExecucaoPadrao = 5; // Tempo default de execução em minutos.
 
 private slots:
     void mslot();
