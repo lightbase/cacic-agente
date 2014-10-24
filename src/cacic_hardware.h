@@ -7,6 +7,7 @@
 #include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
+#include "QLogger.h"
 #ifdef Q_OS_WIN
     #include <wmi.h>
 #elif defined(Q_OS_LINUX)
@@ -17,6 +18,7 @@ class cacic_hardware
 {
 public:
     cacic_hardware();
+    ~cacic_hardware();
     void iniciaColeta();
     QJsonObject toJsonObject();
 
@@ -39,6 +41,7 @@ private:
 
     CCacic oCacic;
     QJsonObject coletaHardware;
+    QLogger::QLoggerManager *logManager;
 };
 
 #endif // CACIC_HARDWARE_H

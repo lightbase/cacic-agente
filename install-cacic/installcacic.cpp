@@ -14,9 +14,12 @@ InstallCacic::InstallCacic(QObject *parent) :
 InstallCacic::~InstallCacic()
 {
     logManager->closeLogger();
+    delete logManager;
 }
 
 void InstallCacic::run(QStringList argv, int argc) {
+
+    // TODO: Verificar hash no gerente.
 
     QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
 
@@ -59,7 +62,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 registro["password"] = oCacicComm->getPassword();
                 registro["usuario"] = oCacicComm->getUsuario();
                 registro["mainFolder"] = oCacic.getCacicMainFolder();
-                registro["applicationUrl"] = oCacicComm.getUrlGerente();
+                registro["applicationUrl"] = oCacicComm->getUrlGerente();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
 
                 oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
@@ -86,7 +89,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                         metodoDownload["url"].toString(),
                         metodoDownload["path"].toString() + "cacic-service",
                         oCacic.getCacicMainFolder());
-//                qDebug() << metodoDownload["path"].toString() + "cacic-service";
+
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     std::cout << "Falha ao baixar arquivo.\n";

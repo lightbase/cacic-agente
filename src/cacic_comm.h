@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QObject>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QUrlQuery>
 #include <QtNetwork/QNetworkAccessManager>
@@ -12,6 +13,7 @@
 #include <QUrlQuery>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include "QLogger.h"
 
 class CacicComm : public QObject{
 
@@ -68,6 +70,8 @@ private:
 
     QFile *fileHandler;
     QNetworkReply *reply;
+
+    QLogger::QLoggerManager *logManager;
 
 };
 #endif // CACIC_COMM_H

@@ -13,7 +13,7 @@ Gercols::Gercols(QObject *parent)
 
 void Gercols::run()
 {
-//    qDebug() << "run...";
+
     emit iniciaConfiguracao();
     //emite sinal para começar a coleta
     emit iniciaColeta();

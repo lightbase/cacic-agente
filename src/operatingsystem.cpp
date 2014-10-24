@@ -77,7 +77,7 @@ QJsonObject OperatingSystem::toJsonObject()
     QJsonObject json;
     json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));
     json["nomeOs"] = QJsonValue::fromVariant(this->nomeOs);
-//    qDebug() << json;
+
     return json;
 }
 

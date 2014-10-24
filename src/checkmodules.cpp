@@ -2,13 +2,18 @@
 
 CheckModules::CheckModules(const QString &workingPath)
 {
+
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(workingPath + "/Logs/cacicLog.txt","CheckModules",QLogger::InfoLevel);
+    logManager->addDestination(workingPath + "/Logs/cacicLog.txt","CheckModules",QLogger::ErrorLevel);
+
     oCacic.setCacicMainFolder(workingPath);
     QJsonObject configFile;
     configFile = oCacic.getJsonFromFile(workingPath + "/getConfig.json");
     if (!configFile.isEmpty()) {
         //pega url do gerente.
         this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
-//        qDebug() << applicationUrl;
+
         QJsonArray modulos;
         //pega o jsonarray dos módulos
         modulos = configFile["agentcomputer"].toObject()["modulos"].toObject()["cacic"].toArray();
@@ -21,9 +26,14 @@ CheckModules::CheckModules(const QString &workingPath)
 
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
     if (!tempPath.exists()){
-//        qDebug() << "criando diretório temporário";
         tempPath.mkdir(oCacic.getCacicMainFolder() + "/temp");
     }
+}
+
+CheckModules::~CheckModules()
+{
+    logManager->closeLogger();
+    delete logManager;
 }
 
 QVariantMap CheckModules::getModules() const {
@@ -72,11 +82,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         if (downloadOk){
             //faz uma verificação do novo módulo.
             if (!(novoModulo->exists() && novoModulo->size()>1)){
-                qDebug() << moduloName << "falha no download..";
+                QLogger::QLog_Error("CheckModules", moduloName + "falha no download..");
                 novoModulo->remove();
                 return false;
             } else {
-                qDebug() << moduloName << "Sucesso!";
+                QLogger::QLog_Info("CheckModules", moduloName + "Sucesso!");
                 return true;
             }
         } else {
