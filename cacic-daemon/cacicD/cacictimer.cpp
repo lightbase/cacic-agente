@@ -159,7 +159,7 @@ bool CacicTimer::getTest(){
                               this->applicationDirPath + "/getTest.json");
         return ok;
     } catch (...) {
-        qDebug() << "Erro ao salvar o arquivo de configurações.";
+        QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
         return false;
     }
 }
@@ -181,7 +181,7 @@ bool CacicTimer::getConfig(){
                               this->applicationDirPath + "/getConfig.json");
         return ok;
     } catch (...) {
-        qDebug() << "Erro ao salvar o arquivo de configurações.";
+        QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
         return false;
     }
 }

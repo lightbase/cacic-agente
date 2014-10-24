@@ -24,6 +24,7 @@ SOURCES += \
     ../src/vregistry.cpp \
     ../src/vqtconvert.cpp \
     ../src/wmi.cpp \
+    ../src/QLogger.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -37,6 +38,7 @@ HEADERS += \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
     ../src/wmi.h \
+    ../src/QLogger.h
 
 CONFIG   += console
 CONFIG   -= app_bundle

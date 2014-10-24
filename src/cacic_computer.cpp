@@ -7,7 +7,7 @@ CACIC_Computer::CACIC_Computer()
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
     computerName = sysName.nodename;
-//    qDebug() << sysName.nodename << sysName.machine << sysName.sysname << sysName.release << sysName.version;
+
 }
 
 /*NetworkInterfacesRunning

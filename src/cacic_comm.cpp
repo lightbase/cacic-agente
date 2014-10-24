@@ -25,6 +25,9 @@ CacicComm::CacicComm (const QString &urlGerente,          const QString &operati
     params.addQueryItem("te_versao_cacic",cacicVersion);
     params.addQueryItem("te_versao_gercols",gercolsVersion);
 
+    QDir dir;
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination( dir.currentPath() + "/Logs/cacicLog.log","Cacic Comm",QLogger::InfoLevel);
 
 }
 
@@ -108,11 +111,9 @@ bool CacicComm::commStatus(){
 
     QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
     if (reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).isValid()){
-//            qDebug() << "Status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << reason;
         return true;
     }else{
         reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-//              qDebug() << "Error:" << reason;
         return false;
     }
 }
@@ -152,7 +153,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
 
     fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
-        qDebug() << "fileDownload: fileHandler nâo pode abrir arquivo.";
+        QLogger::QLog_Error("Cacic Comm","fileDownload: fileHandler nâo pode abrir arquivo.");
         return false;
     }
 
@@ -184,8 +185,8 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     fileHandler = new QFile((!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1]);
 
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
-        qDebug() << "ftpDownload: fileHandler nâo pode abrir arquivo.";
-        qDebug() << fileHandler->errorString();
+        QLogger::QLog_Error("Cacic Comm","fileDownload: fileHandler nâo pode abrir arquivo.");
+        QLogger::QLog_Error("Cacic Comm",fileHandler->errorString());
         return false;
     }
 

@@ -1,6 +1,16 @@
 #include "cacic_hardware.h"
 cacic_hardware::cacic_hardware()
 {
+    QDir dir;
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.log","Gercols (hardware)",QLogger::InfoLevel);
+    logManager->addDestination(dir.currentPath() + "/Logs/cacicLog.log","Gercols (hardware)",QLogger::ErrorLevel);
+}
+
+cacic_hardware::~cacic_hardware()
+{
+    logManager->closeLogger();
+    delete logManager;
 }
 
 void cacic_hardware::iniciaColeta()
@@ -15,7 +25,8 @@ void cacic_hardware::iniciaColeta()
     // ser incluídas como dependências.
 
     // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
-    if( console("lshw").contains("/bin/sh:") ){ qDebug() << "lshw nao instalado.";
+    if( console("lshw").contains("/bin/sh:") ){
+        QLogger::QLog_Info("Gercols (hardware)", "lshw nao estava instalado.");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm lshw");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
@@ -23,9 +34,10 @@ void cacic_hardware::iniciaColeta()
             console("apt-get -y install lshw");
     }
 
-    if( console("dmidecode").contains("/bin/sh:") ){ qDebug() << "dmidecode nao instalado.";
+    if( console("dmidecode").contains("/bin/sh:") ){
+        QLogger::QLog_Info("Gercols (hardware)", "dmidecode nao estava instalado");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
-            qDebug() << console("pacman -S --needed --noconfirm dmidecode");
+            console("pacman -S --needed --noconfirm dmidecode");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
                operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU )
             console("apt-get -y install dmidecode");
@@ -235,7 +247,7 @@ QJsonObject cacic_hardware::coletaWin()
     wmiResult = wmi::wmiSearch("Win32_PnPSignedDriver", params);
     if (!wmiResult.isNull())
         hardware["PnPSignedDriver"] = wmiResult;
-//    qDebug() << hardware;
+
     return hardware;
 }
 
@@ -256,20 +268,11 @@ QJsonObject cacic_hardware::coletaLinux()
 
     if( lshwJson.contains("id") && lshwJson["id"] == QJsonValue::fromVariant(QString("core")) ) {
         if ( lshwJson["children"].isArray() ){
-//            qDebug() << "IS ARRAY!!";
+
             QJsonArray componentsArray =  lshwJson["children"].toArray();
 
             foreach(QJsonValue componentValue, componentsArray ) {
                 QJsonObject component = componentValue.toObject();
-
-                /* TODO:
-                 * - Formatar direito as quantidades (memória,clock do cpu)
-                 * com unidades mais amigáveis para humanos em todos métodos.
-                 *
-                 * coletaLinuxMem
-                 * coletaLinuxCpu
-                 * coletaLinuxPci
-                 */
 
                 if( component["id"] == QJsonValue::fromVariant(QString("memory")) ) {
                     coletaLinuxMem(hardware,component);
@@ -398,7 +401,7 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
     QStringList consoleOutput;
 
     consoleOutput= console("dmidecode -t 2").split("\n");
-//    qDebug() << consoleOutput;
+
     foreach(QString line, consoleOutput){
         if(line.contains("Manufacturer:") ){
                 motherboard["manufacturer"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
@@ -434,7 +437,7 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
     QStringList consoleOutput;
 
     consoleOutput= console("dmidecode -t 3").split("\n");
-//    qDebug() << consoleOutput;
+
     foreach(QString line, consoleOutput){
         if(line.contains("Type:")
                 && (line.contains("Notebook") || line.contains("Portable")) ){

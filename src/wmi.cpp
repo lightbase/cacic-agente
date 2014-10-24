@@ -28,10 +28,10 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
                                                                     QString("."),
                                                                     QString("root\\CIMV2")
                                                                );
-//    qDebug() << ">>>>>>>>>" << objIWbemLocator->isNull() << objWMIService->isNull();
+
     //Faz a pesquisa no wmi
     QAxObject* returnList = objWMIService->querySubObject("ExecQuery(QString&)", query);
-//        qDebug() << "<<<<<<<<<<<<<<<<<<<<<<<";
+
     QAxObject *enum1 = returnList->querySubObject("_NewEnum");
 
     IEnumVARIANT* enumInterface = 0;

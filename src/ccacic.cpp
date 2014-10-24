@@ -169,7 +169,7 @@ QString CCacic::enCrypt(std::string str_in, std::string iv) {
                                             )
                                         );
     }
-//    qDebug() << QString::fromStdString(str_out);
+
     return QString::fromStdString(str_out);
 }
 

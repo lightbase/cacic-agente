@@ -49,7 +49,6 @@ QJsonObject cacic_software::coletaWin()
 
             softwaresJson[key] = QJsonObject::fromVariantMap(software);
         }
-//        qDebug() << softwaesJson;
     }
     return softwaresJson;
 }
@@ -82,7 +81,6 @@ QJsonObject cacic_software::coletaArch()
         QJsonObject packageJson;
 
         QStringList packageInfo = console(QString("pacman -Qi ").append(packageName)).split("\n");
-//            qDebug() << packageInfo;
 
         packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
         foreach(QString line, packageInfo) {
@@ -123,7 +121,6 @@ QJsonObject cacic_software::coletaDebian()
         QJsonObject packageJson;
 
         QStringList packageInfo = console(QString("apt-cache show ").append(packageName)).split("\n");
-//            qDebug() << packageInfo;
 
         packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
         foreach(QString line, packageInfo) {
