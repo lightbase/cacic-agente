@@ -50,9 +50,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                             configsJson["cacic_main_folder"].toString() :
                     "c:/cacic/");
 #elif defined(Q_OS_LINUX)
-                oCacic.setCacicMainFolder(configsJson["cacic_main_folder"].isString() ?
-                                          configsJson["cacic_main_folder"].toString() :
-                                          "/usr/share/cacic");
+                oCacic.setCacicMainFolder("/usr/share/cacic");
 #endif
 
                 oCacic.createFolder(oCacic.getCacicMainFolder());

@@ -5,7 +5,8 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     try{
         this->createApplication(argc, argv);
         ccacic = new CCacic();
-        ccacic->setCacicMainFolder(ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
+        QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : QDir::currentPath());
         Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
 
         setServiceDescription("Cacic Daemon");
