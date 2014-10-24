@@ -42,12 +42,14 @@ void CColeta::run()
     QJsonObject actions = coleta["agentcomputer"].toObject()["actions"].toObject();
 
     if( actions.contains("col_hard") && actions["col_hard"].toBool()){
+        QLogger::QLog_Info("Gercols", QString("Iniciando coleta de hardware."));
         this->hardwareIsFinish = false;
         emit beginHardware();
     } else
         this->hardwareIsFinish = true;
 
     if ( actions.contains("col_soft") && actions["col_soft"].toBool()){
+        QLogger::QLog_Info("Gercols", QString("Iniciando coleta de software."));
         this->softwareIsFinish = false;
         emit beginSoftware();
     } else
