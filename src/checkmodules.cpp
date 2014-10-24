@@ -8,23 +8,6 @@ CheckModules::CheckModules(const QString &workingPath, const QString &workingMod
     logManager->addDestination(workingPath + "/Logs/cacic.log", workingModule + "(checkModules)",QLogger::ErrorLevel);
 
     oCacic.setCacicMainFolder(workingPath);
-    QJsonObject configFile;
-    configFile = oCacic.getJsonFromFile(workingPath + "/getConfig.json");
-    if (!configFile.isEmpty()) {
-        //pega url do gerente.
-        this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
-
-        QJsonArray modulos;
-        //pega o jsonarray dos módulos
-        modulos = configFile["agentcomputer"].toObject()["modulos"].toObject()["cacic"].toArray();
-        foreach (QJsonValue modulo, modulos){
-            //grava o nome com o hash de cada modulo
-            modules[modulo.toObject()["nome"].toString()] = modulo.toObject()["hash"].toString();
-        }
-    } else {
-        QLogger::QLog_Error("CheckModules", "Erro ao pegar informações do arquivo " + workingPath + "/getConfig.json");
-    }
-    //TODO: Completar constructor. Agora que tenho os nomes dos módulos e os hashs, fazer a verificação.
 
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
     if (!tempPath.exists()){
@@ -44,6 +27,22 @@ QVariantMap CheckModules::getModules() const {
 
 bool CheckModules::start(){
     bool ok = true;
+    QJsonObject configFile;
+    configFile = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json");
+    if (!configFile.isEmpty()) {
+        //pega url do gerente.
+        this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
+
+        QJsonArray modulos;
+        //pega o jsonarray dos módulos
+        modulos = configFile["agentcomputer"].toObject()["modulos"].toObject()["cacic"].toArray();
+        foreach (QJsonValue modulo, modulos){
+            //grava o nome com o hash de cada modulo
+            modules[modulo.toObject()["nome"].toString()] = modulo.toObject()["hash"].toString();
+        }
+    } else {
+        QLogger::QLog_Error("CheckModules", "Erro ao pegar informações do arquivo " + oCacic.getCacicMainFolder() + "/getConfig.json");
+    }
     if (!modules.isEmpty()){
         QVariantMap::const_iterator i = modules.constBegin();
         do {
@@ -53,7 +52,7 @@ bool CheckModules::start(){
         } while (i != modules.constEnd());
     } else {
         //força download do gercols.
-        return this->verificaModulo("gercols", "gtgytt");
+        QLogger::QLog_Error("CheckModules", "Não há modulo a ser verificado. Forçando atualização de gercols.");
     }
 
     return ok;

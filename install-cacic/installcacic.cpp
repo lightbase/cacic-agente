@@ -154,10 +154,10 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
 
 void InstallCacic::uninstall()
 {
+    //TODO: PARAR O SERVIÇO
     oCacic.deleteFolder(oCacic.getCacicMainFolder());
     oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";
-    QLogger::QLog_Info("Install Cacic", QString("Cacic desinstalado com sucesso."));
 }
 
 QMap<QString, QString> InstallCacic::getArgumentos()
