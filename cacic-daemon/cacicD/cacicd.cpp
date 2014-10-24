@@ -6,7 +6,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         this->createApplication(argc, argv);
         ccacic = new CCacic();
         ccacic->setCacicMainFolder(ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
-        Ocacictimer = new CacicTimer();
+        Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
 
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
@@ -32,26 +32,8 @@ cacicD::~cacicD()
 
 void cacicD::start() {
     try{
-        if(Ocacictimer->comunicarGerente()){
-            OcheckModules->start();
-            QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + ccacic->getCacicMainFolder() + "."));
-            QJsonObject result = ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json");
-            if(!result.contains("error") && !result.isEmpty()){
-
-                QJsonObject agenteConfigJson = result["agentcomputer"].toObject();
-                QJsonObject configuracoes = agenteConfigJson["configuracoes"].toObject();
-
-                //o valor nu_intervalo_exec vem em minutos. O valor que o timer aceita é em milisegundos,por isso 60000
-                Ocacictimer->setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
-                Ocacictimer->iniciarTimer(true);
-            }
-            delete OcheckModules;
-        }else{
-            QLogger::QLog_Error("Cacic Daemon", QString("Problemas com o arquivo getConfig.json"));
-            QLogger::QLog_Info("Cacic Daemon", QString("Inicializando periodicidade de execução do serviço com tempo padrão."));
-            Ocacictimer->setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000); // em minutos !!!!
-            Ocacictimer->iniciarTimer(false);
-        }
+        QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + ccacic->getCacicMainFolder() + "."));
+        Ocacictimer->iniciarTimer(true);
     }catch (...){
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido ao iniciar o serviço."));
     }

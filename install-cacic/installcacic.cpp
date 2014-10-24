@@ -99,7 +99,7 @@ void InstallCacic::run(QStringList argv, int argc) {
 
                 fileService.close();
                 ConsoleObject console;
-                std::cout << console("/etc/init.d/cacic start").toStdString();
+                std::cout << console("/etc/init.d/cacic3 start").toStdString();
 
 #endif
                 if (!ok) {

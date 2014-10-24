@@ -25,6 +25,7 @@ void CacicTimer::reiniciarTimer(){
 void CacicTimer::iniciarTimer(bool conexaoGerente)
 {
     if(conexaoGerente){
+        comunicarGerente();
         checkModules->start();
         verificarModulos();
         verificarPeriodicidade();

@@ -4,8 +4,8 @@ CheckModules::CheckModules(const QString &workingPath)
 {
 
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(workingPath + "/Logs/cacicLog.log","CheckModules",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacicLog.log","CheckModules",QLogger::ErrorLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic.log","CheckModules",QLogger::InfoLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic.log","CheckModules",QLogger::ErrorLevel);
 
     oCacic.setCacicMainFolder(workingPath);
     QJsonObject configFile;
@@ -21,6 +21,8 @@ CheckModules::CheckModules(const QString &workingPath)
             //grava o nome com o hash de cada modulo
             modules[modulo.toObject()["nome"].toString()] = modulo.toObject()["hash"].toString();
         }
+    } else {
+        QLogger::QLog_Error("CheckModules", "Erro ao pegar informações do arquivo " + workingPath + "/getConfig.json");
     }
     //TODO: Completar constructor. Agora que tenho os nomes dos módulos e os hashs, fazer a verificação.
 
@@ -66,6 +68,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
 
     //verifica se o módulo existe, se o tamaho é maior que 1 byte e se o hash é igual ao informado pelo json
     if (!(modulo->exists() && modulo->size()>1 && oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
+        QLogger::QLog_Info("CheckModules", "Atualização de " + moduloName + " necessária.");
         QFile *novoModulo;
         QJsonObject metodoDownload;
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
@@ -82,7 +85,10 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         if (downloadOk){
             //faz uma verificação do novo módulo.
             if (!(novoModulo->exists() && novoModulo->size()>1)){
-                QLogger::QLog_Error("CheckModules", moduloName + "falha no download..");
+                QLogger::QLog_Error("CheckModules","Falha ao baixar " + moduloName + "("+metodoDownload["tipo"].toString() +
+                                                                                        this->applicationUrl +
+                                                                                        metodoDownload["path"].toString() +
+                                                                                        moduloName);
                 novoModulo->remove();
                 return false;
             } else {
