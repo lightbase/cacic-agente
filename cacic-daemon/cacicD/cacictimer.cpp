@@ -81,7 +81,7 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        if(!list.at(i).fileName() == "cacic-service"){
+        if(!(list.at(i).fileName() == QString("cacic-service"))){
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
                 QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
@@ -216,7 +216,7 @@ void CacicTimer::iniciarInstancias(){
     OCacicComm = new CacicComm();
     //OCacicComm->setUrlSsl();
     checkModules = new CheckModules(this->applicationDirPath);
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "aplicationUrl").toString());
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());

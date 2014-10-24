@@ -56,13 +56,10 @@ void InstallCacic::run(QStringList argv, int argc) {
                 //grava chave em registro;
                 QVariantMap registro;
                 registro["key"] = oCacic.getChaveCrypt();
-                registro["aplicationUrl"] = oCacicComm->getUrlGerente();
                 registro["password"] = oCacicComm->getPassword();
                 registro["usuario"] = oCacicComm->getUsuario();
                 registro["mainFolder"] = oCacic.getCacicMainFolder();
-                registro["applicationUrl"] = oCacic.getUrlGerente();
-                registro["usuario"] = oCacicComm->getUsuario();
-                registro["senha"] = oCacicComm->getPassword();
+                registro["applicationUrl"] = oCacicComm.getUrlGerente();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
 
                 oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
@@ -89,7 +86,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                         metodoDownload["url"].toString(),
                         metodoDownload["path"].toString() + "cacic-service",
                         oCacic.getCacicMainFolder());
-                qDebug() << metodoDownload["path"].toString() + "cacic-service";
+//                qDebug() << metodoDownload["path"].toString() + "cacic-service";
                 QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     std::cout << "Falha ao baixar arquivo.\n";
