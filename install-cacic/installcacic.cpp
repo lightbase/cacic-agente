@@ -80,7 +80,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                                                          false,
                                                          &ok,
                                                          QStringList("-install");
-        #else
+#else
 
                 oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                         metodoDownload["url"].toString(),
