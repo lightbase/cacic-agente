@@ -1,11 +1,11 @@
 #include "checkmodules.h"
 
-CheckModules::CheckModules(const QString &workingPath)
+CheckModules::CheckModules(const QString &workingPath, const QString &workingModule)
 {
 
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(workingPath + "/Logs/cacic.log","CheckModules",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacic.log","CheckModules",QLogger::ErrorLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic.log", workingModule,QLogger::InfoLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic.log", workingModule,QLogger::ErrorLevel);
 
     oCacic.setCacicMainFolder(workingPath);
     QJsonObject configFile;
@@ -67,7 +67,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
 
     //verifica se o módulo existe, se o tamaho é maior que 1 byte e se o hash é igual ao informado pelo json
-    if (!(modulo->exists() && modulo->size()>1 && oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
+    if (!(modulo->exists() || modulo->size()>1 || oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
         QLogger::QLog_Info("CheckModules", "Atualização de " + moduloName + " necessária.");
         QFile *novoModulo;
         QJsonObject metodoDownload;
@@ -89,18 +89,19 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                     QLogger::QLog_Error("CheckModules","Falha ao baixar " + moduloName + "("+metodoDownload["tipo"].toString() +
                                                                                             this->applicationUrl +
                                                                                             metodoDownload["path"].toString() +
-                                                                                            moduloName +")";
+                                                                                            moduloName +")");
                     novoModulo->remove();
                     return false;
                 } else {
-                    QLogger::QLog_Info("CheckModules", moduloName + "Sucesso!");
+                    QLogger::QLog_Info("CheckModules", moduloName + " baixado com sucesso!");
                     return true;
                 }
             } else {
                 return false;
             }
         } else {
-            QLogger::QLog_Error("CheckModules", moduloName + "Não foi possível recuperar json de " + oCacic.getCacicMainFolder() + "/getConfig.json");
+            QLogger::QLog_Error("CheckModules", "Não foi possível recuperar json de " +
+                                                 oCacic.getCacicMainFolder() + "/getConfig.json ao tentar baixar " + moduloName);
             return false;
         }
 

@@ -10,7 +10,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
-        OcheckModules = new CheckModules(ccacic->getCacicMainFolder());
+        OcheckModules = new CheckModules(ccacic->getCacicMainFolder(), "Cacic Daemon");
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::InfoLevel);
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::ErrorLevel);

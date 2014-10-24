@@ -9,7 +9,7 @@
 class CheckModules
 {
 public:
-    CheckModules(const QString &workingPath);
+    CheckModules(const QString &workingPath, const QString &workingModule);
     ~CheckModules();
 //    QStringList verificaModulos();
     bool start();

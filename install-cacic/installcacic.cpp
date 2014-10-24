@@ -100,6 +100,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 fileService.close();
                 ConsoleObject console;
                 std::cout << console("/etc/init.d/cacic3 start").toStdString();
+                delete &console;
 
 #endif
                 if (!ok) {
@@ -156,11 +157,10 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
 
 void InstallCacic::uninstall()
 {
-    oCacic.deleteFolder("c:/cacic");
+    oCacic.deleteFolder(oCacic.getCacicMainFolder());
     oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";
     QLogger::QLog_Info("Install Cacic", QString("Cacic desinstalado com sucesso."));
-    emit finished();
 }
 
 QMap<QString, QString> InstallCacic::getArgumentos()

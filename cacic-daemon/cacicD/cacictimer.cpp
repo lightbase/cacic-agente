@@ -83,12 +83,15 @@ bool CacicTimer::verificarModulos()
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         if(!(list.at(i).fileName() == QString("cacic-service"))){
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo " + list.at(i).fileName() + " encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "Excluindo versão antiga de "+list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
-            novoModulo.remove();
+            if (!novoModulo.remove())
+                QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
         }
     }
     return true;
@@ -216,7 +219,7 @@ void CacicTimer::iniciarInstancias(){
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
     //OCacicComm->setUrlSsl();
-    checkModules = new CheckModules(this->applicationDirPath);
+    checkModules = new CheckModules(this->applicationDirPath, "Cacic Daemon (Timer)");
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
