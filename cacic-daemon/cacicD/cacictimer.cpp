@@ -214,6 +214,7 @@ void CacicTimer::iniciarInstancias(){
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
+    ccacic->setCacicMainFolder(applicationDirPath);
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);

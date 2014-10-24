@@ -100,7 +100,6 @@ void InstallCacic::run(QStringList argv, int argc) {
                 fileService.close();
                 ConsoleObject console;
                 std::cout << console("/etc/init.d/cacic3 start").toStdString();
-                delete &console;
 
 #endif
                 if (!ok) {
