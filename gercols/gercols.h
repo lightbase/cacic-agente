@@ -12,6 +12,7 @@ private:
     CCacic oCacic;
     CColeta *oColeta;
     QJsonObject configReq;
+    QLogger::QLoggerManager *logManager;
 
 public:
     explicit Gercols(QObject *parent = 0);
