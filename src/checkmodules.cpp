@@ -72,30 +72,35 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         QFile *novoModulo;
         QJsonObject metodoDownload;
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
-        metodoDownload = oCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
-        oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
-        oCacicComm.setFtpPass(metodoDownload["senha"].toString());
+        metodoDownload = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+        if (!metodoDownload.isEmpty()){
+            oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
+            oCacicComm.setFtpPass(metodoDownload["senha"].toString());
 
-        downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
-                                            this->applicationUrl,
-                                            metodoDownload["path"].toString() + moduloName,
-                                            oCacic.getCacicMainFolder() + "/temp");
+            downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
+                                                this->applicationUrl,
+                                                metodoDownload["path"].toString() + moduloName,
+                                                oCacic.getCacicMainFolder() + "/temp");
 
-        novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
-        if (downloadOk){
-            //faz uma verificação do novo módulo.
-            if (!(novoModulo->exists() && novoModulo->size()>1)){
-                QLogger::QLog_Error("CheckModules","Falha ao baixar " + moduloName + "("+metodoDownload["tipo"].toString() +
-                                                                                        this->applicationUrl +
-                                                                                        metodoDownload["path"].toString() +
-                                                                                        moduloName);
-                novoModulo->remove();
-                return false;
+            novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
+            if (downloadOk){
+                //faz uma verificação do novo módulo.
+                if (!(novoModulo->exists() && novoModulo->size()>1)){
+                    QLogger::QLog_Error("CheckModules","Falha ao baixar " + moduloName + "("+metodoDownload["tipo"].toString() +
+                                                                                            this->applicationUrl +
+                                                                                            metodoDownload["path"].toString() +
+                                                                                            moduloName +")";
+                    novoModulo->remove();
+                    return false;
+                } else {
+                    QLogger::QLog_Info("CheckModules", moduloName + "Sucesso!");
+                    return true;
+                }
             } else {
-                QLogger::QLog_Info("CheckModules", moduloName + "Sucesso!");
-                return true;
+                return false;
             }
         } else {
+            QLogger::QLog_Error("CheckModules", moduloName + "Não foi possível recuperar json de " + oCacic.getCacicMainFolder() + "/getConfig.json");
             return false;
         }
 
