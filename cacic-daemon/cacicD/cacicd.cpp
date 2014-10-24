@@ -4,14 +4,16 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 {
     try{
         this->createApplication(argc, argv);
-        Ocacictimer = new CacicTimer(application()->applicationDirPath());
         ccacic = new CCacic();
+        ccacic->setCacicMainFolder(ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
+        Ocacictimer = new CacicTimer();
+
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
-        OcheckModules = new CheckModules(application()->applicationDirPath());
+        OcheckModules = new CheckModules(ccacic->getCacicMainFolder());
         logManager = QLogger::QLoggerManager::getInstance();
-        logManager->addDestination(application()->applicationDirPath() + "/Logs/cacicLog.txt","Cacic Daemon",QLogger::InfoLevel);
-        logManager->addDestination(application()->applicationDirPath() + "/Logs/cacicLog.txt","Cacic Daemon",QLogger::ErrorLevel);
+        logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::InfoLevel);
+        logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::ErrorLevel);
     } catch (...){
         qCritical() << "Error desconhecido no construtor.";
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido no construtor."));
@@ -32,8 +34,8 @@ void cacicD::start() {
     try{
         if(Ocacictimer->comunicarGerente()){
             OcheckModules->start();
-            QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + application()->applicationDirPath() + "."));
-            QJsonObject result = ccacic->getJsonFromFile(application()->applicationDirPath() + "/getConfig.json");
+            QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + ccacic->getCacicMainFolder() + "."));
+            QJsonObject result = ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json");
             if(!result.contains("error") && !result.isEmpty()){
 
                 QJsonObject agenteConfigJson = result["agentcomputer"].toObject();

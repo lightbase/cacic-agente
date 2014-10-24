@@ -59,7 +59,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 registro["password"] = oCacicComm->getPassword();
                 registro["usuario"] = oCacicComm->getUsuario();
                 registro["mainFolder"] = oCacic.getCacicMainFolder();
-                registro["applicationUrl"] = oCacicComm.getUrlGerente();
+                registro["applicationUrl"] = oCacicComm->getUrlGerente();
                 oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
 
                 oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");

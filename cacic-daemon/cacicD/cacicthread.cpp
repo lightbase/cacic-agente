@@ -65,8 +65,11 @@ bool CacicThread::enviarColeta()
         //Envio do json gerado na coleta
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
-        this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-        return &ok;
+        if (!jsonColeta.isEmpty()){
+            this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+            return &ok;
+        } else
+            return true;
     }
     return false;
 }
@@ -89,6 +92,6 @@ void CacicThread::registraFimColeta(QString msg)
 
 void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Thread)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.txt","Cacic Daemon (Thread)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Thread)",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Thread)",QLogger::ErrorLevel);
 }
