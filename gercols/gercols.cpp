@@ -6,6 +6,10 @@ Gercols::Gercols(QObject *parent)
     //Pega chave do registro, que será pega na instalação.
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
 
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Gercols",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Gercols",QLogger::ErrorLevel);
+
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
 
@@ -20,12 +24,11 @@ void Gercols::run()
 
     oColeta->waitToCollect();
     //salva json em arquivo
-    if (!oColeta->toJsonObject().isEmpty())
+    if (!oColeta->toJsonObject().isEmpty()){
+        QLogger::QLog_Info("Gercols", QString("Coleta realizada com sucesso."));
         oCacic.setJsonToFile(oColeta->toJsonObject(), "coleta.json");
-    else
-        //log
-    //O processo de criptografia e IV será tratado depois.
-
-    //emite sinal "finished" pra finalizar a aplicação
+    } else {
+        QLogger::QLog_Error("Gercols", QString("Falha ao realizar coleta."));
+    }
     emit finished();
 }

@@ -7,8 +7,8 @@ InstallCacic::InstallCacic(QObject *parent) :
     this->applicationDirPath = dir.currentPath();
 
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Install Cacic",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacicLog.log","Install Cacic",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Install Cacic",QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Install Cacic",QLogger::ErrorLevel);
 }
 
 InstallCacic::~InstallCacic()
