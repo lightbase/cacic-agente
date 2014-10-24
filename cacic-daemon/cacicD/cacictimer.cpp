@@ -88,7 +88,7 @@ bool CacicTimer::verificarModulos()
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
-            novoModulo.close();
+            novoModulo.remove();
         }
     }
     return true;
@@ -157,7 +157,7 @@ bool CacicTimer::getTest(){
     }
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
-                              this->applicationDirPath + "/getTest.json");
+                              ccacic->getCacicMainFolder() + "/getTest.json");
         return ok;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
@@ -179,7 +179,7 @@ bool CacicTimer::getConfig(){
     }
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
-                              this->applicationDirPath + "/getConfig.json");
+                              ccacic->getCacicMainFolder() + "/getConfig.json");
         return ok;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
