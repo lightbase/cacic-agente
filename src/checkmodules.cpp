@@ -27,6 +27,7 @@ QVariantMap CheckModules::getModules() const {
 
 bool CheckModules::start(){
     bool ok = true;
+    QLogger::QLog_Info("CheckModules", "Verificando módulos.");
     QJsonObject configFile;
     configFile = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json");
     if (!configFile.isEmpty()) {

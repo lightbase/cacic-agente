@@ -6,12 +6,11 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         this->createApplication(argc, argv);
         ccacic = new CCacic();
         QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
-        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : QDir::currentPath());
+        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : "/usr/share/cacic");
         Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
 
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
-        OcheckModules = new CheckModules(ccacic->getCacicMainFolder(), "Cacic Daemon");
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::InfoLevel);
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::ErrorLevel);
