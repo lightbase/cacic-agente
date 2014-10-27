@@ -14,6 +14,7 @@ InstallCacic::InstallCacic(QObject *parent) :
 InstallCacic::~InstallCacic()
 {
     logManager->closeLogger();
+    logManager->wait();
     delete logManager;
 }
 
@@ -92,7 +93,15 @@ void InstallCacic::run(QStringList argv, int argc) {
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     std::cout << "Falha ao baixar arquivo.\n";
                     this->uninstall();
-                    return;
+
+                    /* Somente com um return, o executável não encerrava a execução
+                     * e não passava pelo destrutor; então fechei o log aqui e usei
+                     * um exit no lugar do return.
+                     */
+                    logManager->closeLogger();
+                    logManager->wait();
+                    delete logManager;
+                    exit(-1);
                 }
 
                 fileService.close();
