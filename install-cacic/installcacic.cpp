@@ -154,7 +154,38 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
 
 void InstallCacic::uninstall()
 {
-    //TODO: PARAR O SERVIÇO
+    //TODO: PARAR O SERVIÇO no windows
+
+#if defined(Q_OS_LINUX)
+    ConsoleObject console;
+    QStringList outputColumns;
+
+    std::cout << console("/etc/init.d/cacic3 stop").toStdString();
+
+    outputColumns = console("ps aux | grep cacic-service").split("\n");
+    outputColumns.removeLast();
+
+    foreach(QString processString, outputColumns) {
+
+        if(processString.contains("grep"))
+            continue;
+
+        QStringList columns = processString.split(" ");
+        int i = 0;
+        foreach(QString column, columns){
+            if( !column.isEmpty() ) {
+                i++;
+                if( i == 2 ) {
+                    qDebug() << column;
+                    console("kill -9 " + column);
+                    QLogger::QLog_Info("Install Cacic", QString("Cacic-service interrompido."));
+                }
+            }
+        }
+    }
+
+#endif
+
     oCacic.deleteFolder(oCacic.getCacicMainFolder());
     oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";
