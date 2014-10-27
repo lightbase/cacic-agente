@@ -339,7 +339,7 @@ void CTestCacic::testEnviaColeta()
 void CTestCacic::testGetModulesValues()
 {
     bool ok = true;
-    oCheckModules = new CheckModules(QDir::currentPath());
+    oCheckModules = new CheckModules(QDir::currentPath(), "teste");
     oCheckModules->start();
     QVariantMap modules = oCheckModules->getModules();
     QVariantMap::const_iterator i = modules.constBegin();

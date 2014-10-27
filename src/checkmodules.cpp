@@ -66,7 +66,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     //pega o arquivo do módulo selecionado
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
 
-    //verifica se o módulo existe, ou se o tamaho é maior que 1 byte ou se o hash é igual ao informado pelo json
+    //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
     if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash)){
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
