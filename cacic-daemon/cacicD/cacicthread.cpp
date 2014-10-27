@@ -67,7 +67,8 @@ bool CacicThread::enviarColeta()
         if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta") == 1){
             QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
             if (!jsonColeta.isEmpty()){
-                this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+                QJsonObject retornoColeta;
+                retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
                 return &ok;
             } else
                 return true;

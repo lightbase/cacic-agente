@@ -8,6 +8,8 @@ QT       += core
 QT       += network
 QT       -= gui
 
+QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
+
 TARGET    = gercols
 
 TEMPLATE = app

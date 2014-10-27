@@ -7,6 +7,7 @@
 QT       += core
 QT       -= gui
 QT       += network
+QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
 TARGET       = cacic-service
 CONFIG      += console
