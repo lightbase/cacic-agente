@@ -61,17 +61,25 @@ bool CacicThread::enviarColeta()
      * fazer verificação se é preciso enviar a coleta;
      *
      */
-    if(this->nomeModulo == "gercols" && QFile::exists("coleta.json")){
+    if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         //Envio do json gerado na coleta
         bool ok = false;
-        if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta") == 1){
+        if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
             QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
             if (!jsonColeta.isEmpty()){
                 QJsonObject retornoColeta;
                 retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-                return &ok;
+                if (ok){
+                    QVariantMap enviaColeta;
+                    enviaColeta["enviaColeta"] = false;
+                    ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+                }
+                return ok;
             } else
                 return true;
+        } else {
+            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Sem diferença na coleta."));
+            return true;
         }
     }
     return false;

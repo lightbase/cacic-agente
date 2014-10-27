@@ -26,16 +26,16 @@ void Gercols::run()
     //salva json em arquivo
     if (!oColeta->toJsonObject().isEmpty()){
         QJsonObject oldColeta;
-        oldColeta = oCacic.getJsonFromFile("coleta.json");
+        oldColeta = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/coleta.json");
         QVariantMap enviaColeta;
         if (oldColeta != oColeta->toJsonObject()) {
-            oCacic.setJsonToFile(oColeta->toJsonObject(), "coleta.json");
-            enviaColeta["enviaColeta"] = 1;
+            oCacic.setJsonToFile(oColeta->toJsonObject(), oCacic.getCacicMainFolder() + "/coleta.json");
+            enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
             QLogger::QLog_Info("Gercols", QString("Coleta realizada com sucesso."));
         } else {
             QLogger::QLog_Info("Gercols", QString("Coleta sem alterações."));
-            enviaColeta["enviaColeta"] = 0;
+            enviaColeta["enviaColeta"] = false;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
         }
     } else {

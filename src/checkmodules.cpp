@@ -18,6 +18,7 @@ CheckModules::CheckModules(const QString &workingPath, const QString &workingMod
 CheckModules::~CheckModules()
 {
     logManager->closeLogger();
+    logManager->wait();
     delete logManager;
 }
 
@@ -52,8 +53,7 @@ bool CheckModules::start(){
             i++;
         } while (i != modules.constEnd());
     } else {
-        //força download do gercols.
-        QLogger::QLog_Error("CheckModules", "Não há modulo a ser verificado. Forçando atualização de gercols.");
+        QLogger::QLog_Error("CheckModules", "Não há modulo a ser verificado.");
     }
 
     return ok;
@@ -66,8 +66,8 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     //pega o arquivo do módulo selecionado
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
 
-    //verifica se o módulo existe, se o tamaho é maior que 1 byte e se o hash é igual ao informado pelo json
-    if (!(modulo->exists() || modulo->size()>1 || oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash))){
+    //verifica se o módulo existe, ou se o tamaho é maior que 1 byte ou se o hash é igual ao informado pelo json
+    if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash)){
         QLogger::QLog_Info("CheckModules", "Atualização de " + moduloName + " necessária.");
         QFile *novoModulo;
         QJsonObject metodoDownload;
