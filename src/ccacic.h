@@ -7,7 +7,6 @@
 #include <QFile>
 #include <QSettings>
 #include <QDir>
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>

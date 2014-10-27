@@ -82,7 +82,7 @@ bool CacicTimer::verificarModulos()
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         if(!(list.at(i).fileName() == QString("cacic-service"))){
-            QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo " + list.at(i).fileName() + " encontrado para atualização.");
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Excluindo versão antiga de "+list.at(i).fileName());
@@ -116,13 +116,18 @@ QString CacicTimer::getApplicationDirPath() {
 
 bool CacicTimer::comunicarGerente(){
     bool ok;
+    //Sempre recuperar as informações aqui caso mude.
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
+
     QJsonObject resposta = OCacicComm->login(&ok);
     if(resposta.isEmpty() || resposta.contains("error")){
         //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
-        QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no primeiro login. Código: " + resposta["error"].toString());
         resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
-            QLogger::QLog_Info("Cacic Daemon (Timer)", "Erro no segundo login." + resposta["error"].toString());
+            QLogger::QLog_Error("Cacic Daemon (Timer)", "Erro no login: " + resposta["error"].toString());
             return false;
         }
     }
@@ -132,12 +137,15 @@ bool CacicTimer::comunicarGerente(){
      * */
 
     QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
-    if(getTest()){
+    resposta = getTest();
+    if(!resposta.contains("error")){
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getTeste() success."));
-        if(getConfig()){
+        resposta = getConfig();
+        if(!resposta.contains("error")){
             QLogger::QLog_Info("Cacic Daemon (Timer)", QString("getConfig() success."));
             return true;
         } else{
+            QLogger::QLog_Error("Cacic Daemon (Timer)", "Erro ao pegar informações do gerente: " + resposta["error"].toString());
             return false;
         }
     }else{
@@ -145,7 +153,7 @@ bool CacicTimer::comunicarGerente(){
     }
 }
 
-bool CacicTimer::getTest(){
+QJsonObject CacicTimer::getTest(){
     bool ok;
     QJsonObject as;
     as["computador"] = OCacic_Computer.toJsonObject();
@@ -155,37 +163,35 @@ bool CacicTimer::getTest(){
     }
     if(jsonresult.contains("error")){
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest()." + jsonresult["error"].toString());
-        return false;
+        return jsonresult;
     }
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                               ccacic->getCacicMainFolder() + "/getTest.json");
-        return ok;
+        return jsonresult;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
-        return false;
+        return jsonresult;
     }
 }
 
-bool CacicTimer::getConfig(){
+QJsonObject CacicTimer::getConfig(){
     bool ok;
     QJsonObject as;
     as["computador"] = OCacic_Computer.toJsonObject();
     QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, false);
-    if(!ok){
-        jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, false); // mais uma vez pra garantir.
-    }
+
     if(jsonresult.contains("error")){
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getConfig()." + jsonresult["error"].toString());
-        return false;
+        return jsonresult;
     }
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                               ccacic->getCacicMainFolder() + "/getConfig.json");
-        return ok;
+        return jsonresult;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
-        return false;
+        return jsonresult;
     }
 }
 
@@ -220,10 +226,6 @@ void CacicTimer::iniciarInstancias(){
     OCacicComm = new CacicComm();
     //OCacicComm->setUrlSsl();
     checkModules = new CheckModules(this->applicationDirPath, "Cacic Daemon (Timer)");
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
 }
 
 bool CacicTimer::verificarPeriodicidade()

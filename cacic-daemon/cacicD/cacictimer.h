@@ -27,8 +27,8 @@ public:
     CCacic *ccacic;
     QMutex *cMutex;
     void iniciarTimer(bool conexaoGerente);
-    bool getTest();
-    bool getConfig();
+    QJsonObject getTest();
+    QJsonObject getConfig();
     void setApplicationDirPath(const QString &value);
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);

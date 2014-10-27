@@ -31,6 +31,7 @@ private:
     CCacic oCacic;
     QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
+    void parametrosIncorretos();
 signals:
     void finished();
 

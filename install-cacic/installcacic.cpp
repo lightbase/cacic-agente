@@ -20,7 +20,7 @@ InstallCacic::~InstallCacic()
 void InstallCacic::run(QStringList argv, int argc) {
 
     // TODO: Verificar hash no gerente.
-
+    std::cout << " - - INSTALL CACIC - -\n";
     QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
 
     oCacicComm = new CacicComm();
@@ -28,6 +28,7 @@ void InstallCacic::run(QStringList argv, int argc) {
     bool ok;
     //valida os parametros repassados
     QMap<QString, QString> param = validaParametros(argv, argc, &ok);
+
     //se tiver usuario, senha e url
     if (ok){
         oCacicComm->setUrlGerente(this->argumentos["host"]);
@@ -92,6 +93,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 if ((!fileService.exists() || !fileService.size() > 0)) {
                     std::cout << "Falha ao baixar arquivo.\n";
                     this->uninstall();
+                    emit finished();
                     return;
                 }
 
@@ -120,18 +122,44 @@ void InstallCacic::run(QStringList argv, int argc) {
         }
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         this->uninstall();
+    } else if ((param.contains("default")) && (param["default"] == "configure")) {
+        if (param.size() > 1){
+            QVariantMap reg;
+            if (param.contains("host")){
+                reg["applicationUrl"] = param["host"];
+                std::cout << "Url alterada para \"" << param["host"].toStdString() << "\"\n";
+            }
+            if (param.contains("user")){
+                reg["usuario"] = param["user"];
+                std::cout << "Usuário alterado para \"" << param["user"].toStdString() << "\"\n";
+            }
+            if (param.contains("pass")){
+                reg["senha"] = param["pass"];
+                std::cout << "Senha alterada.\n";
+            }
+            if (reg.size() > 0) {
+                oCacic.setValueToRegistry("Lightbase", "Cacic", reg);
+                std::cout << "\nRegistro atualizado.\n\n";
+            }
+        } else {
+            parametrosIncorretos();
+        }
     } else {
-        std::cout << "\nInstalador do Agente Cacic.\n\n"
-                  << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
-                  << "<-host=url_gerente> <-user=usuario> <-pass=senha> [-help]\n\n"
-                  << "  <-host=url_gerente>       url_gerente: Caminho para a aplicação do gerente.\n"
-                  << "  <-user=usuario>           usuario: usuário de login no gerente.\n"
-                  << "  <-pass=senha>             senha: senha de login no gerente\n"
-                  << "  [-help]                   Lista todos comandos.\n";
+        parametrosIncorretos();
     }
 
 
     emit finished();
+}
+
+void InstallCacic::parametrosIncorretos(){
+    std::cout << "\nInstalador do Agente Cacic.\n\n"
+              << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
+              << "Instalação: <-host=url_gerente> <-user=usuario> <-pass=senha>\n"
+              << "Configurar: <-configure> [-user=usuario] [-pass=senha] [-host=url_gerente]\n\n"
+              << "  -host=url_gerente       url_gerente: Caminho para a aplicação do gerente.\n"
+              << "  -user=usuario           usuario: usuário de login no gerente.\n"
+              << "  -pass=senha             senha: senha de login no gerente\n";
 }
 
 QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc, bool *ok)
@@ -145,7 +173,7 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
         else if (aux.at(0)== '-')
             map["default"] = aux.mid(1);
     }
-    *ok = (bool) map.contains("host") && map.contains("user") && map.contains("pass");
+    *ok = (bool) map.contains("host") && map.contains("user") && map.contains("pass") && !(map.contains("default"));
     if (*ok){
         this->argumentos = map;
     }
@@ -154,7 +182,12 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
 
 void InstallCacic::uninstall()
 {
+#ifdef Q_OS_LINUX
+    ConsoleObject console;
+    std::cout << "Parando serviço: " << console("/etc/init.d/cacic3 stop").toStdString();
+#elif defined(Q_OS_WINDOWS)
     //TODO: PARAR O SERVIÇO
+#endif
     oCacic.deleteFolder(oCacic.getCacicMainFolder());
     oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";

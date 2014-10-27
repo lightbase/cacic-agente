@@ -64,12 +64,14 @@ bool CacicThread::enviarColeta()
     if(this->nomeModulo == "gercols" && QFile::exists("coleta.json")){
         //Envio do json gerado na coleta
         bool ok = false;
-        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
-        if (!jsonColeta.isEmpty()){
-            this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
-            return &ok;
-        } else
-            return true;
+        if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta") == 1){
+            QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+            if (!jsonColeta.isEmpty()){
+                this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+                return &ok;
+            } else
+                return true;
+        }
     }
     return false;
 }

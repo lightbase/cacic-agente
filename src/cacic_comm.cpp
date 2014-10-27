@@ -81,12 +81,11 @@ QJsonObject CacicComm::comm(QString route, bool *ok, const QJsonObject &json, bo
                             replyDocument.object() :
                             QJsonValue::fromVariant(replyVariant.toString());
         *ok = true;
-        delete reply;
     } else {
         strReply = reply->errorString();
         jsonObj.insert("error", QJsonValue::fromVariant(strReply));
-        delete reply;
     }
+    delete reply;
     return jsonObj;
 }
 
