@@ -31,6 +31,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
         timer->start(getPeriodicidadeExecucao());
     }else{
         timer->start(this->periodicidadeExecucaoPadrao * 60000);
+        QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
     }
 
 }
@@ -38,7 +39,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 void CacicTimer::mslot(){
     if(comunicarGerente()){
         if (!checkModules->start()){
-            QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao chegar módulos."));
+            QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao checkar módulos."));
         }
         verificarModulos();
         if (verificarEIniciarQMutex()) {
@@ -47,6 +48,8 @@ void CacicTimer::mslot(){
                 reiniciarTimer();
             }
         }
+    } else {
+        QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao comunicar com gerente."));
     }
 }
 
@@ -77,7 +80,7 @@ bool CacicTimer::verificarEIniciarQMutex(){
 
 bool CacicTimer::verificarModulos()
 {
-    QDir dir("./temp");
+    QDir dir(ccacic->getCacicMainFolder() + "/temp");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -219,7 +222,7 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","[Error]Cacic Daemon (Timer)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
     ccacic->setCacicMainFolder(this->applicationDirPath);
     timer = new QTimer(this);

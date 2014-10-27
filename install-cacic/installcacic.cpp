@@ -5,7 +5,7 @@ InstallCacic::InstallCacic(QObject *parent) :
 {
     QDir dir;
     this->applicationDirPath = dir.currentPath();
-
+    oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Install Cacic",QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Install Cacic",QLogger::ErrorLevel);
