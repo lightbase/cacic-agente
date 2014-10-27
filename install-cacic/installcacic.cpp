@@ -216,8 +216,8 @@ void InstallCacic::uninstall()
         }
     }
 #endif
-
-    oCacic.deleteFolder(oCacic.getCacicMainFolder());
+    if (!oCacic.getCacicMainFolder().isEmpty())
+        oCacic.deleteFolder(oCacic.getCacicMainFolder());
     oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";
 }
