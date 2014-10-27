@@ -18,22 +18,26 @@ void CacicThread::setModuloDirPath(const QString &value)
 void CacicThread::iniciarModulo()
 {
     registraInicioColeta();
-    QDir::setCurrent(this->applicationDirPath);
-    QProcess proc;
-    proc.setWorkingDirectory(this->applicationDirPath);
-    proc.execute(this->moduloDirPath);
-    if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
-        registraFimColeta("SUCESSO");
-        if(enviarColeta()){
-            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Coleta enviada com sucesso."));
+    if (QFile::exists(this->moduloDirPath)){
+        QDir::setCurrent(this->applicationDirPath);
+        QProcess proc;
+        proc.setWorkingDirectory(this->applicationDirPath);
+        proc.execute(this->moduloDirPath);
+        if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
+            registraFimColeta("SUCESSO");
+            if(enviarColeta()){
+                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Coleta enviada com sucesso."));
+            }else{
+                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Erro ao enviar a coleta."));
+            }
         }else{
-            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Erro ao enviar a coleta."));
+            if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
+                registraFimColeta("ERRO");
+                proc.kill();
+            }
         }
-    }else{
-        if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
-            registraFimColeta("ERRO");
-            proc.kill();
-        }
+    } else {
+        QLogger::QLog_Error("Cacic Daemon (Thread)", QString("Módulo inexistente."));
     }
     cMutex->unlock();
     QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Semáforo aberto com sucesso."));

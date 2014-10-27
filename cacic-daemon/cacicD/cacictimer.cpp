@@ -37,7 +37,9 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-        checkModules->start();
+        if (!checkModules->start()){
+            QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao chegar módulos."));
+        }
         verificarModulos();
         if (verificarEIniciarQMutex()) {
             iniciarThread();
@@ -217,7 +219,7 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","[Error]Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
     ccacic->setCacicMainFolder(this->applicationDirPath);
     timer = new QTimer(this);
