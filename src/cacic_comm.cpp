@@ -36,6 +36,7 @@ QJsonObject CacicComm::comm(QString route, bool *ok, const QJsonObject &json, bo
     *ok = false;
     QByteArray data;
     QNetworkRequest req;
+    req.setRawHeader("User-Agent", "Cacic Agente/3.0");
     QUrl url;
     QString strReply;
     QJsonObject jsonObj;
@@ -104,6 +105,7 @@ bool CacicComm::commStatus(){
     // a requisição HTTP
     QUrl url = "http://" + urlGerente;
     QNetworkRequest req( url );
+    req.setRawHeader("User-Agent", "Cacic Agente/3.0");
     req.setHeader(QNetworkRequest::LocationHeader, "Cacic Agente");
     QNetworkReply *reply = mgr.get(req);
     eventLoop.exec(); // sai do looping chamando o "finished()".
@@ -143,6 +145,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     QEventLoop eventLoop;
     QNetworkAccessManager manager;
     QNetworkRequest request;
+    request.setRawHeader("User-Agent", "Cacic Agente/3.0");
     QNetworkReply *reply;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloadFinished(QNetworkReply*)) );
