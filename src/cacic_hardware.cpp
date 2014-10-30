@@ -254,7 +254,10 @@ QJsonObject cacic_hardware::coletaWin()
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()
 {
-
+/*Aumentar coleta de Hardware. array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
+ *                             array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
+ *                             Keyboard e mouse (se possível)
+ */
     QJsonObject hardware;
 
     QFile lshwFile("lshwJson.json");
@@ -337,7 +340,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         hardware["multimedia"] = pciMember;
     } else if (pciJson["id"].toString().contains("pci:") ) {
         QJsonArray pciChildren = pciJson["children"].toArray();
-
+        QJsonArray pciNetwork;
         foreach( QJsonValue pciChild, pciChildren ) {
             QJsonObject pciChildJson = pciChild.toObject();
 
@@ -351,7 +354,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                 pciMember["serial"] = pciChildJson["serial"];
                 pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
 
-                hardware["wireless_card"] = pciMember;
+                pciNetwork.append(pciMember);
+//                hardware["wireless_card"] = pciMember;
             } else if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
                 pciMember["description"] = pciChildJson["description"];
                 pciMember["product"] = pciChildJson["product"];
@@ -362,10 +366,12 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                                         oCacic.convertDouble(pciChildJson["capacity"].toDouble(), 0) +
                                         " bits/s" );
 
-                hardware["ethernet_card"] = pciMember;
+//                hardware["ethernet_card"] = pciMember;
+                pciNetwork.append(pciMember);
             }
 
         }
+        hardware["NetworkAdapterConfiguration"] = pciNetwork;
     }
 }
 

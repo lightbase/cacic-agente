@@ -174,10 +174,10 @@ void InstallCacic::run(QStringList argv, int argc) {
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
                 QLogger::QLog_Info("Install Cacic", "Excluindo versão antiga de "+list.at(i).fileName());
-                QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
+                if (!QFile::remove(applicationDirPath + "/" + list.at(i).fileName()))
+                    QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName());
             }
-            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName()))
-                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+            novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
 
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
@@ -202,6 +202,7 @@ void InstallCacic::parametrosIncorretos(){
     std::cout << "\nInstalador do Agente Cacic.\n\n"
               << "Parametros incorretos. (<obrigatorios> [opcional])\n\n"
               << "Instalação: <-host=url_gerente> <-user=usuario> <-pass=senha>\n"
+              << "Desinstalar: <-uninstall>\n"
               << "Configurar: <-configure> [-user=usuario] [-pass=senha] [-host=url_gerente]\n\n"
               << "  -host=url_gerente       url_gerente: Caminho para a aplicação do gerente.\n"
               << "  -user=usuario           usuario: usuário de login no gerente.\n"

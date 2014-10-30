@@ -72,6 +72,7 @@ bool CacicThread::enviarColeta()
             QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
             if (!jsonColeta.isEmpty()){
                 QJsonObject retornoColeta;
+                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Enviando coleta ao gerente."));
                 retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
                 if (ok){
                     QVariantMap enviaColeta;
