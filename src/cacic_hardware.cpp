@@ -256,7 +256,9 @@ QJsonObject cacic_hardware::coletaLinux()
 {
 /*Aumentar coleta de Hardware. array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
  *                             array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
- *                             Keyboard e mouse (se possível)
+ *                             jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
+ *                             jsonvalue-> hardware["Win32_PointingDevice"] = mouse (se possível)
+ *                             Fora essas, detalhar mais as outras que já existem. Pegar todos os nomes, versão, vendor, id, etc..
  */
     QJsonObject hardware;
 
