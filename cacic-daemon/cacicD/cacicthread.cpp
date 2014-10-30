@@ -108,5 +108,5 @@ void CacicThread::registraFimColeta(QString msg)
 void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Thread)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Thread)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log","Cacic Daemon (Thread)",QLogger::ErrorLevel);
 }

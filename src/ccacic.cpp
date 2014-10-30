@@ -211,6 +211,7 @@ bool CCacic::Md5IsEqual(QVariant document01,QString document02){
     QString file1 = QString(QCryptographicHash::hash(
                                        (document01.toByteArray()),QCryptographicHash::Md5).toHex());
     QString file2 = document02;
+
     return file1 == file2;
 }
 
