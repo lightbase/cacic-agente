@@ -310,7 +310,7 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 
     memory["size"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
 
-    hardware["memory"] = memory;
+    hardware["Win32_MemoryDevice"] = memory;
 }
 
 void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component)
@@ -321,7 +321,7 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
     cpu["vendor"] = component["vendor"];
     cpu["clock"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
 
-    hardware["cpu"] = cpu;
+    hardware["Win32_Processor"] = cpu;
 }
 
 void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson)
@@ -391,7 +391,7 @@ void cacic_hardware::coletaLinuxBios(QJsonObject &hardware)
               bios["revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
-    hardware["bios"] = bios;
+    hardware["Win32_BIOS"] = bios;
 }
 
 void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
@@ -428,7 +428,7 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 
     motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
-    hardware["motherboard"] = motherboard;
+    hardware["Win32_BaseBoard"] = motherboard;
 }
 
 void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
@@ -471,7 +471,7 @@ void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
                 printersList.append(QJsonValue::fromVariant(printerName));
             }
         }
-        hardware["printers"] = printersList;
+        hardware["Win32_Printer"] = printersList;
     }
 
 }

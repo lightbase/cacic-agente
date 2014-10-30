@@ -176,7 +176,9 @@ void InstallCacic::run(QStringList argv, int argc) {
                 QLogger::QLog_Info("Install Cacic", "Excluindo versão antiga de "+list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
-            novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName()))
+                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
         }

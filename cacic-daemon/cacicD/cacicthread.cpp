@@ -77,6 +77,8 @@ bool CacicThread::enviarColeta()
                     QVariantMap enviaColeta;
                     enviaColeta["enviaColeta"] = false;
                     ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+                } else if(retornoColeta.contains("error")) {
+                    QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Falha na coleta: " + retornoColeta["error"].toString()));
                 }
                 return ok;
             } else

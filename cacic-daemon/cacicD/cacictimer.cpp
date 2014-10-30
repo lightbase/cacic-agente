@@ -93,6 +93,7 @@ bool CacicTimer::verificarModulos()
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Excluindo versão antiga de "+list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
