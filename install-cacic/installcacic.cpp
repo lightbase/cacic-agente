@@ -185,7 +185,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                     novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
                     QLogger::QLog_Info("Install Cacic", "Copiando arquivo para " + applicationDirPath);
                 } else {
-                    QLogger::QLog_Info("Falha ao excluir " + list.at(i).filePath());
+                    QLogger::QLog_Info("Install Cacic", "Falha ao excluir " + list.at(i).filePath());
                 }
 
                 if (!novoModulo.remove())

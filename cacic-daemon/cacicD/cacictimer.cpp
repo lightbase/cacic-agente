@@ -28,6 +28,9 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
         checkModules->start();
         verificarModulos();
         verificarPeriodicidade();
+        if (verificarEIniciarQMutex()) {
+            iniciarThread();
+        }
         timer->start(getPeriodicidadeExecucao());
     }else{
         timer->start(this->periodicidadeExecucaoPadrao * 60000);
