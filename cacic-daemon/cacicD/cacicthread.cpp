@@ -83,6 +83,7 @@ bool CacicThread::enviarColeta()
                 }
                 return ok;
             } else
+                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
                 return true;
         } else {
             QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Sem diferença na coleta."));

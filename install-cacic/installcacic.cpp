@@ -24,8 +24,6 @@ InstallCacic::~InstallCacic()
 void InstallCacic::run(QStringList argv, int argc) {
 
     // TODO: Verificar hash no gerente.
-    QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
-
     oCacicComm = new CacicComm();
 
     bool ok;
@@ -34,6 +32,7 @@ void InstallCacic::run(QStringList argv, int argc) {
 
     //se tiver usuario, senha e url
     if (ok){
+        QLogger::QLog_Info("Install Cacic", QString("Inicio de instalacao"));
         std::cout << " - - INSTALL CACIC - -\n";
         oCacicComm->setUrlGerente(this->argumentos["host"]);
         oCacicComm->setUsuario(this->argumentos["user"]);
@@ -130,18 +129,22 @@ void InstallCacic::run(QStringList argv, int argc) {
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         this->uninstall();
     } else if ((param.contains("default")) && (param["default"] == "configure")) {
+        QLogger::QLog_Info("Install Cacic", QString("Configuração do agente."));
         if (param.size() > 1){
             QVariantMap reg;
             if (param.contains("host")){
                 reg["applicationUrl"] = param["host"];
+                QLogger::QLog_Info("Install Cacic", QString("Host alterado para " + param["host"]));
                 std::cout << "Url alterada para \"" << param["host"].toStdString() << "\"\n";
             }
             if (param.contains("user")){
                 reg["usuario"] = param["user"];
+                QLogger::QLog_Info("Install Cacic", QString("Usuário alterado para " + param["user"]));
                 std::cout << "Usuário alterado para \"" << param["user"].toStdString() << "\"\n";
             }
             if (param.contains("pass")){
                 reg["senha"] = param["pass"];
+                QLogger::QLog_Info("Install Cacic", QString("Senha alterada."));
                 std::cout << "Senha alterada.\n";
             }
             if (reg.size() > 0) {
@@ -177,7 +180,13 @@ void InstallCacic::run(QStringList argv, int argc) {
                 if (!QFile::remove(applicationDirPath + "/" + list.at(i).fileName()))
                     QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName());
             }
-            novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+            //Nova verificação pra ter certeza de que não existe, porque se existir ele não vai copiar.
+            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+                QLogger::QLog_Info("Install Cacic", "Copiando arquivo para " + applicationDirPath);
+            } else {
+                QLogger::QLog_Info("Falha ao excluir " + list.at(i).filePath());
+            }
 
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");

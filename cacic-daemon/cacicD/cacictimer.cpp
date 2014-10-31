@@ -36,6 +36,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 
 }
 
+//Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
         if (!checkModules->start()){
