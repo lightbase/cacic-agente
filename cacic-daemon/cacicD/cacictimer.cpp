@@ -206,9 +206,11 @@ QJsonObject CacicTimer::getConfig(){
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                               ccacic->getCacicMainFolder() + "/getConfig.json");
-        QVariantMap registro;
-        registro["applicationUrl"] = jsonresult["applicationUrl"].toString();
-        oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+        if (!jsonresult["reply"].toObject()["applicationUrl"].toString().isEmpty()){
+            QVariantMap registro;
+            registro["applicationUrl"] = jsonresult["reply"].toObject()["applicationUrl"].toString();
+            oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+        }
         return jsonresult;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
