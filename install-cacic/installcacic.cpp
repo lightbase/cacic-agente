@@ -3,9 +3,8 @@
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
-    QDir dir;
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
-    this->applicationDirPath = dir.currentPath();
+    this->applicationDirPath = "/usr/share/cacic";
     if (oCacic.getCacicMainFolder().isEmpty())
         oCacic.setCacicMainFolder(applicationDirPath);
 
@@ -168,12 +167,12 @@ void InstallCacic::run(QStringList argv, int argc) {
                 if((list.at(i).fileName() == QString("cacic-service"))){
                     serviceUpdate = true;
                     QLogger::QLog_Info("Install Cacic", "Parando serviço para atualização.");
-    #ifdef Q_OS_WINDOWS
+#ifdef Q_OS_WINDOWS
                     //TODO WINDOWS
-    #else
+#else
                     ConsoleObject console;
                     console("/etc/init.d/cacic3 stop").toStdString();
-    #endif
+#endif
                 }
                 QFile novoModulo(list.at(i).filePath());
                 if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
@@ -182,7 +181,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                         QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName());
                 }
                 //Nova verificação pra ter certeza de que não existe, porque se existir ele não vai copiar.
-                if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
                     novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
                     QLogger::QLog_Info("Install Cacic", "Copiando arquivo para " + applicationDirPath);
                 } else {
@@ -199,14 +198,14 @@ void InstallCacic::run(QStringList argv, int argc) {
             //TODO WINDOWS
 #else
             ConsoleObject console;
-            console("/etc/init.d/cacic3 start").toStdString();
+            QLogger::QLog_Info("Install Cacic", "Info: " + console("/etc/init.d/cacic3 start"));
 #endif
         }
     } else {
         parametrosIncorretos();
     }
 
-emit finished();
+    emit finished();
 }
 
 void InstallCacic::parametrosIncorretos(){
