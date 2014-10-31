@@ -28,8 +28,9 @@ void Gercols::run()
         QJsonObject oldColeta;
         oldColeta = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/coleta.json");
         QVariantMap enviaColeta;
-        if (oldColeta["ḧardware"].toObject() != oColeta->toJsonObject()["hardware"].toObject() ||
-            oldColeta["software"].toObject() != oColeta->toJsonObject()["software"].toObject() ) {
+        //verificando quantidade de chaves. Se for diferente, envia a coleta.
+        if (oldColeta["ḧardware"].toObject().size() != oColeta->toJsonObject()["hardware"].toObject().size() ||
+            oldColeta["software"].toObject().size() != oColeta->toJsonObject()["software"].toObject().size() ) {
             oCacic.setJsonToFile(oColeta->toJsonObject(), oCacic.getCacicMainFolder() + "/coleta.json");
             enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);

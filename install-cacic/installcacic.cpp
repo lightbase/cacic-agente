@@ -244,8 +244,8 @@ void InstallCacic::uninstall()
 #if defined(Q_OS_LINUX)
     ConsoleObject console;
     QStringList outputColumns;
-
-    std::cout << "Parando serviço " << console("/etc/init.d/cacic3 stop").toStdString();
+    std::cout << "Parando serviço...";
+    std::cout << console("/etc/init.d/cacic3 stop").toStdString();
 
     outputColumns = console("ps aux | grep cacic-service").split("\n");
     outputColumns.removeLast();
@@ -269,9 +269,11 @@ void InstallCacic::uninstall()
         }
     }
 #endif
+    oCacic.removeRegistry("Lightbase", "Cacic");
+
+    //TODO -> DELETAR A PASTA TODA, MENOS O INSTALL-CACIC.
     if (!oCacic.getCacicMainFolder().isEmpty())
         oCacic.deleteFolder(oCacic.getCacicMainFolder());
-    oCacic.removeRegistry("Lightbase", "Cacic");
     std::cout << "\nCacic desinstalado com sucesso.\n";
 }
 

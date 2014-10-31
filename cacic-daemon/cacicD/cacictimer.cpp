@@ -28,6 +28,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
         checkModules->start();
         verificarModulos();
         verificarPeriodicidade();
+        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
         if (verificarEIniciarQMutex()) {
             iniciarThread();
         }
@@ -97,7 +98,6 @@ bool CacicTimer::verificarModulos()
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Excluindo versão antiga de "+list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
-            QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
@@ -209,7 +209,7 @@ QJsonObject CacicTimer::getConfig(){
         if (!jsonresult["reply"].toObject()["applicationUrl"].toString().isEmpty()){
             QVariantMap registro;
             registro["applicationUrl"] = jsonresult["reply"].toObject()["applicationUrl"].toString();
-            oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+            ccacic->setValueToRegistry("Lightbase", "Cacic", registro);
         }
         return jsonresult;
     } catch (...) {
