@@ -356,8 +356,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                 pciMember["serial"] = pciChildJson["serial"];
                 pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
 
-                pciNetwork.append(pciMember);
-//                hardware["wireless_card"] = pciMember;
+//                pciNetwork.append(pciMember);
+                hardware["wireless_card"] = pciMember;
             } else if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
                 pciMember["description"] = pciChildJson["description"];
                 pciMember["product"] = pciChildJson["product"];
@@ -368,12 +368,12 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                                         oCacic.convertDouble(pciChildJson["capacity"].toDouble(), 0) +
                                         " bits/s" );
 
-//                hardware["ethernet_card"] = pciMember;
-                pciNetwork.append(pciMember);
+                hardware["ethernet_card"] = pciMember;
+//                pciNetwork.append(pciMember);
             }
 
         }
-        hardware["NetworkAdapterConfiguration"] = pciNetwork;
+//        hardware["NetworkAdapterConfiguration"] = pciNetwork;
     }
 }
 
