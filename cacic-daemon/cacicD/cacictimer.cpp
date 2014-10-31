@@ -135,6 +135,7 @@ bool CacicTimer::comunicarGerente(){
     bool ok;
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
@@ -241,6 +242,11 @@ void CacicTimer::iniciarInstancias(){
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());
+    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     //OCacicComm->setUrlSsl();
     checkModules = new CheckModules(this->applicationDirPath, "Cacic Daemon (Timer)");
 }
