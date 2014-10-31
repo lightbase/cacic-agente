@@ -163,33 +163,35 @@ void InstallCacic::run(QStringList argv, int argc) {
 
         QFileInfoList list = dir.entryInfoList();
         for (int i = 0; i<list.size(); i++){
-            QLogger::QLog_Info("Install Cacic", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
-            if((list.at(i).fileName() == QString("cacic-service"))){
-                serviceUpdate = true;
-                QLogger::QLog_Info("Install Cacic", "Parando serviço para atualização.");
-#ifdef Q_OS_WINDOWS
-                //TODO WINDOWS
-#else
-                ConsoleObject console;
-                console("/etc/init.d/cacic3 stop").toStdString();
-#endif
-            }
-            QFile novoModulo(list.at(i).filePath());
-            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                QLogger::QLog_Info("Install Cacic", "Excluindo versão antiga de "+list.at(i).fileName());
-                if (!QFile::remove(applicationDirPath + "/" + list.at(i).fileName()))
-                    QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName());
-            }
-            //Nova verificação pra ter certeza de que não existe, porque se existir ele não vai copiar.
-            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
-                QLogger::QLog_Info("Install Cacic", "Copiando arquivo para " + applicationDirPath);
-            } else {
-                QLogger::QLog_Info("Falha ao excluir " + list.at(i).filePath());
-            }
+            if(!(list.at(i).fileName() == QString("install-cacic"))){
+                QLogger::QLog_Info("Install Cacic", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
+                if((list.at(i).fileName() == QString("cacic-service"))){
+                    serviceUpdate = true;
+                    QLogger::QLog_Info("Install Cacic", "Parando serviço para atualização.");
+    #ifdef Q_OS_WINDOWS
+                    //TODO WINDOWS
+    #else
+                    ConsoleObject console;
+                    console("/etc/init.d/cacic3 stop").toStdString();
+    #endif
+                }
+                QFile novoModulo(list.at(i).filePath());
+                if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                    QLogger::QLog_Info("Install Cacic", "Excluindo versão antiga de "+list.at(i).fileName());
+                    if (!QFile::remove(applicationDirPath + "/" + list.at(i).fileName()))
+                        QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName());
+                }
+                //Nova verificação pra ter certeza de que não existe, porque se existir ele não vai copiar.
+                if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                    novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+                    QLogger::QLog_Info("Install Cacic", "Copiando arquivo para " + applicationDirPath);
+                } else {
+                    QLogger::QLog_Info("Falha ao excluir " + list.at(i).filePath());
+                }
 
-            if (!novoModulo.remove())
-                QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+                if (!novoModulo.remove())
+                    QLogger::QLog_Info("Install Cacic", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+            }
         }
         if (serviceUpdate){
             QLogger::QLog_Info("Install Cacic", "Iniciando o serviço cacic.");
