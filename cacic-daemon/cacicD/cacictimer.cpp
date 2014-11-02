@@ -28,6 +28,10 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
         checkModules->start();
         verificarModulos();
         verificarPeriodicidade();
+        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
+        if (verificarEIniciarQMutex()) {
+            iniciarThread();
+        }
         timer->start(getPeriodicidadeExecucao());
     }else{
         timer->start(this->periodicidadeExecucaoPadrao * 60000);
@@ -36,6 +40,7 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 
 }
 
+//Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
         if (!checkModules->start()){
@@ -96,6 +101,13 @@ bool CacicTimer::verificarModulos()
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+        } else {
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Atualização do serviço.");
+            QStringList arg;
+            arg << "-updateService";
+            QProcess installCacicProc;
+            installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
+            break;
         }
     }
     return true;
@@ -123,6 +135,7 @@ bool CacicTimer::comunicarGerente(){
     bool ok;
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
@@ -193,6 +206,11 @@ QJsonObject CacicTimer::getConfig(){
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                               ccacic->getCacicMainFolder() + "/getConfig.json");
+        if (!jsonresult["reply"].toObject()["applicationUrl"].toString().isEmpty()){
+            QVariantMap registro;
+            registro["applicationUrl"] = jsonresult["reply"].toObject()["applicationUrl"].toString();
+            ccacic->setValueToRegistry("Lightbase", "Cacic", registro);
+        }
         return jsonresult;
     } catch (...) {
         QLogger::QLog_Error("Cacic Daemon (Timer)","Erro ao salvar o arquivo de configurações.");
@@ -222,13 +240,18 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log","Cacic Daemon (Timer)",QLogger::ErrorLevel);
     ccacic = new CCacic();
     ccacic->setCacicMainFolder(this->applicationDirPath);
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());
+    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     //OCacicComm->setUrlSsl();
     checkModules = new CheckModules(this->applicationDirPath, "Cacic Daemon (Timer)");
 }

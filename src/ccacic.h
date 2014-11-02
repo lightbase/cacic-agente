@@ -61,7 +61,7 @@ public:
     void setChaveCrypt(const QString &value);
 
     bool Md5IsEqual(QVariant document01, QVariant document02);
-    bool Md5IsEqual(QVariant document01, QString document02);
+    bool Md5IsEqual(QByteArray document01, QString document02);
 private:
     QString cacicMainFolder;
     QString mainModuleName;

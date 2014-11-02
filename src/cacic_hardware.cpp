@@ -253,7 +253,12 @@ QJsonObject cacic_hardware::coletaWin()
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()
 {
-
+/*Aumentar coleta de Hardware. array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
+ *                             array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
+ *                             jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
+ *                             jsonvalue-> hardware["Win32_PointingDevice"] = mouse (se possível)
+ *                             Fora essas, detalhar mais as outras que já existem. Pegar todos os nomes, versão, vendor, id, etc..
+ */
     QJsonObject hardware;
 
     QFile lshwFile("lshwJson.json");
@@ -309,7 +314,7 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 
     memory["size"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
 
-    hardware["memory"] = memory;
+    hardware["Win32_MemoryDevice"] = memory;
 }
 
 void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component)
@@ -320,7 +325,7 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
     cpu["vendor"] = component["vendor"];
     cpu["clock"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
 
-    hardware["cpu"] = cpu;
+    hardware["Win32_Processor"] = cpu;
 }
 
 void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson)
@@ -336,7 +341,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         hardware["multimedia"] = pciMember;
     } else if (pciJson["id"].toString().contains("pci:") ) {
         QJsonArray pciChildren = pciJson["children"].toArray();
-
+        QJsonArray pciNetwork;
         foreach( QJsonValue pciChild, pciChildren ) {
             QJsonObject pciChildJson = pciChild.toObject();
 
@@ -350,6 +355,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                 pciMember["serial"] = pciChildJson["serial"];
                 pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
 
+//                pciNetwork.append(pciMember);
                 hardware["wireless_card"] = pciMember;
             } else if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
                 pciMember["description"] = pciChildJson["description"];
@@ -362,9 +368,11 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                                         " bits/s" );
 
                 hardware["ethernet_card"] = pciMember;
+//                pciNetwork.append(pciMember);
             }
 
         }
+//        hardware["NetworkAdapterConfiguration"] = pciNetwork;
     }
 }
 
@@ -390,7 +398,7 @@ void cacic_hardware::coletaLinuxBios(QJsonObject &hardware)
               bios["revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
-    hardware["bios"] = bios;
+    hardware["Win32_BIOS"] = bios;
 }
 
 void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
@@ -427,7 +435,7 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 
     motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
-    hardware["motherboard"] = motherboard;
+    hardware["Win32_BaseBoard"] = motherboard;
 }
 
 void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
@@ -470,7 +478,7 @@ void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
                 printersList.append(QJsonValue::fromVariant(printerName));
             }
         }
-        hardware["printers"] = printersList;
+        hardware["Win32_Printer"] = printersList;
     }
 
 }

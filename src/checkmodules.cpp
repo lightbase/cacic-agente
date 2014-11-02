@@ -4,9 +4,8 @@ CheckModules::CheckModules(const QString &workingPath, const QString &workingMod
 {
 
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(workingPath + "/Logs/cacic.log", workingModule + "(checkModules)",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacic.log", workingModule + "(checkModules)",QLogger::ErrorLevel);
-
+    logManager->addDestination(workingPath + "/Logs/cacic.log", "CheckModules",QLogger::InfoLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic_error.log", "CheckModules",QLogger::ErrorLevel);
     oCacic.setCacicMainFolder(workingPath);
 
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
@@ -65,9 +64,9 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
-
+    modulo->open(QFile::ReadOnly);
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(QVariant::fromValue(modulo), moduloHash)){
+    if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(modulo->readAll(), moduloHash)){
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
         QJsonObject metodoDownload;

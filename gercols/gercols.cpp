@@ -8,7 +8,7 @@ Gercols::Gercols(QObject *parent)
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Gercols",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Gercols",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log","Gercols",QLogger::ErrorLevel);
 
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
@@ -28,7 +28,9 @@ void Gercols::run()
         QJsonObject oldColeta;
         oldColeta = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/coleta.json");
         QVariantMap enviaColeta;
-        if (oldColeta != oColeta->toJsonObject()) {
+        //verificando quantidade de chaves. Se for diferente, envia a coleta.
+        if (oldColeta["ḧardware"].toObject().size() != oColeta->toJsonObject()["hardware"].toObject().size() ||
+            oldColeta["software"].toObject().size() != oColeta->toJsonObject()["software"].toObject().size() ) {
             oCacic.setJsonToFile(oColeta->toJsonObject(), oCacic.getCacicMainFolder() + "/coleta.json");
             enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
