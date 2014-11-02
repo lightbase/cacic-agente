@@ -1,4 +1,5 @@
 #ifndef TESTINSTALLCACIC_H
+#ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
 
 #include <cacic_comm.h>

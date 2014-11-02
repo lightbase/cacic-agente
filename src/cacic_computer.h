@@ -9,8 +9,9 @@
 #include <QSysInfo>
 #include "operatingsystem.h"
 #include "console.h"
+#ifdef Q_OS_LINUX
 #include <sys/utsname.h>
-
+#endif
 class CACIC_Computer
 {
 public:

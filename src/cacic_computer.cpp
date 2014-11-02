@@ -2,12 +2,18 @@
 
 CACIC_Computer::CACIC_Computer()
 {
+#ifdef Q_OS_LINUX
     struct utsname sysName;
     uname(&sysName);
+    computerName = sysName.nodename;
+#else defined(Q_OS_WIN)
+    QStringList param;
+    param << "Caption";
+    computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toString().toStdString();
+    param.clear();
+#endif
     networkInterface = networkInterfacesRunning();
     usuario = pegarUsu();
-    computerName = sysName.nodename;
-
 }
 
 /*NetworkInterfacesRunning

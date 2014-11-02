@@ -66,7 +66,6 @@ QJsonObject cacic_hardware::coletaWin()
     QJsonObject notebook;
     notebook["Value"] = QJsonValue::fromVariant(!wmiResult.isNull());
     hardware["IsNotebook"] = notebook;
-    delete notebook;
     if (!wmiResult.isNull()){
         hardware["PortableBattery"] = wmiResult;
     }
