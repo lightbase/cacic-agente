@@ -83,7 +83,7 @@ void InstallCacic::run(QStringList argv, int argc) {
                 QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
                                                          false,
                                                          &ok,
-                                                         QStringList("-install");
+                                                         QStringList("-install"));
         #else
 
                 oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
@@ -108,7 +108,7 @@ void InstallCacic::run(QStringList argv, int argc) {
 
 #endif
                 if (!ok) {
-                    QLogger::QLog_Info("Install Cacic", QString("Erro ao iniciar o processo"));
+                    QLogger::QLog_Info("Install Cacic", QString("Erro ao iniciar o processo: " + exitStatus));
                 } else {
                     std::cout << "Instalação realizada com sucesso." << "\n";
                     QLogger::QLog_Info("Install Cacic", QString("Instalação realizada com sucesso."));

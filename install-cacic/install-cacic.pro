@@ -27,7 +27,7 @@ static {
     message("Static build.")
 
     win32 {
-        LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+        LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
         DEPENDPATH += ../lib
@@ -38,7 +38,7 @@ static {
 
 } else {
     win32 {
-        LIBS += -LE:\LightBase\cacic-agente-project\cacic-agente\src\crypto++\lib -lcryptopp
+        LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
         LIBS += -L/usr/lib -lcryptopp
