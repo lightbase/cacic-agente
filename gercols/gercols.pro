@@ -44,9 +44,9 @@ HEADERS += \
 
 CONFIG   += console
 CONFIG   -= app_bundle
-CONFIG   += qt
+#CONFIG   += qt
 CONFIG   += c++11
-CONFIG += static
+CONFIG   += static
 
 win32 {
     QT   += axcontainer

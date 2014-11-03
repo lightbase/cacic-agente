@@ -101,6 +101,8 @@ bool CacicTimer::verificarModulos()
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+
+            novoModulo.close();
         } else {
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Atualização do serviço.");
             QStringList arg;
@@ -110,6 +112,7 @@ bool CacicTimer::verificarModulos()
             break;
         }
     }
+    list.clear();
     return true;
 }
 

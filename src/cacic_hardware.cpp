@@ -58,7 +58,7 @@ QJsonObject cacic_hardware::coletaWin()
            << "Name" << "PrimaryOwnerName" << "TotalPhysicalMemory" << "Workgroup";
     wmiResult = wmi::wmiSearch("Win32_ComputerSystem", params);
     if (!wmiResult.isNull())
-        hardware["ComputerSystem"] = wmiResult;
+        hardware["Win32_ComputerSystem"] = wmiResult;
     //Win32_PortableBattery
     //  (Verifica se é notebook)
     params.clear();
@@ -67,7 +67,7 @@ QJsonObject cacic_hardware::coletaWin()
     notebook["Value"] = QJsonValue::fromVariant(!wmiResult.isNull());
     hardware["IsNotebook"] = notebook;
     if (!wmiResult.isNull()){
-        hardware["PortableBattery"] = wmiResult;
+        hardware["Win32_PortableBattery"] = wmiResult;
     }
     //Win32_Bios
     //  (Manufacturer, SMBIOSBIOSVersion, BIOSVersion, Version, SerialNumber, ReleaseDate)
@@ -75,28 +75,28 @@ QJsonObject cacic_hardware::coletaWin()
     params << "Manufacturer" << "SMBIOSBIOSVersion" << "BIOSVersion" << "Version" << "SerialNumber" << "ReleaseDate";
     wmiResult = wmi::wmiSearch("Win32_Bios", params);
     if (!wmiResult.isNull())
-        hardware["Bios"] = wmiResult;
+        hardware["Win32_Bios"] = wmiResult;
     //Win32_BaseBoard
     //  (Manufacturer, Model, SerialNumber)
     params.clear();
     params << "Manufacturer" << "Model" << "SerialNumber";
     wmiResult = wmi::wmiSearch("Win32_Baseboard", params);
     if (!wmiResult.isNull())
-        hardware["BaseBoard"] = wmiResult;
+        hardware["Win32_BaseBoard"] = wmiResult;
     //Win32_SystemEnclosure
     //  (Manufacturer, ChassisTypes, SerialNumber, SMBIOSAssetTag)
     params.clear();
     params << "Manufacturer" << "ChassisTypes" << "SerialNumber" << "SMBIOSAssetTag";
     wmiResult = wmi::wmiSearch("Win32_SystemEnclosure", params);
     if (!wmiResult.isNull())
-        hardware["SystemEnclosure"] = wmiResult;
+        hardware["Win32_SystemEnclosure"] = wmiResult;
     //Win32_FloppyDrive
     //  (Manufacturer, Caption, Description, Name, MediaType, Size)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name";
     wmiResult = wmi::wmiSearch("Win32_FloppyDrive", params);
     if (!wmiResult.isNull())
-        hardware["FloppyDrive"] = wmiResult;
+        hardware["Win32_FloppyDrive"] = wmiResult;
     //Win32_DiskDrive
     //  (Manufacturer, Caption, Description, Name, MediaType, Size, SerialNumber, Model, FirmwareRevision)
     params.clear();
@@ -104,49 +104,63 @@ QJsonObject cacic_hardware::coletaWin()
            << "Model" << "FirmwareRevision";
     wmiResult = wmi::wmiSearch("Win32_DiskDrive", params);
     if (!wmiResult.isNull())
-        hardware["DiskDrive"] = wmiResult;
+        hardware["Win32_DiskDrive"] = wmiResult;
     //Win32_CDROMDrive
     //  (Manufacturer, Caption, Description, Name, MediaType, Size)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "MediaType" << "Name" << "Size";
     wmiResult = wmi::wmiSearch("Win32_CDROMDrive", params);
     if (!wmiResult.isNull())
-        hardware["CDROMDrive"] = wmiResult;
+        hardware["Win32_CDROMDrive"] = wmiResult;
     //Win32_FloppyController
     //  (Manufacturer, Caption, Description, Name)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name";
     wmiResult = wmi::wmiSearch("Win32_FloppyController", params);
     if (!wmiResult.isNull())
-        hardware["FloppyController"] = wmiResult;
+        hardware["Win32_FloppyController"] = wmiResult;
+    //Win32_MemoryDevice
+    //  (Caption, Description, Name, BlockSize, DeviceID, NumberOfBlocks, Status)
+    params.clear();
+    params << "Caption" << "Description" << "Name" << "BlockSize" << "DeviceID" << "NumberOfBlocks" << "Status";
+    wmiResult = wmi::wmiSearch("Win32_MemoryDevice", params);
+    if (!wmiResult.isNull())
+        hardware["Win32_MemoryDevice"] = wmiResult;
+    //Win32_SMBIOSMemory
+    //  (BlockSize, Caption, Description, DeviceID, Name, NumberOfBlocks, Status)
+    params.clear();
+    params << "Caption" << "Description" << "Name" << "BlockSize" << "DeviceID" << "NumberOfBlocks" << "Status";
+    wmiResult = wmi::wmiSearch("Win32_SMBIOSMemory", params);
+    if (!wmiResult.isNull())
+        hardware["Win32_SMBIOSMemory"] = wmiResult;
     //Win32_SCSIController
     //  (Manufacturer, Caption, Description, Name, HardwareVersion)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name" << "HardwareVersion";
     wmiResult = wmi::wmiSearch("Win32_SCSIController", params);
     if (!wmiResult.isNull())
-        hardware["SCSIController"] = wmiResult;
+        hardware["Win32_SCSIController"] = wmiResult;
     //Win32_InfraredDevice
     //  (Manufacturer, Caption, Description, Name)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name";
     wmiResult = wmi::wmiSearch("Win32_InfraredDevice", params);
     if (!wmiResult.isNull())
-        hardware["InfraredDevice"] = wmiResult;
+        hardware["Win32_InfraredDevice"] = wmiResult;
     //Win32_USBController
     //  (Manufacturer, Caption, Description, Name)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name";
     wmiResult = wmi::wmiSearch("Win32_USBController", params);
     if (!wmiResult.isNull())
-        hardware["USBController"] = wmiResult;
+        hardware["Win32_USBController"] = wmiResult;
     //Win32_PCMCIAController
     //  (Manufacturer, Caption, Description, Name)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "Name";
     wmiResult = wmi::wmiSearch("Win32_PCMCIAController", params);
     if (!wmiResult.isNull())
-        hardware["PCMCIAController"] = wmiResult;
+        hardware["Win32_PCMCIAController"] = wmiResult;
     //Win32_VideoController
     //  (Description, VideoProcessor, AdapterRAM, CurrentHorizontalResolution, CurrentVerticalResolution, Caption, Name)
     params.clear();
@@ -154,14 +168,14 @@ QJsonObject cacic_hardware::coletaWin()
            << "CurrentVerticalResolution" << "Caption" << "AcceleratorCapabilities";
     wmiResult = wmi::wmiSearch("Win32_VideoController", params);
     if (!wmiResult.isNull())
-        hardware["VideoController"] = wmiResult;
+        hardware["Win32_VideoController"] = wmiResult;
     //Win32_DesktopMonitor
     //  (MonitorManufacturer, Caption, Description, MonitorType, Name)
     params.clear();
     params << "MonitorManufacturer" << "Caption" << "Description" << "MonitorType" << "Name";
     wmiResult = wmi::wmiSearch("Win32_DesktopMonitor", params);
     if (!wmiResult.isNull())
-        hardware["DesktopMonitor"] = wmiResult;
+        hardware["Win32_DesktopMonitor"] = wmiResult;
     //Win32_Printer
     //  (Name, DriverName, PortName, ServerName, ShareName, HorizontalResolution, VerticalResolution, Comment, Shared, Network)
     params.clear();
@@ -169,21 +183,21 @@ QJsonObject cacic_hardware::coletaWin()
            << "VerticalResolution" << "Comment" << "Shared" << "Network";
     wmiResult = wmi::wmiSearch("Win32_Printer", params);
     if (!wmiResult.isNull())
-        hardware["Printer"] = wmiResult;
+        hardware["Win32_Printer"] = wmiResult;
     //Win32_PortConnector
     //  (ExternalReferenceDesignator, PortType (verificar), ConnectorType (verificar), Manufacturer, Caption, Name)
     params.clear();
     params << "ExternalReferenceDesignator" << "PortType" << "ConnectorType" << "Name" << "Caption" << "Manufacturer";
     wmiResult = wmi::wmiSearch("Win32_PortConnector", params);
     if (!wmiResult.isNull())
-        hardware["PortConnector"] = wmiResult;
+        hardware["Win32_PortConnector"] = wmiResult;
     //Win32_SerialPort
     //  (Name, Caption, Description, StatusInfo)
     params.clear();
     params << "Name" << "Caption" << "Description" << "StatusInfo";
     wmiResult = wmi::wmiSearch("Win32_SerialPort", params);
     if (!wmiResult.isNull())
-        hardware["SerialPort"] = wmiResult;
+        hardware["Win32_SerialPort"] = wmiResult;
     //Win32_Processor
     //  (MaxClockSpeed, Name, Architecture, NumberOfCores, SocketDesignation, Manufacturer, Architecture, NumberOfCores
     //  CurrentClockSpeed, MaxClockSpeed, L2CacheSize, AddressWidth, DataWidth, VoltageCaps, CpuStatus,
@@ -194,7 +208,7 @@ QJsonObject cacic_hardware::coletaWin()
            << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth";
     wmiResult = wmi::wmiSearch("Win32_Processor", params);
     if (!wmiResult.isNull())
-        hardware["Processor"] = wmiResult;
+        hardware["Win32_Processor"] = wmiResult;
     //Win32_OperatingSystem
     //  (Name, Version, CSDVersion, Description, InstallDate, Organization, RegisteredUser, SerialNumber)
     params.clear();
@@ -202,14 +216,14 @@ QJsonObject cacic_hardware::coletaWin()
            << "SerialNumber";
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!wmiResult.isNull())
-        hardware["OperatingSystem"] = wmiResult;
+        hardware["Win32_OperatingSystem"] = wmiResult;
     //Win32_SystemSlot
     //  (Name, Description, SlotDesignation, CurrentUsage, Status, Shared)
     params.clear();
     params << "Name" << "Description" << "SlotDesignation" << "CurrentUsage" << "Status" << "Shared";
     wmiResult = wmi::wmiSearch("Win32_SystemSlot", params);
     if (!wmiResult.isNull())
-        hardware["SystemSlot"] = wmiResult;
+        hardware["Win32_SystemSlot"] = wmiResult;
     //Win32_LogicalDisk
     //  (Caption, DriveType, Filesystem, VolumeName, ProviderName, Filesystem, VolumeName, Size, FreeSpace)
     params.clear();
@@ -217,35 +231,35 @@ QJsonObject cacic_hardware::coletaWin()
            << "Size" << "FreeSpace";
     wmiResult = wmi::wmiSearch("Win32_LogicalDisk", params);
     if (!wmiResult.isNull())
-        hardware["LogicalDisk"] = wmiResult;
+        hardware["Win32_LogicalDisk"] = wmiResult;
     //Win32_PhysicalMemory
     //  (Caption, Description, BankLabel, DeviceLocator, Capacity, Speed, MemoryType, SerialNumber)
     params.clear();
     params << "Caption" << "Description" << "BankLabel" << "DeviceLocator" << "Capacity" << "Speed" << "MemoryType";
     wmiResult = wmi::wmiSearch("Win32_PhysicalMemory", params);
     if (!wmiResult.isNull())
-        hardware["PhysicalMemory"] = wmiResult;
+        hardware["Win32_PhysicalMemory"] = wmiResult;
     //Win32_Keyboard
     //  (Caption, Description, Name)
     params.clear();
     params << "Caption" << "Description" << "Name" << "Layout";
     wmiResult = wmi::wmiSearch("Win32_Keyboard", params);
     if (!wmiResult.isNull())
-        hardware["Keyboard"] = wmiResult;
+        hardware["Win32_Keyboard"] = wmiResult;
     //Win32_PointingDevice
     //  (Manufacturer, Caption, Description, PointingType, DeviceInterface)
     params.clear();
     params << "Manufacturer" << "Caption" << "Description" << "PointingType" << "DeviceInterface";
     wmiResult = wmi::wmiSearch("Win32_PointingDevice", params);
     if (!wmiResult.isNull())
-        hardware["PointingDevice"] = wmiResult;
+        hardware["Win32_PointingDevice"] = wmiResult;
     //Win32_PnPSignedDriver
     //  (Manufacturer, DeviceName, Description, Location, DeviceClass)
     params.clear();
     params << "Manufacturer" << "DeviceName" << "Description" << "Location" << "DeviceClass";
     wmiResult = wmi::wmiSearch("Win32_PnPSignedDriver", params);
     if (!wmiResult.isNull())
-        hardware["PnPSignedDriver"] = wmiResult;
+        hardware["Win32_PnPSignedDriver"] = wmiResult;
 
     return hardware;
 }

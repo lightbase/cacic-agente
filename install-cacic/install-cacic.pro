@@ -4,10 +4,10 @@
 #
 #-------------------------------------------------
 
-QT += core
+QT -= core
 QT += network
 QT -= gui
-
+LIBS -= -lQtGui
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
 TARGET = install-cacic
@@ -45,7 +45,7 @@ static {
     }
 }
 
-TEMPLATE = app
+#TEMPLATE = app
 
 SOURCES += main.cpp \
     installcacic.cpp \

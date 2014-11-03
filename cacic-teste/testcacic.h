@@ -1,5 +1,4 @@
 #ifndef TESTINSTALLCACIC_H
-#ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
 
 #include <cacic_comm.h>
@@ -77,9 +76,9 @@ private slots:
     void testColetaSoftware();
     void testColetaHardware();
     void testLogger();
+    void testEnviaColeta();
     void testDownload();
     void testStartService();
-    void testEnviaColeta();
     void testGetModulesValues();
     void cleanupTestCase();
 };

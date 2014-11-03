@@ -9,7 +9,7 @@ CACIC_Computer::CACIC_Computer()
 #else defined(Q_OS_WIN)
     QStringList param;
     param << "Caption";
-    computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toString().toStdString();
+    computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toObject()["Caption"].toString().toStdString();
     param.clear();
 #endif
     networkInterface = networkInterfacesRunning();
@@ -75,7 +75,7 @@ QJsonObject CACIC_Computer::toJsonObject()
  *      retorna o usuario logado no sistema. (erro, retorna o usuário que está executando.)
 */
 std::string CACIC_Computer::pegarUsu(){
-#if defined(Q_OS_WINDOWS)
+#if defined(Q_OS_WIN)
   QString text;
   QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
   foreach (text, environment) {

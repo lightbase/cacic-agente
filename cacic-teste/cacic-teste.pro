@@ -6,7 +6,7 @@
 
 QT += testlib
 QT += network
-
+QT -= gui
 TARGET = cacic-teste
 
 CONFIG -= app_bundle
