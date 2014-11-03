@@ -44,6 +44,7 @@ int OperatingSystem::coletaIdOs(){
 
 QString OperatingSystem::coletaNomeOs()
 {
+    //TODO: Colocar no final da string se é 32btis ou 64bits.
 #if defined(Q_OS_WIN)
     QStringList params;
     QJsonValue osName;
