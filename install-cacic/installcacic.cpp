@@ -54,6 +54,9 @@ void InstallCacic::run(QStringList argv, int argc) {
 #ifdef Q_OS_WIN
     system("PAUSE");
 #endif
+    logManager->closeLogger();
+    logManager->wait();
+    delete logManager;
     emit finished();
 }
 
@@ -212,7 +215,6 @@ void InstallCacic::install()
             oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
             //starta o processo do cacic.
 
-            //TO DO: Fazer download do serviço
             QJsonObject metodoDownload;
             metodoDownload = configsJson["metodoDownload"].toObject();
             oCacicComm->setFtpPass(metodoDownload["senha"].toString());
@@ -227,8 +229,9 @@ void InstallCacic::install()
             proc.setWorkingDirectory(oCacic.getCacicMainFolder());
             proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
 
-            if (!proc.error() == QProcess::NormalExit) {
-                std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n";
+            if (proc.exitStatus() == QProcess::NormalExit) {
+                std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"
+                          << "Verifique se o serviço foi instalado e tente iniciá-lo a mão.\n";
                 ok = false;
 //                uninstall();
             } else {
@@ -246,12 +249,7 @@ void InstallCacic::install()
             QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
             if ((!fileService.exists() || !fileService.size() > 0)) {
                 std::cout << "Falha ao baixar arquivo.\n";
-                std::cout << "Erro ao baixar cacic-service;" << std::endl;
                 this->uninstall();
-                logManager->closeLogger();
-                logManager->wait();
-                delete logManager;
-                emit finished();
                 return;
             }
 
@@ -303,10 +301,10 @@ void InstallCacic::uninstall()
     bool ok;
 #ifdef Q_OS_WIN
     //TODO: PARAR O SERVIÇO no windows
-    QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
-                                             false,
-                                             &ok,
-                                             QStringList("-stop"));
+    QProcess proc;
+    proc.setWorkingDirectory(oCacic.getCacicMainFolder());
+    proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-uninstall"));
+
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
     QStringList outputColumns;
@@ -359,6 +357,7 @@ void InstallCacic::uninstall()
             }
         }
     }
+
     std::cout << "\nCacic desinstalado com sucesso.\n";
 }
 

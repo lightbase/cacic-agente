@@ -78,6 +78,11 @@ QJsonObject OperatingSystem::toJsonObject()
     QJsonObject json;
     json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));
     json["nomeOs"] = QJsonValue::fromVariant(this->nomeOs);
+#ifdef Q_OS_WIN
+    json["tipo"] = QJsonValue::fromVariant(QString("windows"));
+#else
+    json["tipo"] = QJsonValue::fromVariant(QString("linux"));
+#endif
 
     return json;
 }
