@@ -331,9 +331,6 @@ void InstallCacic::uninstall()
     // Exclui tudo no diretorio, menos o install-cacic
     if (!oCacic.getCacicMainFolder().isEmpty()) {
 
-        std::cout << "\nEntrou no if \
-                     !oCacic.getCacicMainFolder().isEmpty().\n";
-
         QDir dir(oCacic.getCacicMainFolder());
         dir.setFilter(QDir::AllEntries | QDir::Hidden );
         dir.setSorting(QDir::Size | QDir::Reversed);
@@ -341,13 +338,11 @@ void InstallCacic::uninstall()
         QFileInfoList list = dir.entryInfoList();
 
         for (int i = 0; i<list.size(); i++) {
-            std::cout << "FileName: " << list.at(i).fileName().toStdString() << std::endl;
 
             if( list.at(i).fileName() != "." &&
                 list.at(i).fileName() != ".." &&
                 list.at(i).fileName() != "install-cacic" ) {
 
-                std::cout << "absoluteFilePath: " << list.at(i).absoluteFilePath().toStdString() << std::endl;
                 if ( list.at(i).isDir() )
                     oCacic.deleteFolder(list.at(i).absoluteFilePath());
                 else
