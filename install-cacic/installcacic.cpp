@@ -246,6 +246,7 @@ void InstallCacic::install()
             QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
             if ((!fileService.exists() || !fileService.size() > 0)) {
                 std::cout << "Falha ao baixar arquivo.\n";
+                std::cout << "Erro ao baixar cacic-service;" << std::endl;
                 this->uninstall();
                 logManager->closeLogger();
                 logManager->wait();
@@ -336,9 +337,28 @@ void InstallCacic::uninstall()
 #endif
     oCacic.removeRegistry("Lightbase", "Cacic");
 
-    //TODO -> DELETAR A PASTA TODA, MENOS O INSTALL-CACIC.
-    if (!oCacic.getCacicMainFolder().isEmpty())
-        oCacic.deleteFolder(oCacic.getCacicMainFolder());
+    // Exclui tudo no diretorio, menos o install-cacic
+    if (!oCacic.getCacicMainFolder().isEmpty()) {
+
+        QDir dir(oCacic.getCacicMainFolder());
+        dir.setFilter(QDir::AllEntries | QDir::Hidden );
+        dir.setSorting(QDir::Size | QDir::Reversed);
+
+        QFileInfoList list = dir.entryInfoList();
+
+        for (int i = 0; i<list.size(); i++) {
+
+            if( list.at(i).fileName() != "." &&
+                list.at(i).fileName() != ".." &&
+                list.at(i).fileName() != "install-cacic" ) {
+
+                if ( list.at(i).isDir() )
+                    oCacic.deleteFolder(list.at(i).absoluteFilePath());
+                else
+                    oCacic.deleteFile(list.at(i).absoluteFilePath());
+            }
+        }
+    }
     std::cout << "\nCacic desinstalado com sucesso.\n";
 }
 
