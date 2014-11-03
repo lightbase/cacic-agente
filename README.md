@@ -6,6 +6,7 @@ Pré Requisitos:
 Instalando no Windows:
 >https://sites.google.com/site/ievgensychov/cryptopp
 >Caso dê problemas durante a compilação e for solicitado o "this->" antes de alguns métodos, deve ser corrigido em cada arquivo. Depois disso basta o tutorial.
+>Após a compilação, colocar no diretório src/crypto++/lib e modificar o path de onde está o seu projeto em todos os .pro na linha que a libcript é importada.
 
 Instalando no Linux (Versão utilizada Ubuntu 14.04):
 

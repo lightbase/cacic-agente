@@ -36,6 +36,7 @@ void CacicThread::iniciarModulo()
                 proc.kill();
             }
         }
+        proc.close();
     } else {
         QLogger::QLog_Error("Cacic Daemon (Thread)", QString("Módulo inexistente."));
     }

@@ -10,7 +10,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 void CTestCacic::initTestCase()
 {
     this->OCacicComm = new CacicComm();
-    OCacicComm->setUrlGerente("http://teste.cacic.cc");
+    OCacicComm->setUrlGerente("http://10.209.134.100/cacic/app_dev.php");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
@@ -381,9 +381,9 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-    OCacic.deleteFile("getConfig.json");
-//    OCacic.deleteFolder("./temp");
-//    OCacic.deleteFile("./install-cacic");
-//    OCacic.deleteFile("./gercols");
-    OCacic.deleteFile("./coleta.json");
+//    OCacic.deleteFile("getConfig.json");
+    OCacic.deleteFolder("./temp");
+    OCacic.deleteFile("./install-cacic");
+    OCacic.deleteFile("./gercols");
+//    OCacic.deleteFile("./coleta.json");
 }

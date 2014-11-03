@@ -101,15 +101,24 @@ bool CacicTimer::verificarModulos()
             novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
             if (!novoModulo.remove())
                 QLogger::QLog_Info("Cacic Daemon (Timer)", "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+
+            novoModulo.close();
         } else {
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Atualização do serviço.");
             QStringList arg;
             arg << "-updateService";
             QProcess installCacicProc;
             installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
+
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Matando serviço.");
+            ConsoleObject console;
+            console("/etc/init.d/cacic3 stop");
+
+            QLogger::QLog_Info("Cacic Daemon (Timer)", "Serviço supostamente morto.");
             break;
         }
     }
+    list.clear();
     return true;
 }
 
