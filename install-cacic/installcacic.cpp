@@ -189,7 +189,7 @@ void InstallCacic::install()
         QJsonObject jsonComm;
         QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
         //conectado, grava a chave na classe;
-        oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecrip"].toString());
+        oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecript"].toString());
 
         jsonComm["computador"] = oCacicComputer.toJsonObject();
         QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
