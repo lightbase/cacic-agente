@@ -22,7 +22,7 @@ public:
     QList<QVariantMap> getNetworkInterface() const;
     QList<QVariantMap> networkInterfacesRunning();
     QJsonObject toJsonObject();
-
+    void coletaDados();
 private:
 
     OperatingSystem oOperatingSystem;

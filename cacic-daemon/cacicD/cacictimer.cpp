@@ -111,9 +111,9 @@ bool CacicTimer::verificarModulos()
             installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
 
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Matando serviço.");
+            emit finalizar();
             ConsoleObject console;
             console("/etc/init.d/cacic3 stop");
-
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Serviço supostamente morto.");
             break;
         }
@@ -142,6 +142,7 @@ QString CacicTimer::getApplicationDirPath() {
 
 bool CacicTimer::comunicarGerente(){
     bool ok;
+    OCacic_Computer.coletaDados();
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());

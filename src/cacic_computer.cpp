@@ -2,18 +2,7 @@
 
 CACIC_Computer::CACIC_Computer()
 {
-#ifdef Q_OS_LINUX
-    struct utsname sysName;
-    uname(&sysName);
-    computerName = sysName.nodename;
-#else defined(Q_OS_WIN)
-    QStringList param;
-    param << "Caption";
-    computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toObject()["Caption"].toString().toStdString();
-    param.clear();
-#endif
-    networkInterface = networkInterfacesRunning();
-    usuario = pegarUsu();
+    this->coletaDados();
 }
 
 /*NetworkInterfacesRunning
@@ -96,6 +85,22 @@ std::string CACIC_Computer::pegarUsu(){
 
     return "0";
 }
+
+void CACIC_Computer::coletaDados() {
+#ifdef Q_OS_LINUX
+    struct utsname sysName;
+    uname(&sysName);
+    computerName = sysName.nodename;
+#else defined(Q_OS_WIN)
+    QStringList param;
+    param << "Caption";
+    computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toObject()["Caption"].toString().toStdString();
+    param.clear();
+#endif
+    networkInterface = networkInterfacesRunning();
+    usuario = pegarUsu();
+}
+
 /*
  * getters/setters
 */
