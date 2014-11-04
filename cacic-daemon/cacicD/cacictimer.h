@@ -35,6 +35,9 @@ public:
     void setPeriodicidadeExecucao(int value);
     bool comunicarGerente();
 
+signals:
+    void finalizar();
+
 private:
     bool verificarEIniciarQMutex();
     bool verificarModulos();

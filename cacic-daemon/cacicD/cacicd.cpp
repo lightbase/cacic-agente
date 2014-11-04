@@ -9,9 +9,9 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : "/usr/share/cacic");
         Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
 
-        setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
-        setStartupType(QtServiceController::AutoStartup);
+
+        QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
 
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::InfoLevel);
@@ -68,5 +68,4 @@ void cacicD::stop()
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido ao parar o serviço."));
     }
 }
-
 

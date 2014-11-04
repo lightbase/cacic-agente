@@ -111,9 +111,9 @@ bool CacicTimer::verificarModulos()
             installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
 
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Matando serviço.");
+            emit finalizar();
             ConsoleObject console;
             console("/etc/init.d/cacic3 stop");
-
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Serviço supostamente morto.");
             break;
         }
