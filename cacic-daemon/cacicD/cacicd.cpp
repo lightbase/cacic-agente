@@ -11,6 +11,8 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 
         setServiceDescription("Cacic Daemon");
         setServiceFlags(QtService::Default);
+        setStartupType(QtServiceController::AutoStartup);
+
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log","Cacic Daemon",QLogger::InfoLevel);
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic_error.log","Cacic Daemon",QLogger::ErrorLevel);
