@@ -79,7 +79,9 @@ void InstallCacic::parametrosIncorretos(){
  */
 void InstallCacic::updateService()
 {
+#ifdef Q_OS_WIN
     bool ok;
+#endif
     bool serviceUpdate = false;
     QLogger::QLog_Info("Install Cacic", "Verificando a existência de módulos na pasta temporária.");
     QDir dir(oCacic.getCacicMainFolder() + "/temp");
@@ -102,7 +104,7 @@ void InstallCacic::updateService()
                                                          QStringList("-install"));
 #else
                 ConsoleObject console;
-                console("/etc/init.d/cacic3 stop").toStdString();
+                console("/etc/init.d/cacic3 stop");
 #endif
             }
             QFile novoModulo(list.at(i).filePath());
@@ -136,7 +138,7 @@ void InstallCacic::updateService()
         }
 #else
         ConsoleObject console;
-        QLogger::QLog_Info("Install Cacic", "Info: " + console("/etc/init.d/cacic3 start"));
+        console("/etc/init.d/cacic3 start");
 #endif
     }
 }
