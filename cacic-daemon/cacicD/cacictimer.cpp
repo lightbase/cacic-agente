@@ -142,6 +142,7 @@ QString CacicTimer::getApplicationDirPath() {
 
 bool CacicTimer::comunicarGerente(){
     bool ok;
+    OCacic_Computer.coletaDados();
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());

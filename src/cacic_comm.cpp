@@ -2,6 +2,9 @@
 
 CacicComm::CacicComm ()
 {
+    QDir dir;
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination( dir.currentPath() + "/Logs/cacic.log","Cacic Comm",QLogger::InfoLevel);
 }
 
 CacicComm::CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
@@ -24,10 +27,6 @@ CacicComm::CacicComm (const QString &urlGerente,          const QString &operati
     params.addQueryItem("te_so",so);
     params.addQueryItem("te_versao_cacic",cacicVersion);
     params.addQueryItem("te_versao_gercols",gercolsVersion);
-
-    QDir dir;
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination( dir.currentPath() + "/Logs/cacicLog.log","Cacic Comm",QLogger::InfoLevel);
 
 }
 
