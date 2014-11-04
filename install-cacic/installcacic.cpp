@@ -227,7 +227,7 @@ void InstallCacic::install()
             proc.setWorkingDirectory(oCacic.getCacicMainFolder());
             proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
 
-            if (!proc.error() == QProcess::NormalExit) {
+            if (proc.exitStatus() == QProcess::NormalExit) {
                 std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n";
                 ok = false;
 //                uninstall();
