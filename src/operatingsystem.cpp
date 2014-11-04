@@ -44,8 +44,9 @@ int OperatingSystem::coletaIdOs(){
 
 QString OperatingSystem::coletaNomeOs()
 {
-    //TODO: Colocar no final da string se é 32btis ou 64bits.
+
 #if defined(Q_OS_WIN)
+    //TODO: Colocar no final da string se é 32btis ou 64bits.
     QStringList params;
     QJsonValue osName;
     params << "Name";
@@ -57,17 +58,26 @@ QString OperatingSystem::coletaNomeOs()
     }
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
-    QStringList catOutput = console("cat /etc/*release").split("\n");
-
+    QStringList consoleOutput;
     QString line;
-    foreach(line, catOutput) {
+    QString nomeDistro;
+
+    consoleOutput = console("cat /etc/*release").split("\n");
+    foreach(line, consoleOutput) {
         if(line.contains("PRETTY_NAME")) {
             QStringList split = line.split("=");
-
-            QString nomeDistro = split[1].mid(1, split[1].size()-2 );
-            return nomeDistro;
+            nomeDistro = split[1].mid(1, split[1].size()-2 );
         }
     }
+
+    consoleOutput = console("uname -i").split("\n");
+
+    if(consoleOutput.contains("unknown"))
+        consoleOutput = console("uname -m").split("\n");
+
+    nomeDistro.append("-"+consoleOutput.at(0));
+
+    return nomeDistro;
 #endif
       return "";
 
