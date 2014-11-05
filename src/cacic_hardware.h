@@ -33,6 +33,8 @@ private:
     void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
+    void coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJson);
+    void coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject);
     void coletaLinuxBios(QJsonObject &hardware);
     void coletaLinuxMotherboard(QJsonObject &hardware);
     void coletaLinuxIsNotebook(QJsonObject &hardware);

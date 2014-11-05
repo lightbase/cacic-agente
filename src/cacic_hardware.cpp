@@ -305,6 +305,14 @@ QJsonObject cacic_hardware::coletaLinux()
                         coletaLinuxPci(hardware, pciObject);
                     }
 
+                } else if ( component["id"].toString().startsWith("scsi") ) {
+                    QJsonArray ioArray = component["children"].toArray();
+
+                    foreach(QJsonValue ioValue, ioArray){
+                        QJsonObject ioObject = ioValue.toObject();
+
+                        coletaLinuxIO(hardware, ioObject);
+                    }
                 }
 
             }
@@ -387,6 +395,95 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
 
         }
 //        hardware["NetworkAdapterConfiguration"] = pciNetwork;
+    }
+}
+
+void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJson)
+{
+    QJsonArray physicalArray;
+    QJsonObject dispositivo;
+
+    if ( !hardware["Win32_PhysicalMedia"].isNull() ) {
+        physicalArray = hardware["Win32_PhysicalMedia"].toArray();
+    }
+
+    if ( ioJson["id"] == QJsonValue::fromVariant(QString("cdrom")) ) {
+
+        dispositivo["description"] = ioJson["description"];
+        dispositivo["logicalname"] = ioJson["logicalname"];
+
+    } else if ( ioJson["id"] == QJsonValue::fromVariant(QString("disk")) ) {
+
+        dispositivo["description"] = ioJson["description"];
+        dispositivo["product"] = ioJson["product"];
+        dispositivo["logicalname"] = ioJson["logicalname"];
+        dispositivo["serial"] = ioJson["serial"];
+        dispositivo["size"] = QJsonValue::fromVariant(oCacic.convertDouble(ioJson["size"].toDouble(),0)
+                + " " + ioJson["units"].toString());
+
+        foreach(QJsonValue partitionValue, ioJson["children"].toArray() ) {
+            QJsonObject partitionObject = partitionValue.toObject();
+            QJsonObject newPartition;
+            QJsonArray partitionsList;
+
+            if( !dispositivo["partitions"].isNull() ) {
+                partitionsList = dispositivo["partitions"].toArray();
+            }
+
+            coletaGenericPartitionInfo(newPartition, partitionObject);
+
+            if( partitionObject["description"] == QJsonValue::fromVariant(QString("Extended partition")) ) {
+
+                foreach(QJsonValue extendedValue, partitionObject["children"].toArray()){
+                    QJsonObject extendedObject = extendedValue.toObject();
+                    QJsonObject newExtended;
+                    QJsonArray extendedList;
+
+                    if( !partitionObject["children"].isNull() ) {
+                        extendedList = partitionObject["children"].toArray();
+                    }
+
+                    coletaGenericPartitionInfo(newExtended, extendedObject);
+
+                    extendedList.append(newExtended);
+                    partitionObject["children"] = extendedList;
+                }
+
+            } else {
+                newPartition["filesystem"] = partitionObject["configurations"].toObject()["filesystem"];
+                newPartition["created"] = partitionObject["configurations"].toObject()["created"];
+                newPartition["lastmountpoint"] = partitionObject["configurations"].toObject()["lastmountpoint"];
+                newPartition["lastmounted"] = partitionObject["configurations"].toObject()["mounted"];
+                newPartition["mountoptions"] = partitionObject["configurations"].toObject()["mount.options"];
+            }
+
+            partitionsList.append(newPartition);
+            dispositivo["partitions"] = partitionsList;
+        }
+
+    }
+
+    physicalArray.append(dispositivo);
+    hardware["Win32_PhysicalMedia"] = physicalArray;
+}
+
+void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
+{
+    newPartition["description"] = partitionObject["description"];
+    newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
+            + " " + partitionObject["units"].toString());
+
+    if ( !partitionObject["capabilities"].toObject()[""].isNull() )
+        newPartition["primary"] = partitionObject["capabilities"].toObject()["primary"];
+    if ( !partitionObject["capabilities"].toObject()["bootable"].isNull() )
+        newPartition["bootable"] = partitionObject["cababilities"].toObject()["bootable"];
+    if ( !partitionObject["capabilities"].toObject()["capabilities"].isNull() )
+        newPartition["journaled"] = partitionObject["cababilities"].toObject()["journaled"];
+
+    if( partitionObject["logicalname"].isArray() ) {
+        newPartition["logicalname"] = partitionObject["logicalname"].toArray().first();
+    } else {
+        newPartition["logicalname"] = partitionObject["logicalname"];
     }
 }
 
