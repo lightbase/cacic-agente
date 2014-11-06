@@ -23,9 +23,6 @@ InstallCacic::InstallCacic(QObject *parent) :
 
 InstallCacic::~InstallCacic()
 {
-    logManager->closeLogger();
-    logManager->wait();
-    delete logManager;
 }
 
 void InstallCacic::run(QStringList argv, int argc) {
@@ -60,7 +57,6 @@ void InstallCacic::run(QStringList argv, int argc) {
 #endif
     logManager->closeLogger();
     logManager->wait();
-    delete logManager;
     emit finished();
 }
 
@@ -240,9 +236,12 @@ void InstallCacic::install()
             std::cout << "Executando instalador do serviço...\n";
             proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
             std::cout << "Iniciando serviço...\n";
+            //TO DO: COLOCAR CONFIGURAÇÃO DE DELAY STARTUP
+            system("sc config cacicdaemon start= delayed-auto");
+            system("sc failure cacicdaemon reset= 60 actions= restart/60000");
             proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-start"));
 
-            if (proc.exitStatus() == QProcess::NormalExit) {
+            if (proc.exitStatus() != QProcess::NormalExit) {
                 std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"
                           << "Verifique se o serviço foi instalado e tente iniciá-lo a mão.\n";
                 ok = false;
@@ -317,6 +316,7 @@ void InstallCacic::uninstall()
     //TODO: PARAR O SERVIÇO no windows
     QProcess proc;
     proc.setWorkingDirectory(oCacic.getCacicMainFolder());
+    proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-stop"));
     proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-uninstall"));
 
 #elif defined(Q_OS_LINUX)
