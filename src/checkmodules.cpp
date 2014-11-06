@@ -67,6 +67,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     modulo->open(QFile::ReadOnly);
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
     if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(modulo->readAll(), moduloHash)){
+        modulo->close();
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
         QJsonObject metodoDownload;
@@ -107,6 +108,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             return false;
         }
     } else {
+        modulo->close();
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " desnecessária."));
         return true;
     }

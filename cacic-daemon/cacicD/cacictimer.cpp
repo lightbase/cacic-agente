@@ -10,10 +10,6 @@ CacicTimer::CacicTimer(QString dirpath)
 CacicTimer::~CacicTimer()
 {
     logManager->closeLogger();
-    delete logManager;
-    delete ccacic;
-    delete OCacicComm;
-    delete checkModules;
 }
 
 void CacicTimer::reiniciarTimer(){
