@@ -267,7 +267,7 @@ QJsonObject cacic_hardware::coletaWin()
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()
 {
-/*Aumentar coleta de Hardware. array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
+/*Aumentar coleta de Hardware. DONE array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
  *                             array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
  *                             jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
  *                             jsonvalue-> hardware["Win32_PointingDevice"] = mouse (se possível)
@@ -450,11 +450,11 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                 }
 
             } else {
-                newPartition["filesystem"] = partitionObject["configurations"].toObject()["filesystem"];
-                newPartition["created"] = partitionObject["configurations"].toObject()["created"];
-                newPartition["lastmountpoint"] = partitionObject["configurations"].toObject()["lastmountpoint"];
-                newPartition["lastmounted"] = partitionObject["configurations"].toObject()["mounted"];
-                newPartition["mountoptions"] = partitionObject["configurations"].toObject()["mount.options"];
+                newPartition["filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
+                newPartition["created"] = partitionObject["configuration"].toObject()["created"];
+                newPartition["lastmountpoint"] = partitionObject["configuration"].toObject()["lastmountpoint"];
+                newPartition["lastmounted"] = partitionObject["configuration"].toObject()["mounted"];
+                newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
             }
 
             partitionsList.append(newPartition);
@@ -481,9 +481,9 @@ void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const
     if ( !partitionObject["capabilities"].toObject()["primary"].isNull() )
         newPartition["primary"] = partitionObject["capabilities"].toObject()["primary"];
     if ( !partitionObject["capabilities"].toObject()["bootable"].isNull() )
-        newPartition["bootable"] = partitionObject["cababilities"].toObject()["bootable"];
+        newPartition["bootable"] = partitionObject["capabilities"].toObject()["bootable"];
     if ( !partitionObject["capabilities"].toObject()["journaled"].isNull() )
-        newPartition["journaled"] = partitionObject["cababilities"].toObject()["journaled"];
+        newPartition["journaled"] = partitionObject["capabilities"].toObject()["journaled"];
 
     if( partitionObject["logicalname"].isArray() ) {
         newPartition["logicalname"] = partitionObject["logicalname"].toArray().first();
