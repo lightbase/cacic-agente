@@ -439,14 +439,14 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     QJsonObject newExtended;
                     QJsonArray extendedList;
 
-                    if( !partitionObject["children"].isNull() ) {
-                        extendedList = partitionObject["children"].toArray();
+                    if( !newPartition["children"].isNull() ) {
+                        extendedList = newPartition["children"].toArray();
                     }
 
                     coletaGenericPartitionInfo(newExtended, extendedObject);
 
                     extendedList.append(newExtended);
-                    partitionObject["children"] = extendedList;
+                    newPartition["children"] = extendedList;
                 }
 
             } else {
@@ -470,14 +470,19 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
 void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
 {
     newPartition["description"] = partitionObject["description"];
-    newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
+
+    if( !partitionObject["size"].isNull() )
+        newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
+            + " " + partitionObject["units"].toString());
+    else
+        newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["capacity"].toDouble(),0)
             + " " + partitionObject["units"].toString());
 
-    if ( !partitionObject["capabilities"].toObject()[""].isNull() )
+    if ( !partitionObject["capabilities"].toObject()["primary"].isNull() )
         newPartition["primary"] = partitionObject["capabilities"].toObject()["primary"];
     if ( !partitionObject["capabilities"].toObject()["bootable"].isNull() )
         newPartition["bootable"] = partitionObject["cababilities"].toObject()["bootable"];
-    if ( !partitionObject["capabilities"].toObject()["capabilities"].isNull() )
+    if ( !partitionObject["capabilities"].toObject()["journaled"].isNull() )
         newPartition["journaled"] = partitionObject["cababilities"].toObject()["journaled"];
 
     if( partitionObject["logicalname"].isArray() ) {
