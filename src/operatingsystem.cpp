@@ -66,7 +66,7 @@ QString OperatingSystem::coletaNomeOs()
     foreach(line, consoleOutput) {
         if(line.contains("PRETTY_NAME")) {
             QStringList split = line.split("=");
-            nomeDistro = split[1].mid(1, split[1].size()-2 );
+            nomeDistro = split[1].mid(1, split[1].size()-2 ).trimmed();
         }
     }
 
