@@ -14,6 +14,8 @@ private:
     QJsonObject configReq;
     QLogger::QLoggerManager *logManager;
 
+    bool percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno);
+    bool verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta);
 public:
     explicit Gercols(QObject *parent = 0);
 

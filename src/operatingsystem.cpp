@@ -91,7 +91,13 @@ QJsonObject OperatingSystem::toJsonObject()
 #ifdef Q_OS_WIN
     json["tipo"] = QJsonValue::fromVariant(QString("windows"));
 #else
-    json["tipo"] = QJsonValue::fromVariant(QString("linux"));
+    ConsoleObject console;
+    QStringList consoleOutput;
+    consoleOutput = console("uname -i").split("\n");
+
+    if(consoleOutput.contains("unknown"))
+        consoleOutput = console("uname -m").split("\n");
+    json["tipo"] = QJsonValue::fromVariant(QString("linux" + consoleOutput.at(0)));
 #endif
 
     return json;

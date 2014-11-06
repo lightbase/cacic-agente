@@ -354,6 +354,10 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
 {
 
     QJsonObject pciMember;
+    QJsonArray pciNetwork;
+    if (!hardware["NetworkAdapterConfiguration"].isNull()){
+        pciNetwork = hardware["NetworkAdapterConfiguration"].toArray();
+    }
 
     if ( pciJson["id"] == QJsonValue::fromVariant(QString("multimedia")) ) {
         pciMember["description"] = pciJson["description"];
@@ -371,8 +375,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         pciMember["serial"] = pciJson["serial"];
         pciMember["firmware"] = pciJson["configuration"].toObject()["firmware"];
 
-        //                pciNetwork.append(pciMember);
-        hardware["wireless_card"] = pciMember;
+        pciNetwork.append(pciMember);
+//        hardware["wireless_card"] = pciMember;
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
         pciMember["description"] = pciJson["description"];
         pciMember["product"] = pciJson["product"];
@@ -383,8 +387,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
                     oCacic.convertDouble(pciJson["capacity"].toDouble(), 0) +
                 " bits/s" );
 
-        hardware["ethernet_card"] = pciMember;
-        //                pciNetwork.append(pciMember);
+//        hardware["ethernet_card"] = pciMember;
+        pciNetwork.append(pciMember);
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("display")) ) {
         pciMember["description"] = pciJson["description"];
         pciMember["product"] = pciJson["product"];
@@ -396,8 +400,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         hardware["Win32_PCMCIAController"] = pciMember;
     }
 
-
-    //        hardware["NetworkAdapterConfiguration"] = pciNetwork;
+    if (!pciNetwork.isEmpty())
+        hardware["NetworkAdapterConfiguration"] = pciNetwork;
 }
 
 void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJson)
