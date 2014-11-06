@@ -98,10 +98,7 @@ void InstallCacic::updateService()
 #ifdef Q_OS_WIN
                 //TODO WINDOWS
                 bool ok = false;
-                QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
-                                                         false,
-                                                         &ok,
-                                                         QStringList("-install"));
+                system("sc stop cacicdaemon");
 #else
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 stop");
@@ -129,12 +126,12 @@ void InstallCacic::updateService()
         QLogger::QLog_Info("Install Cacic", "Iniciando o serviço cacic.");
 #ifdef Q_OS_WIN
         //TODO WINDOWS
-        QString exitStatus = oCacic.startProcess(oCacic.getCacicMainFolder() + "/cacic-service.exe",
-                                                 false,
-                                                 &ok,
-                                                 QStringList("-start"));
+        QProcess proc;
+        proc.setWorkingDirectory(oCacic.getCacicMainFolder());
+        proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-start"));
+
         if(!ok) {
-            QLogger::QLog_Info("Install Cacic", "Falha ao iniciar serviço: "+ exitStatus);
+            QLogger::QLog_Info("Install Cacic", "Falha ao iniciar serviço");
         }
 #else
         ConsoleObject console;

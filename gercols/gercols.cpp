@@ -53,7 +53,7 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     for (int i = 0; i<2; i++){
         if (!(primeiroJson.isEmpty() && segundoJson.isEmpty())){
             foreach (QString key, primeiroJson.keys()){
-                if(key != "computer"){
+                if(key != "computador"){
                     QJsonValue jsonRetorno;
                     if (!segundoJson[key].isNull()){
                         if (this->percorreColeta(primeiroJson[key], segundoJson[key], jsonRetorno)){
@@ -86,11 +86,14 @@ bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &
         //Se for um objeto, verifico as chaves.
         QJsonObject jsonObj;
         foreach(QString key, primeiroValor.toObject().keys()){
-            QJsonValue subRetorno;
-            //Mando percorrer cada key do objeto também.
-            if (this->percorreColeta(primeiroValor.toObject()[key], segundoValor.toObject()[key], subRetorno)){
-                jsonObj[key] = subRetorno;
-                diferenca = true;
+            //Tirando algumas variáveis que modificam sempre.
+            if (key != "FreeSpace" && key != "clock" && key != "CurrentClockSpeed" && key != "ipv4" && key != "ipv6") {
+                QJsonValue subRetorno;
+                //Mando percorrer cada key do objeto também.
+                if (this->percorreColeta(primeiroValor.toObject()[key], segundoValor.toObject()[key], subRetorno)){
+                    jsonObj[key] = subRetorno;
+                    diferenca = true;
+                }
             }
         }
         if (diferenca){

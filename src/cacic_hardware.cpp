@@ -458,8 +458,9 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
             } else {
                 newPartition["filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
                 newPartition["created"] = partitionObject["configuration"].toObject()["created"];
-                newPartition["lastmountpoint"] = partitionObject["configuration"].toObject()["lastmountpoint"];
-                newPartition["lastmounted"] = partitionObject["configuration"].toObject()["mounted"];
+                //retirado porque podem modificar a qualquer momento, não é interessante manter.
+//                newPartition["lastmountpoint"] = partitionObject["configuration"].toObject()["lastmountpoint"];
+//                newPartition["lastmounted"] = partitionObject["configuration"].toObject()["mounted"];
                 newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
             }
 
