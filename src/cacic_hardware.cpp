@@ -267,8 +267,8 @@ QJsonObject cacic_hardware::coletaWin()
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_hardware::coletaLinux()
 {
-/*Aumentar coleta de Hardware. array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
- *                             array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
+/*Aumentar coleta de Hardware. DONE array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
+ *                             Done? array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
  *                             jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
  *                             jsonvalue-> hardware["Win32_PointingDevice"] = mouse (se possível)
  *                             Fora essas, detalhar mais as outras que já existem. Pegar todos os nomes, versão, vendor, id, etc..
@@ -361,41 +361,43 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         pciMember["vendor"] = pciJson["vendor"];
 
         hardware["multimedia"] = pciMember;
-    } else if (pciJson["id"].toString().contains("pci:") ) {
-        QJsonArray pciChildren = pciJson["children"].toArray();
-        QJsonArray pciNetwork;
-        foreach( QJsonValue pciChild, pciChildren ) {
-            QJsonObject pciChildJson = pciChild.toObject();
+    } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) &&
+               ( pciJson["description"].toString().contains("Wireless") ||
+                 pciJson["product"].toString().contains("Wireless") )) {
+        pciMember["description"] = pciJson["description"];
+        pciMember["product"] = pciJson["product"];
+        pciMember["vendor"] = pciJson["vendor"];
+        pciMember["logicalname"] = pciJson["logicalname"];
+        pciMember["serial"] = pciJson["serial"];
+        pciMember["firmware"] = pciJson["configuration"].toObject()["firmware"];
 
-            if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) &&
-                   ( pciChildJson["description"].toString().contains("Wireless") ||
-                     pciChildJson["product"].toString().contains("Wireless") )) {
-                pciMember["description"] = pciChildJson["description"];
-                pciMember["product"] = pciChildJson["product"];
-                pciMember["vendor"] = pciChildJson["vendor"];
-                pciMember["logicalname"] = pciChildJson["logicalname"];
-                pciMember["serial"] = pciChildJson["serial"];
-                pciMember["firmware"] = pciChildJson["configuration"].toObject()["firmware"];
+        //                pciNetwork.append(pciMember);
+        hardware["wireless_card"] = pciMember;
+    } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
+        pciMember["description"] = pciJson["description"];
+        pciMember["product"] = pciJson["product"];
+        pciMember["vendor"] = pciJson["vendor"];
+        pciMember["logicalname"] = pciJson["logicalname"];
+        pciMember["serial"] = pciJson["serial"];
+        pciMember["capacity"] = QJsonValue::fromVariant(
+                    oCacic.convertDouble(pciJson["capacity"].toDouble(), 0) +
+                " bits/s" );
 
-//                pciNetwork.append(pciMember);
-                hardware["wireless_card"] = pciMember;
-            } else if( pciChildJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
-                pciMember["description"] = pciChildJson["description"];
-                pciMember["product"] = pciChildJson["product"];
-                pciMember["vendor"] = pciChildJson["vendor"];
-                pciMember["logicalname"] = pciChildJson["logicalname"];
-                pciMember["serial"] = pciChildJson["serial"];
-                pciMember["capacity"] = QJsonValue::fromVariant(
-                                        oCacic.convertDouble(pciChildJson["capacity"].toDouble(), 0) +
-                                        " bits/s" );
+        hardware["ethernet_card"] = pciMember;
+        //                pciNetwork.append(pciMember);
+    } else if( pciJson["id"] == QJsonValue::fromVariant(QString("display")) ) {
+        pciMember["description"] = pciJson["description"];
+        pciMember["product"] = pciJson["product"];
+        pciMember["vendor"] = pciJson["vendor"];
+        pciMember["width"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["width"].toDouble(),0) );
+        pciMember["clock"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["clock"].toDouble(),0) );
 
-                hardware["ethernet_card"] = pciMember;
-//                pciNetwork.append(pciMember);
-            }
 
-        }
-//        hardware["NetworkAdapterConfiguration"] = pciNetwork;
+        hardware["Win32_PCMCIAController"] = pciMember;
     }
+
+
+    //        hardware["NetworkAdapterConfiguration"] = pciNetwork;
 }
 
 void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJson)
@@ -439,22 +441,22 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     QJsonObject newExtended;
                     QJsonArray extendedList;
 
-                    if( !partitionObject["children"].isNull() ) {
-                        extendedList = partitionObject["children"].toArray();
+                    if( !newPartition["children"].isNull() ) {
+                        extendedList = newPartition["children"].toArray();
                     }
 
                     coletaGenericPartitionInfo(newExtended, extendedObject);
 
                     extendedList.append(newExtended);
-                    partitionObject["children"] = extendedList;
+                    newPartition["children"] = extendedList;
                 }
 
             } else {
-                newPartition["filesystem"] = partitionObject["configurations"].toObject()["filesystem"];
-                newPartition["created"] = partitionObject["configurations"].toObject()["created"];
-                newPartition["lastmountpoint"] = partitionObject["configurations"].toObject()["lastmountpoint"];
-                newPartition["lastmounted"] = partitionObject["configurations"].toObject()["mounted"];
-                newPartition["mountoptions"] = partitionObject["configurations"].toObject()["mount.options"];
+                newPartition["filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
+                newPartition["created"] = partitionObject["configuration"].toObject()["created"];
+                newPartition["lastmountpoint"] = partitionObject["configuration"].toObject()["lastmountpoint"];
+                newPartition["lastmounted"] = partitionObject["configuration"].toObject()["mounted"];
+                newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
             }
 
             partitionsList.append(newPartition);
@@ -470,15 +472,20 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
 void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
 {
     newPartition["description"] = partitionObject["description"];
-    newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
+
+    if( !partitionObject["size"].isNull() )
+        newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
+            + " " + partitionObject["units"].toString());
+    else
+        newPartition["size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["capacity"].toDouble(),0)
             + " " + partitionObject["units"].toString());
 
-    if ( !partitionObject["capabilities"].toObject()[""].isNull() )
+    if ( !partitionObject["capabilities"].toObject()["primary"].isNull() )
         newPartition["primary"] = partitionObject["capabilities"].toObject()["primary"];
     if ( !partitionObject["capabilities"].toObject()["bootable"].isNull() )
-        newPartition["bootable"] = partitionObject["cababilities"].toObject()["bootable"];
-    if ( !partitionObject["capabilities"].toObject()["capabilities"].isNull() )
-        newPartition["journaled"] = partitionObject["cababilities"].toObject()["journaled"];
+        newPartition["bootable"] = partitionObject["capabilities"].toObject()["bootable"];
+    if ( !partitionObject["capabilities"].toObject()["journaled"].isNull() )
+        newPartition["journaled"] = partitionObject["capabilities"].toObject()["journaled"];
 
     if( partitionObject["logicalname"].isArray() ) {
         newPartition["logicalname"] = partitionObject["logicalname"].toArray().first();
