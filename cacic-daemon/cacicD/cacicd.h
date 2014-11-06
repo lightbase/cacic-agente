@@ -27,7 +27,7 @@ public:
     void stop();
 
 private:
-    const int periodicidadeExecucaoPadrao = 5; // valor padrão em minutos.
+    const int periodicidadeExecucaoPadrao = 240; // valor padrão em minutos.
 
 };
 #endif // CACICD_H

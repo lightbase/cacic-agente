@@ -57,7 +57,7 @@ private:
     QString applicationDirPath;
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
-    const int periodicidadeExecucaoPadrao = 5; // Tempo default de execução em minutos.
+    const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
 
 private slots:
     void mslot();
