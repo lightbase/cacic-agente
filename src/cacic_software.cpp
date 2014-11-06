@@ -1,4 +1,4 @@
-#include "cacic_software.h"
+#include "cacic_software.h" ''
 
 cacic_software::cacic_software()
 {
@@ -31,22 +31,22 @@ QJsonObject cacic_software::coletaWin()
             VRegistry subReg;
             subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
             if (!subReg.get_REG_SZ("DisplayName").isEmpty())
-                software["DisplayName"] = subReg.get_REG_SZ("DisplayName");
+                software["description"] = subReg.get_REG_SZ("DisplayName");
             if (!subReg.get_REG_SZ("Publisher").isEmpty())
-                software["Publisher"] = subReg.get_REG_SZ("Publisher");
+                software["publisher"] = subReg.get_REG_SZ("Publisher");
             if (!subReg.get_REG_SZ("InstallLocation").isEmpty())
-                software["InstallLocation"] = subReg.get_REG_SZ("InstallLocation");
+                software["installLocation"] = subReg.get_REG_SZ("InstallLocation");
             if (!subReg.get_REG_SZ("InstallDate").isEmpty())
-                software["InstallDate"] = subReg.get_REG_SZ("InstallDate");
+                software["installDate"] = subReg.get_REG_SZ("InstallDate");
             if (!subReg.get_REG_SZ("URLInfoAbout").isEmpty())
-                software["URLInfoAbout"] = subReg.get_REG_SZ("URLInfoAbout");
+                software["url"] = subReg.get_REG_SZ("URLInfoAbout");
             if (!subReg.get_REG_EXPAND_SZ("UninstallString").isEmpty())
-                software["UninstallString"] = subReg.get_REG_EXPAND_SZ("UninstallString");
+                software["uninstallString"] = subReg.get_REG_EXPAND_SZ("UninstallString");
             if (!subReg.get_REG_EXPAND_SZ("QuietUninstallString").isEmpty())
-                software["QuietUninstallString"] = subReg.get_REG_EXPAND_SZ("QuietUninstallString");
+                software["quietUninstallString"] = subReg.get_REG_EXPAND_SZ("QuietUninstallString");
             if (!subReg.get_REG_SZ("DisplayVersion").isEmpty())
-                software["DisplayVersion"] = subReg.get_REG_SZ("DisplayVersion");
-
+                software["version"] = subReg.get_REG_SZ("DisplayVersion");
+            software["name"] = key;
             softwaresJson[key] = QJsonObject::fromVariantMap(software);
         }
     }

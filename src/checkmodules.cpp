@@ -78,17 +78,19 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
 
             downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
                                                 this->applicationUrl,
-                                                metodoDownload["path"].toString() + moduloName,
+                                                metodoDownload["path"].toString() +
+                                                (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
                                                 oCacic.getCacicMainFolder() + "/temp");
 
             novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
             if (downloadOk){
                 //faz uma verificação do novo módulo.
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
-                    QLogger::QLog_Error("CheckModules",QString("Falha ao baixar " + moduloName + "("+metodoDownload["tipo"].toString() +
-                                                                                            this->applicationUrl +
-                                                                                            metodoDownload["path"].toString() +
-                                                                                            moduloName +")"));
+                    QLogger::QLog_Error("CheckModules",
+                                        QString("Falha ao baixar " + moduloName +
+                                                "("+metodoDownload["tipo"].toString()+ "://" +
+                                                this->applicationUrl + metodoDownload["path"].toString() +
+                                                (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
                     novoModulo->remove();
                     return false;
                 } else {

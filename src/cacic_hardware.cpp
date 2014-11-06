@@ -75,7 +75,7 @@ QJsonObject cacic_hardware::coletaWin()
     params << "Manufacturer" << "SMBIOSBIOSVersion" << "BIOSVersion" << "Version" << "SerialNumber" << "ReleaseDate";
     wmiResult = wmi::wmiSearch("Win32_Bios", params);
     if (!wmiResult.isNull())
-        hardware["Win32_Bios"] = wmiResult;
+        hardware["Win32_BIOS"] = wmiResult;
     //Win32_BaseBoard
     //  (Manufacturer, Model, SerialNumber)
     params.clear();
@@ -253,13 +253,13 @@ QJsonObject cacic_hardware::coletaWin()
     wmiResult = wmi::wmiSearch("Win32_PointingDevice", params);
     if (!wmiResult.isNull())
         hardware["Win32_PointingDevice"] = wmiResult;
-    //Win32_PnPSignedDriver
+    //Win32_PnPSignedDriver (Muito grande, é necessário?)
     //  (Manufacturer, DeviceName, Description, Location, DeviceClass)
-    params.clear();
-    params << "Manufacturer" << "DeviceName" << "Description" << "Location" << "DeviceClass";
-    wmiResult = wmi::wmiSearch("Win32_PnPSignedDriver", params);
-    if (!wmiResult.isNull())
-        hardware["Win32_PnPSignedDriver"] = wmiResult;
+//    params.clear();
+//    params << "Manufacturer" << "DeviceName" << "Description" << "Location" << "DeviceClass";
+//    wmiResult = wmi::wmiSearch("Win32_PnPSignedDriver", params);
+//    if (!wmiResult.isNull())
+//        hardware["Win32_PnPSignedDriver"] = wmiResult;
 
     return hardware;
 }

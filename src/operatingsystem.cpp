@@ -53,7 +53,7 @@ QString OperatingSystem::coletaNomeOs()
     osName = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!osName.isNull()){
         QString retorno = osName.toObject()["Name"].toString();
-        retorno = retorno.left(retorno.indexOf("|")) + "-" + osName.toObject()["OSArchitecture"].toString();
+        retorno = retorno.left(retorno.indexOf("|")).trimmed() + "-" + osName.toObject()["OSArchitecture"].toString();
         return retorno.trimmed();
     }
 #elif defined(Q_OS_LINUX)
