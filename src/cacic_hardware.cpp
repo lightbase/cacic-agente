@@ -432,26 +432,27 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
             QJsonObject newPartition;
             QJsonArray partitionsList;
 
-            if( !dispositivo["partitions"].isNull() ) {
-                partitionsList = dispositivo["partitions"].toArray();
+            if( !hardware["Win32_LogicalDisk"].isNull() ) {
+                partitionsList = hardware["Win32_LogicalDisk"].toArray();
             }
 
+            newPartition["disk"] = ioJson["logicalname"];
             coletaGenericPartitionInfo(newPartition, partitionObject);
 
             if( partitionObject["description"] == QJsonValue::fromVariant(QString("Extended partition")) ) {
 
                 foreach(QJsonValue extendedValue, partitionObject["children"].toArray()){
                     QJsonObject extendedObject = extendedValue.toObject();
-                    QJsonObject newExtended;
                     QJsonArray extendedList;
 
                     if( !newPartition["children"].isNull() ) {
                         extendedList = newPartition["children"].toArray();
                     }
 
-                    coletaGenericPartitionInfo(newExtended, extendedObject);
+                    QString newExtended;
+                    newExtended = extendedObject["description"].toString() + " " + extendedObject["logicalname"].toString();
 
-                    extendedList.append(newExtended);
+                    extendedList.append(QJsonValue::fromVariant(newExtended));
                     newPartition["children"] = extendedList;
                 }
 
@@ -465,13 +466,13 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
             }
 
             partitionsList.append(newPartition);
-            dispositivo["partitions"] = partitionsList;
+            hardware["Win32_LogicalDisk"] = partitionsList;
         }
 
     }
 
     physicalArray.append(dispositivo);
-    hardware["Win32_PhysicalMedia"] = physicalArray;
+    hardware["Win32_DiskDrive"] = physicalArray;
 }
 
 void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
