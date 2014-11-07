@@ -96,7 +96,6 @@ void InstallCacic::updateService()
                 serviceUpdate = true;
                 QLogger::QLog_Info("Install Cacic", "Parando serviço para atualização.");
 #ifdef Q_OS_WIN
-                //TODO WINDOWS
                 bool ok = false;
                 system("sc stop cacicdaemon");
 #else
@@ -125,7 +124,6 @@ void InstallCacic::updateService()
     if (serviceUpdate){
         QLogger::QLog_Info("Install Cacic", "Iniciando o serviço cacic.");
 #ifdef Q_OS_WIN
-        //TODO WINDOWS
         QProcess proc;
         proc.setWorkingDirectory(oCacic.getCacicMainFolder());
         proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-start"));
@@ -194,7 +192,7 @@ void InstallCacic::install()
 
         jsonComm["computador"] = oCacicComputer.toJsonObject();
         std::cout << "Pegando informações do gerente...\n";
-        QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm);
+        QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm, true);
         if (ok){
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
             oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());

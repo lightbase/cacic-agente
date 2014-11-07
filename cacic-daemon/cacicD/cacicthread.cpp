@@ -74,7 +74,7 @@ bool CacicThread::enviarColeta()
             if (!jsonColeta.isEmpty()){
                 QJsonObject retornoColeta;
                 QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Enviando coleta ao gerente."));
-                retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , false);
+                retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , true);
                 if (ok){
                     QVariantMap enviaColeta;
                     enviaColeta["enviaColeta"] = false;

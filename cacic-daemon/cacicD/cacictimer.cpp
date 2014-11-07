@@ -109,7 +109,7 @@ bool CacicTimer::verificarModulos()
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Matando serviço.");
 #ifdef Q_OS_WIN
             system("sc stop cacicdaemon");
-#elif
+#else
             ConsoleObject console;
             console("/etc/init.d/cacic3 stop");
 #endif
@@ -123,8 +123,6 @@ bool CacicTimer::verificarModulos()
 }
 
 void CacicTimer::iniciarThread(){
-    //checkModules = new CheckModules(this->applicationDirPath);
-    //checkModules->start();
 
     QString nome = "gercols";
     definirDirModulo(getApplicationDirPath(), nome);
@@ -185,9 +183,9 @@ QJsonObject CacicTimer::getTest(){
     bool ok;
     QJsonObject as;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, false);
+    QJsonObject jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, true);
     if(!ok){
-        jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, false); // mais uma vez pra garantir.
+        jsonresult = OCacicComm->comm("/ws/neo/getTest", &ok, as, true); // mais uma vez pra garantir.
     }
     if(jsonresult.contains("error")){
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getTest()." + jsonresult["error"].toString());
@@ -207,7 +205,7 @@ QJsonObject CacicTimer::getConfig(){
     bool ok;
     QJsonObject as;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, false);
+    QJsonObject jsonresult = OCacicComm->comm("/ws/neo/config", &ok, as, true);
 
     if(jsonresult.contains("error")){
         QLogger::QLog_Error("Cacic Daemon (Timer)", "Falha na execução do getConfig()." + jsonresult["error"].toString());
