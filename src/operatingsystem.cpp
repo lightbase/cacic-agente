@@ -97,7 +97,7 @@ QJsonObject OperatingSystem::toJsonObject()
 
     if(consoleOutput.contains("unknown"))
         consoleOutput = console("uname -m").split("\n");
-    json["tipo"] = QJsonValue::fromVariant(QString("linux" + consoleOutput.at(0)));
+    json["tipo"] = QJsonValue::fromVariant(QString("linux" + "-" + consoleOutput.at(0)));
 #endif
 
     return json;
