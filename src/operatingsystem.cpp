@@ -49,15 +49,11 @@ QString OperatingSystem::coletaNomeOs()
     //TODO: Colocar no final da string se é 32btis ou 64bits.
     QStringList params;
     QJsonValue osName;
-    params << "Name" << "OSArchitecture";
+    params << "Name";
     osName = wmi::wmiSearch("Win32_OperatingSystem", params);
-    if (!osName.toObject()["Name"].toString().contains("XP")){
-        params << "OSArchitecture";
-        osName = wmi::wmiSearch("Win32_OperatingSystem", params);
-    }
     if (!osName.isNull()){
         QString retorno = osName.toObject()["Name"].toString();
-        retorno = retorno.left(retorno.indexOf("|")).trimmed() + "-" + osName.toObject()["OSArchitecture"].toString();
+        retorno = retorno.left(retorno.indexOf("|")).trimmed();
         return retorno.trimmed();
     }
 #elif defined(Q_OS_LINUX)

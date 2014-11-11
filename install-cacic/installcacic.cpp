@@ -223,7 +223,8 @@ void InstallCacic::install()
 #ifdef Q_OS_WIN
             oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                     metodoDownload["url"].toString(),
-                    metodoDownload["path"].toString() + "cacic-service.exe",
+                    metodoDownload["path"].toString() + (!metodoDownload["path"].toString().endsWith("/") ? "/" : "") +
+                    "cacic-service.exe",
                     oCacic.getCacicMainFolder());
 
             QProcess proc;
