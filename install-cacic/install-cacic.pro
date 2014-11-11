@@ -11,7 +11,7 @@ LIBS -= -lQtGui
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
 TARGET = install-cacic
-CONFIG += console
+#CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
 
@@ -27,7 +27,7 @@ static {
     message("Static build.")
 
     win32 {
-        LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
+#        LIBS += -LC:\Devel\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
         DEPENDPATH += ../lib
@@ -38,7 +38,7 @@ static {
 
 } else {
     win32 {
-        LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
+#        LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
         LIBS += -L/usr/lib -lcryptopp
@@ -67,4 +67,4 @@ HEADERS += \
     ../src/console.h
 
 INCLUDEPATH += ../src \
-               ../src/crypto++/include/
+#               ../src/crypto++/include/

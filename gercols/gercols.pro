@@ -50,7 +50,7 @@ CONFIG   += static
 
 win32 {
     QT   += axcontainer
-    LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
+#    LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
     LIBS += -L/usr/lib -lcryptopp
 }
@@ -58,6 +58,6 @@ win32 {
 
 
 INCLUDEPATH += ../src \
-               ../src/crypto++/include/
+#               ../src/crypto++/include/
 
 DEFINES += STATIC

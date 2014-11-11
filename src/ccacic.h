@@ -13,9 +13,9 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include "../src/crypto++/include/aes.h"
-#include "../src/crypto++/include/base64.h"
-#include "../src/crypto++/include/modes.h"
+//#include "../src/crypto++/include/aes.h"
+//#include "../src/crypto++/include/base64.h"
+//#include "../src/crypto++/include/modes.h"
 #include <QCryptographicHash>
 
 class CCacic
@@ -25,8 +25,8 @@ public:
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
-    QString enCrypt(std::string str_in, std::string iv);
-    QString deCrypt(std::string str_in, std::string iv);
+//    QString enCrypt(std::string str_in, std::string iv);
+//    QString deCrypt(std::string str_in, std::string iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);

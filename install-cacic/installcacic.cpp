@@ -53,7 +53,7 @@ void InstallCacic::run(QStringList argv, int argc) {
         parametrosIncorretos();
     }
 #ifdef Q_OS_WIN
-    system("PAUSE");
+//    system("PAUSE");
 #endif
     logManager->closeLogger();
     logManager->wait();

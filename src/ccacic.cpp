@@ -156,22 +156,22 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
  *              exemplo de iv: 0123456789123456
  * @return std:string: retorna a string encriptada convertida em base64.
  * */
-QString CCacic::enCrypt(std::string str_in, std::string iv) {
-    std::string str_out;
-    if ((!this->getChaveCrypt().isNull())){
-        std::string key = (!this->getChaveCrypt().isNull()) ? this->getChaveCrypt().toStdString() : "";
-        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
-        CryptoPP::StringSource encryptor(str_in, true,
-                                         new CryptoPP::StreamTransformationFilter(encryption,
-                                            new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
-                                                false // do not append a newline
-                                                )
-                                            )
-                                        );
-    }
+//QString CCacic::enCrypt(std::string str_in, std::string iv) {
+//    std::string str_out;
+//    if ((!this->getChaveCrypt().isNull())){
+//        std::string key = (!this->getChaveCrypt().isNull()) ? this->getChaveCrypt().toStdString() : "";
+//        CryptoPP::CFB_Mode<CryptoPP::AES>::Encryption encryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+//        CryptoPP::StringSource encryptor(str_in, true,
+//                                         new CryptoPP::StreamTransformationFilter(encryption,
+//                                            new CryptoPP::Base64Encoder(new CryptoPP::StringSink(str_out),
+//                                                false // do not append a newline
+//                                                )
+//                                            )
+//                                        );
+//    }
 
-    return QString::fromStdString(str_out);
-}
+//    return QString::fromStdString(str_out);
+//}
 
 /*deCrypt
 // * @parameter std::string str_in: string encriptada convertida em base64.
@@ -183,21 +183,21 @@ QString CCacic::enCrypt(std::string str_in, std::string iv) {
 // *              *exemplo de iv: 0123456789123456
 // * @return QString: retorna a string desencriptada convertida em base64.
 // * */
-QString CCacic::deCrypt(std::string str_in, std::string iv) {
-    std::string str_out;
-    if ((!this->getChaveCrypt().isNull())){
-        std::string key = this->getChaveCrypt().toStdString();
-        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
+//QString CCacic::deCrypt(std::string str_in, std::string iv) {
+//    std::string str_out;
+//    if ((!this->getChaveCrypt().isNull())){
+//        std::string key = this->getChaveCrypt().toStdString();
+//        CryptoPP::CFB_Mode<CryptoPP::AES>::Decryption decryption((byte*)key.c_str(), key.length(), (byte*)iv.c_str());
 
-        CryptoPP::StringSource decryptor(str_in, true,
-                                        new CryptoPP::Base64Decoder(
-                                            new CryptoPP::StreamTransformationFilter(decryption,
-                                                new CryptoPP::StringSink(str_out))
-                                           )
-                                         );
-    }
-    return QString::fromStdString(str_out);
-}
+//        CryptoPP::StringSource decryptor(str_in, true,
+//                                        new CryptoPP::Base64Decoder(
+//                                            new CryptoPP::StreamTransformationFilter(decryption,
+//                                                new CryptoPP::StringSink(str_out))
+//                                           )
+//                                         );
+//    }
+//    return QString::fromStdString(str_out);
+//}
 
 bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
     QString file1 = QString(QCryptographicHash::hash(

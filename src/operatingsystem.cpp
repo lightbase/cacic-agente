@@ -51,6 +51,10 @@ QString OperatingSystem::coletaNomeOs()
     QJsonValue osName;
     params << "Name" << "OSArchitecture";
     osName = wmi::wmiSearch("Win32_OperatingSystem", params);
+    if (!osName.toObject()["Name"].toString().contains("XP")){
+        params << "OSArchitecture";
+        osName = wmi::wmiSearch("Win32_OperatingSystem", params);
+    }
     if (!osName.isNull()){
         QString retorno = osName.toObject()["Name"].toString();
         retorno = retorno.left(retorno.indexOf("|")).trimmed() + "-" + osName.toObject()["OSArchitecture"].toString();

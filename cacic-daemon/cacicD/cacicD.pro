@@ -15,10 +15,10 @@ CONFIG      -= app_bundle
 CONFIG      += static
 TEMPLATE     = app
 INCLUDEPATH += ../../src \
-               ../../src/crypto++/include/
+#               ../../src/crypto++/include/
 
 win32 {
-    LIBS    += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
+#    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     QT      += axcontainer
 } else {
     LIBS    += -L/usr/lib -lcryptopp
