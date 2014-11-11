@@ -27,4 +27,5 @@ Instalando no Linux (Versão utilizada Ubuntu 14.04):
 
 Instalação do agente:
 >No windows, deve colocar as dll's que está dentro do zip (as dll's são as do QT, se o QT estiver instalado, não há necessidade) em uma pasta qualquer e adcionar a pasta às variáveis de ambiente. (Botão auxiliar em 'Meu Computador', navegue até 'Opções Avançadas' e 'Variáveis de Ambientes'. Procure a chave 'path' e coloque o diretório onde estão as dll's no final, separado por ;).
+
 >No linux, primeiramente deve ativar a opção 'universe' em Softwares & Updates (nas configurações do sistema). Caso seja o Ubuntu 12, deve adicionar o repositório ppa:ubuntu-sdk-team/ppa (basta executar o comando 'sudo add-apt-repository ppa:ubuntu-sdk-team/ppa & sudo apt-get update'). Depois de configurar, basta executar o .deb e, ao final da instalação, no terminal, executar 'install-cacic -host=ip_do_gerente -user=usuario -pass=senha'.
