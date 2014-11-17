@@ -90,14 +90,14 @@ void InstallCacic::updateService()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        if(!(list.at(i).fileName() == QString("install-cacic"))){
+        if(!(list.at(i).fileName().contains("install-cacic"))){
             QLogger::QLog_Info("Install Cacic", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
-            if((list.at(i).fileName() == QString("cacic-service"))){
+            if((list.at(i).fileName().contains("cacic-service"))){
                 serviceUpdate = true;
                 QLogger::QLog_Info("Install Cacic", "Parando serviço para atualização.");
 #ifdef Q_OS_WIN
                 bool ok = false;
-                system("sc stop cacicdaemon");
+                system("start /b sc stop cacicdaemon");
 #else
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 stop");
@@ -232,10 +232,10 @@ void InstallCacic::install()
             std::cout << "Executando instalador do serviço...\n";
             proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
             std::cout << "Iniciando serviço...\n";
-            //TO DO: COLOCAR CONFIGURAÇÃO DE DELAY STARTUP
+
             system("sc config cacicdaemon start= delayed-auto");
             system("sc failure cacicdaemon reset= 60 actions= restart/60000");
-            proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-start"));
+            system("sc start cacicdaemon");
 
             if (proc.exitStatus() != QProcess::NormalExit) {
                 std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"

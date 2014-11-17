@@ -26,7 +26,7 @@ public:
     CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
     QMutex *cMutex;
-    void iniciarTimer(bool conexaoGerente);
+    void iniciarTimer();
     QJsonObject getTest();
     QJsonObject getConfig();
     void setApplicationDirPath(const QString &value);

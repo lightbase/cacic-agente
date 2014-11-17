@@ -35,7 +35,7 @@ cacicD::~cacicD()
 void cacicD::start() {
     try{
         QLogger::QLog_Info("Cacic Daemon", QString("Servico iniciado em " + ccacic->getCacicMainFolder() + "."));
-        Ocacictimer->iniciarTimer(true);
+        Ocacictimer->iniciarTimer();
     }catch (...){
         QLogger::QLog_Info("Cacic Daemon", QString("Erro desconhecido ao iniciar o serviço."));
     }
