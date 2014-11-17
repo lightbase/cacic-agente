@@ -18,7 +18,7 @@ void CacicTimer::reiniciarTimer(){
 }
 
 
-void CacicTimer::iniciarTimer(bool conexaoGerente)
+void CacicTimer::iniciarTimer()
 {
     if(comunicarGerente()){
         checkModules->start();
@@ -33,7 +33,6 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
         timer->start(this->periodicidadeExecucaoPadrao * 60000);
         QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
     }
-
 }
 
 //Slot que será iniciado sempre der a contagem do timer.
@@ -50,6 +49,9 @@ void CacicTimer::mslot(){
             }
         }
     } else {
+        if(verificarPeriodicidade()){
+            reiniciarTimer();
+        }
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao comunicar com gerente."));
     }
 }
@@ -266,9 +268,14 @@ bool CacicTimer::verificarPeriodicidade()
     if(!result.contains("error") && !result.isEmpty()){
         agenteConfigJson = result["agentcomputer"].toObject();
         configuracoes = agenteConfigJson["configuracoes"].toObject();
-        if(getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
+        if(!configuracoes["nu_intervalo_exe"].isNull() &&
+           getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
             setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
             return true;
+        } else {
+            setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
+            QLogger::QLog_Error("Cacic Daemon (Timer)", QString("valor do timer com erro ou vazio"));
+            return false;
         }
     }else{
         setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
