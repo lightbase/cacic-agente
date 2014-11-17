@@ -358,9 +358,10 @@ void InstallCacic::uninstall()
 
             if( list.at(i).fileName() != "." &&
                 list.at(i).fileName() != ".." &&
-                list.at(i).fileName() != "install-cacic" ) {
+                list.at(i).fileName() != "bin" &&
+                !list.at(i).fileName().contains("install-cacic") ) {
 
-                if ( list.at(i).isDir() )
+                if ( list.at(i).isDir())
                     oCacic.deleteFolder(list.at(i).absoluteFilePath());
                 else
                     oCacic.deleteFile(list.at(i).absoluteFilePath());

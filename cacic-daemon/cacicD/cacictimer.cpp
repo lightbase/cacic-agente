@@ -22,9 +22,9 @@ void CacicTimer::iniciarTimer(bool conexaoGerente)
 {
     if(comunicarGerente()){
         checkModules->start();
+        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
         verificarModulos();
         verificarPeriodicidade();
-        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
         if (verificarEIniciarQMutex()) {
             iniciarThread();
         }
@@ -87,7 +87,7 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        if(!(list.at(i).fileName() == QString("cacic-service"))){
+        if(!(list.at(i).fileName().contains("cacic-service"))){
             QLogger::QLog_Info("Cacic Daemon (Timer)", "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
@@ -157,10 +157,6 @@ bool CacicTimer::comunicarGerente(){
             return false;
         }
     }
-    /*
-     * no refactoring: Apenas fazer o login quando a sessão estiver expirada.
-     *
-     * */
 
     QLogger::QLog_Info("Cacic Daemon (Timer)", "getLogin() success.");
     resposta = getTest();
@@ -256,11 +252,9 @@ void CacicTimer::iniciarInstancias(){
     cacicthread = new CacicThread(this->applicationDirPath);
     OCacicComm = new CacicComm();
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-    QLogger::QLog_Info("Cacic Daemon (Timer)", "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-    //OCacicComm->setUrlSsl();
     checkModules = new CheckModules(this->applicationDirPath, "Cacic Daemon (Timer)");
 }
 
