@@ -4,13 +4,17 @@ InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
+
+    if (oCacic.getCacicMainFolder().isEmpty()){
 #ifdef Q_OS_WIN
-    this->applicationDirPath = "c:/cacic";
+        this->applicationDirPath = "c:/cacic";
 #else
-    this->applicationDirPath = "/usr/share/cacic";
+        this->applicationDirPath = "/usr/share/cacic";
 #endif
-    if (oCacic.getCacicMainFolder().isEmpty())
         oCacic.setCacicMainFolder(applicationDirPath);
+    } else {
+        this->applicationDirPath = oCacic.getCacicMainFolder();
+    }
 
     QDir dir(oCacic.getCacicMainFolder());
     if (!dir.exists()){
@@ -18,7 +22,7 @@ InstallCacic::InstallCacic(QObject *parent) :
     }
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Install Cacic",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log","Install Cacic",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Install Cacic",QLogger::ErrorLevel);
 }
 
 InstallCacic::~InstallCacic()
@@ -40,6 +44,7 @@ void InstallCacic::run(QStringList argv, int argc) {
         this->install();
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         //Se tiver -uninstall como parâmetro, inicia desinstalação.
+        Logger::QLog_Info("Install Cacic", "Desinstalando cacic!");
         this->uninstall();
     } else if ((param.contains("default")) && (param["default"] == "configure")) {
         //Se tiver -configure, inicia configuração (trocar de host, usuário ou senha)
@@ -182,9 +187,11 @@ void InstallCacic::install()
     oCacicComm->setUsuario(this->argumentos["user"]);
     oCacicComm->setPassword(this->argumentos["pass"]);
     std::cout << "Realizando login...\n";
+    Logger::QLog_Info("Install Cacic", "Realizando login...");
     QJsonObject jsonLogin = oCacicComm->login(&ok);
     if (ok){
         std::cout << "Login realizado com sucesso...\n";
+        Logger::QLog_Info("Install Cacic", "Login realizado com sucesso!");
         QJsonObject jsonComm;
         QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
         //conectado, grava a chave na classe;
@@ -192,6 +199,7 @@ void InstallCacic::install()
 
         jsonComm["computador"] = oCacicComputer.toJsonObject();
         std::cout << "Pegando informações do gerente...\n";
+        Logger::QLog_Info("Install Cacic", "Pegando informações do gerente...");
         QJsonObject configs = oCacicComm->comm("/ws/neo/config", &ok, jsonComm, true);
         if (ok){
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
@@ -212,6 +220,7 @@ void InstallCacic::install()
             registro["applicationUrl"] = oCacicComm->getUrlGerente();
             oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
             std::cout << "Sucesso, salvando configurações em arquivo...\n";
+            Logger::QLog_Info("Install Cacic", "Sucesso! Salvando configurações em arquivo...");
             oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
             //starta o processo do cacic.
 
@@ -220,6 +229,8 @@ void InstallCacic::install()
             oCacicComm->setFtpPass(metodoDownload["senha"].toString());
             oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
             std::cout << "Realizando download do serviço...\n";
+            Logger::QLog_Info("Install Cacic", "Realizando download do serviço...");
+            std::cout << "Baixando serviço...\n";
 #ifdef Q_OS_WIN
             oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                     metodoDownload["url"].toString(),
@@ -227,24 +238,34 @@ void InstallCacic::install()
                     "cacic-service.exe",
                     oCacic.getCacicMainFolder());
 
-            QProcess proc;
-            proc.setWorkingDirectory(oCacic.getCacicMainFolder());
-            std::cout << "Executando instalador do serviço...\n";
-            proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
-            std::cout << "Iniciando serviço...\n";
-
-            system("sc config cacicdaemon start= delayed-auto");
-            system("sc failure cacicdaemon reset= 60 actions= restart/60000");
-            system("sc start cacicdaemon");
-
-            if (proc.exitStatus() != QProcess::NormalExit) {
-                std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"
-                          << "Verifique se o serviço foi instalado e tente iniciá-lo a mão.\n";
-                ok = false;
-//                uninstall();
+            QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service.exe");
+            if ((!fileService.exists() || !fileService.size() > 0)) {
+                std::cout << "Falha ao baixar arquivo.\n";
+                Logger::QLog_Info("Install Cacic", "Falha ao baixar o serviço...");
+                this->uninstall();
+                fileService.close();
             } else {
-                std::cout << "Instalação realizada com sucesso." << "\n";
-                QLogger::QLog_Info("Install Cacic", QString("Instalação realizada com sucesso."));
+                QProcess proc;
+                proc.setWorkingDirectory(oCacic.getCacicMainFolder());
+                std::cout << "Executando instalador do serviço...\n";
+                Logger::QLog_Info("Install Cacic", "Executando instalador do serviço...");
+                proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
+                std::cout << "Iniciando serviço...\n";
+                Logger::QLog_Info("Install Cacic", "Iniciando serviço...");
+
+                system("sc config cacicdaemon start= delayed-auto");
+                system("sc failure cacicdaemon reset= 60 actions= restart/60000");
+                system("sc start cacicdaemon");
+
+                if (proc.exitStatus() != QProcess::NormalExit) {
+                    std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"
+                              << "Verifique se o serviço foi instalado e tente iniciá-lo a mão.\n";
+                    ok = false;
+    //                uninstall();
+                } else {
+                    std::cout << "Instalação realizada com sucesso." << "\n";
+                    QLogger::QLog_Info("Install Cacic", QString("Instalação realizada com sucesso."));
+                }
             }
     #else
 
@@ -253,11 +274,10 @@ void InstallCacic::install()
                     metodoDownload["path"].toString() + "cacic-service",
                     oCacic.getCacicMainFolder());
 
-            std::cout << "Baixando serviço...\n";
-
             QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
             if ((!fileService.exists() || !fileService.size() > 0)) {
                 std::cout << "Falha ao baixar arquivo.\n";
+                Logger::QLog_Info("Install Cacic", "Falha ao baixar o serviço...");
                 this->uninstall();
                 fileService.close();
             } else {
