@@ -551,13 +551,16 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 
     QVariantList onboardCapabilities;
     foreach(QString line, consoleOutput){
-
-        if(line.contains("Type:") )
-            onboardCapabilities.append( QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) ) );
-
+        QString value;
+        if(line.contains("Type:") ){
+            value = line.split(":")[1].mid(1);
+            if (!value.isNull() && !value.isEmpty())
+                onboardCapabilities.append( QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) ) );
+        }
     }
 
-    motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
+    if (!onboardCapabilities.isEmpty())
+        motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 
     hardware["Win32_BaseBoard"] = motherboard;
 }

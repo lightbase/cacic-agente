@@ -104,7 +104,8 @@ QJsonObject cacic_software::coletaArch()
             if(line.contains("Install Date"))
                 packageJson["installDate"] = line.split(":")[1].mid(1);
         }
-        softwaresJson[packageName] = packageJson;
+        if (!packageName.isEmpty())
+            softwaresJson[packageName] = packageJson;
     }
     return softwaresJson;
 }
