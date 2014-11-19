@@ -47,6 +47,9 @@ void cacic_hardware::iniciaColeta()
 #endif
 }
 #ifdef Q_OS_WIN
+/**********************************************************************
+ * Faz a coleta de hardware por meio de WMI armazenando em formato json
+ **********************************************************************/
 QJsonObject cacic_hardware::coletaWin()
 {  
     QJsonObject hardware;
@@ -266,11 +269,13 @@ QJsonObject cacic_hardware::coletaWin()
 }
 
 #elif defined(Q_OS_LINUX)
+/******************************************************************
+ * Realiza coleta de hardware de acordo com o json gerado pelo lshw,
+ * pegando os valores 'úteis' e armazenando em formato json
+ ******************************************************************/
 QJsonObject cacic_hardware::coletaLinux()
 {
-/*Aumentar coleta de Hardware. DONE array-> hardware["Win32_PhysicalMedia"] = Pegar volumes de disco (partições, nome, tipo, tamanho, etc.)
- *                             Done? array-> hardware["Win32_PCMCIAController"] = Placa de vídeo (nome, tamanho, detalhes)
- *                             jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
+/*Aumentar coleta de Hardware. jsonvalue-> hardware["Win32_Keyboard"] = keyboard (se possível)
  *                             jsonvalue-> hardware["Win32_PointingDevice"] = mouse (se possível)
  *                             Fora essas, detalhar mais as outras que já existem. Pegar todos os nomes, versão, vendor, id, etc..
  */

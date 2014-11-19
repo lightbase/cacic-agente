@@ -15,11 +15,15 @@ void cacic_software::iniciaColeta()
 }
 
 #if defined(Q_OS_WIN)
+/***************************************************************
+ * Realiza a coleta de softwares do Windows por meio do regedit.
+ ***************************************************************/
 using namespace voidrealms::win32;
 QJsonObject cacic_software::coletaWin()
 {
     QJsonObject softwaresJson;
     QStringList regedit;
+    //No windows, ele armazena os dados em 2 locais diferentes se for 64x. Um para programas 86x e outro pra 64x.
     regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
     regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
     foreach(QString registry, regedit){

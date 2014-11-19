@@ -83,6 +83,9 @@ QString OperatingSystem::coletaNomeOs()
 
 }
 
+/*********************************************
+ * Transforma todos os dados da classe em json
+ *********************************************/
 QJsonObject OperatingSystem::toJsonObject()
 {
     QJsonObject json;

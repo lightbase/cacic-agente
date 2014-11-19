@@ -39,6 +39,9 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
     return listaMap;
 }
 
+/*********************************************
+ * Transforma todos os dados da classe em json
+ *********************************************/
 QJsonObject CACIC_Computer::toJsonObject()
 {
     QJsonObject json;
@@ -85,7 +88,7 @@ void CACIC_Computer::coletaDados() {
     struct utsname sysName;
     uname(&sysName);
     computerName = sysName.nodename;
-#else defined(Q_OS_WIN)
+#elif defined(Q_OS_WIN)
     QStringList param;
     param << "Caption";
     computerName = wmi::wmiSearch("Win32_ComputerSystem", param).toObject()["Caption"].toString().toStdString();

@@ -5,6 +5,9 @@ wmi::wmi()
 {
 }
 
+/***********************************************************************
+ * Faz a pesquisa WMI de acordo com a classe e os parametros repassados.
+ ***********************************************************************/
 QJsonValue wmi::wmiSearch(QString classe, QStringList params)
 {
     QJsonValue wmiReturn;

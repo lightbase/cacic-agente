@@ -33,7 +33,8 @@ void CacicTimer::iniciarTimer()
 //        timer->start(this->periodicidadeExecucaoPadrao * 60000);
 //        QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
 //    }
-    //iniciar em 2 minutos
+
+    //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
     timer->start(2 * 60000);
 }
 
@@ -55,7 +56,9 @@ void CacicTimer::mslot(){
     }
 }
 
-
+/*************************************************************
+ * Verifica se a thread ainda está rodando, se tiver mata ela.
+ *************************************************************/
 bool CacicTimer::verificarEIniciarQMutex(){
     /*
      * para o refactoring: Quando matar o gercols travado na memoria imediatamente ja inicia outra coleta
@@ -79,7 +82,10 @@ bool CacicTimer::verificarEIniciarQMutex(){
         return true;
     }
 }
-
+/**********************************************************************************************
+ * Verifica se há algum módulo na pasta temporária, se tiver remove o antigo da pasta principal
+ * e substitui pelo novo
+ **********************************************************************************************/
 bool CacicTimer::verificarModulos()
 {
     QDir dir(ccacic->getCacicMainFolder() + "/temp");
@@ -267,7 +273,7 @@ bool CacicTimer::verificarPeriodicidade()
     if(!result.contains("error") && !result.isEmpty()){
         agenteConfigJson = result["agentcomputer"].toObject();
         configuracoes = agenteConfigJson["configuracoes"].toObject();
-        if(!configuracoes["nu_intervalo_exe"].isNull() &&
+        if(!configuracoes["nu_intervalo_exec"].isNull() &&
            getPeriodicidadeExecucao() != configuracoes["nu_intervalo_exec"].toString().toInt()){
             setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
             return true;

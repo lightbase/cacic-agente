@@ -17,7 +17,6 @@ Gercols::Gercols(QObject *parent)
 
 void Gercols::run()
 {
-
     emit iniciaConfiguracao();
     //emite sinal para começar a coleta
     emit iniciaColeta();
@@ -45,6 +44,10 @@ void Gercols::run()
     emit finished();
 }
 
+/****************************************************************************************
+ * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
+ * o qual ainda não tem propósito, mas vai ter.
+ ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
     QJsonObject primeiroJson, segundoJson, diferencaColeta;
@@ -74,8 +77,10 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     //true se houver diferença.
     return retorno;
 }
-
-//Aqui percorro o json "primeiroValor" e comparo com o "segundoValor"
+/*************************************************************************************************
+ * Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
+ * sendo ele objeto (json), array ou valor comum.
+ **************************************************************************************************/
 bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno){
     //Se o primeiro valor for nulo, o segundo não vai ser, então deverá ser gravado.
     bool diferenca = false;

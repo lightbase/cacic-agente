@@ -199,6 +199,9 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
 //    return QString::fromStdString(str_out);
 //}
 
+/********************************
+ * Compara o MD5 de dois arquivos
+ ********************************/
 bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
     QString file1 = QString(QCryptographicHash::hash(
                                        (document01.toByteArray()),QCryptographicHash::Md5).toHex());
@@ -206,7 +209,9 @@ bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
                                         (document02.toByteArray()),QCryptographicHash::Md5).toHex());
     return file1 == file2;
 }
-
+/***********************************************************
+ * Compara o MD5 de um arquivo com uma string (o MD5 em si)
+ ***********************************************************/
 bool CCacic::Md5IsEqual(QByteArray document01,QString document02){
     QString file1 = QString(QCryptographicHash::hash(
                                        document01,QCryptographicHash::Md5).toHex());
@@ -215,7 +220,10 @@ bool CCacic::Md5IsEqual(QByteArray document01,QString document02){
     return file1 == file2;
 }
 
-
+/******************************************
+ * Método com funcionamento duvidoso...
+ * TO DO: Ou exclui ou deixá-lo funcional.
+ ******************************************/
 QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments)
 {
     QProcess process;
@@ -224,6 +232,10 @@ QString CCacic::startProcess(QString pathprogram, bool wait, bool *ok, QStringLi
     return process.errorString();
 }
 
+/***********************************************************
+ * Salva valores em um registro local do sistema operacional.
+ * Mais detalhes verifique QSettings
+ ***********************************************************/
 void CCacic::setValueToRegistry(QString organization, QString application, QVariantMap values)
 {
     QSettings registry(QSettings::SystemScope, organization, application);
@@ -232,12 +244,20 @@ void CCacic::setValueToRegistry(QString organization, QString application, QVari
     registry.sync();
 }
 
+/***********************************************************
+ * Recupera valores em um registro local do sistema operacional.
+ * Mais detalhes verifique QSettings
+ ***********************************************************/
 QVariant CCacic::getValueFromRegistry(QString organization, QString application, QString key)
 {
     QSettings registry(QSettings::SystemScope, organization, application);
     return registry.value(key);
 }
 
+/***********************************************************
+ * Remove valores de um registro local do sistema operacional.
+ * Mais detalhes verifique QSettings
+ ***********************************************************/
 void CCacic::removeRegistry(QString organization, QString application)
 {
     QSettings registry(organization, application);

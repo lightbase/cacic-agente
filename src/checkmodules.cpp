@@ -25,6 +25,10 @@ QVariantMap CheckModules::getModules() const {
     return modules;
 }
 
+/*********************************************************************************
+ * Verificar os módulos instalado de acordo com os hashs locais e do gerente,
+ * se houver diferença entre eles, baixa o novo do servidor e salva na pasta temp.
+ *********************************************************************************/
 bool CheckModules::start(){
     bool ok = true;
     QLogger::QLog_Info("CheckModules", QString("Verificando módulos."));
@@ -58,6 +62,9 @@ bool CheckModules::start(){
     return ok;
 }
 
+/*******************************************************
+ * Método que vai verificar cada módulo individualmente.
+ *******************************************************/
 bool CheckModules::verificaModulo(const QString &moduloName, const QString &moduloHash)
 {
     QFile *modulo;

@@ -18,6 +18,10 @@ void CColeta::coletaSoftware()
     emit softwareFinish();
 }
 
+/********************************************************
+ * Conecta os sinais com os slots corretos, ou seja,
+ * sempre que um sinal for emitido, o slot será executado
+ ********************************************************/
 void CColeta::configuraColetas(){
     QObject::connect(this, SIGNAL(beginHardware()), this, SLOT(coletaHardware()));
     QObject::connect(this, SIGNAL(beginSoftware()), this, SLOT(coletaSoftware()));
@@ -37,10 +41,10 @@ bool CColeta::waitToCollect()
 
 void CColeta::run()
 {
-    /* Versão do json de testes */
     QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json");
     QJsonObject actions = coleta["agentcomputer"].toObject()["actions"].toObject();
 
+    //se for pra coletar hardware...
     if( actions.contains("col_hard") && actions["col_hard"].toBool()){
         QLogger::QLog_Info("Gercols", QString("Iniciando coleta de hardware."));
         this->hardwareIsFinish = false;
@@ -48,6 +52,7 @@ void CColeta::run()
     } else
         this->hardwareIsFinish = true;
 
+    //se for pra coletar software...
     if ( actions.contains("col_soft") && actions["col_soft"].toBool()){
         QLogger::QLog_Info("Gercols", QString("Iniciando coleta de software."));
         this->softwareIsFinish = false;
@@ -57,6 +62,9 @@ void CColeta::run()
 
 }
 
+/*********************************************
+ * Transforma todos os dados da classe em json
+ *********************************************/
 QJsonObject CColeta::toJsonObject()
 {
     QJsonObject coletaJson;
