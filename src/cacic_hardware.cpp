@@ -52,9 +52,9 @@ QJsonObject cacic_hardware::coletaWin()
     QJsonObject hardware;
     QStringList params;
     QJsonValue wmiResult;
-    // Win32_ComputerSystem (Caption, Description, Domain, DNSHostName, Manufacturer,
+    // Win32_ComputerSystem (Caption, Description, Domain, Manufacturer,
     //                       Model, Name, PrimaryOwnerName, TotalPhysicalMemory, Workgroup)
-    params << "Caption" << "Description" << "Domain" << "DNSHostName" << "Manufacturer" << "Model"
+    params << "Caption" << "Description" << "Domain" << "Manufacturer" << "Model"
            << "Name" << "PrimaryOwnerName" << "TotalPhysicalMemory" << "Workgroup";
     wmiResult = wmi::wmiSearch("Win32_ComputerSystem", params);
     if (!wmiResult.isNull())
@@ -62,6 +62,8 @@ QJsonObject cacic_hardware::coletaWin()
     //Win32_PortableBattery
     //  (Verifica se é notebook)
     params.clear();
+    params << "Caption" << "Description" << "DeviceID" << "EstimatedChargeRemaining" << "ExpectedLife"
+           << "FullChargeCapacity" << "Name" << "Status" << "Location";
     wmiResult = wmi::wmiSearch("Win32_PortableBattery", params);
     QJsonObject notebook;
     notebook["Value"] = QJsonValue::fromVariant(!wmiResult.isNull());
@@ -98,10 +100,9 @@ QJsonObject cacic_hardware::coletaWin()
     if (!wmiResult.isNull())
         hardware["Win32_FloppyDrive"] = wmiResult;
     //Win32_DiskDrive
-    //  (Manufacturer, Caption, Description, Name, MediaType, Size, SerialNumber, Model, FirmwareRevision)
+    //  (Manufacturer, Caption, Description, MediaType, Name, Size, Model)
     params.clear();
-    params << "Manufacturer" << "Caption" << "Description" << "Name" << "MediaType" << "Size" << "SerialNumber"
-           << "Model" << "FirmwareRevision";
+    params << "Manufacturer" << "Caption" << "Description" << "Name" << "MediaType" << "Size" << "Model";
     wmiResult = wmi::wmiSearch("Win32_DiskDrive", params);
     if (!wmiResult.isNull())
         hardware["Win32_DiskDrive"] = wmiResult;

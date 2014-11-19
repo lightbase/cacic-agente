@@ -65,16 +65,10 @@ QJsonObject CACIC_Computer::toJsonObject()
 */
 std::string CACIC_Computer::pegarUsu(){
 #if defined(Q_OS_WIN)
-  QString text;
-  QStringList environment = QProcessEnvironment::systemEnvironment().toStringList();
-  foreach (text, environment) {
-      if (text.contains("USER="    , Qt::CaseInsensitive) ||
-          text.contains("USERNAME=", Qt::CaseInsensitive) ){
-          QStringList split = text.split("=");
-
-          return split[1].toStdString();
-        }
-    }
+    QString text;
+    text = wmi::wmiSearch("Win32_ComputerSystem",QStringList("UserName")).toObject()["UserName"].toString();
+    text = text.split("\\").last();
+    return text.toStdString();
 
 #elif defined(Q_OS_LINUX)
 

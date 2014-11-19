@@ -20,19 +20,21 @@ void CacicTimer::reiniciarTimer(){
 
 void CacicTimer::iniciarTimer()
 {
-    if(comunicarGerente()){
-        checkModules->start();
-        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
-        verificarModulos();
-        verificarPeriodicidade();
-        if (verificarEIniciarQMutex()) {
-            iniciarThread();
-        }
-        timer->start(getPeriodicidadeExecucao());
-    }else{
-        timer->start(this->periodicidadeExecucaoPadrao * 60000);
-        QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
-    }
+//    if(comunicarGerente()){
+//        checkModules->start();
+//        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
+//        verificarModulos();
+//        verificarPeriodicidade();
+//        if (verificarEIniciarQMutex()) {
+//            iniciarThread();
+//        }
+//        timer->start(getPeriodicidadeExecucao());
+//    }else{
+//        timer->start(this->periodicidadeExecucaoPadrao * 60000);
+//        QLogger::QLog_Error("Cacic Daemon (Timer)", QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
+//    }
+    //iniciar em 2 minutos
+    timer->start(2 * 60000);
 }
 
 //Slot que será iniciado sempre der a contagem do timer.
@@ -49,9 +51,6 @@ void CacicTimer::mslot(){
             }
         }
     } else {
-        if(verificarPeriodicidade()){
-            reiniciarTimer();
-        }
         QLogger::QLog_Info("Cacic Daemon (Timer)", QString("Problemas ao comunicar com gerente."));
     }
 }
