@@ -64,7 +64,7 @@ bool CacicThread::enviarColeta()
 {
     /*
      * fazer verificação se é preciso enviar a coleta;
-     *
+     * SE DER ERRO 500, FORÇAR A PROXIMA COLETA
      */
     if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         //Envio do json gerado na coleta
