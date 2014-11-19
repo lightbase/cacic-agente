@@ -296,13 +296,31 @@ QJsonObject cacic_hardware::coletaLinux()
                     coletaLinuxMem(hardware,component);
                 } else if ( component["id"] == QJsonValue::fromVariant(QString("cpu")) ) {
                     coletaLinuxCpu(hardware,component);
-                } else if ( component["id"] == QJsonValue::fromVariant(QString("pci")) ) {
+                } else if ( component["id"].toString().startsWith("pci") ) {
                     QJsonArray pciArray = component["children"].toArray();
 
                     foreach(QJsonValue pciValue, pciArray){
                         QJsonObject pciObject = pciValue.toObject();
 
-                        coletaLinuxPci(hardware, pciObject);
+                        if( pciObject["id"].toString().startsWith("pci") ) {
+                            QJsonArray pciChildrenArray = pciObject["children"].toArray();
+
+                            foreach(QJsonValue pciChildrenValue, pciChildrenArray) {
+                                QJsonObject pciChildrenObject = pciChildrenValue.toObject();
+                                coletaLinuxPci(hardware, pciObject);
+                            }
+
+                        } else if (pciObject["id"] == QJsonValue::fromVariant(QString("storage")) ) {
+                            QJsonArray ioArray = pciObject["children"].toArray();
+
+                            foreach(QJsonValue ioValue, ioArray) {
+                                QJsonObject ioObject = ioValue.toObject();
+                                coletaLinuxIO(hardware, ioObject);
+                            }
+
+                        } else {
+                            coletaLinuxPci(hardware, pciObject);
+                        }
                     }
 
                 } else if ( component["id"].toString().startsWith("scsi") ) {
@@ -450,7 +468,12 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     }
 
                     QString newExtended;
-                    newExtended = extendedObject["description"].toString() + " " + extendedObject["logicalname"].toString();
+
+                    if ( extendedObject["logicalname"].isArray() ) {
+                        newExtended = extendedObject["description"].toString() +  " " + extendedObject["logicalname"].toArray().at(0).toString();
+                    } else {
+                        newExtended = extendedObject["description"].toString() +  " " + extendedObject["logicalname"].toString();
+                    }
 
                     extendedList.append(QJsonValue::fromVariant(newExtended));
                     newPartition["children"] = extendedList;
