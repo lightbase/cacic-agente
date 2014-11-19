@@ -472,7 +472,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
     }
 
     physicalArray.append(dispositivo);
-    hardware["Win32_DiskDrive"] = physicalArray;
+    hardware["Win32_PhysicalMedia"] = physicalArray;
 }
 
 void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
