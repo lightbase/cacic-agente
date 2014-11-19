@@ -480,12 +480,12 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                 }
 
             } else {
-                newPartition["filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
-                newPartition["created"] = partitionObject["configuration"].toObject()["created"];
-                //retirado porque podem modificar a qualquer momento, não é interessante manter.
-//                newPartition["lastmountpoint"] = partitionObject["configuration"].toObject()["lastmountpoint"];
-//                newPartition["lastmounted"] = partitionObject["configuration"].toObject()["mounted"];
-                newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
+                if ( !partitionObject["configuration"].toObject()["filesystem"].isNull() )
+                    newPartition["filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
+                if ( !partitionObject["configuration"].toObject()["created"].isNull() )
+                    newPartition["created"] = partitionObject["configuration"].toObject()["created"];
+                if ( !partitionObject["configuration"].toObject()["mount.options"].isNull() )
+                    newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
             }
 
             partitionsList.append(newPartition);
@@ -572,15 +572,17 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 
     consoleOutput= console("dmidecode -t 10").split("\n");
 
-    QVariantList onboardCapabilities;
+    QStringList onboardCapabilities;
     foreach(QString line, consoleOutput){
         QString value;
         if(line.contains("Type:") ){
             value = line.split(":")[1].mid(1);
             if (!value.isNull() && !value.isEmpty())
-                onboardCapabilities.append( QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) ) );
+                onboardCapabilities.push_back( value );
         }
     }
+
+    qDebug() << onboardCapabilities;
 
     if (!onboardCapabilities.isEmpty())
         motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
