@@ -34,7 +34,8 @@ SOURCES     += main.cpp \
                ../../src/cacic_computer.cpp \
                ../../src/operatingsystem.cpp \
                ../../src/QLogger.cpp \
-               ../../src/checkmodules.cpp
+               ../../src/checkmodules.cpp \
+    forcacoletatimer.cpp
 
 
 HEADERS     += cacicd.h \
@@ -46,7 +47,8 @@ HEADERS     += cacicd.h \
                ../../src/operatingsystem.h \
                ../../src/cacic_comm.h \
                ../../src/QLogger.h \
-               ../../src/checkmodules.h
+               ../../src/checkmodules.h \
+    forcacoletatimer.h
 
 include(../../src/qtservice/src/qtservice.pri)
 
