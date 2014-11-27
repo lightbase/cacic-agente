@@ -588,8 +588,6 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
         }
     }
 
-    qDebug() << onboardCapabilities;
-
     if (!onboardCapabilities.isEmpty())
         motherboard["onboardCapabilities"] = QJsonValue::fromVariant(onboardCapabilities);
 

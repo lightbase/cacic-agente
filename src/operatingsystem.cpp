@@ -79,7 +79,7 @@ QString OperatingSystem::coletaNomeOs()
 
     return nomeDistro;
 #endif
-      return "";
+    return "";
 
 }
 
@@ -97,10 +97,15 @@ QJsonObject OperatingSystem::toJsonObject()
     ConsoleObject console;
     QStringList consoleOutput;
     consoleOutput = console("uname -i").split("\n");
-
-    if(consoleOutput.contains("unknown"))
+    if(consoleOutput.contains("unknown")){
         consoleOutput = console("uname -m").split("\n");
-    json["tipo"] = QJsonValue::fromVariant(QString("linux") + QString("-") + consoleOutput.at(0));
+    }
+    if(consoleOutput.contains("x86_64")){
+        json["tipo"] = QJsonValue::fromVariant(QString("linux") + QString("-") + consoleOutput.at(0));
+    } else if(consoleOutput.contains("i386") || consoleOutput.contains("i686")){
+        json["tipo"] = QJsonValue::fromVariant(QString("linux") + QString("-x86"));
+    }
+
 #endif
 
     return json;
