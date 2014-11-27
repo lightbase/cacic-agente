@@ -68,13 +68,11 @@ void CColeta::run()
 QJsonObject CColeta::toJsonObject()
 {
     QJsonObject coletaJson;
-    if (this->hardwareIsFinish && this->softwareIsFinish){
-        coletaJson["computador"] = oComputer.toJsonObject();
-        QJsonObject hardware = oHardware.toJsonObject();
-        hardware["NetworkAdapterConfiguration"] = oComputer.toJsonObject()["networkDevices"].toArray();
-        coletaJson["hardware"] = hardware;
-        coletaJson["software"] = oSoftware.toJsonObject();
-    }
+    coletaJson["computador"] = oComputer.toJsonObject();
+    QJsonObject hardware = oHardware.toJsonObject();
+    hardware["NetworkAdapterConfiguration"] = oComputer.toJsonObject()["networkDevices"].toArray();
+    coletaJson["hardware"] = hardware;
+    coletaJson["software"] = oSoftware.toJsonObject();
     return coletaJson;
 }
 
