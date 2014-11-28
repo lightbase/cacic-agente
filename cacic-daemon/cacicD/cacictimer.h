@@ -14,6 +14,7 @@
 #include "QLogger.h"
 #include  "cacicthread.h"
 #include "checkmodules.h"
+#include "identificadores.h"
 
 class CacicTimer : public QObject
 {

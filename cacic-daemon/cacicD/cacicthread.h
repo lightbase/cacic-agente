@@ -5,6 +5,7 @@
 #include "QLogger.h"
 #include "ccacic.h"
 #include "cacic_comm.h"
+#include "identificadores.h"
 
 class CacicThread : public QThread
 {
