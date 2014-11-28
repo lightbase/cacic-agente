@@ -14,6 +14,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include "QLogger.h"
+#include "identificadores.h"
 
 class CacicComm : public QObject{
 
