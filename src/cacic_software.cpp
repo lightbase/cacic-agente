@@ -112,8 +112,10 @@ QJsonObject cacic_software::coletaArch()
         }
 
         QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-        if(!location.isEmpty() && !location.isNull())
-            packageJson["installLocation"] = console(QString("whereis ").append(packageName)).split("\n").at(0);
+        if(!location.split(":").at(1).isEmpty()) {
+            location = location.split(":").at(1).mid(1);
+            packageJson["installLocation"] = location;
+        }
 
         if (!packageName.isEmpty())
             softwaresJson[packageName] = packageJson;
@@ -159,8 +161,10 @@ QJsonObject cacic_software::coletaDebian()
         }
 
         QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-        if(!location.isEmpty() && !location.isNull())
-            packageJson["installLocation"] = console(QString("whereis ").append(packageName)).split("\n").at(0);
+        if(!location.split(":").at(1).isEmpty()) {
+            location = location.split(":").at(1).mid(1);
+            packageJson["installLocation"] = location;
+        }
 
         if (!packageName.isEmpty())
             softwaresJson[packageName] = packageJson;
