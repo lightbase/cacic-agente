@@ -313,7 +313,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
                             foreach(QJsonValue pciChildrenValue, pciChildrenArray) {
                                 QJsonObject pciChildrenObject = pciChildrenValue.toObject();
-                                coletaLinuxPci(hardware, pciObject);
+                                coletaLinuxPci(hardware, pciObject); //Aqui não seria picChuldrenObject?!
                             }
 
                         } else if (pciObject["id"] == QJsonValue::fromVariant(QString("storage")) ) {
