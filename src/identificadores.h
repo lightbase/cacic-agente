@@ -24,6 +24,8 @@ public:
 
     static const QString LOG_CACIC_COMM;
 
+    static const QString AGENTE_VERSAO;
+
 };
 
 #endif // IDENTIFICADORES_H
