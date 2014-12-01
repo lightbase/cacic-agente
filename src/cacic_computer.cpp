@@ -56,7 +56,7 @@ QJsonObject CACIC_Computer::toJsonObject()
     }
     json["networkDevices"] = network;
     json["nmComputador"] = QJsonValue::fromVariant(QString::fromStdString(this->computerName));
-    json["versaoAgente"] = QJsonValue::fromVariant(QString("3.0 (manual)"));
+    json["versaoAgente"] = QJsonValue::fromVariant(Identificadores::AGENTE_VERSAO);
     return json;
 }
 

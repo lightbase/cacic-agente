@@ -9,6 +9,7 @@
 #include <QSysInfo>
 #include "operatingsystem.h"
 #include "console.h"
+#include "identificadores.h"
 #ifdef Q_OS_LINUX
 #include <sys/utsname.h>
 #endif
