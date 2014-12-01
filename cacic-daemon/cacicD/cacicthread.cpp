@@ -26,9 +26,9 @@ void CacicThread::iniciarModulo()
         if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
             registraFimColeta("SUCESSO");
             if(enviarColeta()){
-                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Coleta enviada com sucesso."));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta enviada com sucesso."));
             }else{
-                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Erro ao enviar a coleta."));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Erro ao enviar a coleta."));
             }
         }else{
             if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
@@ -38,10 +38,10 @@ void CacicThread::iniciarModulo()
         }
         proc.close();
     } else {
-        QLogger::QLog_Error("Cacic Daemon (Thread)", QString("Módulo inexistente."));
+        QLogger::QLog_Error(Identificadores::LOG_DAEMON_THREAD, QString("Módulo inexistente."));
     }
     cMutex->unlock();
-    QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Semáforo aberto com sucesso."));
+    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Semáforo aberto com sucesso."));
 }
 
 void CacicThread::setOCacicComm(CacicComm *value)
@@ -73,8 +73,8 @@ bool CacicThread::enviarColeta()
             QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
             if (!jsonColeta.isEmpty()){
                 QJsonObject retornoColeta;
-                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Enviando coleta ao gerente."));
-                retornoColeta = this->OCacicComm->comm("/ws/neo/coleta", &ok, jsonColeta , true);
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta ao gerente."));
+                retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
                 if (ok){
                     if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
                         QVariantMap enviaColeta;
@@ -82,14 +82,14 @@ bool CacicThread::enviarColeta()
                         ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
                     }
                 } else if(retornoColeta.contains("error")) {
-                    QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Falha na coleta: " + retornoColeta["error"].toString()));
+                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: " + retornoColeta["error"].toString()));
                 }
                 return ok;
             } else
-                QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
             return true;
         } else {
-            QLogger::QLog_Info("Cacic Daemon (Thread)", QString("Sem diferença na coleta."));
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
             return true;
         }
     }
@@ -104,16 +104,16 @@ void CacicThread::setCMutex(QMutex *value)
 
 void CacicThread::registraInicioColeta()
 {
-    QLogger::QLog_Info("Cacic Daemon (Thread)","Coleta iniciada em: " + QDateTime::currentDateTime().toLocalTime().toString());
+    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta iniciada em: " + QDateTime::currentDateTime().toLocalTime().toString());
 }
 
 void CacicThread::registraFimColeta(QString msg)
 {
-    QLogger::QLog_Info("Cacic Daemon (Thread)","Coleta finalizada com " + msg + " em: " + QDateTime::currentDateTime().toLocalTime().toString());
+    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta finalizada com " + msg + " em: " + QDateTime::currentDateTime().toLocalTime().toString());
 }
 
 void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log","Cacic Daemon (Thread)",QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log","Cacic Daemon (Thread)",QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
 }

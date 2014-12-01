@@ -102,12 +102,21 @@ QJsonObject cacic_software::coletaArch()
                 }
 
                 packageJson["url"] = urlString.mid(1);
+                packageJson["publisher"] = urlString.mid(1);
             }
-            if(line.contains("Installed size"))
-                packageJson["installedSize"] = line.split(":")[1].mid(1);
+//            installSize não existe na coleta do Windows.
+//            if(line.contains("Installed size"))
+//                packageJson["installSize"] = line.split(":")[1].mid(1);
             if(line.contains("Install Date"))
                 packageJson["installDate"] = line.split(":")[1].mid(1);
         }
+
+        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
+        if(!location.split(":").at(1).isEmpty()) {
+            location = location.split(":").at(1).mid(1);
+            packageJson["installLocation"] = location;
+        }
+
         if (!packageName.isEmpty())
             softwaresJson[packageName] = packageJson;
     }
@@ -143,11 +152,23 @@ QJsonObject cacic_software::coletaDebian()
                 }
 
                 packageJson["url"] = urlString.mid(1);
+                packageJson["publisher"] = urlString.mid(1);
             }
-            if(line.contains("Installed-Size:"))
-                packageJson["installed_size"] = line.split(":")[1].mid(1);
+//            installSize não existe na coleta do Windows.
+//            if(line.contains("Installed-Size:"))
+//                packageJson["installSize"] = line.split(":")[1].mid(1);
+
         }
-        softwaresJson[packageName] = packageJson;
+
+        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
+        if(!location.split(":").at(1).isEmpty()) {
+            location = location.split(":").at(1).mid(1);
+            packageJson["installLocation"] = location;
+        }
+
+        if (!packageName.isEmpty())
+            softwaresJson[packageName] = packageJson;
+
         int counterPackages = softwaresJson.size();
     }
 

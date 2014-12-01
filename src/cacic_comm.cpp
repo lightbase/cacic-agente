@@ -4,7 +4,7 @@ CacicComm::CacicComm ()
 {
     QDir dir;
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination( dir.currentPath() + "/Logs/cacic.log","Cacic Comm",QLogger::InfoLevel);
+    logManager->addDestination( dir.currentPath() + "/Logs/cacic.log", Identificadores::LOG_CACIC_COMM, QLogger::InfoLevel);
 }
 
 CacicComm::CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
@@ -129,7 +129,7 @@ QJsonObject CacicComm::login(bool *ok) {
     login["user"] = this->usuario;
     login["password"] = this->password;
     // Cria conexão e retorna Json da sessão
-    QJsonObject retorno = this->comm("/ws/neo/getLogin", ok, QJsonObject::fromVariantMap(login), true);
+    QJsonObject retorno = this->comm(Identificadores::ROTA_GETLOGIN, ok, QJsonObject::fromVariantMap(login), true);
     if (*ok)
         this->session = retorno["reply"].toObject()["session"].toString();
     return retorno;
