@@ -299,9 +299,9 @@ QJsonObject cacic_hardware::coletaLinux()
                 QJsonObject component = componentValue.toObject();
 
                 if( component["id"] == QJsonValue::fromVariant(QString("memory")) ) {
-                    coletaLinuxMem(hardware,component);
+                    coletaLinuxMem(hardware, component);
                 } else if ( component["id"] == QJsonValue::fromVariant(QString("cpu")) ) {
-                    coletaLinuxCpu(hardware,component);
+                    coletaLinuxCpu(hardware, component);
                 } else if ( component["id"].toString().startsWith("pci") ) {
                     QJsonArray pciArray = component["children"].toArray();
 
@@ -358,16 +358,17 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 {
     QJsonObject memory;
 
-    memory["size"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
+    memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
+    //memory["MemoryType"] = QJsonValue::fromVariant(component["children"].toObject()["slot"].toString());
 
-    hardware["Win32_MemoryDevice"] = memory;
+    hardware["Win32_PhysicalMemory"] = memory;
 }
 
 void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component)
 {
     QJsonObject cpu;
 
-    cpu["Name"] = component["product"];
+    cpu["Caption"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
     cpu["CurrentClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
 
@@ -570,7 +571,7 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
         } else if(line.contains("Version:")){
               motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Asset Tag:")){
-            motherboard["assetTag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            motherboard["Tag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Serial Number:")){
             motherboard["SerialNumber"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
