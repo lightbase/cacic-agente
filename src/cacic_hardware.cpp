@@ -208,7 +208,7 @@ QJsonObject cacic_hardware::coletaWin()
     //  ProcessorId || UniqueId, AddressWidth)
     params.clear();
     params << "MaxClockSpeed" << "Name" << "Architecture" << "NumberOfCores" << "SocketDesignation" << "Manufacturer"
-           << "Architecture" << "NumberOfCores" << "CurrentClockSpeed" << "MaxClockSpeed" << "L2CacheSize" << "AddressWidth"
+           << "Architecture" << "NumberOfCores" << "NumberOfLogicalProcessors" << "CurrentClockSpeed" << "MaxClockSpeed" << "L2CacheSize" << "AddressWidth"
            << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth";
     wmiResult = wmi::wmiSearch("Win32_Processor", params);
     if (!wmiResult.isNull())
@@ -372,6 +372,15 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
     cpu["Manufacturer"] = component["vendor"];
     cpu["CurrentClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
 
+
+    QStringList consoleOutput;
+    consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
+    foreach(QString line, consoleOutput){
+        if(line.contains("CPU(s):") ){
+            cpu["NumberOfLogicalProcessors"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
+            break;
+        }
+    }
     hardware["Win32_Processor"] = cpu;
 }
 
