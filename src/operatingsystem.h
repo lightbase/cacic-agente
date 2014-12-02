@@ -20,6 +20,7 @@ private:
     QString coletaNomeOs();
 public:
     OperatingSystem();
+    QString coletaVersaoOsEmString();
     QJsonObject toJsonObject();
     enum OsList {
         MAC,

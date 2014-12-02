@@ -42,6 +42,54 @@ int OperatingSystem::coletaIdOs(){
 #endif
 }
 
+QString OperatingSystem::coletaVersaoOsEmString(){
+#if defined (Q_OS_WIN)
+    switch (QSysInfo::WindowsVersion) {
+    case QSysInfo::WV_NT:
+        return QString("Windows NT");
+        break;
+    case QSysInfo::WV_2000:
+        return QString("Windows 2000");
+        break;
+    case QSysInfo::WV_XP:
+        return QString("Windows 2000");
+        break;
+    case QSysInfo::WV_2003:
+        return QString("Windows Server 2003");
+        break;
+    case QSysInfo::WV_VISTA:
+        return QString("Windows Vista");
+        break;
+    case QSysInfo::WV_WINDOWS7:
+        return QString("Windows 7");
+        break;
+    case QSysInfo::WV_WINDOWS8:
+        return QString("Windows 8");
+        break;
+    case QSysInfo::WV_WINDOWS8_1:
+        return QString("Windows 8.1");
+        break;
+    default:
+        break;
+    }
+#elif defined (Q_OS_LINUX)
+    ConsoleObject console;
+    QStringList catOutput = console("cat /etc/*release").split("\n");
+    QString line;
+    foreach(line, catOutput) {
+        if(line.contains("VERSION=") && line.contains(",")) {
+            return QString(line.split("=").takeLast().split('"').takeAt(1).split(",").takeFirst());
+        }else if (line.contains("VERSION=")){
+            return line.split("=").takeLast().split('"').takeAt(1);
+        }
+    }
+
+#else
+    return null;
+#endif
+}
+
+
 QString OperatingSystem::coletaNomeOs()
 {
 
