@@ -368,6 +368,8 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 {
     QJsonObject memory;
 
+    memory["Caption"] = component["description"];
+    memory["DeviceLocator"] = component["physid"];
     memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
     QStringList consoleOutput;
     consoleOutput = console("dmidecode --type 17").split("\n", QString::SkipEmptyParts);
@@ -449,11 +451,11 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         //        hardware["ethernet_card"] = pciMember;
         pciNetwork.append(pciMember);
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("display")) ) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
-        pciMember["width"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["width"].toDouble(),0) );
-        pciMember["clock"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["clock"].toDouble(),0) );
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Vendor"] = pciJson["vendor"];
+        pciMember["Width"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["width"].toDouble(),0) );
+        pciMember["Clock"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["clock"].toDouble(),0) );
 
 
         hardware["Win32_PCMCIAController"] = pciMember;
@@ -495,7 +497,6 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                 partitionsList = hardware["Win32_LogicalDisk"].toArray();
             }
 
-            newPartition["Caption"] = ioJson["logicalname"];
             coletaGenericPartitionInfo(newPartition, partitionObject);
 
             if( partitionObject["description"] == QJsonValue::fromVariant(QString("Extended partition")) ) {
@@ -524,9 +525,9 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                 if ( !partitionObject["configuration"].toObject()["filesystem"].isNull() )
                     newPartition["Filesystem"] = partitionObject["configuration"].toObject()["filesystem"];
                 if ( !partitionObject["configuration"].toObject()["created"].isNull() )
-                    newPartition["created"] = partitionObject["configuration"].toObject()["created"];
+                    newPartition["Created"] = partitionObject["configuration"].toObject()["created"];
                 if ( !partitionObject["configuration"].toObject()["mount.options"].isNull() )
-                    newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
+                    newPartition["MountOptions"] = partitionObject["configuration"].toObject()["mount.options"];
                 if ( !partitionObject["configuration"].toObject()["label"].isNull() ){
                     newPartition["MediaType"] = partitionObject["configuration"].toObject()["label"];
                 }else{
@@ -546,7 +547,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
 
 void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const QJsonObject &partitionObject)
 {
-    newPartition["description"] = partitionObject["description"];
+    newPartition["Description"] = partitionObject["description"];
 
     if( !partitionObject["size"].isNull() )
         newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
@@ -566,6 +567,16 @@ void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const
         newPartition["Caption"] = partitionObject["logicalname"].toArray().first();
     } else {
         newPartition["Caption"] = partitionObject["logicalname"];
+    }
+
+    QStringList dfOutput = console(QString("df -h")).split("\n");
+    foreach(QString dfLine, dfOutput){
+        if(dfLine.split(" ").at(0) == newPartition["Caption"].toString() ) {
+            QStringList splitLine = dfLine.split(" ");
+            splitLine.removeAll("");
+
+            newPartition["FreeSpace"] = QJsonValue::fromVariant(splitLine.at(3));
+        }
     }
 }
 
@@ -606,9 +617,9 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
         if(line.contains("Manufacturer:") ){
             motherboard["Manufacturer"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Product Name:")){
-            motherboard["productName"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            motherboard["ProductName"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Version:")){
-            motherboard["version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            motherboard["Version"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Asset Tag:")){
             motherboard["Tag"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Serial Number:")){
