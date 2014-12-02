@@ -24,6 +24,8 @@ public:
 
     static const QString LOG_CACIC_COMM;
 
+    static const QString LOG_INSTALL_CACIC;
+
     static const QString AGENTE_VERSAO;
 
 };

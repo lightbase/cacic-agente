@@ -27,7 +27,7 @@ public:
                const QString &csDebug,             const QString &csCompress,          const QString &httpUserAgent,   const QString &moduleFolderName,
                const QString &moduleProgramName,   const QString &networkConfiguration,const QString &phpAuthPw,       const QString &phpAuthUser,
                const QString &so,                  const QString &cacicVersion,        const QString &gercolsVersion);
-    QJsonObject comm(QString route, bool *ok, const QJsonObject &json = QJsonObject(), bool isSsl = false);
+    QJsonObject comm(const QString route, bool *ok, const QJsonObject &json = QJsonObject(), bool isSsl = false);
     bool commStatus();
     QJsonObject login(bool *ok);
     bool ftpDownload(const QString &path, const QString &pathDownload);

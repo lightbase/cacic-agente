@@ -30,7 +30,7 @@ CacicComm::CacicComm (const QString &urlGerente,          const QString &operati
 
 }
 
-QJsonObject CacicComm::comm(QString route, bool *ok, const QJsonObject &json, bool isSsl)
+QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &json, bool isSsl)
 {
     *ok = false;
     QByteArray data;
