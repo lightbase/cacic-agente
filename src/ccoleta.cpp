@@ -8,6 +8,7 @@ CColeta::CColeta(QObject *parent)
 void CColeta::coletaHardware()
 {
     oHardware.iniciaColeta();
+    QLogger::QLog_Info("Gercols", QString("Coleta de hardware finalizada."));
     emit hardwareFinish();
 }
 
@@ -15,6 +16,7 @@ void CColeta::coletaHardware()
 void CColeta::coletaSoftware()
 {
     oSoftware.iniciaColeta();
+    QLogger::QLog_Info("Gercols", QString("Coleta de software finalizada."));
     emit softwareFinish();
 }
 
@@ -68,9 +70,9 @@ void CColeta::run()
 QJsonObject CColeta::toJsonObject()
 {
     QJsonObject coletaJson;
-    coletaJson["computador"] = oComputer.toJsonObject();
     QJsonObject hardware = oHardware.toJsonObject();
     hardware["NetworkAdapterConfiguration"] = oComputer.toJsonObject()["networkDevices"].toArray();
+    coletaJson["computador"] = oComputer.toJsonObject();
     coletaJson["hardware"] = hardware;
     coletaJson["software"] = oSoftware.toJsonObject();
     return coletaJson;

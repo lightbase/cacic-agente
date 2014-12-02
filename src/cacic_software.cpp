@@ -159,17 +159,17 @@ QJsonObject cacic_software::coletaDebian()
 //                packageJson["installSize"] = line.split(":")[1].mid(1);
 
         }
-
-        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-        if(!location.split(":").at(1).isEmpty()) {
-            location = location.split(":").at(1).mid(1);
-            packageJson["installLocation"] = location;
-        }
+// Estava travando a coleta...
+//        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
+//        if(!location.split(":").at(1).isEmpty()) {
+//            location = location.split(":").at(1).mid(1);
+//            packageJson["installLocation"] = location;
+//        }
 
         if (!packageName.isEmpty())
             softwaresJson[packageName] = packageJson;
 
-        int counterPackages = softwaresJson.size();
+//        int counterPackages = softwaresJson.size();
     }
 
     return softwaresJson;
