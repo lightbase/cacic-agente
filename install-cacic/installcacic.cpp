@@ -21,8 +21,8 @@ InstallCacic::InstallCacic(QObject *parent) :
         oCacic.createFolder(oCacic.getCacicMainFolder());
     }
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Install Cacic",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Install Cacic",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::InfoLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::ErrorLevel);
 }
 
 InstallCacic::~InstallCacic()

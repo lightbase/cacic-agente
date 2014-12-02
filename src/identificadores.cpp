@@ -20,4 +20,6 @@ const QString Identificadores::LOG_DAEMON_TIMER = QString("Cacic Daemon (Timer)"
 
 const QString Identificadores::LOG_CACIC_COMM = QString("Cacic Comm");
 
+const QString Identificadores::LOG_INSTALL_CACIC = QString("Install Cacic");
+
 const QString Identificadores::AGENTE_VERSAO = QString("3.0 (manual)");

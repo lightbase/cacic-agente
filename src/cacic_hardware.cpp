@@ -358,8 +358,8 @@ QJsonObject cacic_hardware::coletaLinux()
 void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
     QJsonObject so;
     OperatingSystem op;
-    so["Caption"] = op.coletaVersaoOsEmString();
-    so["Version"] = op.getNomeOs();
+    so["Caption"] = op.getNomeOs();
+    so["Version"] = op.coletaVersaoOsEmString();
     so["InstallDate"] = console("ls -alct /|tail -1|awk '{print $6, $7, $8}'").split("\n").takeFirst();
     hardware["OperatingSystem"] = so;
 }

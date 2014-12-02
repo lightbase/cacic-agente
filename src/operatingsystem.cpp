@@ -153,7 +153,6 @@ QJsonObject OperatingSystem::toJsonObject()
     } else if(consoleOutput.contains("i386") || consoleOutput.contains("i686")){
         json["tipo"] = QJsonValue::fromVariant(QString("linux") + QString("-x86"));
     }
-
 #endif
 
     return json;
