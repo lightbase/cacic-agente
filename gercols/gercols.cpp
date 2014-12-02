@@ -39,7 +39,7 @@ void Gercols::run()
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
         }
     } else {
-        QLogger::QLog_Error("Gercols", QString("Falha ao realizar coleta."));
+        QLogger::QLog_Info("Gercols", QString("Falha ao realizar coleta."));
     }
     emit finished();
 }

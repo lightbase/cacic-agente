@@ -19,7 +19,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_DAEMON, QLogger::InfoLevel);
-        logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON ,QLogger::ErrorLevel);
+        logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_DAEMON ,QLogger::ErrorLevel);
     } catch (...){
         qCritical() << "Error desconhecido no construtor.";
         QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido no construtor."));

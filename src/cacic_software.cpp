@@ -1,4 +1,4 @@
-#include "cacic_software.h" ''
+#include "cacic_software.h"
 
 cacic_software::cacic_software()
 {
@@ -111,14 +111,16 @@ QJsonObject cacic_software::coletaArch()
                 packageJson["installDate"] = line.split(":")[1].mid(1);
         }
 
-        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-        if(!location.split(":").at(1).isEmpty()) {
-            location = location.split(":").at(1).mid(1);
-            packageJson["installLocation"] = location;
-        }
+        if (!packageName.isEmpty()) {
 
-        if (!packageName.isEmpty())
+            QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
+            if(!location.split(":").at(1).isEmpty()) {
+                location = location.split(":").at(1).mid(1);
+                packageJson["installLocation"] = location;
+            }
+
             softwaresJson[packageName] = packageJson;
+        }
     }
     return softwaresJson;
 }
@@ -160,16 +162,22 @@ QJsonObject cacic_software::coletaDebian()
 
         }
 
-//        QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-//        if(!location.split(":").at(1).isEmpty()) {
-//            location = location.split(":").at(1).mid(1);
-//            packageJson["installLocation"] = location;
-//        }
+        if (!packageName.isEmpty()) {
 
-        if (!packageName.isEmpty())
+            QString treatedPackageName = packageName;
+            if(treatedPackageName.contains("amd64") || treatedPackageName.contains("i386"))
+                treatedPackageName = treatedPackageName.split(":").at(0);
+
+            QString location = console(QString("whereis ").append(treatedPackageName)).split("\n").at(0);
+            if(!location.split(":").at(1).isEmpty()) {
+                location = location.split(":").at(1).mid(1);
+                packageJson["installLocation"] = location;
+            }
+
             softwaresJson[packageName] = packageJson;
+        }
 
-        int counterPackages = softwaresJson.size();
+//        int counterPackages = softwaresJson.size();
     }
 
     return softwaresJson;
