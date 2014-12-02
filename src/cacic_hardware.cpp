@@ -209,7 +209,7 @@ QJsonObject cacic_hardware::coletaWin()
     params.clear();
     params << "MaxClockSpeed" << "Name" << "Architecture" << "NumberOfCores" << "SocketDesignation" << "Manufacturer"
            << "Architecture" << "NumberOfCores" << "NumberOfLogicalProcessors" << "CurrentClockSpeed" << "MaxClockSpeed" << "L2CacheSize" << "AddressWidth"
-           << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth";
+           << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth" << "Caption" << "Family";
     wmiResult = wmi::wmiSearch("Win32_Processor", params);
     if (!wmiResult.isNull())
         hardware["Win32_Processor"] = wmiResult;
@@ -217,7 +217,7 @@ QJsonObject cacic_hardware::coletaWin()
     //  (Name, Version, CSDVersion, Description, InstallDate, Organization, RegisteredUser, SerialNumber)
     params.clear();
     params << "Name" << "Version" << "CSDVersion" << "Description" << "InstallDate" << "Organization" << "RegisteredUser"
-           << "SerialNumber";
+           << "SerialNumber" << "Caption";
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!wmiResult.isNull())
         hardware["Win32_OperatingSystem"] = wmiResult;
@@ -232,7 +232,7 @@ QJsonObject cacic_hardware::coletaWin()
     //  (Caption, DriveType, Filesystem, VolumeName, ProviderName, Filesystem, VolumeName, Size, FreeSpace)
     params.clear();
     params << "Caption" << "DriveType" << "Filesystem" << "VolumeName" << "ProviderName" << "Filesystem" << "VolumeName"
-           << "Size" << "FreeSpace";
+           << "Size" << "FreeSpace" << "MediaType";
     wmiResult = wmi::wmiSearch("Win32_LogicalDisk", params);
     if (!wmiResult.isNull())
         hardware["Win32_LogicalDisk"] = wmiResult;
@@ -345,6 +345,7 @@ QJsonObject cacic_hardware::coletaLinux()
     }
 
     if ( getuid() != 0 ) qDebug() << "Coleta de Bios e Motherboard requer root.";
+    coletaLinuxOperatingSystem(hardware);
     coletaLinuxBios(hardware);
     coletaLinuxMotherboard(hardware);
     coletaLinuxIsNotebook(hardware);
@@ -354,12 +355,30 @@ QJsonObject cacic_hardware::coletaLinux()
     return hardware;
 }
 
+void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
+    QJsonObject so;
+    OperatingSystem op;
+    so["Caption"] = op.coletaVersaoOsEmString();
+    so["Version"] = op.getNomeOs();
+    so["InstallDate"] = console("ls -alct /|tail -1|awk '{print $6, $7, $8}'").split("\n").takeFirst();
+    hardware["Win32_OperatingSystem"] = so;
+}
+
 void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component)
 {
     QJsonObject memory;
 
     memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
-//    memory["MemoryType"] = QJsonValue::fromVariant(component["children"].toObject()["slot"].toString());
+    QStringList consoleOutput;
+    consoleOutput = console("dmidecode --type 17").split("\n", QString::SkipEmptyParts);
+    foreach(QString line, consoleOutput){
+        if(line.contains("Type:")){
+            memory["MemoryType"] = QJsonValue::fromVariant(QString(line.split("Type: ", QString::SkipEmptyParts).takeLast()));
+            break;
+        }
+    }
+
+    //memory["MemoryType"] = QJsonValue::fromVariant(component["children"].toObject()["slot"].toString());
 
     hardware["Win32_PhysicalMemory"] = memory;
 }
@@ -370,14 +389,20 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 
     cpu["Caption"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    cpu["CurrentClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
-
+    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
 
     QStringList consoleOutput;
     consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
-        if(line.contains("CPU(s):") ){
+        if(line.contains("CPU(s):")){
             cpu["NumberOfLogicalProcessors"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
+            break;
+        }
+    }
+    consoleOutput = console("cat /proc/cpuinfo").split("\n", QString::SkipEmptyParts);
+    foreach(QString line, consoleOutput){
+        if(line.contains("family") ){
+            cpu["Family"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
             break;
         }
     }
@@ -502,6 +527,11 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     newPartition["created"] = partitionObject["configuration"].toObject()["created"];
                 if ( !partitionObject["configuration"].toObject()["mount.options"].isNull() )
                     newPartition["mountoptions"] = partitionObject["configuration"].toObject()["mount.options"];
+                if ( !partitionObject["configuration"].toObject()["label"].isNull() ){
+                    newPartition["MediaType"] = partitionObject["configuration"].toObject()["label"];
+                }else{
+                    newPartition["MediaType"] = ioJson["description"];
+                }
             }
 
             partitionsList.append(newPartition);

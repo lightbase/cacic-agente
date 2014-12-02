@@ -30,6 +30,7 @@ private:
     ConsoleObject console;
 
     QJsonObject coletaLinux();
+    void coletaLinuxOperatingSystem(QJsonObject &hardware);
     void coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component);
     void coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pciJson);
