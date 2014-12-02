@@ -220,7 +220,7 @@ QJsonObject cacic_hardware::coletaWin()
            << "SerialNumber" << "Caption";
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!wmiResult.isNull())
-        hardware["Win32_OperatingSystem"] = wmiResult;
+        hardware["OperatingSystem"] = wmiResult;
     //Win32_SystemSlot
     //  (Name, Description, SlotDesignation, CurrentUsage, Status, Shared)
     params.clear();
@@ -361,7 +361,7 @@ void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
     so["Caption"] = op.coletaVersaoOsEmString();
     so["Version"] = op.getNomeOs();
     so["InstallDate"] = console("ls -alct /|tail -1|awk '{print $6, $7, $8}'").split("\n").takeFirst();
-    hardware["Win32_OperatingSystem"] = so;
+    hardware["OperatingSystem"] = so;
 }
 
 void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &component)
