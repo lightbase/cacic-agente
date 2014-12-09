@@ -243,14 +243,10 @@ void CacicTimer::setDirProgram(const QString &value)
     dirProgram = value;
 }
 
-
 void CacicTimer::setApplicationDirPath(const QString &value)
 {
     this->applicationDirPath = value;
 }
-
-
-
 
 void CacicTimer::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
@@ -293,6 +289,23 @@ bool CacicTimer::verificarPeriodicidade()
     }
 }
 
+
+bool CacicTimer::verificaForcarColeta(){
+    QJsonObject agenteConfigJson;
+    QJsonObject configuracoes;
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        agenteConfigJson = result["agentcomputer"].toObject();
+        configuracoes = agenteConfigJson["configuracoes"].toObject();
+        if(!configuracoes["nu_intervalo_forca_coleta"].isNull()){
+            return configuracoes["nu_intervalo_forca_coleta"].toBool();
+        } else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
 #if defined (Q_OS_WIN)
