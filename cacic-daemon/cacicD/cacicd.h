@@ -19,9 +19,9 @@ public:
     CacicTimer *Ocacictimer;
     CCacic *ccacic;
     CheckModules *OcheckModules;
+
     cacicD(int argc, char **argv);
     ~cacicD();
-
     void start();
     void pause();
     void resume();

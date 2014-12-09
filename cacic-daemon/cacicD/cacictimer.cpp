@@ -2,6 +2,9 @@
 
 CacicTimer::CacicTimer(QString dirpath)
 {
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(dirpath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_TIMER,QLogger::InfoLevel);
+    logManager->addDestination(dirpath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_TIMER,QLogger::ErrorLevel);
     setApplicationDirPath(dirpath);
     iniciarInstancias();
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
@@ -24,7 +27,7 @@ void CacicTimer::iniciarTimer()
     //        checkModules->start();
     //        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
     //        verificarModulos();
-    //        verificarPeriodicidade();
+    //        verificarPeriodicidade();r
     //        if (verificarEIniciarQMutex()) {
     //            iniciarThread();
     //        }
@@ -249,9 +252,7 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 
 
 void CacicTimer::iniciarInstancias(){
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_TIMER,QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_TIMER,QLogger::ErrorLevel);
+
     ccacic = new CCacic();
     ccacic->setCacicMainFolder(this->applicationDirPath);
     timer = new QTimer(this);
