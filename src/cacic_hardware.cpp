@@ -292,9 +292,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
     if( lshwJson.contains("id") && lshwJson["id"] == QJsonValue::fromVariant(QString("core")) ) {
         if ( lshwJson["children"].isArray() ){
-
             QJsonArray componentsArray =  lshwJson["children"].toArray();
-
             foreach(QJsonValue componentValue, componentsArray ) {
                 QJsonObject component = componentValue.toObject();
 
@@ -334,7 +332,6 @@ QJsonObject cacic_hardware::coletaLinux()
 
                     foreach(QJsonValue ioValue, ioArray){
                         QJsonObject ioObject = ioValue.toObject();
-
                         coletaLinuxIO(hardware, ioObject);
                     }
                 }
@@ -469,18 +466,13 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
 {
     QJsonArray physicalArray;
     QJsonObject dispositivo;
-
     if ( !hardware["Win32_DiskDrive"].isNull() ) {
         physicalArray = hardware["Win32_DiskDrive"].toArray();
     }
-
     if ( ioJson["id"] == QJsonValue::fromVariant(QString("cdrom")) ) {
-
         dispositivo["Caption"] = ioJson["description"];
         dispositivo["Name"] = ioJson["logicalname"];
-
     } else if ( ioJson["id"] == QJsonValue::fromVariant(QString("disk")) ) {
-
         dispositivo["Caption"] = ioJson["description"];
         dispositivo["Model"] = ioJson["product"];
         dispositivo["Name"] = ioJson["logicalname"];
@@ -492,13 +484,10 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
             QJsonObject partitionObject = partitionValue.toObject();
             QJsonObject newPartition;
             QJsonArray partitionsList;
-
             if( !hardware["Win32_LogicalDisk"].isNull() ) {
                 partitionsList = hardware["Win32_LogicalDisk"].toArray();
             }
-
             coletaGenericPartitionInfo(newPartition, partitionObject);
-
             if( partitionObject["description"] == QJsonValue::fromVariant(QString("Extended partition")) ) {
 
                 foreach(QJsonValue extendedValue, partitionObject["children"].toArray()){
@@ -562,20 +551,20 @@ void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const
     //        newPartition["bootable"] = partitionObject["capabilities"].toObject()["bootable"];
     //    if ( !partitionObject["capabilities"].toObject()["journaled"].isNull() )
     //        newPartition["journaled"] = partitionObject["capabilities"].toObject()["journaled"];
+    if (partitionObject.contains("logicalname")) {
+        if( partitionObject["logicalname"].isArray() ) {
+            newPartition["Caption"] = partitionObject["logicalname"].toArray().first();
+        } else {
+            newPartition["Caption"] = partitionObject["logicalname"];
+        }
 
-    if( partitionObject["logicalname"].isArray() ) {
-        newPartition["Caption"] = partitionObject["logicalname"].toArray().first();
-    } else {
-        newPartition["Caption"] = partitionObject["logicalname"];
-    }
-
-    QStringList dfOutput = console(QString("df -h")).split("\n");
-    foreach(QString dfLine, dfOutput){
-        if(dfLine.split(" ").at(0) == newPartition["Caption"].toString() ) {
-            QStringList splitLine = dfLine.split(" ");
-            splitLine.removeAll("");
-
-            newPartition["FreeSpace"] = QJsonValue::fromVariant(splitLine.at(3));
+        QStringList dfOutput = console(QString("df -h")).split("\n");
+        foreach(QString dfLine, dfOutput){
+            if(dfLine.split(" ").at(0) == newPartition["Caption"].toString() ) {
+                QStringList splitLine = dfLine.split(" ");
+                splitLine.removeAll(" ");
+                newPartition["FreeSpace"] = QJsonValue::fromVariant(splitLine.at(3));
+            }
         }
     }
 }

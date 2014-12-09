@@ -60,42 +60,64 @@ void CacicThread::setNomeModulo(const QString &value)
     nomeModulo = value;
 }
 
-bool CacicThread::enviarColeta()
-{
-    /*
-     * fazer verificação se é preciso enviar a coleta;
-     * SE DER ERRO 500, FORÇAR A PROXIMA COLETA
-     */
-    if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
-        //Envio do json gerado na coleta
-        bool ok = false;
-        if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
-            QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
-            if (!jsonColeta.isEmpty()){
-                QJsonObject retornoColeta;
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta ao gerente."));
-                retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
-                if (ok){
-                    if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
-                        QVariantMap enviaColeta;
-                        enviaColeta["enviaColeta"] = false;
-                        ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
-                    }
-                } else if(retornoColeta.contains("error")) {
-                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: " + retornoColeta["error"].toString()));
-                }
-                return ok;
-            } else
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
-            return true;
-        } else {
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
-            return true;
+bool CacicThread::verificaForcarColeta(){
+    QJsonObject agenteConfigJson;
+    QJsonObject configuracoes;
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        agenteConfigJson = result["agentcomputer"].toObject();
+        configuracoes = agenteConfigJson["configuracoes"].toObject();
+        if(!configuracoes["nu_forca_coleta"].isNull()){
+            return configuracoes["nu_forca_coleta"].toBool();
         }
     }
     return false;
 }
 
+bool CacicThread::realizarEnviodeColeta(){
+    bool ok = false;
+    QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+    if (!jsonColeta.isEmpty()){
+        QJsonObject retornoColeta;
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta ao gerente."));
+        retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
+        if (ok){
+            if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
+                QVariantMap enviaColeta;
+                enviaColeta["enviaColeta"] = false;
+                ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+            }
+        } else if(retornoColeta.contains("error")) {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: " + retornoColeta["error"].toString()));
+        }
+        return ok;
+    } else {
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
+        return false;
+    }
+}
+
+bool CacicThread::enviarColeta() {
+    if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
+        if(!verificaForcarColeta()){
+            if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
+                if(realizarEnviodeColeta()){
+                    return true;
+                }
+                return false;
+            }else{
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
+                return true;
+            }
+        }else{
+            if(realizarEnviodeColeta()){
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
 
 void CacicThread::setCMutex(QMutex *value)
 {
@@ -116,4 +138,6 @@ void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
+    ccacic = new CCacic();
+    ccacic->setCacicMainFolder(this->applicationDirPath);
 }

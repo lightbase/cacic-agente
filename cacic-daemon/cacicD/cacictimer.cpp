@@ -97,7 +97,11 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        if(!(list.at(i).fileName().contains("cacic-service"))){
+#ifdef Q_OS_WIN
+        if(!(list.at(i).fileName() == "cacic-service.exe")){
+#else
+        if(!(list.at(i).fileName() == "cacic-service")){
+#endif
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
@@ -242,14 +246,10 @@ void CacicTimer::setDirProgram(const QString &value)
     dirProgram = value;
 }
 
-
 void CacicTimer::setApplicationDirPath(const QString &value)
 {
     this->applicationDirPath = value;
 }
-
-
-
 
 void CacicTimer::iniciarInstancias(){
 
@@ -290,6 +290,23 @@ bool CacicTimer::verificarPeriodicidade()
     }
 }
 
+
+bool CacicTimer::verificaForcarColeta(){
+    QJsonObject agenteConfigJson;
+    QJsonObject configuracoes;
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        agenteConfigJson = result["agentcomputer"].toObject();
+        configuracoes = agenteConfigJson["configuracoes"].toObject();
+        if(!configuracoes["nu_intervalo_forca_coleta"].isNull()){
+            return configuracoes["nu_intervalo_forca_coleta"].toBool();
+        } else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
 #if defined (Q_OS_WIN)
