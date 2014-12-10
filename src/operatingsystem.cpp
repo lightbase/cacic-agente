@@ -36,7 +36,7 @@ int OperatingSystem::coletaIdOs(){
                 return LINUX_UBUNTU;
         }
     }
-
+    return -1;
 #else
     return -1;
 #endif
@@ -83,9 +83,10 @@ QString OperatingSystem::coletaVersaoOsEmString(){
             return line.split("=").takeLast().split('"').takeAt(1);
         }
     }
+    return QString();
 
 #else
-    return null;
+    return QString();
 #endif
 }
 

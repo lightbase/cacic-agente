@@ -108,9 +108,13 @@ bool CacicTimer::verificarModulos()
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo versão antiga de "+list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
-            novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
-            if (!novoModulo.remove())
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+            if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+                if (!novoModulo.remove())
+                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+            } else {
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
+            }
 
             novoModulo.close();
         } else {

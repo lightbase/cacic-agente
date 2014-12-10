@@ -67,13 +67,16 @@ bool CheckModules::start(){
  *******************************************************/
 bool CheckModules::verificaModulo(const QString &moduloName, const QString &moduloHash)
 {
-    QFile *modulo;
+
+    QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
     modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
     modulo->open(QFile::ReadOnly);
+    moduloTemp = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
+    moduloTemp->open(QFile::ReadOnly);
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if (!(modulo->exists() && modulo->size()>1) || !oCacic.Md5IsEqual(modulo->readAll(), moduloHash)){
+    if ((!(modulo->exists()     && modulo->size()>1)     || !oCacic.Md5IsEqual(modulo->readAll(), moduloHash))){
         modulo->close();
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
@@ -81,15 +84,22 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
         metodoDownload = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
         if (!metodoDownload.isEmpty()){
-            oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
-            oCacicComm.setFtpPass(metodoDownload["senha"].toString());
+            //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
+            if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !oCacic.Md5IsEqual(moduloTemp->readAll(), moduloHash))){
+                moduloTemp->close();
+                oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
+                oCacicComm.setFtpPass(metodoDownload["senha"].toString());
 
-            downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
-                                                this->applicationUrl,
-                                                metodoDownload["path"].toString() +
-                                                (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
-                                                oCacic.getCacicMainFolder() + "/temp");
-
+                downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
+                                                    this->applicationUrl,
+                                                    metodoDownload["path"].toString() +
+                                                    (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
+                                                    oCacic.getCacicMainFolder() + "/temp");
+            } else {
+                moduloTemp->close();
+                QLogger::QLog_Info("CheckModules", QString(moduloName + " já existente na pasta temporária·"));
+                return true;
+            }
             novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
             if (downloadOk){
                 //faz uma verificação do novo módulo.
