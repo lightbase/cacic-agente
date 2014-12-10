@@ -1,4 +1,4 @@
-#include "cacicthread.h"
+﻿#include "cacicthread.h"
 
 CacicThread::CacicThread(QString applicationDirPath)
 {
@@ -74,6 +74,26 @@ bool CacicThread::verificaForcarColeta(){
     return false;
 }
 
+bool CacicThread::eviarColetaDiff(){
+    if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
+        bool ok = false;
+        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
+        if (!jsonColeta.isEmpty()){
+            QJsonObject retornoColeta;
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta Diff ao gerente."));
+            retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
+            if(retornoColeta.contains("error")) {
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a coleta Diff: " + retornoColeta["error"].toString()));
+            }
+            return ok;
+        } else {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a coleta Diff: Arquivo JSON vazio ou inexistente."));
+            return false;
+        }
+    }
+    return false;
+}
+
 bool CacicThread::realizarEnviodeColeta(){
     bool ok = false;
     QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
@@ -138,6 +158,4 @@ void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
-    ccacic = new CCacic();
-    ccacic->setCacicMainFolder(this->applicationDirPath);
 }

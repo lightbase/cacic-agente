@@ -141,7 +141,6 @@ bool CacicTimer::verificarModulos()
 }
 
 void CacicTimer::iniciarThread(){
-
     QString nome = "gercols";
     definirDirModulo(getApplicationDirPath(), nome);
     cacicthread->setCcacic(ccacic);
@@ -290,24 +289,6 @@ bool CacicTimer::verificarPeriodicidade()
     }else{
         setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
         QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, QString("getConfig.json com erro ou vazio"));
-        return false;
-    }
-}
-
-
-bool CacicTimer::verificaForcarColeta(){
-    QJsonObject agenteConfigJson;
-    QJsonObject configuracoes;
-    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
-    if(!result.contains("error") && !result.isEmpty()){
-        agenteConfigJson = result["agentcomputer"].toObject();
-        configuracoes = agenteConfigJson["configuracoes"].toObject();
-        if(!configuracoes["nu_intervalo_forca_coleta"].isNull()){
-            return configuracoes["nu_intervalo_forca_coleta"].toBool();
-        } else{
-            return false;
-        }
-    }else{
         return false;
     }
 }
