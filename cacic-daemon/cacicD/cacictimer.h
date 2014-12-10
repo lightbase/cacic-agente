@@ -50,7 +50,6 @@ private:
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
-    bool verificaForcarColeta();
 
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;

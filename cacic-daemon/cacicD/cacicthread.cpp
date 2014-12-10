@@ -138,6 +138,4 @@ void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
-    ccacic = new CCacic();
-    ccacic->setCacicMainFolder(this->applicationDirPath);
 }
