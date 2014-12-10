@@ -7,8 +7,8 @@ Gercols::Gercols(QObject *parent)
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log","Gercols",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log","Gercols",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::InfoLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
 
@@ -31,14 +31,14 @@ void Gercols::run()
         if (oldColeta.isEmpty() || this->verificaColeta(oldColeta, oColeta->toJsonObject())) {
             enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
-            QLogger::QLog_Info("Gercols", QString("Coleta realizada com sucesso."));
+            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta realizada com sucesso."));
         } else {
-            QLogger::QLog_Info("Gercols", QString("Coleta sem alterações."));
+            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta sem alterações."));
             enviaColeta["enviaColeta"] = false;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
         }
     } else {
-        QLogger::QLog_Info("Gercols", QString("Falha ao realizar coleta."));
+        QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Falha ao realizar coleta."));
     }
     emit finished();
 }
@@ -59,7 +59,7 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
                     QJsonValue jsonRetorno;
                     if (!segundoJson[key].isNull()){
                         if (this->percorreColeta(primeiroJson[key], segundoJson[key], jsonRetorno)){
-                            QLogger::QLog_Info("Gercols", QString("Coleta com algum valor diferente em " + key));
+                            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta com algum valor diferente em " + key));
                             diferencaColeta[key] = jsonRetorno;
                             retorno = true;
                         }

@@ -137,7 +137,6 @@ bool CacicTimer::verificarModulos()
 }
 
 void CacicTimer::iniciarThread(){
-
     QString nome = "gercols";
     definirDirModulo(getApplicationDirPath(), nome);
     cacicthread->setCcacic(ccacic);

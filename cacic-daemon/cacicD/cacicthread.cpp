@@ -1,4 +1,4 @@
-#include "cacicthread.h"
+﻿#include "cacicthread.h"
 
 CacicThread::CacicThread(QString applicationDirPath)
 {
@@ -69,6 +69,26 @@ bool CacicThread::verificaForcarColeta(){
         configuracoes = agenteConfigJson["configuracoes"].toObject();
         if(!configuracoes["nu_forca_coleta"].isNull()){
             return configuracoes["nu_forca_coleta"].toBool();
+        }
+    }
+    return false;
+}
+
+bool CacicThread::eviarColetaDiff(){
+    if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
+        bool ok = false;
+        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
+        if (!jsonColeta.isEmpty()){
+            QJsonObject retornoColeta;
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta Diff ao gerente."));
+            retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
+            if(retornoColeta.contains("error")) {
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a coleta Diff: " + retornoColeta["error"].toString()));
+            }
+            return ok;
+        } else {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a coleta Diff: Arquivo JSON vazio ou inexistente."));
+            return false;
         }
     }
     return false;
