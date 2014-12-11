@@ -105,7 +105,7 @@ bool CacicTimer::verificarModulos()
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo versão antiga de "+list.at(i).fileName());
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo versão antiga de " + list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
             if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
@@ -140,15 +140,32 @@ bool CacicTimer::verificarModulos()
     return true;
 }
 
-void CacicTimer::iniciarThread(){
-    QString nome = "gercols";
-    definirDirModulo(getApplicationDirPath(), nome);
-    cacicthread->setCcacic(ccacic);
-    cacicthread->setOCacicComm(OCacicComm);
-    cacicthread->setNomeModulo(nome);
-    cacicthread->setCMutex(cMutex);
-    cacicthread->setModuloDirPath(getDirProgram());
-    cacicthread->start(QThread::NormalPriority);
+void CacicTimer::iniciarThread(){    
+    QJsonObject agenteConfigJson;
+    QJsonArray listaModulos;
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        agenteConfigJson = result["agentcomputer"].toObject();
+        listaModulos = agenteConfigJson["modulos"].toObject()["cacic"].toArray();
+        QVariantMap modulosExecutados;
+        for (int var = 0; var < listaModulos.size(); var++) {;
+            QString nome = listaModulos.at(var).toObject().value("nome").toString();
+            definirDirModulo(getApplicationDirPath(), nome);
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, nome);
+            if (QFile::exists(getDirProgram())){
+                cacicthread->setCcacic(ccacic);
+                cacicthread->setOCacicComm(OCacicComm);
+                cacicthread->setNomeModulo(nome);
+                cacicthread->setCMutex(cMutex);
+                cacicthread->setModuloDirPath(getDirProgram());
+                cacicthread->start(QThread::NormalPriority);
+                modulosExecutados[listaModulos.at(var).toObject().value("nome").toString()] = listaModulos.at(var).toObject().value("hash").toString();
+                ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
+            }else{
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
+            }
+        }
+    }
 }
 
 QString CacicTimer::getApplicationDirPath() {

@@ -21,6 +21,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     } catch (...){
         QLogger::QLog_Info("Cacic Daemon", QString("Erro desconhecido no construtor."));
     }
+
 }
 
 cacicD::~cacicD()
