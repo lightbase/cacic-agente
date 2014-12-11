@@ -19,7 +19,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
 
         setServiceFlags(QtService::Default);
     } catch (...){
-        QLogger::QLog_Info("Cacic Daemon", QString("Erro desconhecido no construtor."));
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido no construtor."));
     }
 
 }
@@ -30,7 +30,7 @@ cacicD::~cacicD()
         logManager->closeLogger();
         application()->exit();
     } catch (...){
-        QLogger::QLog_Error("Cacic Daemon", QString("Erro desconhecido no destrutor."));
+        QLogger::QLog_Error(Identificadores::LOG_DAEMON, QString("Erro desconhecido no destrutor."));
     }
 }
 
