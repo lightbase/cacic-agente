@@ -50,6 +50,7 @@ private:
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
+    bool removeArquivosEstrangeiros(const QDir &diretorio);
 
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;

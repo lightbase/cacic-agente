@@ -44,6 +44,10 @@ void CacicTimer::iniciarTimer()
 //Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
+
+        if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ) {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
+        }
         if (!checkModules->start()){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
         }
@@ -291,6 +295,36 @@ bool CacicTimer::verificarPeriodicidade()
         QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, QString("getConfig.json com erro ou vazio"));
         return false;
     }
+}
+
+
+bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
+{
+    bool retorno = true;
+//    QDir dir(ccacic->getCacicMainFolder());
+    QDir dir = diretorio;
+    dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i<list.size(); i++){
+        std::cout << list.at(i).absoluteFilePath().toStdString() << std::endl;
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Excluindo ") + list.at(i).absoluteFilePath());
+
+        // Este if lista arquivos e diretorios a não serem excluídos
+        if( !list.at(i).fileName().contains("cacic-service") &&
+            !list.at(i).fileName().contains("cacic.log") &&
+            !list.at(i).fileName().contains("getTest.json") &&
+            !list.at(i).fileName().contains("getConfig.json") ) {
+
+            if ( list.at(i).isDir() ) {
+                retorno = ccacic->deleteFolder(list.at(i).absoluteFilePath());
+            } else
+                retorno = ccacic->deleteFile(list.at(i).absoluteFilePath());
+        }
+    }
+
+    return retorno;
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
