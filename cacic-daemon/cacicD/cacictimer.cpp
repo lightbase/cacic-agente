@@ -45,9 +45,12 @@ void CacicTimer::iniciarTimer()
 void CacicTimer::mslot(){
     if(comunicarGerente()){
 
-        if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ) {
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
+        if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ) {
+            if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ) {
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
+            }
         }
+
         if (!checkModules->start()){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
         }
@@ -312,7 +315,11 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Excluindo ") + list.at(i).absoluteFilePath());
 
         // Este if lista arquivos e diretorios a não serem excluídos
+#if defined(Q_OS_WIN)
+        if( !list.at(i).fileName().contains("cacic-service.exe") &&
+#else
         if( !list.at(i).fileName().contains("cacic-service") &&
+#endif
             !list.at(i).fileName().contains("cacic.log") &&
             !list.at(i).fileName().contains("getTest.json") &&
             !list.at(i).fileName().contains("getConfig.json") ) {
