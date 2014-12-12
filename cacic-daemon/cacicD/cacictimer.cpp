@@ -147,6 +147,25 @@ bool CacicTimer::verificarModulos()
     return true;
 }
 
+bool CacicTimer::verificarseModuloJaFoiExecutado(QString nome, QString hash){
+    QFile file("/etc/xdg/Lightbase/Cacic.conf");
+    if(!file.open(QIODevice::ReadOnly)) {
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Erro ao tentar ler o /etc/xdg/Lightbase/Cacic.conf."));
+    }
+    QTextStream in(&file);
+    QStringList fields;
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        fields.append(line.split(","));
+    }
+    file.close();
+    if(fields.contains(QString(nome.append("=").append(hash)))){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 void CacicTimer::iniciarThread(){    
     QJsonObject agenteConfigJson;
     QJsonArray listaModulos;
@@ -157,19 +176,25 @@ void CacicTimer::iniciarThread(){
         QVariantMap modulosExecutados;
         for (int var = 0; var < listaModulos.size(); var++) {
             QString nome = listaModulos.at(var).toObject().value("nome").toString();
+            QString hash = listaModulos.at(var).toObject().value("hash").toString();
             definirDirModulo(getApplicationDirPath(), nome);
-            if (QFile::exists(getDirProgram()) && nome != "install-cacic" && nome != "cacic-service"){
-                cacicthread->setCcacic(ccacic);
-                cacicthread->setOCacicComm(OCacicComm);
-                cacicthread->setNomeModulo(nome);
-                cacicthread->setCMutex(cMutex);
-                cacicthread->setModuloDirPath(getDirProgram());
-                cacicthread->start(QThread::NormalPriority);
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O "+ getDirProgram() + " está em execução.");
-                modulosExecutados[listaModulos.at(var).toObject().value("nome").toString()] = listaModulos.at(var).toObject().value("hash").toString();
-                ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
-            }else{
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
+            if(nome != "install-cacic" && nome != "cacic-service"){
+//                if(!verificarseModuloJaFoiExecutado(nome,hash)){
+                    if (QFile::exists(getDirProgram())){
+                        cacicthread->setCcacic(ccacic);
+                        cacicthread->setOCacicComm(OCacicComm);
+                        cacicthread->setNomeModulo(nome);
+                        cacicthread->setCMutex(cMutex);
+                        cacicthread->setModuloDirPath(getDirProgram());
+                        cacicthread->start(QThread::NormalPriority);
+                        modulosExecutados[nome] = hash;
+                        ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
+                    }else{
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
+                    }
+//                }else{
+//                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O ("+ nome +") com o hash ("+ hash +") já foi executado antes.");
+//                }
             }
         }
     }
@@ -321,7 +346,7 @@ bool CacicTimer::verificarPeriodicidade()
 bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
 {
     bool retorno = true;
-//    QDir dir(ccacic->getCacicMainFolder());
+    //    QDir dir(ccacic->getCacicMainFolder());
     QDir dir = diretorio;
     dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
     dir.setSorting(QDir::Size | QDir::Reversed);
@@ -334,12 +359,12 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
         // Este if lista arquivos e diretorios a não serem excluídos
 #if defined(Q_OS_WIN)
         if( !list.at(i).fileName().contains("cacic-service.exe") &&
-#else
+        #else
         if( !list.at(i).fileName().contains("cacic-service") &&
-#endif
-            !list.at(i).fileName().contains("cacic.log") &&
-            !list.at(i).fileName().contains("getTest.json") &&
-            !list.at(i).fileName().contains("getConfig.json") ) {
+        #endif
+                !list.at(i).fileName().contains("cacic.log") &&
+                !list.at(i).fileName().contains("getTest.json") &&
+                !list.at(i).fileName().contains("getConfig.json") ) {
 
             if ( list.at(i).isDir() ) {
                 retorno = ccacic->deleteFolder(list.at(i).absoluteFilePath());

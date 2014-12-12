@@ -24,15 +24,15 @@ void CacicThread::iniciarModulo()
         proc.setWorkingDirectory(this->applicationDirPath);
         proc.execute(this->moduloDirPath);
         if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
-            registraFimColeta("SUCESSO");
+            registraFimColeta(true);
             if(enviarColeta()){
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta enviada com sucesso."));
             }else{
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Erro ao enviar a coleta."));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta não enviada."));
             }
         }else{
             if((!proc.atEnd()) || (proc.exitStatus() == QProcess::CrashExit)){
-                registraFimColeta("ERRO");
+                registraFimColeta(false);
                 proc.kill();
             }
         }
@@ -54,7 +54,6 @@ void CacicThread::setCcacic(CCacic *value)
     ccacic = value;
 }
 
-
 void CacicThread::setNomeModulo(const QString &value)
 {
     nomeModulo = value;
@@ -68,7 +67,10 @@ bool CacicThread::verificaForcarColeta(){
         agenteConfigJson = result["agentcomputer"].toObject();
         configuracoes = agenteConfigJson["configuracoes"].toObject();
         if(!configuracoes["nu_forca_coleta"].isNull()){
-            return configuracoes["nu_forca_coleta"].toBool();
+            QString valor = configuracoes["nu_forca_coleta"].toString();
+            if(configuracoes["nu_forca_coleta"].toString() == "true" || configuracoes["nu_forca_coleta"].toString() == "True"){
+                return true;
+            }
         }
     }
     return false;
@@ -127,10 +129,11 @@ bool CacicThread::enviarColeta() {
                 return false;
             }else{
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
-                return true;
+                return false;
             }
         }else{
             if(realizarEnviodeColeta()){
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviou coleta forçadamente."));
                 return true;
             }
             return false;
@@ -149,9 +152,13 @@ void CacicThread::registraInicioColeta()
     QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta iniciada em: " + QDateTime::currentDateTime().toLocalTime().toString());
 }
 
-void CacicThread::registraFimColeta(QString msg)
+void CacicThread::registraFimColeta(bool tipo)
 {
-    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta finalizada com " + msg + " em: " + QDateTime::currentDateTime().toLocalTime().toString());
+    if(tipo){
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta finalizada com SUCESSO em: " + QDateTime::currentDateTime().toLocalTime().toString());
+    }else{
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD,"Coleta finalizada com ERRO em: " + QDateTime::currentDateTime().toLocalTime().toString());
+    }
 }
 
 void CacicThread::iniciarInstancias(){

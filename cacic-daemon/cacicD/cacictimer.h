@@ -51,7 +51,7 @@ private:
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
-
+    bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
     CheckModules *checkModules;
@@ -60,6 +60,7 @@ private:
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
+
 
 private slots:
     void mslot();
