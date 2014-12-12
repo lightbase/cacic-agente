@@ -477,8 +477,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
         dispositivo["Model"] = ioJson["product"];
         dispositivo["Name"] = ioJson["logicalname"];
         //        dispositivo["serial"] = ioJson["serial"];
-        dispositivo["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(ioJson["size"].toDouble(),0)
-                + " " + ioJson["units"].toString());
+        dispositivo["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(ioJson["size"].toDouble(),0));
 
         foreach(QJsonValue partitionValue, ioJson["children"].toArray() ) {
             QJsonObject partitionObject = partitionValue.toObject();
@@ -539,8 +538,7 @@ void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const
     newPartition["Description"] = partitionObject["description"];
 
     if( !partitionObject["size"].isNull() )
-        newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0)
-                + " " + partitionObject["units"].toString());
+        newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0));
     else
         newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["capacity"].toDouble(),0)
                 + " " + partitionObject["units"].toString());

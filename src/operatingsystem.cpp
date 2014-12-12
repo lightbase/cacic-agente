@@ -141,7 +141,10 @@ QJsonObject OperatingSystem::toJsonObject()
     json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));
     json["nomeOs"] = QJsonValue::fromVariant(this->nomeOs);
 #ifdef Q_OS_WIN
+    QStringList param;
+    param << "SystemUpTime";
     json["tipo"] = QJsonValue::fromVariant(QString("windows"));
+    json["upTime"] = QJsonValue::fromVariant(wmi::search("Win32_PerfFormattedData_PerfOS_System", param);
 #else
     ConsoleObject console;
     QStringList consoleOutput;

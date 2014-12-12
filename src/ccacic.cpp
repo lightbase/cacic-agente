@@ -329,12 +329,14 @@ QString CCacic::convertDouble(const double &number, const int &precision)
     ss.precision(precision);
     ss << std::fixed << number;
 
-    return QString::fromStdString(ss.str());
+    return QString::fromStdString(ss.str()).trimmed();
 }
 
 std::string CCacic::genRandomString(const int &len)
 {
     char* s;
+
+    s = (char *) malloc(sizeof(char) * len);
 
     static const char alphanum[] =
         "0123456789"

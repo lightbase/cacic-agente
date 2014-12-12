@@ -49,7 +49,7 @@ void Gercols::run()
  ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
-    QJsonObject primeiroJson, segundoJson, diferencaColeta;
+    QJsonObject primeiroJson, segundoJson, diferencaColeta, coletaDiff;
     primeiroJson = coletaAntiga;
     segundoJson = novaColeta;
     for (int i = 0; i<2; i++){
@@ -61,6 +61,14 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
                         if (this->percorreColeta(primeiroJson[key], segundoJson[key], jsonRetorno)){
                             QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta com algum valor diferente em " + key));
                             diferencaColeta[key] = jsonRetorno;
+                            if (i == 0){
+                                /*o primeiro json é o antigo, então o que for inserido *
+                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
+                                coletaDiff["coletasRetiradas"] = diferencaColeta;
+                            }
+                            else {
+                                coletaDiff["coletasInseridas"] = diferencaColeta;
+                            }
                             retorno = true;
                         }
                     }
@@ -71,7 +79,11 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
         segundoJson = coletaAntiga;
     }
     if (!diferencaColeta.isEmpty()){
-        oCacic.setJsonToFile(diferencaColeta, oCacic.getCacicMainFolder() + "/coletaDiff.json");
+        coletaDiff["computador"] = oColeta->getOComputer().toJsonObject();
+        if (QFile::exists(oCacic.getCacicMainFolder() + "/coletaDiff.json")){
+            oCacic.deleteFile(oCacic.getCacicMainFolder() + "/coletaDiff.json");
+        }
+        oCacic.setJsonToFile(coletaDiff, oCacic.getCacicMainFolder() + "/coletaDiff.json");
     }
     //true se houver diferença.
     return retorno;
@@ -128,7 +140,8 @@ bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &
         if (primeiroValor.toVariant() == segundoValor.toVariant()){
             return false;
         } else {
-            jsonRetorno = !segundoValor.isNull() ? segundoValor : primeiroValor;
+//            jsonRetorno = !segundoValor.isNull() ? segundoValor : primeiroValor;
+            jsonRetorno = primeiroValor;
             return true;
         }
     }
