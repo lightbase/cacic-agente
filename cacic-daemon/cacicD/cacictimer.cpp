@@ -155,17 +155,17 @@ void CacicTimer::iniciarThread(){
         agenteConfigJson = result["agentcomputer"].toObject();
         listaModulos = agenteConfigJson["modulos"].toObject()["cacic"].toArray();
         QVariantMap modulosExecutados;
-        for (int var = 0; var < listaModulos.size(); var++) {;
+        for (int var = 0; var < listaModulos.size(); var++) {
             QString nome = listaModulos.at(var).toObject().value("nome").toString();
             definirDirModulo(getApplicationDirPath(), nome);
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, nome);
-            if (QFile::exists(getDirProgram())){
+            if (QFile::exists(getDirProgram()) && nome != "install-cacic" && nome != "cacic-service"){
                 cacicthread->setCcacic(ccacic);
                 cacicthread->setOCacicComm(OCacicComm);
                 cacicthread->setNomeModulo(nome);
                 cacicthread->setCMutex(cMutex);
                 cacicthread->setModuloDirPath(getDirProgram());
                 cacicthread->start(QThread::NormalPriority);
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O "+ getDirProgram() + " está em execução.");
                 modulosExecutados[listaModulos.at(var).toObject().value("nome").toString()] = listaModulos.at(var).toObject().value("hash").toString();
                 ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
             }else{
