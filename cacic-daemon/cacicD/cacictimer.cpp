@@ -353,23 +353,38 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-        std::cout << list.at(i).absoluteFilePath().toStdString() << std::endl;
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Excluindo ") + list.at(i).absoluteFilePath());
 
-        // Este if lista arquivos e diretorios a não serem excluídos
+        // Lista arquivos a não serem excluídos
 #if defined(Q_OS_WIN)
         if( !list.at(i).fileName().contains("cacic-service.exe") &&
         #else
         if( !list.at(i).fileName().contains("cacic-service") &&
         #endif
                 !list.at(i).fileName().contains("cacic.log") &&
+                !list.at(i).fileName().contains("install-cacic") &&
+                !list.at(i).fileName().contains("gercols") &&
                 !list.at(i).fileName().contains("getTest.json") &&
                 !list.at(i).fileName().contains("getConfig.json") ) {
 
-            if ( list.at(i).isDir() ) {
-                retorno = ccacic->deleteFolder(list.at(i).absoluteFilePath());
-            } else
+            if ( list.at(i).isDir()) {
+
+                // Lista diretorios a não serem excluidos
+                if( list.at(i).absoluteFilePath() == "/usr/share/cacic/Logs" ||
+                    list.at(i).absoluteFilePath() == "/usr/share/cacic/temp" ) {
+
+                    if( removeArquivosEstrangeiros(QDir(list.at(i).absoluteFilePath())) )
+                        retorno = true;
+                    else
+                        retorno = false;
+                } else {
+                    retorno = ccacic->deleteFolder(list.at(i).absoluteFilePath());
+                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo diretorio: " + list.at(i).fileName());
+                }
+            } else {
                 retorno = ccacic->deleteFile(list.at(i).absoluteFilePath());
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo arquivo: " + list.at(i).fileName());
+            }
+
         }
     }
 
