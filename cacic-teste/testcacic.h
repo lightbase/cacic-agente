@@ -19,6 +19,7 @@
 #include <ccoleta.h>
 #include <QLogger.h>
 #include <checkmodules.h>
+#include <servicecontroller.h>
 
 class CTestCacic : public QObject
 {
@@ -47,7 +48,6 @@ public slots:
 private slots:
     void initTestCase();
     void testCommStatus();
-    //  void testComm();
     void testGetAndSetValueFromFile();
     void testGetValueFromTags();
     void testCreateFolder();
@@ -55,14 +55,14 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testConsole();
+    void testServiceController();
     void testPegarUsu();
-//    void testJsonValueFromJsonString();
     void testcoletaIdOs();
     void testpegarOS();
     void testLogin();
     void testSslConnection();
-    void testEnCrypt();
-    void testDeCrypt();
+//    void testEnCrypt();
+//    void testDeCrypt();
     void testCacicCompToJsonObject();
     void testOperatingSystemToJsonObject();
     void testJsonToFile();
@@ -78,7 +78,7 @@ private slots:
     void testLogger();
     void testEnviaColeta();
     void testDownload();
-    void testStartService();
+//    void testStartService();
     void testGetModulesValues();
     void cleanupTestCase();
 };

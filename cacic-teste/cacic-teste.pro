@@ -14,7 +14,7 @@ CONFIG += c++11
 TEMPLATE = app
 win32 {
     QT += axcontainer
-    LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
+#    LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
     LIBS += -L/usr/lib -lcryptopp
 }
@@ -32,7 +32,9 @@ SOURCES += \
     ../src/ccoleta.cpp \
     ../src/wmi.cpp \
     ../src/QLogger.cpp \
-    ../src/checkmodules.cpp
+    ../src/checkmodules.cpp \
+    ../src/servicecontroller.cpp \
+    ../src/identificadores.cpp
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -54,7 +56,9 @@ HEADERS += \
     ../src/ccoleta.h \
     ../src/wmi.h \
     ../src/QLogger.h \
-    ../src/checkmodules.h
+    ../src/checkmodules.h \
+    ../src/servicecontroller.h \
+    ../src/identificadores.h
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \

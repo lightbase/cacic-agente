@@ -10,7 +10,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 void CTestCacic::initTestCase()
 {
     this->OCacicComm = new CacicComm();
-    OCacicComm->setUrlGerente("http://10.209.134.100/cacic/app_dev.php");
+    OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
@@ -95,6 +95,20 @@ void CTestCacic::testConsole()
 #endif
 }
 
+void CTestCacic::testServiceController()
+{
+#ifdef Q_OS_WIN
+    ServiceController service;
+    wchar_t serviceName[] = L"cacicdaemon";
+    service.open(serviceName);
+    service.start();
+    QVERIFY(service.stop());
+    service.close();
+#else
+    QSKIP("Teste desnecessário nessa plataforma");
+#endif
+}
+
 void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }
@@ -118,26 +132,26 @@ void CTestCacic::testSslConnection()
     bool ok;
     QJsonObject json = OCacicComm->comm("", &ok, QJsonObject(), true);
     QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
-                           json["codestatus"] :
-                           QJsonValue::fromVariant("-1");
-//    qDebug()<< jsonvalue.toDouble();
+                json["codestatus"] :
+        QJsonValue::fromVariant("-1");
+    //    qDebug()<< jsonvalue.toDouble();
     QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
 }
 
-void CTestCacic::testEnCrypt(){
-    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
-    std::string input = "aqui vai a url que sera encriptada";
-    OCacic.setChaveCrypt("testecript123456");
-    this->cripTeste = OCacic.enCrypt(input, IV);
-    QVERIFY(!this->cripTeste.isEmpty() && !this->cripTeste.isNull());
-}
+//void CTestCacic::testEnCrypt(){
+//    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
+//    std::string input = "aqui vai a url que sera encriptada";
+//    OCacic.setChaveCrypt("testecript123456");
+//    this->cripTeste = OCacic.enCrypt(input, IV);
+//    QVERIFY(!this->cripTeste.isEmpty() && !this->cripTeste.isNull());
+//}
 
-void CTestCacic::testDeCrypt(){
-    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
-    std::string input = this->cripTeste.toStdString();
-    QVERIFY(OCacic.deCrypt(input, IV) == "aqui vai a url que sera encriptada");
+//void CTestCacic::testDeCrypt(){
+//    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
+//    std::string input = this->cripTeste.toStdString();
+//    QVERIFY(OCacic.deCrypt(input, IV) == "aqui vai a url que sera encriptada");
 
-}
+//}
 
 void CTestCacic::testCacicCompToJsonObject()
 {
@@ -160,7 +174,7 @@ void CTestCacic::testJsonToFile()
 
 void CTestCacic::testJsonFromFile()
 {
-//    qDebug() << OCacic.getJsonFromFile("teste123.json");
+    //    qDebug() << OCacic.getJsonFromFile("teste123.json");
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
@@ -202,7 +216,7 @@ void CTestCacic::testGetTest()
     bool ok;
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
-//    qDebug() << envio;
+    //    qDebug() << envio;
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
@@ -213,7 +227,7 @@ void CTestCacic::testGetConfig()
     QJsonObject configEnvio;
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
     QJsonObject getConfig = OCacicComm->comm("/ws/neo/config", &ok, configEnvio);
-//    qDebug() << getConfig;
+    //    qDebug() << getConfig;
     OCacic.setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
@@ -301,9 +315,9 @@ void CTestCacic::testDownload()
     OCacicComm->setFtpPass(ftp["senha"].toString());
     OCacicComm->setFtpUser(ftp["usuario"].toString());
     OCacicComm->fileDownload(ftp["tipo"].toString(),
-                             ftp["url"].toString(),
-                             ftp["path"].toString() + "install-cacic",
-                             "");
+            ftp["url"].toString(),
+            ftp["path"].toString() + "install-cacic",
+            "");
     QFile downloaded("install-cacic");
 
     QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
@@ -311,27 +325,27 @@ void CTestCacic::testDownload()
              (downloaded.size() > 0) );
 }
 
-void CTestCacic::testStartService()
-{
-    bool ok;
-    QString exitStatus;
+//void CTestCacic::testStartService()
+//{
+//    bool ok;
+//    QString exitStatus;
 
-#ifdef Q_OS_WIN
-    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
-    qDebug() << exitStatus;
-#else
-    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
+//#ifdef Q_OS_WIN
+//    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
 //    qDebug() << exitStatus;
-#endif
-    QVERIFY(ok);
-}
+//#else
+//    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
+////    qDebug() << exitStatus;
+//#endif
+//    QVERIFY(ok);
+//}
 
 void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
     OCacic.setJsonToFile(oColeta.toJsonObject(), "coleta.json");
-//    qDebug() << coletaEnvio;
+    //    qDebug() << coletaEnvio;
     OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);
 }
@@ -351,19 +365,19 @@ void CTestCacic::testGetModulesValues()
         } while (i!=modules.constEnd());
     }
 
-        QDir dir("./temp");
-        dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
-        dir.setSorting(QDir::Size | QDir::Reversed);
+    QDir dir("./temp");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
+    dir.setSorting(QDir::Size | QDir::Reversed);
 
-        QFileInfoList list = dir.entryInfoList();
-        for (int i = 0; i<list.size(); i++){
-            QFile novoModulo(list.at(i).filePath());
-            if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
-                QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
-            }
-            novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
-            novoModulo.close();
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i<list.size(); i++){
+        QFile novoModulo(list.at(i).filePath());
+        if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
+            QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
         }
+        novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
+        novoModulo.close();
+    }
 
     QVERIFY(ok);
 }
@@ -381,9 +395,9 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-//    OCacic.deleteFile("getConfig.json");
+    //    OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
     OCacic.deleteFile("./install-cacic");
     OCacic.deleteFile("./gercols");
-//    OCacic.deleteFile("./coleta.json");
+    //    OCacic.deleteFile("./coleta.json");
 }

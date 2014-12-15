@@ -178,7 +178,7 @@ void CacicTimer::iniciarThread(){
             QString nome = listaModulos.at(var).toObject().value("nome").toString();
             QString hash = listaModulos.at(var).toObject().value("hash").toString();
             definirDirModulo(getApplicationDirPath(), nome);
-            if(nome != "install-cacic" && nome != "cacic-service"){
+            if(nome.contains("gercols")){
 //                if(!verificarseModuloJaFoiExecutado(nome,hash)){
                     if (QFile::exists(getDirProgram())){
                         cacicthread->setCcacic(ccacic);

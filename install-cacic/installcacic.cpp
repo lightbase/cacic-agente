@@ -33,7 +33,6 @@ void InstallCacic::run(QStringList argv, int argc) {
 
     // TODO: Verificar hash no gerente.
     oCacicComm = new CacicComm();
-
     bool ok;
     //valida os parametros repassados
     QMap<QString, QString> param = validaParametros(argv, argc, &ok);
