@@ -35,6 +35,8 @@ public:
     void setDirProgram(const QString &value);
     void setPeriodicidadeExecucao(int value);
     bool comunicarGerente();
+    int getPeriodicidadeExecucaoAnterior() const;
+    void setPeriodicidadeExecucaoAnterior(int value);
 
 signals:
     void finalizar();
@@ -61,6 +63,7 @@ private:
     QString applicationDirPath;
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
+    int periodicidadeExecucaoAnterior;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
 
 
