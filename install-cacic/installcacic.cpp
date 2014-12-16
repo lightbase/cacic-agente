@@ -85,6 +85,7 @@ void InstallCacic::updateService()
 {
 #ifdef Q_OS_WIN
     bool ok;
+    ServiceController service;
 #endif
     bool serviceUpdate = false;
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Verificando a existência de módulos na pasta temporária.");
@@ -100,8 +101,19 @@ void InstallCacic::updateService()
                 serviceUpdate = true;
                 QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Parando serviço para atualização.");
 #ifdef Q_OS_WIN
-                bool ok = false;
-                system("start /b sc stop cacicdaemon");
+                ok = false;
+                if (!service.open(Identificadores::CACIC_SERVICE_NAME.toStdWString())){
+                    std::cout << "Não foi possível abrir o serviço: " + service.getLastError() +"\n";
+                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível abrir o serviço: " +
+                                                                                   QString::fromStdString(service.getLastError())));
+                } else {
+                    if (!service.stop()){
+                        std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
+                        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
+                                                                                       QString::fromStdString(service.getLastError())));
+                    }
+                    service.close();
+                }
 #else
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 stop");
@@ -128,12 +140,33 @@ void InstallCacic::updateService()
     if (serviceUpdate){
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Iniciando o serviço cacic.");
 #ifdef Q_OS_WIN
-        QProcess proc;
-        proc.setWorkingDirectory(oCacic.getCacicMainFolder());
-        proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-start"));
-
-        if(!ok) {
-            QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao iniciar serviço");
+        if (!service.open(Identificadores::CACIC_SERVICE_NAME.toStdWString())){
+            if (service.getILastError() == 16){
+                std::cout << "Serviço não existe, instalando novamente.\n";
+                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Serviço não existe, instalando novamente."));
+                if(!service.install(Identificadores::CACIC_SERVICE_NAME.toStdWString(),
+                                    QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
+                                    L"Cacic Daemon")){
+                    std::cout << "Não foi possível instalar o serviço: " + service.getLastError() +"\n";
+                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível instalar o serviço: " +
+                                                                                   QString::fromStdString(service.getLastError())));
+                } else {
+                    std::cout << "Serviço reinstalado com sucesso.\n";
+                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Serviço reinstalado com sucesso."));
+                    service.close();
+                }
+            } else {
+                std::cout << "Não foi possível abrir o serviço: " + service.getLastError() +"\n";
+                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível abrir o serviço: " +
+                                                                               QString::fromStdString(service.getLastError())));
+            }
+        } else {
+            if (!service.start()){
+                std::cout << "Não foi possível iniciar o serviço: " + service.getLastError() +"\n";
+                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível iniciar o serviço: " +
+                                                                               QString::fromStdString(service.getLastError())));
+            }
+            service.close();
         }
 #else
         ConsoleObject console;
@@ -248,29 +281,47 @@ void InstallCacic::install()
                 fileService.close();
                 this->uninstall();
             } else {
-                QProcess proc;
-                proc.setWorkingDirectory(oCacic.getCacicMainFolder());
-                std::cout << "Executando instalador do serviço...\n";
-                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Executando instalador do serviço...");
-                proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-install"));
-                std::cout << "Iniciando serviço...\n";
-                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Iniciando serviço...");
+                ServiceController service;
+                //Tenta instalar o serviço
+                if (!service.install(Identificadores::CACIC_SERVICE_NAME.toStdWString(),
+                                     QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
+                                     QString("Cacic Daemon").toStdWString())){
+                    //Se não for possível, verifica se é porque já está instalado
+                    if (service.getILastError() == 7){
+                        service.close();
+                        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Serviço já instalado, é necessário a reinstalação.");
+                        if (!service.open(Identificadores::CACIC_SERVICE_NAME.toStdWString())){
+                            QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao abrir o serviço: "+
+                                                                                    QString::fromStdString(service.getLastError()));
+                            uninstall();
+                        } else {
+                            QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Desinstalando serviço, para uma nova instalação.");
 
-                /************************************************************
-                 * Configurações necessárias para startartar automaticamente.
-                 * Veirificar como fazer isso sem esse gato depois
-                 ***********************************************************/
-
-                system("sc config cacicdaemon start= delayed-auto");
-                system("sc failure cacicdaemon reset= 60 actions= restart/60000");
-                system("sc start cacicdaemon");
-
-                if (proc.exitStatus() != QProcess::NormalExit) {
-                    std::cout << "Erro ao executar serviço para instalação: " << proc.errorString().toStdString() << "\n"
-                              << "Verifique se o serviço foi instalado e tente iniciá-lo a mão.\n";
-                    ok = false;
-    //                uninstall();
+                            if (!service.uninstall()){
+                                QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao desinstalar o serviço: " +
+                                                                                        QString::fromStdString(service.getLastError()));
+                                service.close();
+                                uninstall();
+                            } else {
+                                service.close();
+                                //tenta a isntalação novamente.
+                                if (!service.install(Identificadores::CACIC_SERVICE_NAME.toStdWString(),
+                                                     QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
+                                                     QString("Cacic Daemon").toStdWString())){
+                                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao reinstalar o serviço: " +
+                                                                                            QString::fromStdString(service.getLastError()));
+                                    uninstall();
+                                }
+                            }
+                        }
+                    } else {
+                        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao instalar o serviço: " +
+                                                                                QString::fromStdString(service.getLastError()));
+                        uninstall();
+                    }
                 } else {
+                    service.start();
+                    service.close();
                     std::cout << "Instalação realizada com sucesso." << "\n";
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Instalação realizada com sucesso."));
                 }
@@ -338,11 +389,20 @@ void InstallCacic::uninstall()
 {
     bool ok;
 #ifdef Q_OS_WIN
-    //TODO: PARAR O SERVIÇO no windows
-    QProcess proc;
-    proc.setWorkingDirectory(oCacic.getCacicMainFolder());
-    system("sc stop cacicdaemon");
-    proc.execute(oCacic.getCacicMainFolder() + "/cacic-service.exe", QStringList("-uninstall"));
+    ServiceController service;
+    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Parando o serviço."));
+    if (!service.open(Identificadores::CACIC_SERVICE_NAME.toStdWString())){
+        std::cout << "Não foi possível abrir o serviço: " + service.getLastError() +"\n";
+        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível abrir o serviço: " +
+                                                                       QString::fromStdString(service.getLastError())));
+    } else {
+        if (!service.stop()){
+            std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
+            QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
+                                                                           QString::fromStdString(service.getLastError())));
+        }
+        service.close();
+    }
 
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;

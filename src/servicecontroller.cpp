@@ -4,31 +4,21 @@ ServiceController::ServiceController()
 {
 }
 
-bool ServiceController::open(std::wstring name)
+bool ServiceController::open(std::wstring serviceName)
 {
-    // Abre o ServiceControlerMananger
-
-    schSCManager = OpenSCManager(
-                NULL,                    // local computer
-                NULL,                    // servicesActive database
-                SC_MANAGER_ALL_ACCESS);  // full access rights
-
-    if (NULL == schSCManager)
-    {
-//        printf("OpenSCManager failed (%d)\n", GetLastError());
+    if(!this->openMananger()){
         return false;
     }
-
     // Abre o serviço
 
     schService = OpenService(
                 schSCManager,         // SCM database
-                name.c_str(),         // name of service
+                serviceName.c_str(),         // name of service
                 SERVICE_ALL_ACCESS);  // full access
 
     if (schService == NULL)
     {
-//        printf("OpenService failed (%d)\n", GetLastError());
+        this->trataErro(GetLastError());
         CloseServiceHandle(schSCManager);
         return false;
     }
@@ -48,13 +38,14 @@ bool ServiceController::start(){
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // size needed if buffer is too small
     {
-//        printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+        this->trataErro(GetLastError());
         return false;
     }
 
     if(ssStatus.dwCurrentState != SERVICE_STOPPED && ssStatus.dwCurrentState != SERVICE_STOP_PENDING)
     {
-//        printf("Cannot start the service because it is already running\n");
+        printf(">>>>>>>>>>>>>>> SERVICO NAO PARADO");
+        this->trataErro(GetLastError());
         return false;
     }
 
@@ -69,12 +60,12 @@ bool ServiceController::start(){
                 0,           // number of arguments
                 NULL) )      // no arguments
     {
-//        printf("StartService failed (%d)\n", GetLastError());
+        this->trataErro(GetLastError());
         return false;
     }
-//    else printf("Service start pending...\n");
 
-    // Verifica o status até que não fique pendente
+    //Espera até startar de verdade
+    this->waitPending();
 
     if (!QueryServiceStatusEx(
                 schService,                     // handle to service
@@ -83,17 +74,12 @@ bool ServiceController::start(){
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-//        printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+        this->trataErro(GetLastError());
         return false;
     }
-    // Save the tick count and initial checkpoint.
-    this->waitPending();
-
-    // Determine whether the service is running.
 
     if (ssStatus.dwCurrentState == SERVICE_RUNNING)
     {
-        printf("Service started successfully.\n");
         return true;
     }
     else
@@ -103,6 +89,8 @@ bool ServiceController::start(){
 //        printf("  Exit Code: %d\n", ssStatus.dwWin32ExitCode);
 //        printf("  Check Point: %d\n", ssStatus.dwCheckPoint);
 //        printf("  Wait Hint: %d\n", ssStatus.dwWaitHint);
+
+        this->trataErro(GetLastError());
         return false;
     }
 }
@@ -127,6 +115,7 @@ bool ServiceController::stop()
 //        printf("Serviço parado com sucesso");
         return true;
     } else if (lpsStatus->dwCurrentState != SERVICE_STOP_PENDING){
+        this->trataErro(GetLastError());
         return false;
     }
 
@@ -141,21 +130,81 @@ bool ServiceController::stop()
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-
+        this->trataErro(GetLastError());
         return false;
     }
     if (ssStatus.dwCurrentState == SERVICE_STOPPED){
 
         return true;
     } else {
+        this->trataErro(GetLastError());
         return false;
     }
+}
+
+bool ServiceController::install(std::wstring serviceName, std::wstring servicePath, std::wstring displayName)
+{
+    if(!this->openMananger()){
+        this->trataErro(GetLastError());
+        return false;
+    }
+
+    schService = CreateService(
+                    schSCManager,                // SCM database
+                    serviceName.c_str(),         // nome do serviço
+                    (displayName != L"" ?
+                        displayName.c_str() :
+                        serviceName.c_str()),    // nome 'fantasia' do serviço
+                    SERVICE_ALL_ACCESS,          // acesso desejado
+                    SERVICE_WIN32_OWN_PROCESS |
+                        SERVICE_INTERACTIVE_PROCESS, // tipo de serviço
+                    SERVICE_AUTO_START,          // tipo de inicialização
+                    SERVICE_ERROR_NORMAL,        // tipo de controle de erro
+                    servicePath.c_str(),         // path do serviço
+                    NULL,                        // no load ordering group
+                    NULL,                        // no tag identifier
+                    NULL,                        // no dependencies
+                    NULL,                        // LocalSystem account
+                    NULL);                       // no password
+
+    if (schService == NULL)
+    {
+        this->trataErro(GetLastError());
+        return false;
+    }
+    else return true;
+
+}
+
+bool ServiceController::uninstall()
+{
+    //para o serviço antes para não ficar rodando mesmo após a desinstalação.
+    if (!this->stop()){
+        this->trataErro(GetLastError());
+        return false;
+    }
+    if (!DeleteService(schService)){
+        this->trataErro(GetLastError());
+        return false;
+    } else {
+        return true;
+    }
+
 }
 
 void ServiceController::close()
 {
     CloseServiceHandle(schService);
     CloseServiceHandle(schSCManager);
+}
+
+std::string ServiceController::getLastError() const
+{
+    return lastError;
+}
+int ServiceController::getILastError() const
+{
+    return iLastError;
 }
 
 bool ServiceController::waitPending()
@@ -173,7 +222,7 @@ bool ServiceController::waitPending()
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-
+        this->trataErro(GetLastError());
         return false;
     }
     // Save the tick count and initial checkpoint.
@@ -202,7 +251,7 @@ bool ServiceController::waitPending()
                     sizeof(SERVICE_STATUS_PROCESS), // size of structure
                     &dwBytesNeeded ) )              // size needed if buffer is too small
         {
-//            printf("QueryServiceStatusEx failed (%d)\n", GetLastError());
+            this->trataErro(GetLastError());
             return false;
         }
 
@@ -217,11 +266,90 @@ bool ServiceController::waitPending()
         {
             if(GetTickCount()-dwStartTickCount > 30000)
             {
-                printf("Timeout waiting\n");
+                this->trataErro(ERROR_TIMEOUT);
                 return false;
             }
         }
     }
     return true;
+}
+
+bool ServiceController::openMananger()
+{
+    // Abre o ServiceControlerMananger
+
+    schSCManager = OpenSCManager(
+                NULL,                    // local computer
+                NULL,                    // servicesActive database
+                SC_MANAGER_ALL_ACCESS);  // full access rights
+
+    if (NULL == schSCManager)
+    {
+        this->trataErro(GetLastError());
+        return false;
+    } else {
+        return true;
+    }
+}
+
+int ServiceController::trataErro(DWORD error)
+{
+    if (error == ERROR_ACCESS_DENIED){
+        this->lastError = "Acesso negado";
+        this->iLastError = 0;
+    } else if (error == ERROR_CIRCULAR_DEPENDENCY){
+        this->lastError = "A circular service dependency was specified";
+        this->iLastError = 1;
+    } else if (error == ERROR_DUPLICATE_SERVICE_NAME){
+        this->lastError = "Nome do serviço já existente";
+        this->iLastError = 2;
+    } else if (error == ERROR_INVALID_HANDLE){
+        this->lastError = "Service Control Mananger inválido";
+        this->iLastError = 3;
+    } else if (error == ERROR_INVALID_NAME){
+        this->lastError = "Nome inválido";
+        this->iLastError = 4;
+    } else if (error == ERROR_INVALID_PARAMETER){
+        this->lastError = "Parâmetro invalido";
+        this->iLastError = 5;
+    } else if (error == ERROR_INVALID_SERVICE_ACCOUNT){
+        this->lastError = "Conta do serviço inválida";
+        this->iLastError = 6;
+    } else if (error == ERROR_SERVICE_EXISTS){
+        this->lastError = "Serviço já existente";
+        this->iLastError = 7;
+    } else if (error == ERROR_SERVICE_MARKED_FOR_DELETE){
+        this->lastError = "Serviço marcado para exclusão";
+        this->iLastError = 8;
+    } else if (error == ERROR_TIMEOUT){
+        this->lastError = "Tempo limite atingido";
+        this->iLastError = 9;
+    } else if (error == ERROR_PATH_NOT_FOUND){
+        this->lastError = "Path não encontrado";
+        this->iLastError = 10;
+    } else if (error == ERROR_SERVICE_ALREADY_RUNNING){
+        this->lastError = "Serviço já está rodando";
+        this->iLastError = 11;
+    } else if (error == ERROR_SERVICE_DATABASE_LOCKED){
+        this->lastError = "A base de dados de serviço está trancada";
+        this->iLastError = 12;
+    } else if (error == ERROR_SERVICE_DISABLED){
+        this->lastError = "O serviço foi desativado";
+        this->iLastError = 13;
+    } else if (error == ERROR_SERVICE_REQUEST_TIMEOUT){
+        this->lastError = "O processo do serviço foi iniciado, mas não completou a operação";
+        this->iLastError = 14;
+    } else if (error == ERROR_SERVICE_NOT_ACTIVE){
+        this->lastError = "O serviço não está ativo";
+        this->iLastError = 15;
+    } else if (error == ERROR_SERVICE_DOES_NOT_EXIST){
+        this->lastError = "O serviço não existe";
+        this->iLastError = 16;
+    } else {
+        this->lastError = "Desconhecido: " + std::to_string(error);
+        this->iLastError = -1;
+    }
+
+    return this->iLastError;
 }
 

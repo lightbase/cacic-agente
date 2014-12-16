@@ -32,6 +32,8 @@ public:
 
     static const QString AGENTE_VERSAO;
 
+    static const QString CACIC_SERVICE_NAME;
+
 };
 
 #endif // IDENTIFICADORES_H

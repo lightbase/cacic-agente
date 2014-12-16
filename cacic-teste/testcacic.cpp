@@ -100,9 +100,57 @@ void CTestCacic::testServiceController()
 #ifdef Q_OS_WIN
     ServiceController service;
     wchar_t serviceName[] = L"cacicdaemon";
-    service.open(serviceName);
-    service.start();
-    QVERIFY(service.stop());
+    wchar_t serviceDisplay[] = L"Cacic Service";
+    wchar_t servicePath[] = L"C:\\Cacic\\cacic-service.exe";
+    if (!service.install(serviceName, servicePath, serviceDisplay)){
+        if (service.getILastError() == 7){
+            if (!service.open(serviceName)){
+                qDebug() << "Não foi possível abrir o serviço." << QString::fromStdString(service.getLastError());
+                QVERIFY(false);
+                return;
+            }
+            if (service.uninstall()){
+                service.close();
+                qDebug() << "Desinstalado serviço antigo, tentando isntalar de novo";
+                if (!service.install(serviceName, servicePath, serviceDisplay)){
+                    qDebug() << "Falha ao tentar reinstalar serviço: " << QString::fromStdString(service.getLastError());
+                    QVERIFY(false);
+                    return;
+                } else {
+                    service.stop();
+                    service.close();
+                }
+            } else {
+                qDebug() << "Falha ao desinstalar serviço antigo: " << QString::fromStdString(service.getLastError());
+                QVERIFY(false);
+                return;
+            }
+        } else {
+            qDebug() << "Não instalado." << QString::fromStdString(service.getLastError());
+            QVERIFY(false);
+            return;
+        }
+    } else {
+        service.stop();
+        service.close();
+    }
+    if (!service.open(serviceName)){
+        qDebug() << "Não foi possível abrir o serviço." << QString::fromStdString(service.getLastError());
+        QVERIFY(false);
+        return;
+    }
+    if (service.start())
+        if (service.uninstall()){
+            QVERIFY(true);
+        } else {
+            qDebug() << "Falha ao desinstalar o serviço: " << QString::fromStdString(service.getLastError());
+            QVERIFY(false);
+        }
+    else{
+        qDebug() << "Falha ao startar o serviço: " << QString::fromStdString(service.getLastError());
+        QVERIFY(false);
+    }
+
     service.close();
 #else
     QSKIP("Teste desnecessário nessa plataforma");

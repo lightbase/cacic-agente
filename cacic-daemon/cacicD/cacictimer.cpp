@@ -226,6 +226,8 @@ QString CacicTimer::resolverURLAplicacao(){
         }else{
             return ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
         }
+    } else {
+        return QString();
     }
 }
 
@@ -424,7 +426,7 @@ bool CacicTimer::removeCacic280()
 
     // TODO: Ainda deve ser feita a desinstalação do serviço
 
-    QDir dir("C:\windows");
+    QDir dir("C:/windows");
     dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
     dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -440,6 +442,7 @@ bool CacicTimer::removeCacic280()
     }
 
 #endif
+    //Cade o retorno? Você colocou bool, pode colocar void ou vai ter o retorno?
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){

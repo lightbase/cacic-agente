@@ -27,3 +27,5 @@ const QString Identificadores::LOG_GERCOLS = QString("Gercols");
 const QString Identificadores::LOG_INSTALL_CACIC = QString("Install Cacic");
 
 const QString Identificadores::AGENTE_VERSAO = QString("3.1.1a");
+
+const QString Identificadores::CACIC_SERVICE_NAME = QString("cacicdaemon");
