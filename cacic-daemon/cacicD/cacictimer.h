@@ -52,6 +52,7 @@ private:
     void iniciarThread();
     QString resolverURLAplicacao();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
+    bool removeCacic280();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;

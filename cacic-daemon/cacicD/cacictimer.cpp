@@ -46,7 +46,8 @@ void CacicTimer::mslot(){
     if(comunicarGerente()){
 
         if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ) {
-            if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ) {
+            if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ||
+                    !removeCacic280() ) {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
             }
         }
@@ -414,6 +415,31 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
     }
 
     return retorno;
+}
+
+bool CacicTimer::removeCacic280()
+{
+
+#if defined(Q_OS_WIN)
+
+    // TODO: Ainda deve ser feita a desinstalação do serviço
+
+    QDir dir("C:\windows");
+    dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i<list.size(); i++){
+        if( list.at(i).fileName() == "chksys.exe" ||
+            list.at(i).fileName() == "chksys.exe" ||
+            list.at(i).fileName() == "cacicservice.exe") {
+
+            QFile fileHandler( list.at(i).absoluteFilePath() );
+            fileHandler.remove();
+        }
+    }
+
+#endif
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
