@@ -13,7 +13,6 @@ private:
     CColeta *oColeta;
     QJsonObject configReq;
     QLogger::QLoggerManager *logManager;
-
     bool percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno);
     bool verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta);
 public:
@@ -27,6 +26,7 @@ signals:
     void iniciaConfiguracao();
     void iniciaColeta();
     void fimColeta();
+
 };
 
 #endif // GERCOLS_H

@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     ../src/operatingsystem.cpp \
     ../src/wmi.cpp \
     ../src/QLogger.cpp \
-    ../src/identificadores.cpp
+    ../src/identificadores.cpp \
+    ../src/servicecontroller.cpp
 
 HEADERS += \
     installcacic.h \
@@ -67,6 +68,7 @@ HEADERS += \
     ../src/QLogger.h \
     ../src/console.h \
     ../src/identificadores.h
+    ../src/servicecontroller.h
 
 INCLUDEPATH += ../src \
 #               ../src/crypto++/include/

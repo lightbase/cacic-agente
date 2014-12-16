@@ -10,7 +10,7 @@ CTestCacic::CTestCacic(QObject *parent) :
 void CTestCacic::initTestCase()
 {
     this->OCacicComm = new CacicComm();
-    OCacicComm->setUrlGerente("http://localhost/cacic/app_dev.php");
+    OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
     this->testPath = QDir::currentPath() + "/teste";
@@ -95,6 +95,68 @@ void CTestCacic::testConsole()
 #endif
 }
 
+void CTestCacic::testServiceController()
+{
+#ifdef Q_OS_WIN
+    ServiceController service;
+    wchar_t serviceName[] = L"cacicdaemon";
+    wchar_t serviceDisplay[] = L"Cacic Service";
+    wchar_t servicePath[] = L"C:\\Cacic\\cacic-service.exe";
+    if (!service.install(serviceName, servicePath, serviceDisplay)){
+        if (service.getILastError() == 7){
+            if (!service.open(serviceName)){
+                qDebug() << "Não foi possível abrir o serviço." << QString::fromStdString(service.getLastError());
+                QVERIFY(false);
+                return;
+            }
+            if (service.uninstall()){
+                service.close();
+                qDebug() << "Desinstalado serviço antigo, tentando isntalar de novo";
+                if (!service.install(serviceName, servicePath, serviceDisplay)){
+                    qDebug() << "Falha ao tentar reinstalar serviço: " << QString::fromStdString(service.getLastError());
+                    QVERIFY(false);
+                    return;
+                } else {
+                    service.stop();
+                    service.close();
+                }
+            } else {
+                qDebug() << "Falha ao desinstalar serviço antigo: " << QString::fromStdString(service.getLastError());
+                QVERIFY(false);
+                return;
+            }
+        } else {
+            qDebug() << "Não instalado." << QString::fromStdString(service.getLastError());
+            QVERIFY(false);
+            return;
+        }
+    } else {
+        service.stop();
+        service.close();
+    }
+    if (!service.open(serviceName)){
+        qDebug() << "Não foi possível abrir o serviço." << QString::fromStdString(service.getLastError());
+        QVERIFY(false);
+        return;
+    }
+    if (service.start())
+        if (service.uninstall()){
+            QVERIFY(true);
+        } else {
+            qDebug() << "Falha ao desinstalar o serviço: " << QString::fromStdString(service.getLastError());
+            QVERIFY(false);
+        }
+    else{
+        qDebug() << "Falha ao startar o serviço: " << QString::fromStdString(service.getLastError());
+        QVERIFY(false);
+    }
+
+    service.close();
+#else
+    QSKIP("Teste desnecessário nessa plataforma");
+#endif
+}
+
 void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }
@@ -118,9 +180,9 @@ void CTestCacic::testSslConnection()
     bool ok;
     QJsonObject json = OCacicComm->comm("", &ok, QJsonObject(), true);
     QJsonValue jsonvalue = (!json["codestatus"].isNull()) ?
-                           json["codestatus"] :
-                           QJsonValue::fromVariant("-1");
-//    qDebug()<< jsonvalue.toDouble();
+                json["codestatus"] :
+        QJsonValue::fromVariant("-1");
+    //    qDebug()<< jsonvalue.toDouble();
     QVERIFY(jsonvalue.toString() == "200" || jsonvalue.toString() == "302");
 }
 
@@ -160,7 +222,7 @@ void CTestCacic::testJsonToFile()
 
 void CTestCacic::testJsonFromFile()
 {
-//    qDebug() << OCacic.getJsonFromFile("teste123.json");
+    //    qDebug() << OCacic.getJsonFromFile("teste123.json");
     QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
@@ -202,7 +264,7 @@ void CTestCacic::testGetTest()
     bool ok;
     QJsonObject envio;
     envio["computador"] = OCacicComp.toJsonObject();
-//    qDebug() << envio;
+    //    qDebug() << envio;
     OCacicComm->comm("/ws/neo/getTest", &ok, envio, true);
     QVERIFY(ok);
 }
@@ -213,7 +275,7 @@ void CTestCacic::testGetConfig()
     QJsonObject configEnvio;
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
     QJsonObject getConfig = OCacicComm->comm("/ws/neo/config", &ok, configEnvio);
-//    qDebug() << getConfig;
+    //    qDebug() << getConfig;
     OCacic.setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
@@ -312,27 +374,27 @@ void CTestCacic::testDownload()
              (downloaded.size() > 0) );
 }
 
-void CTestCacic::testStartService()
-{
-    bool ok;
-    QString exitStatus;
+//void CTestCacic::testStartService()
+//{
+//    bool ok;
+//    QString exitStatus;
 
-#ifdef Q_OS_WIN
-    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
-    qDebug() << exitStatus;
-#else
-    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
+//#ifdef Q_OS_WIN
+//    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
 //    qDebug() << exitStatus;
-#endif
-    QVERIFY(ok);
-}
+//#else
+//    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
+////    qDebug() << exitStatus;
+//#endif
+//    QVERIFY(ok);
+//}
 
 void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
     OCacic.setJsonToFile(oColeta.toJsonObject(), "coleta.json");
-//    qDebug() << coletaEnvio;
+    //    qDebug() << coletaEnvio;
     OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);
 }
@@ -382,9 +444,9 @@ void CTestCacic::cleanupTestCase()
     OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
-//    OCacic.deleteFile("getConfig.json");
+    //    OCacic.deleteFile("getConfig.json");
     OCacic.deleteFolder("./temp");
     OCacic.deleteFile("./install-cacic");
     OCacic.deleteFile("./gercols");
-//    OCacic.deleteFile("./coleta.json");
+    //    OCacic.deleteFile("./coleta.json");
 }

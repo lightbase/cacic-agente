@@ -18,6 +18,8 @@ public:
 
     static const QString ROTA_COLETA_DIFF;
 
+    static const QString ENDERECO_PATCH_CACIC;
+
     static const QString LOG_DAEMON;
 
     static const QString LOG_DAEMON_THREAD;
@@ -31,6 +33,8 @@ public:
     static const QString LOG_GERCOLS;
 
     static const QString AGENTE_VERSAO;
+
+    static const QString CACIC_SERVICE_NAME;
 
 };
 

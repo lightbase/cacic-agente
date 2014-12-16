@@ -88,6 +88,7 @@ QString OperatingSystem::coletaVersaoOsEmString(){
 #else
     return QString();
 #endif
+    return QString();
 }
 
 
@@ -144,9 +145,11 @@ QJsonObject OperatingSystem::toJsonObject()
     QStringList param;
     param << "SystemUpTime";
     json["tipo"] = QJsonValue::fromVariant(QString("windows"));
-    json["upTime"] = QJsonValue::fromVariant(wmi::search("Win32_PerfFormattedData_PerfOS_System", param);
+    json["upTime"] = QJsonValue::fromVariant(wmi::wmiSearch("Win32_PerfFormattedData_PerfOS_System", param).toObject()["SystemUpTime"].toInt());
 #else
     ConsoleObject console;
+    json["tipo"] = QJsonValue::fromVariant(QString("linux"));
+    json["upTime"] = QJsonValue::fromVariant(console("cat /proc/uptime | awk '{print $1}'").toInt());
     QStringList consoleOutput;
     consoleOutput = console("uname -i").split("\n");
     if(consoleOutput.contains("unknown")){

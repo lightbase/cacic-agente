@@ -35,6 +35,8 @@ public:
     void setDirProgram(const QString &value);
     void setPeriodicidadeExecucao(int value);
     bool comunicarGerente();
+    int getPeriodicidadeExecucaoAnterior() const;
+    void setPeriodicidadeExecucaoAnterior(int value);
 
 signals:
     void finalizar();
@@ -50,8 +52,10 @@ private:
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
+    QString resolverURLAplicacao();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
-
+    bool removeCacic280();
+    bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
     CheckModules *checkModules;
@@ -59,7 +63,9 @@ private:
     QString applicationDirPath;
     QJsonObject jsonConfig;
     int periodicidadeExecucao;
+    int periodicidadeExecucaoAnterior;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
+
 
 private slots:
     void mslot();

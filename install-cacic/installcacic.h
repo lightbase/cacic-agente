@@ -7,6 +7,7 @@
 #include <cacic_computer.h>
 #include <ccacic.h>
 #include <stdlib.h>
+#include <servicecontroller.h>
 #include "iostream"
 #include "QLogger.h"
 

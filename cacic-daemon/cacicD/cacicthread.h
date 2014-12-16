@@ -25,7 +25,7 @@ private:
     QLogger::QLoggerManager *logManager;
     void iniciarInstancias();
     void registraInicioColeta();
-    void registraFimColeta(QString msg);
+    void registraFimColeta(bool tipo);
     void iniciarModulo();
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
