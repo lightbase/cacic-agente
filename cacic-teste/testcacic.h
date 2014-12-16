@@ -61,8 +61,8 @@ private slots:
     void testpegarOS();
     void testLogin();
     void testSslConnection();
-    void testEnCrypt();
-    void testDeCrypt();
+//    void testEnCrypt();
+//    void testDeCrypt();
     void testCacicCompToJsonObject();
     void testOperatingSystemToJsonObject();
     void testJsonToFile();

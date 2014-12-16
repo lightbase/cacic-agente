@@ -260,7 +260,7 @@ QVariant CCacic::getValueFromRegistry(QString organization, QString application,
  ***********************************************************/
 void CCacic::removeRegistry(QString organization, QString application)
 {
-    QSettings registry(organization, application);
+    QSettings registry(QSettings::SystemScope, organization, application);
     registry.clear();
     registry.sync();
 }

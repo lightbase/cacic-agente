@@ -84,6 +84,8 @@ bool CacicThread::eviarColetaDiff(){
             retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
             if(retornoColeta.contains("error")) {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a coleta Diff: " + retornoColeta["error"].toString()));
+            } else {
+                QFile::remove(this->applicationDirPath + "/coletaDiff.json");
             }
             return ok;
         } else {

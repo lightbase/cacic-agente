@@ -367,7 +367,7 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 
     memory["Caption"] = component["description"];
     memory["DeviceLocator"] = component["physid"];
-    memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0) + " bytes");
+    memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0));
     QStringList consoleOutput;
     consoleOutput = console("dmidecode --type 17").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
@@ -388,7 +388,7 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 
     cpu["Caption"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0) + " Hz");
+    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(oCacic.convertDouble(component["capacity"].toDouble(),0));
 
     QStringList consoleOutput;
     consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
@@ -442,8 +442,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         pciMember["logicalname"] = pciJson["logicalname"];
         pciMember["serial"] = pciJson["serial"];
         pciMember["capacity"] = QJsonValue::fromVariant(
-                    oCacic.convertDouble(pciJson["capacity"].toDouble(), 0) +
-                " bits/s" );
+                    oCacic.convertDouble(pciJson["capacity"].toDouble(), 0));
 
         //        hardware["ethernet_card"] = pciMember;
         pciNetwork.append(pciMember);

@@ -8,7 +8,7 @@ Gercols::Gercols(QObject *parent)
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
 
@@ -45,7 +45,7 @@ void Gercols::run()
 
 /****************************************************************************************
  * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
- * o qual ainda não tem propósito, mas vai ter.
+ * os dados removidos e os dados inseridos.
  ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
