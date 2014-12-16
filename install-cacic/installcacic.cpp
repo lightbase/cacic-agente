@@ -7,9 +7,9 @@ InstallCacic::InstallCacic(QObject *parent) :
 
     if (oCacic.getCacicMainFolder().isEmpty()){
 #ifdef Q_OS_WIN
-        this->applicationDirPath = "c:/cacic";
+        this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
 #else
-        this->applicationDirPath = "/usr/share/cacic";
+        this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
 #endif
         oCacic.setCacicMainFolder(applicationDirPath);
     } else {

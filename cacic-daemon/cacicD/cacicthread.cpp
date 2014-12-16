@@ -132,7 +132,7 @@ bool CacicThread::enviarColeta() {
             }
         }else{
             if(realizarEnviodeColeta()){
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviou coleta forçadamente."));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta forçada enviada com sucesso."));
                 return true;
             }
             return false;

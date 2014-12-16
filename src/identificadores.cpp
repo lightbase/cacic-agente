@@ -14,6 +14,14 @@ const QString Identificadores::ROTA_COLETA = QString("/ws/neo/coleta");
 
 const QString Identificadores::ROTA_COLETA_DIFF = QString("/ws/neo/modifications");
 
+#ifdef Q_OS_LINUX
+const QString Identificadores::ENDERECO_PATCH_CACIC = QString("/usr/share/cacic");
+#endif
+
+#ifdef Q_OS__WIN
+const QString Identificadores::ENDERECO_PATCH_CACIC = QString("c:/cacic");
+#endif
+
 const QString Identificadores::LOG_DAEMON = QString("Cacic Daemon");
 
 const QString Identificadores::LOG_DAEMON_THREAD = QString("Cacic Daemon (Thread)");
