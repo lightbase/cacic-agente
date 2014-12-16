@@ -179,7 +179,6 @@ void CacicTimer::iniciarThread(){
             QString hash = listaModulos.at(var).toObject().value("hash").toString();
             definirDirModulo(getApplicationDirPath(), nome);
             if(nome.contains("gercols")){
-                //                if(!verificarseModuloJaFoiExecutado(nome,hash)){
                 if (QFile::exists(getDirProgram())){
                     cacicthread->setCcacic(ccacic);
                     cacicthread->setOCacicComm(OCacicComm);
@@ -195,6 +194,19 @@ void CacicTimer::iniciarThread(){
                 //                }else{
                 //                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O ("+ nome +") com o hash ("+ hash +") já foi executado antes.");
                 //                }
+//                if(!verificarseModuloJaFoiExecutado(nome,hash)){
+                    if (QFile::exists(getDirProgram())){
+                        cacicthread->setCcacic(ccacic);
+                        cacicthread->setOCacicComm(OCacicComm);
+                        cacicthread->setNomeModulo(nome);
+                        cacicthread->setCMutex(cMutex);
+                        cacicthread->setModuloDirPath(getDirProgram());
+                        cacicthread->start(QThread::NormalPriority);
+                        modulosExecutados[nome] = hash;
+                        ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
+                    }else{
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
+                    }
             }
         }
     }
