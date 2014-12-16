@@ -147,6 +147,8 @@ QJsonObject OperatingSystem::toJsonObject()
     json["upTime"] = QJsonValue::fromVariant(wmi::search("Win32_PerfFormattedData_PerfOS_System", param);
 #else
     ConsoleObject console;
+    json["tipo"] = QJsonValue::fromVariant(QString("linux"));
+    json["upTime"] = QJsonValue::fromVariant(console("cat /proc/uptime | awk '{print $1}'").toInt());
     QStringList consoleOutput;
     consoleOutput = console("uname -i").split("\n");
     if(consoleOutput.contains("unknown")){

@@ -178,23 +178,23 @@ void CacicTimer::iniciarThread(){
             QString nome = listaModulos.at(var).toObject().value("nome").toString();
             QString hash = listaModulos.at(var).toObject().value("hash").toString();
             definirDirModulo(getApplicationDirPath(), nome);
-            if(nome != "install-cacic" && nome != "cacic-service"){
-//                if(!verificarseModuloJaFoiExecutado(nome,hash)){
-                    if (QFile::exists(getDirProgram())){
-                        cacicthread->setCcacic(ccacic);
-                        cacicthread->setOCacicComm(OCacicComm);
-                        cacicthread->setNomeModulo(nome);
-                        cacicthread->setCMutex(cMutex);
-                        cacicthread->setModuloDirPath(getDirProgram());
-                        cacicthread->start(QThread::NormalPriority);
-                        modulosExecutados[nome] = hash;
-                        ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
-                    }else{
-                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
-                    }
-//                }else{
-//                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O ("+ nome +") com o hash ("+ hash +") já foi executado antes.");
-//                }
+            if(nome.contains("gercols")){
+                //                if(!verificarseModuloJaFoiExecutado(nome,hash)){
+                if (QFile::exists(getDirProgram())){
+                    cacicthread->setCcacic(ccacic);
+                    cacicthread->setOCacicComm(OCacicComm);
+                    cacicthread->setNomeModulo(nome);
+                    cacicthread->setCMutex(cMutex);
+                    cacicthread->setModuloDirPath(getDirProgram());
+                    cacicthread->start(QThread::NormalPriority);
+                    modulosExecutados[nome] = hash;
+                    ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
+                }else{
+                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
+                }
+                //                }else{
+                //                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O ("+ nome +") com o hash ("+ hash +") já foi executado antes.");
+                //                }
             }
         }
     }
@@ -204,11 +204,25 @@ QString CacicTimer::getApplicationDirPath() {
     return applicationDirPath;
 }
 
+
+QString CacicTimer::resolverURLAplicacao(){
+    if(QFile(ccacic->getCacicMainFolder() + "/getConfig.json").exists()){
+        QJsonObject result = ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json");
+        if(!result.contains("error") && !result.isEmpty()){
+            return QString(result["agentcomputer"].toObject()["applicationUrl"].toString());
+        }else{
+            return ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
+        }
+    }
+}
+
+
+
 bool CacicTimer::comunicarGerente(){
     bool ok;
     OCacic_Computer.coletaDados();
     //Sempre recuperar as informações aqui caso mude.
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    OCacicComm->setUrlGerente(resolverURLAplicacao());
     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
@@ -304,7 +318,6 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 }
 
 void CacicTimer::iniciarInstancias(){
-
     ccacic = new CCacic();
     ccacic->setCacicMainFolder(this->applicationDirPath);
     timer = new QTimer(this);
@@ -370,7 +383,7 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
 
                 // Lista diretorios a não serem excluidos
                 if( list.at(i).absoluteFilePath() == "/usr/share/cacic/Logs" ||
-                    list.at(i).absoluteFilePath() == "/usr/share/cacic/temp" ) {
+                        list.at(i).absoluteFilePath() == "/usr/share/cacic/temp" ) {
 
                     if( removeArquivosEstrangeiros(QDir(list.at(i).absoluteFilePath())) )
                         retorno = true;

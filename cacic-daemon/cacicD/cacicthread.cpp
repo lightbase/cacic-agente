@@ -67,7 +67,6 @@ bool CacicThread::verificaForcarColeta(){
         agenteConfigJson = result["agentcomputer"].toObject();
         configuracoes = agenteConfigJson["configuracoes"].toObject();
         if(!configuracoes["nu_forca_coleta"].isNull()){
-            QString valor = configuracoes["nu_forca_coleta"].toString();
             if(configuracoes["nu_forca_coleta"].toString() == "true" || configuracoes["nu_forca_coleta"].toString() == "True"){
                 return true;
             }

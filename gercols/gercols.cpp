@@ -44,9 +44,9 @@ void Gercols::run()
 }
 
 /****************************************************************************************
- * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
- * o qual ainda não tem propósito, mas vai ter.
- ****************************************************************************************/
+                 * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
+                 * o qual ainda não tem propósito, mas vai ter.
+                 ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
     QJsonObject primeiroJson, segundoJson, diferencaColeta, coletaDiff;
@@ -63,7 +63,7 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
                             diferencaColeta[key] = jsonRetorno;
                             if (i == 0){
                                 /*o primeiro json é o antigo, então o que for inserido *
-                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
+                                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
                                 coletaDiff["coletasRetiradas"] = diferencaColeta;
                             }
                             else {
@@ -89,9 +89,9 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     return retorno;
 }
 /*************************************************************************************************
- * Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
- * sendo ele objeto (json), array ou valor comum.
- **************************************************************************************************/
+                 * Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
+                 * sendo ele objeto (json), array ou valor comum.
+                 **************************************************************************************************/
 bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno){
     //Se o primeiro valor for nulo, o segundo não vai ser, então deverá ser gravado.
     bool diferenca = false;
@@ -140,7 +140,7 @@ bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &
         if (primeiroValor.toVariant() == segundoValor.toVariant()){
             return false;
         } else {
-//            jsonRetorno = !segundoValor.isNull() ? segundoValor : primeiroValor;
+            //            jsonRetorno = !segundoValor.isNull() ? segundoValor : primeiroValor;
             jsonRetorno = primeiroValor;
             return true;
         }
