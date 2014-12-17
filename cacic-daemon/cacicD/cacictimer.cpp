@@ -428,7 +428,7 @@ bool CacicTimer::removeCacic280()
 
 #if defined(Q_OS_WIN)
 
-    // TODO: Ainda deve ser feita a desinstalação do serviço
+    system("sc delete cacicservice");
 
     QDir dir("C:/windows");
     dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
