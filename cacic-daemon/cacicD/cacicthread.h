@@ -29,7 +29,7 @@ private:
     void iniciarModulo();
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
-    bool eviarColetaDiff();
+    bool enviarColetaDiff();
     QMutex *cMutex;
     QString nomeModulo;
     CCacic *ccacic;

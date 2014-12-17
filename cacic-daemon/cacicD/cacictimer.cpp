@@ -245,7 +245,6 @@ bool CacicTimer::comunicarGerente(){
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-
     QJsonObject resposta = OCacicComm->login(&ok);
     if(resposta.isEmpty() || resposta.contains("error")){
         //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
@@ -265,7 +264,7 @@ bool CacicTimer::comunicarGerente(){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("getConfig() success."));
             return true;
         } else{
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, " Erro ao pegar informações do gerente: " + resposta["error"].toString());
+            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Erro ao pegar informações do gerente: " + resposta["error"].toString());
             return false;
         }
     }else{
@@ -300,7 +299,6 @@ QJsonObject CacicTimer::getConfig(){
     QJsonObject as;
     as["computador"] = OCacic_Computer.toJsonObject();
     QJsonObject jsonresult = OCacicComm->comm(Identificadores::ROTA_GETCONFIG, &ok, as, true);
-
     if(jsonresult.contains("error")){
         QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;
@@ -385,7 +383,6 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-
         // Lista arquivos a não serem excluídos
 #if defined(Q_OS_WIN)
         if( !list.at(i).fileName().contains("cacic-service.exe") &&
@@ -397,13 +394,10 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
                 !list.at(i).fileName().contains("gercols") &&
                 !list.at(i).fileName().contains("getTest.json") &&
                 !list.at(i).fileName().contains("getConfig.json") ) {
-
             if ( list.at(i).isDir()) {
-
                 // Lista diretorios a não serem excluidos
                 if( list.at(i).absoluteFilePath() == "/usr/share/cacic/Logs" ||
                         list.at(i).absoluteFilePath() == "/usr/share/cacic/temp" ) {
-
                     if( removeArquivosEstrangeiros(QDir(list.at(i).absoluteFilePath())) )
                         retorno = true;
                     else
@@ -416,35 +410,27 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
                 retorno = ccacic->deleteFile(list.at(i).absoluteFilePath());
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo arquivo: " + list.at(i).fileName());
             }
-
         }
     }
-
     return retorno;
 }
 
 bool CacicTimer::removeCacic280()
-{
-
+{    
 #if defined(Q_OS_WIN)
-
     system("sc delete cacicservice");
-
     QDir dir("C:/windows");
     dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
     dir.setSorting(QDir::Size | QDir::Reversed);
-
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         if( list.at(i).fileName() == "chksys.exe" ||
                 list.at(i).fileName() == "chksys.exe" ||
                 list.at(i).fileName() == "cacicservice.exe") {
-
             QFile fileHandler( list.at(i).absoluteFilePath() );
             fileHandler.remove();
         }
     }
-
 #endif
     //Cade o retorno? Você colocou bool, pode colocar void ou vai ter o retorno?
 }

@@ -75,7 +75,7 @@ bool CacicThread::verificaForcarColeta(){
     return false;
 }
 
-bool CacicThread::eviarColetaDiff(){
+bool CacicThread::enviarColetaDiff(){
     if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
@@ -122,7 +122,7 @@ bool CacicThread::enviarColeta() {
     if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
-                if(realizarEnviodeColeta()){
+                if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
                     return true;
                 }
                 return false;
