@@ -1,3 +1,5 @@
+#if defined(Q_OS_WIN)
+
 #ifndef SERVICECONTROLLER_H
 #define SERVICECONTROLLER_H
 #include <Windows.h>
@@ -34,3 +36,4 @@ private:
 };
 
 #endif // SERVICECONTROLLER_H
+#endif // defined(Q_OS_WIN)

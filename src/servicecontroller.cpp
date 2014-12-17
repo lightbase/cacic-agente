@@ -1,3 +1,4 @@
+#if defined(Q_OS_WIN)
 #include "servicecontroller.h"
 
 ServiceController::ServiceController()
@@ -353,3 +354,4 @@ int ServiceController::trataErro(DWORD error)
     return this->iLastError;
 }
 
+#endif // defined(Q_OS_WIN)
