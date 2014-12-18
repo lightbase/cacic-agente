@@ -41,7 +41,6 @@ void CacicThread::iniciarModulo()
         QLogger::QLog_Error(Identificadores::LOG_DAEMON_THREAD, QString("Módulo inexistente."));
     }
     cMutex->unlock();
-    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Semáforo aberto com sucesso."));
 }
 
 void CacicThread::setOCacicComm(CacicComm *value)
@@ -84,11 +83,11 @@ bool CacicThread::eviarColetaDiff(){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta Diff ao gerente."));
             retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
             if(retornoColeta.contains("error")) {
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a coleta Diff: " + retornoColeta["error"].toString()));
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a deferença de coleta: " + retornoColeta["error"].toString()));
             }
             return ok;
         } else {
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a coleta Diff: Arquivo JSON vazio ou inexistente."));
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a diferença de coleta: Arquivo JSON vazio ou inexistente."));
             return false;
         }
     }

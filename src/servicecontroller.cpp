@@ -1,20 +1,21 @@
 #include "servicecontroller.h"
 
-ServiceController::ServiceController()
+ServiceController::ServiceController(std::wstring serviceName)
 {
+    this->serviceName = serviceName;
 }
 
-bool ServiceController::open(std::wstring serviceName)
+bool ServiceController::open(DWORD accessManager, DWORD accessService)
 {
-    if(!this->openMananger()){
+    if(!this->openMananger(accessManager)){
         return false;
     }
     // Abre o serviço
 
-    schService = OpenService(
+    schService = OpenServiceW(
                 schSCManager,         // SCM database
                 serviceName.c_str(),         // name of service
-                SERVICE_ALL_ACCESS);  // full access
+                accessService);  // full access
 
     if (schService == NULL)
     {
@@ -29,6 +30,9 @@ bool ServiceController::start(){
     SERVICE_STATUS_PROCESS ssStatus;
     DWORD dwBytesNeeded;
 
+    if (!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_QUERY_STATUS | SERVICE_START)){
+        return false;
+    }
     // Verifica o status em caso de não estar parado.
 
     if (!QueryServiceStatusEx(
@@ -39,13 +43,14 @@ bool ServiceController::start(){
                 &dwBytesNeeded ) )              // size needed if buffer is too small
     {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 
     if(ssStatus.dwCurrentState != SERVICE_STOPPED && ssStatus.dwCurrentState != SERVICE_STOP_PENDING)
     {
-        printf(">>>>>>>>>>>>>>> SERVICO NAO PARADO");
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 
@@ -61,6 +66,7 @@ bool ServiceController::start(){
                 NULL) )      // no arguments
     {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 
@@ -75,11 +81,13 @@ bool ServiceController::start(){
                 &dwBytesNeeded ) )              // if buffer too small
     {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 
     if (ssStatus.dwCurrentState == SERVICE_RUNNING)
     {
+        this->close();
         return true;
     }
     else
@@ -91,6 +99,7 @@ bool ServiceController::start(){
 //        printf("  Wait Hint: %d\n", ssStatus.dwWaitHint);
 
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 }
@@ -101,6 +110,9 @@ bool ServiceController::stop()
     LPSERVICE_STATUS lpsStatus;
     DWORD dwBytesNeeded;
 
+    if(!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_STOP | SERVICE_QUERY_STATUS)){
+        return false;
+    }
     //lpsStatus deve ser inicializada antes.
     lpsStatus = (LPSERVICE_STATUS) malloc(sizeof(LPSERVICE_STATUS));
 
@@ -113,12 +125,13 @@ bool ServiceController::stop()
     // Verifica o status em caso de não estar parado.
     if (lpsStatus->dwCurrentState == SERVICE_STOPPED){
 //        printf("Serviço parado com sucesso");
+        this->close();
         return true;
     } else if (lpsStatus->dwCurrentState != SERVICE_STOP_PENDING){
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
-
 
     // Verifica o status até que não fique pendente
     this->waitPending();
@@ -131,20 +144,26 @@ bool ServiceController::stop()
                 &dwBytesNeeded ) )              // if buffer too small
     {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
     if (ssStatus.dwCurrentState == SERVICE_STOPPED){
-
+        this->close();
         return true;
     } else {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
 }
 
-bool ServiceController::install(std::wstring serviceName, std::wstring servicePath, std::wstring displayName)
+bool ServiceController::install(std::wstring servicePath, std::wstring displayName)
 {
-    if(!this->openMananger()){
+    if (this->isInstalled()){
+        this->trataErro(ERROR_SERVICE_EXISTS);
+        return false;
+    }
+    if(!this->openMananger(SC_MANAGER_ALL_ACCESS)){
         this->trataErro(GetLastError());
         return false;
     }
@@ -170,26 +189,87 @@ bool ServiceController::install(std::wstring serviceName, std::wstring servicePa
     if (schService == NULL)
     {
         this->trataErro(GetLastError());
+        this->close();
         return false;
     }
-    else return true;
-
+    else{
+        this->close();
+        return true;
+    }
 }
 
 bool ServiceController::uninstall()
 {
-    //para o serviço antes para não ficar rodando mesmo após a desinstalação.
-    if (!this->stop()){
-        this->trataErro(GetLastError());
+    this->close();
+    if(!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_STOP | DELETE)){
         return false;
     }
+    //para o serviço para não ficar rodando mesmo após a desinstalação.
+    if (this->isRunning()){
+        if (!this->stop()){
+            this->trataErro(GetLastError());
+            this->close();
+            return false;
+        }
+    }
+
     if (!DeleteService(schService)){
         this->trataErro(GetLastError());
+        this->close();
         return false;
     } else {
+        this->close();
         return true;
     }
 
+}
+
+bool ServiceController::isInstalled()
+{
+    bool result = false;
+    // Abre o mananger
+    if (this->openMananger(0)) {
+        // Tenta abrir o serviço
+        this->schService = OpenService(this->schSCManager,
+                                       this->serviceName.c_str(),
+                                       SERVICE_QUERY_CONFIG);
+
+        if (this->schService) {
+            result = true;
+            CloseServiceHandle(this->schService);
+        }
+        CloseServiceHandle(this->schSCManager);
+    }
+    return result;
+}
+
+bool ServiceController::isRunning()
+{
+    SERVICE_STATUS_PROCESS ssStatus;
+    DWORD dwBytesNeeded;
+
+    if(!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_QUERY_STATUS)){
+        return false;
+    }
+
+    if (!QueryServiceStatusEx(
+                schService,                     // handle to service
+                SC_STATUS_PROCESS_INFO,         // info level
+                (LPBYTE) &ssStatus,             // address of structure
+                sizeof(SERVICE_STATUS_PROCESS), // size of structure
+                &dwBytesNeeded ) )              // if buffer too small
+    {
+        this->trataErro(GetLastError());
+        this->close();
+        return false;
+    }
+    if (ssStatus.dwCurrentState == SERVICE_RUNNING){
+        this->close();
+        return true;
+    } else {
+        this->close();
+        return false;
+    }
 }
 
 void ServiceController::close()
@@ -274,14 +354,14 @@ bool ServiceController::waitPending()
     return true;
 }
 
-bool ServiceController::openMananger()
+bool ServiceController::openMananger(DWORD managerAccess)
 {
     // Abre o ServiceControlerMananger
 
-    schSCManager = OpenSCManager(
+    schSCManager = OpenSCManagerW(
                 NULL,                    // local computer
                 NULL,                    // servicesActive database
-                SC_MANAGER_ALL_ACCESS);  // full access rights
+                managerAccess);  // full access rights
 
     if (NULL == schSCManager)
     {

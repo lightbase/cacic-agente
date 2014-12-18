@@ -8,7 +8,7 @@ Gercols::Gercols(QObject *parent)
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic_error.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
 
@@ -31,7 +31,7 @@ void Gercols::run()
         if (oldColeta.isEmpty() || this->verificaColeta(oldColeta, oColeta->toJsonObject())) {
             enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
-            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta realizada com sucesso."));
+            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Novas informações prontas para o envio ao gerente."));
         } else {
             QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta sem alterações."));
             enviaColeta["enviaColeta"] = false;
@@ -44,9 +44,9 @@ void Gercols::run()
 }
 
 /****************************************************************************************
-                 * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
-                 * o qual ainda não tem propósito, mas vai ter.
-                 ****************************************************************************************/
+ * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
+ * o qual ainda não tem propósito, mas vai ter.
+ ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
     QJsonObject primeiroJson, segundoJson, diferencaColeta, coletaDiff;
@@ -59,11 +59,10 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
                     QJsonValue jsonRetorno;
                     if (!segundoJson[key].isNull()){
                         if (this->percorreColeta(primeiroJson[key], segundoJson[key], jsonRetorno)){
-                            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta com algum valor diferente em " + key));
                             diferencaColeta[key] = jsonRetorno;
                             if (i == 0){
                                 /*o primeiro json é o antigo, então o que for inserido *
-                                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
+                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
                                 coletaDiff["coletasRetiradas"] = diferencaColeta;
                             }
                             else {
@@ -89,9 +88,9 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     return retorno;
 }
 /*************************************************************************************************
-                 * Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
-                 * sendo ele objeto (json), array ou valor comum.
-                 **************************************************************************************************/
+* Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
+* sendo ele objeto (json), array ou valor comum.
+**************************************************************************************************/
 bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno){
     //Se o primeiro valor for nulo, o segundo não vai ser, então deverá ser gravado.
     bool diferenca = false;

@@ -38,7 +38,7 @@ void CacicTimer::iniciarTimer()
     //        timer->start(getPeriodicidadeExecucao());
     //    }else{
     //        timer->start(this->periodicidadeExecucaoPadrao * 60000);
-    //        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
+    //        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
     //    }
 
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
@@ -48,7 +48,6 @@ void CacicTimer::iniciarTimer()
 //Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-
         if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ) {
             if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ||
                     !removeCacic280() ) {
@@ -81,19 +80,16 @@ bool CacicTimer::verificarEIniciarQMutex(){
      */
     if(!cacicthread->isRunning()){
         cMutex->lock();
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Semáforo fechado com sucesso.");
         return true;
     }else{
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Possivelmente o gercols travou e será finalizado.");
         try{
             cacicthread->terminate();
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Gercols finalizado com sucesso.");
         }catch (...){
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Falha ao finalizar gercols.");
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao finalizar gercols.");
             return false;
         }
         cMutex->lock();
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Semáforo fechado com sucesso.");
         return true;
     }
 }
@@ -109,15 +105,10 @@ bool CacicTimer::verificarModulos()
 
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
-#ifdef Q_OS_WIN
-        if(!(list.at(i).fileName() == "cacic-service.exe")){
-#else
-        if(!(list.at(i).fileName() == "cacic-service")){
-#endif
+        if(!(list.at(i).fileName().contains("cacic-service"))){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo versão antiga de " + list.at(i).fileName());
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
             }
             if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
@@ -130,16 +121,13 @@ bool CacicTimer::verificarModulos()
 
             novoModulo.close();
         } else {
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Atualização do serviço.");
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Atualização do serviço necessária.");
             QStringList arg;
             arg << "-updateService";
             QProcess installCacicProc;
             installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
 
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Matando serviço.");
-#ifdef Q_OS_WIN
-            system("sc stop cacicdaemon");
-#else
+#ifdef Q_OS_LINUX
             ConsoleObject console;
             console("/etc/init.d/cacic3 stop");
 #endif
@@ -153,22 +141,24 @@ bool CacicTimer::verificarModulos()
 }
 
 bool CacicTimer::verificarseModuloJaFoiExecutado(QString nome, QString hash){
-    QFile file("/etc/xdg/Lightbase/Cacic.conf");
-    if(!file.open(QIODevice::ReadOnly)) {
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Erro ao tentar ler o /etc/xdg/Lightbase/Cacic.conf."));
-    }
-    QTextStream in(&file);
-    QStringList fields;
-    while(!in.atEnd()) {
-        QString line = in.readLine();
-        fields.append(line.split(","));
-    }
-    file.close();
-    if(fields.contains(QString(nome.append("=").append(hash)))){
-        return true;
-    }else{
-        return false;
-    }
+    //oi? Tu chegou a ver a classe CCacic ?...
+//    QFile file("/etc/xdg/Lightbase/Cacic.conf");
+//    if(!file.open(QIODevice::ReadOnly)) {
+//        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Erro ao tentar ler o /etc/xdg/Lightbase/Cacic.conf."));
+//    }
+//    QTextStream in(&file);
+//    QStringList fields;
+//    while(!in.atEnd()) {
+//        QString line = in.readLine();
+//        fields.append(line.split(","));
+//    }
+//    file.close();
+//    if(fields.contains(QString(nome.append("=").append(hash)))){
+//        return true;
+//    }else{
+//        return false;
+//    }
+    return ccacic->getValueFromRegistry("Lightbase", "Cacic", nome).toString() == hash;
 }
 int CacicTimer::getPeriodicidadeExecucaoAnterior() const
 {
@@ -251,21 +241,17 @@ bool CacicTimer::comunicarGerente(){
         //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
         resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Erro no login: " + resposta["error"].toString());
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Erro no login: " + resposta["error"].toString());
             return false;
         }
     }
-
-    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "getLogin() success.");
     resposta = getTest();
     if(!resposta.contains("error")){
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("getTeste() success."));
         resposta = getConfig();
         if(!resposta.contains("error")){
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("getConfig() success."));
             return true;
         } else{
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, " Erro ao pegar informações do gerente: " + resposta["error"].toString());
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, " Erro ao pegar informações do gerente: " + resposta["error"].toString());
             return false;
         }
     }else{
@@ -282,7 +268,7 @@ QJsonObject CacicTimer::getTest(){
         jsonresult = OCacicComm->comm(Identificadores::ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
     }
     if(jsonresult.contains("error")){
-        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getTest(). " + jsonresult["error"].toString());
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getTest(). " + jsonresult["error"].toString());
         return jsonresult;
     }
     try{
@@ -290,7 +276,7 @@ QJsonObject CacicTimer::getTest(){
                               ccacic->getCacicMainFolder() + "/getTest.json");
         return jsonresult;
     } catch (...) {
-        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER,"Erro ao salvar o arquivo de configurações.");
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER,"Erro ao salvar o arquivo de configurações.");
         return jsonresult;
     }
 }
@@ -302,7 +288,7 @@ QJsonObject CacicTimer::getConfig(){
     QJsonObject jsonresult = OCacicComm->comm(Identificadores::ROTA_GETCONFIG, &ok, as, true);
 
     if(jsonresult.contains("error")){
-        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getConfig()." + jsonresult["error"].toString());
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;
     }
     try{
@@ -315,7 +301,7 @@ QJsonObject CacicTimer::getConfig(){
         }
         return jsonresult;
     } catch (...) {
-        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER,"Erro ao salvar o arquivo de configurações.");
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER,"Erro ao salvar o arquivo de configurações.");
         return jsonresult;
     }
 }
@@ -363,12 +349,12 @@ bool CacicTimer::verificarPeriodicidade()
             return true;
         } else if(configuracoes["nu_intervalo_exec"].isNull() || configuracoes["nu_intervalo_exec"].toString().toInt() == 0) {
             setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, QString("valor do timer com erro ou vazio"));
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("valor do timer com erro ou vazio"));
             return false;
         }
     }else{
         setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
-        QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, QString("getConfig.json com erro ou vazio"));
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("getConfig.json com erro ou vazio"));
         return false;
     }
     return false;
@@ -387,33 +373,29 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
     for (int i = 0; i<list.size(); i++){
 
         // Lista arquivos a não serem excluídos
-#if defined(Q_OS_WIN)
-        if( !list.at(i).fileName().contains("cacic-service.exe") &&
-        #else
         if( !list.at(i).fileName().contains("cacic-service") &&
-        #endif
-                !list.at(i).fileName().contains("cacic.log") &&
-                !list.at(i).fileName().contains("install-cacic") &&
-                !list.at(i).fileName().contains("gercols") &&
-                !list.at(i).fileName().contains("getTest.json") &&
-                !list.at(i).fileName().contains("getConfig.json") ) {
+            !list.at(i).fileName().contains("cacic.log") &&
+            !list.at(i).fileName().contains("install-cacic") &&
+            !list.at(i).fileName().contains("gercols") &&
+            !list.at(i).fileName().contains("getTest.json") &&
+            !list.at(i).fileName().contains("getConfig.json") ) {
 
             if ( list.at(i).isDir()) {
 
                 // Lista diretorios a não serem excluidos
-                if( list.at(i).absoluteFilePath() == "/usr/share/cacic/Logs" ||
-                        list.at(i).absoluteFilePath() == "/usr/share/cacic/temp" ) {
+                if( list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/Logs" ||
+                    list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/temp" ) {
 
                     if( removeArquivosEstrangeiros(QDir(list.at(i).absoluteFilePath())) )
-                        retorno = true;
+                        retorno = retorno && true;
                     else
-                        retorno = false;
+                        retorno = retorno && false;
                 } else {
-                    retorno = ccacic->deleteFolder(list.at(i).absoluteFilePath());
+                    retorno = retorno && ccacic->deleteFolder(list.at(i).absoluteFilePath());
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo diretorio: " + list.at(i).fileName());
                 }
             } else {
-                retorno = ccacic->deleteFile(list.at(i).absoluteFilePath());
+                retorno = retorno && ccacic->deleteFile(list.at(i).absoluteFilePath());
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo arquivo: " + list.at(i).fileName());
             }
 
@@ -425,33 +407,31 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
 
 bool CacicTimer::removeCacic280()
 {
-
+    bool retorno=true;
 #if defined(Q_OS_WIN)
 
-    // TODO: Ainda deve ser feita a desinstalação do serviço
-
-    QDir dir("C:/windows");
-    dir.setFilter(QDir::AllEntries | QDir::Hidden | QDir::NoDotAndDotDot );
-    dir.setSorting(QDir::Size | QDir::Reversed);
-
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i<list.size(); i++){
-        if( list.at(i).fileName() == "chksys.exe" ||
-                list.at(i).fileName() == "chksys.exe" ||
-                list.at(i).fileName() == "cacicservice.exe") {
-
-            QFile fileHandler( list.at(i).absoluteFilePath() );
-            fileHandler.remove();
+    ServiceController oldCacic(QString("cacicsustainservice").toStdWString());
+    if(oldCacic.isInstalled()){
+        if(!oldCacic.uninstall()){
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir serviço do cacic 2.8: " +
+                                                                   QString::fromStdString(oldCacic.getLastError()));
+        }
+    }
+    QStringList cacicFiles;
+    cacicFiles << "chksis.inf" << "chksis.exe" << "cacicservice.exe";
+    foreach(QString file, cacicFiles){
+        if(QFile::exists("c:/windows/"+file)){
+            retorno = retorno && ccacic->deleteFile("c:/windows/"+file);
         }
     }
 
 #endif
-    //Cade o retorno? Você colocou bool, pode colocar void ou vai ter o retorno?
+    return retorno;
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
 #if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "\\" + nome + ".exe");
+    setDirProgram(appDirPath + "/" + nome);
 #elif defined (Q_OS_LINUX)
     setDirProgram(appDirPath + "/"+ nome);
 #endif

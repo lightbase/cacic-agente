@@ -15,6 +15,7 @@
 #include  "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
+#include <servicecontroller.h>
 
 class CacicTimer : public QObject
 {

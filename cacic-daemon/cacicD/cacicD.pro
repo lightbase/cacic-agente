@@ -13,6 +13,7 @@ TARGET       = cacic-service
 CONFIG      += console
 CONFIG      -= app_bundle
 CONFIG      += static
+CONFIG      += c++11
 TEMPLATE     = app
 INCLUDEPATH += ../../src \
 #               ../../src/crypto++/include/
@@ -35,7 +36,8 @@ SOURCES     += main.cpp \
                ../../src/operatingsystem.cpp \
                ../../src/QLogger.cpp \
                ../../src/checkmodules.cpp \
-    ../../src/identificadores.cpp
+               ../../src/identificadores.cpp \
+               ../../src/servicecontroller.cpp
 
 
 HEADERS     += cacicd.h \
@@ -48,7 +50,8 @@ HEADERS     += cacicd.h \
                ../../src/cacic_comm.h \
                ../../src/QLogger.h \
                ../../src/checkmodules.h \
-    ../../src/identificadores.h
+               ../../src/identificadores.h \
+               ../../src/servicecontroller.h
 
 include(../../src/qtservice/src/qtservice.pri)
 

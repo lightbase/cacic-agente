@@ -1,25 +1,23 @@
 #ifndef SERVICECONTROLLER_H
 #define SERVICECONTROLLER_H
 #include <Windows.h>
-#include <stdlib.h>
 #include <string>
+#include <stdlib.h>
 
 class ServiceController
 {
 public:
-    ServiceController();
-    //Abre o serviço. Não deve ser chamada se a intenção é instalar o serviço.
-    bool open(std::wstring serviceName);
+    ServiceController(std::wstring serviceName);
     //Instala o serviço solicitado.
-    bool install(std::wstring serviceName, std::wstring servicePath, std::wstring displayName = L"");
+    bool install(std::wstring servicePath, std::wstring displayName = L"");
     //Starta o serviço.
     bool start();
     //Para o serviço.
     bool stop();
     //Desinstala o serviço aberto.
     bool uninstall();
-    //Fecha o controle do serviço.
-    void close();
+    bool isInstalled();
+    bool isRunning();
     std::string getLastError() const;
     int getILastError() const;
 
@@ -27,10 +25,14 @@ private:
     SC_HANDLE schSCManager, schService;
     std::string lastError;
     int iLastError;
+    std::wstring serviceName;
 
+    bool open(DWORD accessManager, DWORD accessService);
     bool waitPending();
-    bool openMananger();
+    bool openMananger(DWORD managerAccess);
     int trataErro(DWORD error);
+    //Fecha o controle do serviço.
+    void close();
 };
 
 #endif // SERVICECONTROLLER_H
