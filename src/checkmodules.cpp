@@ -5,7 +5,7 @@ CheckModules::CheckModules(const QString &workingPath, const QString &workingMod
 
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(workingPath + "/Logs/cacic.log", "CheckModules",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacic_error.log", "CheckModules",QLogger::ErrorLevel);
+    logManager->addDestination(workingPath + "/Logs/cacic.log", "CheckModules",QLogger::ErrorLevel);
     oCacic.setCacicMainFolder(workingPath);
 
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
@@ -31,7 +31,6 @@ QVariantMap CheckModules::getModules() const {
  *********************************************************************************/
 bool CheckModules::start(){
     bool ok = true;
-    QLogger::QLog_Info("CheckModules", QString("Verificando módulos."));
     QJsonObject configFile;
     configFile = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json");
     if (!configFile.isEmpty()) {
@@ -97,7 +96,6 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                                                     oCacic.getCacicMainFolder() + "/temp");
             } else {
                 moduloTemp->close();
-                QLogger::QLog_Info("CheckModules", QString(moduloName + " já existente na pasta temporária·"));
                 return true;
             }
             novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
@@ -126,7 +124,6 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
         }
     } else {
         modulo->close();
-        QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " desnecessária."));
         return true;
     }
 }

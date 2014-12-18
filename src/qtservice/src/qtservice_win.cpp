@@ -854,7 +854,7 @@ bool QtServiceBasePrivate::install(const QString &account, const QString &passwo
     // Open the Service Control Manager
     SC_HANDLE hSCM = pOpenSCManager(0, 0, SC_MANAGER_ALL_ACCESS);
     if (hSCM) {
-        QString acc = account;
+        QString acc = 0;
         DWORD dwStartType = startupType == QtServiceController::AutoStartup ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
         DWORD dwServiceType = SERVICE_WIN32_OWN_PROCESS;
         wchar_t *act = 0;

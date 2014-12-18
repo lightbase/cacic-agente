@@ -41,7 +41,6 @@ void CacicThread::iniciarModulo()
         QLogger::QLog_Error(Identificadores::LOG_DAEMON_THREAD, QString("Módulo inexistente."));
     }
     cMutex->unlock();
-    QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Semáforo aberto com sucesso."));
 }
 
 void CacicThread::setOCacicComm(CacicComm *value)
@@ -75,7 +74,7 @@ bool CacicThread::verificaForcarColeta(){
     return false;
 }
 
-bool CacicThread::eviarColetaDiff(){
+bool CacicThread::enviarColetaDiff(){
     if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
@@ -84,13 +83,11 @@ bool CacicThread::eviarColetaDiff(){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta Diff ao gerente."));
             retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
             if(retornoColeta.contains("error")) {
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a coleta Diff: " + retornoColeta["error"].toString()));
-            } else {
-                QFile::remove(this->applicationDirPath + "/coletaDiff.json");
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a deferença de coleta: " + retornoColeta["error"].toString()));
             }
             return ok;
         } else {
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a coleta Diff: Arquivo JSON vazio ou inexistente."));
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao ler a diferença de coleta: Arquivo JSON vazio ou inexistente."));
             return false;
         }
     }
@@ -124,7 +121,7 @@ bool CacicThread::enviarColeta() {
     if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
-                if(realizarEnviodeColeta()){
+                if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
                     return true;
                 }
                 return false;

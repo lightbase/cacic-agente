@@ -31,7 +31,7 @@ void Gercols::run()
         if (oldColeta.isEmpty() || this->verificaColeta(oldColeta, oColeta->toJsonObject())) {
             enviaColeta["enviaColeta"] = true;
             oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
-            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta realizada com sucesso."));
+            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Novas informações prontas para o envio ao gerente."));
         } else {
             QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta sem alterações."));
             enviaColeta["enviaColeta"] = false;
@@ -46,6 +46,7 @@ void Gercols::run()
 /****************************************************************************************
  * Verifica a diferença de coleta entre 2 json's e grava em um arquivo chamado coletaDiff
  * os dados removidos e os dados inseridos.
+ * o qual ainda não tem propósito, mas vai ter.
  ****************************************************************************************/
 bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta){
     bool retorno = false;
@@ -59,11 +60,10 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
                     QJsonValue jsonRetorno;
                     if (!segundoJson[key].isNull()){
                         if (this->percorreColeta(primeiroJson[key], segundoJson[key], jsonRetorno)){
-                            QLogger::QLog_Info(Identificadores::LOG_GERCOLS, QString("Coleta com algum valor diferente em " + key));
                             diferencaColeta[key] = jsonRetorno;
                             if (i == 0){
                                 /*o primeiro json é o antigo, então o que for inserido *
-                                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
+                                 * no 'diferencaColeta' é o que foi acrescido à coleta */
                                 coletaDiff["coletasRetiradas"] = diferencaColeta;
                             }
                             else {
@@ -89,9 +89,9 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     return retorno;
 }
 /*************************************************************************************************
-                 * Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
-                 * sendo ele objeto (json), array ou valor comum.
-                 **************************************************************************************************/
+* Aqui percorro o json de maneira recursiva pegando "primeiroValor" e comparo com o "segundoValor"
+* sendo ele objeto (json), array ou valor comum.
+**************************************************************************************************/
 bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno){
     //Se o primeiro valor for nulo, o segundo não vai ser, então deverá ser gravado.
     bool diferenca = false;
