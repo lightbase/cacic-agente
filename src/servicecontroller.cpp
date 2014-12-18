@@ -1,3 +1,4 @@
+#if defined(__WIN32)
 #include "servicecontroller.h"
 
 ServiceController::ServiceController(std::wstring serviceName)
@@ -433,3 +434,4 @@ int ServiceController::trataErro(DWORD error)
     return this->iLastError;
 }
 
+#endif // defined(Q_OS_WIN)

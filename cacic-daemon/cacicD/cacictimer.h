@@ -12,7 +12,7 @@
 #include "cacic_comm.h"
 #include "cacic_computer.h"
 #include "QLogger.h"
-#include  "cacicthread.h"
+#include "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
 #include <servicecontroller.h>
