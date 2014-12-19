@@ -149,7 +149,7 @@ QJsonObject OperatingSystem::toJsonObject()
 #else
     ConsoleObject console;
     json["tipo"] = QJsonValue::fromVariant(QString("linux"));
-    json["upTime"] = QJsonValue::fromVariant(console("cat /proc/uptime | awk '{print $1}'").toInt());
+    json["upTime"] = QJsonValue::fromVariant(static_cast<int> (console("cat /proc/uptime | awk '{print $1}'").toDouble()));
     QStringList consoleOutput;
     consoleOutput = console("uname -i").split("\n");
     if(consoleOutput.contains("unknown")){

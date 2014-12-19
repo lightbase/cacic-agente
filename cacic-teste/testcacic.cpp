@@ -22,6 +22,7 @@ void CTestCacic::initTestCase()
 
 void CTestCacic::testCreateFolder()
 {
+    ConsoleObject console;
     QVERIFY(OCacic.createFolder(testPath));
 }
 

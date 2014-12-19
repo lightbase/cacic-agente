@@ -234,7 +234,7 @@ bool CacicTimer::comunicarGerente(){
         if(!resposta.contains("error")){
             return true;
         } else{
-            QLogger::QLog_Error(Identificadores::LOG_DAEMON_TIMER, " Erro ao pegar informações do gerente: " + resposta["error"].toString());            return false;
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, " Erro ao pegar informações do gerente: " + resposta["error"].toString());            return false;
         }
     }else{
         return false;
