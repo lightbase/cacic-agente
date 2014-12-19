@@ -53,7 +53,6 @@ private:
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
-    QString resolverURLAplicacao();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
     bool removeCacic280();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);

@@ -209,31 +209,15 @@ QString CacicTimer::getApplicationDirPath() {
     return applicationDirPath;
 }
 
-
-QString CacicTimer::resolverURLAplicacao(){
-    if(QFile(ccacic->getCacicMainFolder() + "/getConfig.json").exists()){
-        QJsonObject result = ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json");
-        if(!result.contains("error") && !result.isEmpty()){
-            return QString(result["agentcomputer"].toObject()["applicationUrl"].toString());
-        }else{
-            return ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
-        }
-    } else {
-        return QString();
-    }
-    return "";
-}
-
-
-
 bool CacicTimer::comunicarGerente(){
     bool ok;
-    OCacic_Computer.coletaDados();
-    //Sempre recuperar as informações aqui caso mude.
-    OCacicComm->setUrlGerente(resolverURLAplicacao());
-    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Realizando comunicação em: " + OCacicComm->getUrlGerente());
+    OCacicComm = new CacicComm();
+    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    OCacic_Computer.coletaDados();
+    //Sempre recuperar as informações aqui caso mude.
+    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     QJsonObject resposta = OCacicComm->login(&ok);
     if(resposta.isEmpty() || resposta.contains("error")){
@@ -324,10 +308,6 @@ void CacicTimer::iniciarInstancias(){
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
-    OCacicComm = new CacicComm();
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     checkModules = new CheckModules(this->applicationDirPath, Identificadores::LOG_DAEMON_TIMER);
 }
@@ -418,11 +398,7 @@ bool CacicTimer::removeCacic280(){
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
-#if defined (Q_OS_WIN)
-    setDirProgram(appDirPath + "/" + nome);
-#elif defined (Q_OS_LINUX)
     setDirProgram(appDirPath + "/"+ nome);
-#endif
 }
 
 int CacicTimer::getPeriodicidadeExecucao() const

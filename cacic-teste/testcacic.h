@@ -55,7 +55,6 @@ private slots:
     void testDeleteFile();
     void testInterfaceDeRede();
     void testConsole();
-    void testServiceController();
     void testPegarUsu();
     void testcoletaIdOs();
     void testpegarOS();
@@ -78,7 +77,7 @@ private slots:
     void testLogger();
     void testEnviaColeta();
     void testDownload();
-//    void testStartService();
+    void testServiceController();
     void testGetModulesValues();
     void cleanupTestCase();
 };

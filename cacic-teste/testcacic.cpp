@@ -95,37 +95,6 @@ void CTestCacic::testConsole()
 #endif
 }
 
-void CTestCacic::testServiceController()
-{
-#ifdef Q_OS_WIN
-    wchar_t serviceName[] = L"cacicdaemon";
-    wchar_t servicePath[] = L"C:/Cacic/cacic-service.exe";
-    ServiceController service(serviceName);
-    if (!service.isInstalled()){
-        QStringList arg;
-        arg << "-i";
-        if (QProcess::execute(QString::fromWCharArray(servicePath), arg) != 0){
-            qDebug() << "Falha ao instalar serviço.";
-            QVERIFY(false);
-        }
-    }
-    if (!service.isRunning()){
-        if (!service.start()){
-            qDebug() << "Falha ao startar o serviço: " << QString::fromStdString(service.getLastError());
-            QVERIFY(false);
-        }
-    }
-    if (service.uninstall()){
-        QVERIFY(true);
-    } else {
-        qDebug() << "Falha ao desinstalar o serviço: " << QString::fromStdString(service.getLastError());
-        QVERIFY(false);
-    }
-#else
-    QSKIP("Teste desnecessário nessa plataforma");
-#endif
-}
-
 void CTestCacic::testPegarUsu(){
     QVERIFY(OCacicComp.getUser() != "");
 }
@@ -327,6 +296,7 @@ void CTestCacic::testLogger()
 void CTestCacic::testDownload()
 {
     QJsonObject ftp;
+
     ftp = OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
 
     OCacicComm->setFtpPass(ftp["senha"].toString());
@@ -334,29 +304,47 @@ void CTestCacic::testDownload()
     OCacicComm->fileDownload(ftp["tipo"].toString(),
                              ftp["url"].toString(),
                              (ftp["path"].toString().endsWith("/") ? ftp["path"].toString() : ftp["path"].toString() +"/") +
-                             "install-cacic",
+                             "cacic-service",
                              "");
-    QFile downloaded("install-cacic");
-
+    QFile downloaded("cacic-service");
     QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
              downloaded.exists()                  &&
              (downloaded.size() > 0) );
 }
 
-//void CTestCacic::testStartService()
-//{
-//    bool ok;
-//    QString exitStatus;
-
-//#ifdef Q_OS_WIN
-//    exitStatus = OCacic.startProcess("install-cacic.exe", true, &ok);
-//    qDebug() << exitStatus;
-//#else
-//    exitStatus = OCacic.startProcess("./install-cacic", true, &ok);
-////    qDebug() << exitStatus;
-//#endif
-//    QVERIFY(ok);
-//}
+void CTestCacic::testServiceController()
+{
+#ifdef Q_OS_WIN
+    wchar_t serviceName[] = L"cacicdaemon";
+    wchar_t *servicePath;
+    QString aux = QDir::currentPath() + "/cacic-service.exe";
+    servicePath = (wchar_t*) malloc(sizeof(wchar_t)*aux.size());
+    aux.toWCharArray(servicePath);
+    ServiceController service(serviceName);
+    if (!service.isInstalled()){
+        QStringList arg;
+        arg << "-i";
+        if (QProcess::execute(QString::fromWCharArray(servicePath), arg) != 0){
+            qDebug() << "Falha ao instalar serviço.";
+            QVERIFY(false);
+        }
+    }
+    if (!service.isRunning()){
+        if (!service.start()){
+            qDebug() << "Falha ao startar o serviço: " << QString::fromStdString(service.getLastError());
+            QVERIFY(false);
+        }
+    }
+    if (service.uninstall()){
+        QVERIFY(true);
+    } else {
+        qDebug() << "Falha ao desinstalar o serviço: " << QString::fromStdString(service.getLastError());
+        QVERIFY(false);
+    }
+#else
+    QSKIP("Teste desnecessário nessa plataforma");
+#endif
+}
 
 void CTestCacic::testEnviaColeta()
 {
@@ -373,6 +361,7 @@ void CTestCacic::testGetModulesValues()
     bool ok = true;
     oCheckModules = new CheckModules(QDir::currentPath(), "teste");
     oCheckModules->start();
+    qDebug() << "passed";
     QVariantMap modules = oCheckModules->getModules();
     QVariantMap::const_iterator i = modules.constBegin();
     if (!modules.empty()) {
