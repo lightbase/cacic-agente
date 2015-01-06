@@ -25,15 +25,15 @@ QString CCacic::getValueFromFile(QString sectionName, QString keyName, QString f
 
     while (!file.atEnd()){
         line = file.readLine();
-       if (line.contains(sectionName, Qt::CaseInsensitive)) {
-           do {
-               line = file.readLine();
-               if (line.contains(keyName, Qt::CaseInsensitive)) {
-                   file.close();
-                   return line.mid(sizeKeyName).trimmed();
-               }
-           } while (!file.atEnd());
-       }
+        if (line.contains(sectionName, Qt::CaseInsensitive)) {
+            do {
+                line = file.readLine();
+                if (line.contains(keyName, Qt::CaseInsensitive)) {
+                    file.close();
+                    return line.mid(sizeKeyName).trimmed();
+                }
+            } while (!file.atEnd());
+        }
     }
     file.close();
     return "";
@@ -204,9 +204,9 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
  ********************************/
 bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
     QString file1 = QString(QCryptographicHash::hash(
-                                       (document01.toByteArray()),QCryptographicHash::Md5).toHex());
+                                (document01.toByteArray()),QCryptographicHash::Md5).toHex());
     QString file2 = QString(QCryptographicHash::hash(
-                                        (document02.toByteArray()),QCryptographicHash::Md5).toHex());
+                                (document02.toByteArray()),QCryptographicHash::Md5).toHex());
     return file1 == file2;
 }
 /***********************************************************
@@ -214,7 +214,7 @@ bool CCacic::Md5IsEqual(QVariant document01,QVariant document02){
  ***********************************************************/
 bool CCacic::Md5IsEqual(QByteArray document01,QString document02){
     QString file1 = QString(QCryptographicHash::hash(
-                                       document01,QCryptographicHash::Md5).toHex());
+                                document01,QCryptographicHash::Md5).toHex());
     QString file2 = document02;
 
     return file1 == file2;
@@ -263,6 +263,38 @@ void CCacic::removeRegistry(QString organization, QString application)
     QSettings registry(QSettings::SystemScope, organization, application);
     registry.clear();
     registry.sync();
+}
+
+QString CCacic::toMD5(QString string){
+    return QString(QCryptographicHash::hash((string.toLatin1()),QCryptographicHash::Md5).toHex());
+}
+
+QString CCacic::convertDouble(const double &number, const int &precision)
+{
+    std::ostringstream ss;
+    ss.precision(precision);
+    ss << std::fixed << number;
+
+    return QString::fromStdString(ss.str()).trimmed();
+}
+
+std::string CCacic::genRandomString(const int &len)
+{
+    char* s;
+
+    s = (char *) malloc(sizeof(char) * len);
+
+    static const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+
+    for (int i = 0; i < len; ++i) {
+        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    s[len] = 0;
+    return std::string(s);
 }
 
 /*Getters/Setters
@@ -322,35 +354,6 @@ void CCacic::setChaveCrypt(const QString &value)
 {
     chaveCrypt = value;
 }
-
-QString CCacic::convertDouble(const double &number, const int &precision)
-{
-    std::ostringstream ss;
-    ss.precision(precision);
-    ss << std::fixed << number;
-
-    return QString::fromStdString(ss.str()).trimmed();
-}
-
-std::string CCacic::genRandomString(const int &len)
-{
-    char* s;
-
-    s = (char *) malloc(sizeof(char) * len);
-
-    static const char alphanum[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-
-    for (int i = 0; i < len; ++i) {
-        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
-    }
-
-    s[len] = 0;
-    return std::string(s);
-}
-
 /*Getters/Setters
  * End.
  */

@@ -22,7 +22,7 @@ win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     QT      += axcontainer
 } else {
-    LIBS    += -L/usr/lib -lcryptopp
+#    LIBS    += -L/usr/lib -lcryptopp
 }
 
 SOURCES     += main.cpp \

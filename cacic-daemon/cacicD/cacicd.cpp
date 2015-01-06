@@ -5,12 +5,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     try{
         ccacic = new CCacic();
         QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
-#ifdef Q_OS_WIN
-        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : "c:/cacic");
-#elif defined(Q_OS_LINUX)
-        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : "/usr/share/cacic");
-#endif
-
+        ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC);
         logManager = QLogger::QLoggerManager::getInstance();
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_DAEMON, QLogger::InfoLevel);
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_DAEMON ,QLogger::ErrorLevel);
@@ -21,7 +16,6 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     } catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido no construtor."));
     }
-
 }
 
 cacicD::~cacicD()
