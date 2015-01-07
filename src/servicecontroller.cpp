@@ -201,10 +201,10 @@ bool ServiceController::install(std::wstring servicePath, std::wstring displayNa
 
 bool ServiceController::uninstall()
 {
-    this->close();
-    if(!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_STOP | DELETE)){
-        return false;
+    if(this->schSCManager != NULL || this->schService != NULL){
+        this->close();
     }
+
     //para o serviço para não ficar rodando mesmo após a desinstalação.
     if (this->isRunning()){
         if (!this->stop()){
@@ -212,6 +212,11 @@ bool ServiceController::uninstall()
             this->close();
             return false;
         }
+    }
+
+    if(!this->open(SC_MANAGER_ALL_ACCESS, DELETE)){
+        this->trataErro(GetLastError());
+        return false;
     }
 
     if (!DeleteService(schService)){
