@@ -18,6 +18,7 @@ CacicTimer::~CacicTimer()
 void CacicTimer::reiniciarTimer(){
     timer->stop();
     timer->start(getPeriodicidadeExecucao());
+    
     if(QString::number(getPeriodicidadeExecucaoAnterior() / 60000) > 0 &&
             !QString::number(getPeriodicidadeExecucaoAnterior() / 60000).isNull()){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Periodicidade de execução atualizada de: " +
