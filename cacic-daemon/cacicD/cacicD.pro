@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += core
-QT       += gui
-QT       += widgets
+QT       -= gui
+QT       -= widgets
 QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
@@ -38,8 +38,7 @@ SOURCES     += main.cpp \
                ../../src/QLogger.cpp \
                ../../src/checkmodules.cpp \
                ../../src/identificadores.cpp \
-               ../../src/servicecontroller.cpp \
-               trayicon.cpp
+               ../../src/servicecontroller.cpp
 
 
 HEADERS     += cacicd.h \
@@ -53,11 +52,7 @@ HEADERS     += cacicd.h \
                ../../src/QLogger.h \
                ../../src/checkmodules.h \
                ../../src/identificadores.h \
-               ../../src/servicecontroller.h \
-               trayicon.h
+               ../../src/servicecontroller.h
 
 include(../../src/qtservice/src/qtservice.pri)
-
-RESOURCES += \
-    image.qrc
 
