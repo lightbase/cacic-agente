@@ -55,16 +55,17 @@ void CacicTimer::mslot(){
             }
         }
 
-        if (!checkModules->start()){
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
-        }
-        verificarModulos();
         if (verificarEIniciarQMutex()) {
             iniciarThread();
             if(verificarPeriodicidade()){
                 reiniciarTimer();
             }
         }
+
+        if (!checkModules->start()){
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
+        }
+        verificarModulos();
     } else {
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao comunicar com gerente."));
     }

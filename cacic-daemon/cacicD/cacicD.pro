@@ -5,7 +5,8 @@
 #-------------------------------------------------
 
 QT       += core
-QT       -= gui
+QT       += gui
+QT       += widgets
 QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
@@ -22,7 +23,7 @@ win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     QT      += axcontainer
 } else {
-    LIBS    += -L/usr/lib -lcryptopp
+#    LIBS    += -L/usr/lib -lcryptopp
 }
 
 SOURCES     += main.cpp \
@@ -37,7 +38,8 @@ SOURCES     += main.cpp \
                ../../src/QLogger.cpp \
                ../../src/checkmodules.cpp \
                ../../src/identificadores.cpp \
-               ../../src/servicecontroller.cpp
+               ../../src/servicecontroller.cpp \
+               trayicon.cpp
 
 
 HEADERS     += cacicd.h \
@@ -51,7 +53,11 @@ HEADERS     += cacicd.h \
                ../../src/QLogger.h \
                ../../src/checkmodules.h \
                ../../src/identificadores.h \
-               ../../src/servicecontroller.h
+               ../../src/servicecontroller.h \
+               trayicon.h
 
 include(../../src/qtservice/src/qtservice.pri)
+
+RESOURCES += \
+    image.qrc
 

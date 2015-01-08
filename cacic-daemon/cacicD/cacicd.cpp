@@ -18,9 +18,17 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         this->createApplication(argc, argv);
 
         setServiceFlags(QtService::Default);
+
+        if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Sistema não suporta tray icon."));
+        } else {
+            TrayIcon *trayIcon = new TrayIcon();
+            trayIcon->show();
+        }
     } catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido no construtor."));
     }
+
 
 }
 

@@ -8,6 +8,7 @@
 #include "checkmodules.h"
 #include "identificadores.h"
 #include "ccacic.h"
+#include "trayicon.h"
 
 #define APP_VERSION "3.0"
 

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/trayIcon">
+        <file>img/cacic_logo.png</file>
+    </qresource>
+</RCC>

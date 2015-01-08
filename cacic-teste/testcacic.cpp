@@ -23,6 +23,7 @@ void CTestCacic::initTestCase()
 void CTestCacic::testCreateFolder()
 {
     ConsoleObject console;
+    qDebug() << QString::number(static_cast<int> (console("cat /proc/uptime | awk '{print $1}'").toDouble()));
     QVERIFY(OCacic.createFolder(testPath));
 }
 
