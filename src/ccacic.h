@@ -62,6 +62,7 @@ public:
 
     bool Md5IsEqual(QVariant document01, QVariant document02);
     bool Md5IsEqual(QByteArray document01, QString document02);
+    QString toMD5(QString string);
 private:
     QString cacicMainFolder;
     QString mainModuleName;
