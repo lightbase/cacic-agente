@@ -19,9 +19,9 @@ void InstallCacicGui::on_pushButton_clicked()
     if(verificarDadosInseridos()){
         ui->lErrorMsg->setText(QString("Iniciando a instalação ..."));
         QStringList parametros;
-        parametros.append(QString("-host=" + ui->leHost->text().toStdString()));
-        parametros.append(QString("-user=" + ui->leUsuario->text().toStdString()));
-        parametros.append(QString("-pass=" + ui->leSenha->text().toStdString()));
+        parametros.append(QString("-host=" + ui->leHost->text()));
+        parametros.append(QString("-user=" + ui->leUsuario->text()));
+        parametros.append(QString("-pass=" + ui->leSenha->text()));
         if(iniciarInstalacao(parametros)){
 
         }else{
@@ -46,7 +46,7 @@ bool InstallCacicGui::verificarDadosInseridos(){
 }
 
 void InstallCacicGui::instanciarObjetos(){
-    ui->widget->setWindowTitle(QString("Instalação do Cacic"));
+    ui->centralWidget->setWindowTitle(QString("Instalação do Cacic"));
     ui->lErrorMsg->setHidden(true);
     ui->leHost->setPlaceholderText(QString("Endereço do gerente"));
     ui->leUsuario->setPlaceholderText(QString("usuário"));
