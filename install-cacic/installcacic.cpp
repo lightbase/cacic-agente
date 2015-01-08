@@ -281,7 +281,6 @@ void InstallCacic::install()
                     std::cout << "Instalando serviço." << "\n";
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Instalando serviço."));
                 }
-                //tenta a instalação novamente.
 
                 if (!service.install(QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
                                      QString("Cacic Daemon").toStdWString())){
