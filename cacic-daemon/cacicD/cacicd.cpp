@@ -13,7 +13,6 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         this->createApplication(argc, argv);
 
         setServiceFlags(QtService::Default);
-
     } catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido no construtor."));
     }

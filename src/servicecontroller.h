@@ -32,7 +32,7 @@ private:
     bool open(DWORD accessManager, DWORD accessService);
     bool waitPending();
     bool openMananger(DWORD managerAccess);
-    int trataErro(DWORD error);
+    int trataErro(DWORD error, std::string detailError);
     //Fecha o controle do serviço.
     void close();
 };
