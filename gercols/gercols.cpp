@@ -103,7 +103,12 @@ bool Gercols::percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &
         QJsonObject jsonObj;
         foreach(QString key, primeiroValor.toObject().keys()){
             //Tirando algumas variáveis que modificam sempre.
-            if (key != "FreeSpace" && key != "clock" && key != "CurrentClockSpeed" && key != "ipv4" && key != "ipv6") {
+            if (    key != "FreeSpace" &&
+                    key != "clock" &&
+                    key != "CurrentClockSpeed" &&
+                    key != "ipv4" &&
+                    key != "ipv6" &&
+                    key != "MaxClockSpeed") {
                 QJsonValue subRetorno;
                 //Mando percorrer cada key do objeto também.
                 if (this->percorreColeta(primeiroValor.toObject()[key], segundoValor.toObject()[key], subRetorno)){

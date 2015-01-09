@@ -26,22 +26,22 @@ static {
     DEFINES += STATIC
     message("Static build.")
 
-    win32 {
+#    win32 {
 #        LIBS += -LC:\Devel\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
-    } else {
-        DEPENDPATH += ../lib
-        LIBS += ../lib/libcryptopp.a
+#    } else {
+#        DEPENDPATH += ../lib
+#        LIBS += ../lib/libcryptopp.a
         LIBS += ../lib/libQt5Core.a
         LIBS += ../lib/libQt5Network.a
-    }
+#    }
 
 } else {
     win32 {
 #        LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
-        LIBS += -L/usr/lib -lcryptopp
+#        LIBS += -L/usr/lib -lcryptopp
     }
 }
 

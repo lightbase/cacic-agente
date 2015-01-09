@@ -54,7 +54,7 @@ win32 {
     QT   += axcontainer
 #    LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
-    LIBS += -L/usr/lib -lcryptopp
+#    LIBS += -L/usr/lib -lcryptopp
 }
 
 

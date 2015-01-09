@@ -20,7 +20,7 @@ bool ServiceController::open(DWORD accessManager, DWORD accessService)
 
     if (schService == NULL)
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Open Service Handle");
         CloseServiceHandle(schSCManager);
         return false;
     }
@@ -43,16 +43,22 @@ bool ServiceController::start(){
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // size needed if buffer is too small
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Start Service on Query Status");
         this->close();
         return false;
     }
 
     if(ssStatus.dwCurrentState != SERVICE_STOPPED && ssStatus.dwCurrentState != SERVICE_STOP_PENDING)
     {
-        this->trataErro(GetLastError());
         this->close();
-        return false;
+        // Serviço já está rodando..
+        //TODO: VERIFICAR SE ESTÁ PAUSADO, OU SEI LÁ, E COLOCAR PRA RODAR
+        if (ssStatus.dwCurrentState == SERVICE_RUNNING){
+            return true;
+        } else {
+            this->trataErro(GetLastError(), "Start Service, service is not stopped");
+            return false;
+        }
     }
 
     // Espera o serviço parar compeltamente.
@@ -66,7 +72,7 @@ bool ServiceController::start(){
                 0,           // number of arguments
                 NULL) )      // no arguments
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Starting Service");
         this->close();
         return false;
     }
@@ -81,7 +87,7 @@ bool ServiceController::start(){
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Start Service on Query Status");
         this->close();
         return false;
     }
@@ -99,7 +105,7 @@ bool ServiceController::start(){
 //        printf("  Check Point: %d\n", ssStatus.dwCheckPoint);
 //        printf("  Wait Hint: %d\n", ssStatus.dwWaitHint);
 
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Start Service Failed");
         this->close();
         return false;
     }
@@ -129,7 +135,7 @@ bool ServiceController::stop()
         this->close();
         return true;
     } else if (lpsStatus->dwCurrentState != SERVICE_STOP_PENDING){
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Stop Service");
         this->close();
         return false;
     }
@@ -144,7 +150,7 @@ bool ServiceController::stop()
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Stop Service, Query Status");
         this->close();
         return false;
     }
@@ -152,7 +158,7 @@ bool ServiceController::stop()
         this->close();
         return true;
     } else {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Stop Service Failed");
         this->close();
         return false;
     }
@@ -161,11 +167,11 @@ bool ServiceController::stop()
 bool ServiceController::install(std::wstring servicePath, std::wstring displayName)
 {
     if (this->isInstalled()){
-        this->trataErro(ERROR_SERVICE_EXISTS);
+        this->trataErro(ERROR_SERVICE_EXISTS, "Install Service");
         return false;
     }
     if(!this->openMananger(SC_MANAGER_ALL_ACCESS)){
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Install Service");
         return false;
     }
 
@@ -189,7 +195,7 @@ bool ServiceController::install(std::wstring servicePath, std::wstring displayNa
 
     if (schService == NULL)
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Install Service, Handle gets null");
         this->close();
         return false;
     }
@@ -208,19 +214,19 @@ bool ServiceController::uninstall()
     //para o serviço para não ficar rodando mesmo após a desinstalação.
     if (this->isRunning()){
         if (!this->stop()){
-            this->trataErro(GetLastError());
+            this->trataErro(GetLastError(), "Uninstall Service, can't stop service");
             this->close();
             return false;
         }
     }
 
     if(!this->open(SC_MANAGER_ALL_ACCESS, DELETE)){
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Uninstall Service, Open Service Handle Failed");
         return false;
     }
 
     if (!DeleteService(schService)){
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Uninstall Service");
         this->close();
         return false;
     } else {
@@ -265,7 +271,7 @@ bool ServiceController::isRunning()
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Service is Running, Query Status");
         this->close();
         return false;
     }
@@ -308,7 +314,7 @@ bool ServiceController::waitPending()
                 sizeof(SERVICE_STATUS_PROCESS), // size of structure
                 &dwBytesNeeded ) )              // if buffer too small
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "Wait Pending, Query Status");
         return false;
     }
     // Save the tick count and initial checkpoint.
@@ -337,7 +343,7 @@ bool ServiceController::waitPending()
                     sizeof(SERVICE_STATUS_PROCESS), // size of structure
                     &dwBytesNeeded ) )              // size needed if buffer is too small
         {
-            this->trataErro(GetLastError());
+            this->trataErro(GetLastError(), "Wait Pending, Query Status");
             return false;
         }
 
@@ -352,7 +358,7 @@ bool ServiceController::waitPending()
         {
             if(GetTickCount()-dwStartTickCount > 30000)
             {
-                this->trataErro(ERROR_TIMEOUT);
+                this->trataErro(ERROR_TIMEOUT, "Wait Pending");
                 return false;
             }
         }
@@ -371,68 +377,68 @@ bool ServiceController::openMananger(DWORD managerAccess)
 
     if (NULL == schSCManager)
     {
-        this->trataErro(GetLastError());
+        this->trataErro(GetLastError(), "OpenMananger");
         return false;
     } else {
         return true;
     }
 }
 
-int ServiceController::trataErro(DWORD error)
+int ServiceController::trataErro(DWORD error, std::string detailError)
 {
     if (error == ERROR_ACCESS_DENIED){
-        this->lastError = "Acesso negado";
+        this->lastError = detailError + ": Acesso negado";
         this->iLastError = 0;
     } else if (error == ERROR_CIRCULAR_DEPENDENCY){
-        this->lastError = "A circular service dependency was specified";
+        this->lastError = detailError + ": A circular service dependency was specified";
         this->iLastError = 1;
     } else if (error == ERROR_DUPLICATE_SERVICE_NAME){
-        this->lastError = "Nome do serviço já existente";
+        this->lastError = detailError + ": Nome do serviço já existente";
         this->iLastError = 2;
     } else if (error == ERROR_INVALID_HANDLE){
-        this->lastError = "Service Control Mananger inválido";
+        this->lastError = detailError + ": Service Control Mananger inválido";
         this->iLastError = 3;
     } else if (error == ERROR_INVALID_NAME){
-        this->lastError = "Nome inválido";
+        this->lastError = detailError + ": Nome inválido";
         this->iLastError = 4;
     } else if (error == ERROR_INVALID_PARAMETER){
-        this->lastError = "Parâmetro invalido";
+        this->lastError = detailError + ": Parâmetro invalido";
         this->iLastError = 5;
     } else if (error == ERROR_INVALID_SERVICE_ACCOUNT){
-        this->lastError = "Conta do serviço inválida";
+        this->lastError = detailError + ": Conta do serviço inválida";
         this->iLastError = 6;
     } else if (error == ERROR_SERVICE_EXISTS){
-        this->lastError = "Serviço já existente";
+        this->lastError = detailError + ": Serviço já existente";
         this->iLastError = 7;
     } else if (error == ERROR_SERVICE_MARKED_FOR_DELETE){
-        this->lastError = "Serviço marcado para exclusão";
+        this->lastError = detailError + ": Serviço marcado para exclusão";
         this->iLastError = 8;
     } else if (error == ERROR_TIMEOUT){
-        this->lastError = "Tempo limite atingido";
+        this->lastError = detailError + ": Tempo limite atingido";
         this->iLastError = 9;
     } else if (error == ERROR_PATH_NOT_FOUND){
-        this->lastError = "Path não encontrado";
+        this->lastError = detailError + ": Path não encontrado";
         this->iLastError = 10;
     } else if (error == ERROR_SERVICE_ALREADY_RUNNING){
-        this->lastError = "Serviço já está rodando";
+        this->lastError = detailError + ": Serviço já está rodando";
         this->iLastError = 11;
     } else if (error == ERROR_SERVICE_DATABASE_LOCKED){
-        this->lastError = "A base de dados de serviço está trancada";
+        this->lastError = detailError + ": A base de dados de serviço está trancada";
         this->iLastError = 12;
     } else if (error == ERROR_SERVICE_DISABLED){
-        this->lastError = "O serviço foi desativado";
+        this->lastError = detailError + ": O serviço foi desativado";
         this->iLastError = 13;
     } else if (error == ERROR_SERVICE_REQUEST_TIMEOUT){
-        this->lastError = "O processo do serviço foi iniciado, mas não completou a operação";
+        this->lastError = detailError + ": O processo do serviço foi iniciado, mas não completou a operação";
         this->iLastError = 14;
     } else if (error == ERROR_SERVICE_NOT_ACTIVE){
-        this->lastError = "O serviço não está ativo";
+        this->lastError = detailError + ": O serviço não está ativo";
         this->iLastError = 15;
     } else if (error == ERROR_SERVICE_DOES_NOT_EXIST){
-        this->lastError = "O serviço não existe";
+        this->lastError = detailError + ": O serviço não existe";
         this->iLastError = 16;
     } else {
-        this->lastError = "Desconhecido: " + std::to_string(error);
+        this->lastError = detailError + ": Desconhecido - " + std::to_string(error);
         this->iLastError = -1;
     }
 
