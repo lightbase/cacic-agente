@@ -52,7 +52,6 @@ bool InstallCacicGui::verificarDadosInseridos(){
 }
 
 void InstallCacicGui::instanciarObjetos(){
-    ui->centralWidget->setWindowTitle(QString("Instalação do Cacic"));
     ui->leHost->setPlaceholderText(QString("Endereço do gerente"));
     ui->leUsuario->setPlaceholderText(QString("usuário"));
     ui->leSenha->setPlaceholderText(QString("senha"));
@@ -358,7 +357,8 @@ void InstallCacicGui::install()
             } else {
                 mensagemDeProgresso("Iniciando serviço...");
                 ConsoleObject console;
-                mensagemDeProgresso(QString(console("/etc/init.d/cacic3 start")));
+                console("/etc/init.d/cacic3 start");
+                mensagemDeProgresso("Instalado com sucesso.");
             }
 
 #endif
