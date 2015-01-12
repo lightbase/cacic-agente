@@ -4,7 +4,6 @@
 InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new Ui::InstallCacicGui)
 {
     ui->setupUi(this);
-    instanciarObjetos();
     ui->centralWidget->setWindowFlags(Qt::WindowMaximizeButtonHint);
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     if (oCacic.getCacicMainFolder().isEmpty()){
@@ -27,16 +26,31 @@ InstallCacicGui::~InstallCacicGui()
     delete ui;
 }
 
-void InstallCacicGui::on_pushButton_clicked()
+void InstallCacicGui::on_pbInstalar_clicked()
 {
+    QStringList parametros;
+    if(getModoDeExecucao() == Identificadores::DESISNSTALAR){
+        parametros.clear();
+        parametros.append(QString("-uninstall"));
+        run(parametros, parametros.size());
+        return;
+    }
     if(verificarDadosInseridos()){
-        QStringList parametros;
         parametros.append(QString("-host=" + ui->leHost->text()));
         parametros.append(QString("-user=" + ui->leUsuario->text()));
         parametros.append(QString("-pass=" + ui->leSenha->text()));
-        run(parametros, parametros.size());
+        if(getModoDeExecucao() == Identificadores::INSTALAR){
+            run(parametros, parametros.size());
+            return;
+        }
+        if(getModoDeExecucao() ==  Identificadores::MODIFICAR){
+            parametros.prepend(QString("-configure"));
+            run(parametros, parametros.size());
+            return;
+        }
     }else{
         mensagemDeProgresso("Preencha os campos corretamente.", true, true);
+        return;
     }
 }
 
@@ -51,10 +65,51 @@ bool InstallCacicGui::verificarDadosInseridos(){
     return false;
 }
 
-void InstallCacicGui::instanciarObjetos(){
-    ui->leHost->setPlaceholderText(QString("Endereço do gerente"));
-    ui->leUsuario->setPlaceholderText(QString("usuário"));
-    ui->leSenha->setPlaceholderText(QString("senha"));
+void InstallCacicGui::resolverModoDeExecucao(){
+    if(getModoDeExecucao() == Identificadores::INSTALAR){
+        ui->cbHost->setDisabled(true);
+        ui->cbHost->setVisible(false);
+        ui->cbUsu->setDisabled(true);
+        ui->cbUsu->setVisible(false);
+        ui->cbPass->setDisabled(true);
+        ui->cbPass->setVisible(false);
+        ui->leHost->setPlaceholderText(QString("Endereço do gerente"));
+        ui->leUsuario->setPlaceholderText(QString("usuário"));
+        ui->leSenha->setPlaceholderText(QString("senha"));
+    }
+    if(getModoDeExecucao() == Identificadores::MODIFICAR){
+        ui->cbHost->setDisabled(false);
+        ui->cbHost->setVisible(true);
+        ui->cbUsu->setDisabled(false);
+        ui->cbUsu->setVisible(true);
+        ui->cbPass->setDisabled(false);
+        ui->cbPass->setVisible(true);
+        ui->leHost->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        ui->leHost->setReadOnly(true);
+        ui->leUsuario->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        ui->leUsuario->setReadOnly(true);
+        ui->leSenha->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        ui->leSenha->setReadOnly(true);
+        ui->pbInstalar->setText("Modificar configurações");
+    }
+    if(getModoDeExecucao() == Identificadores::DESISNSTALAR){
+        ui->leHost->setEnabled(false);
+        ui->leHost->setReadOnly(true);
+        ui->leHost->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        ui->leUsuario->setEnabled(false);
+        ui->leUsuario->setReadOnly(true);
+        ui->leUsuario->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        ui->leSenha->setEnabled(false);
+        ui->leSenha->setReadOnly(true);
+        ui->leSenha->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        ui->cbHost->setVisible(true);
+        ui->cbHost->setEnabled(false);
+        ui->cbUsu->setVisible(true);
+        ui->cbUsu->setEnabled(false);
+        ui->cbPass->setVisible(true);
+        ui->cbPass->setEnabled(false);
+        ui->pbInstalar->setText("Desinstalar o Cacic");
+    }
     ui->pteResult->setReadOnly(true);
     ui->pteResult->setFont(QFont("Arial", 10));
 }
@@ -69,7 +124,7 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     //se tiver usuario, senha e url e nenhum parâmetro a mais.
     if (ok){
         //inicia a instalação.
-        if(!verificarRoot()){
+        if(!oCacic.verificarRoot()){
             mensagemDeProgresso("O Cacic deve ser instalado com premissões de administrador.\n\n");
             if(!isGui()){
                 emit finished();
@@ -80,6 +135,7 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         //Se tiver -uninstall como parâmetro, inicia desinstalação.
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Desinstalando cacic!");
+        mensagemDeProgresso("Desinstalando, aguarde ...", true, true);
         this->uninstall();
     } else if ((param.contains("default")) && (param["default"] == "configure")) {
         //Se tiver -configure, inicia configuração (trocar de host, usuário ou senha)
@@ -213,7 +269,7 @@ void InstallCacicGui::configurar(const QMap<QString, QString> &param)
         if (param.contains("host")){
             reg["applicationUrl"] = param["host"];
             QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Host alterado para " + param["host"]));
-            mensagemDeProgresso(QString("Url alterada para \"" + param["host"] + "\""));
+            mensagemDeProgresso(QString("Url alterada para \"" + param["host"] + "\""), true, true);
         }
         if (param.contains("user")){
             reg["usuario"] = param["user"];
@@ -447,7 +503,7 @@ void InstallCacicGui::uninstall()
             if( !column.isEmpty() ) {
                 i++;
                 if( i == 2 ) {
-                    qDebug() << column;
+                    mensagemDeProgresso(column);
                     console("kill -9 " + column);
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Cacic-service interrompido."));
                 }
@@ -483,8 +539,20 @@ void InstallCacicGui::uninstall()
         }
     }
 
-    mensagemDeProgresso("Cacic desinstalado com sucesso.");
+    mensagemDeProgresso("Cacic desinstalado com sucesso.\n");
 }
+
+int InstallCacicGui::getModoDeExecucao() const
+{
+    return modoDeExecucao;
+}
+
+void InstallCacicGui::setModoDeExecucao(int value)
+{
+    modoDeExecucao = value;
+    resolverModoDeExecucao();
+}
+
 bool InstallCacicGui::isGui() const
 {
     return gui;
@@ -494,7 +562,6 @@ void InstallCacicGui::setGui(bool value)
 {
     gui = value;
 }
-
 
 QMap<QString, QString> InstallCacicGui::getArgumentos()
 {
@@ -506,19 +573,36 @@ void InstallCacicGui::setArgumentos(QMap<QString, QString> value)
     this->argumentos = value;
 }
 
-bool InstallCacicGui::verificarRoot(){
-#ifdef Q_OS_WIN
-    QFile myFile("C:\Windows\System32\cacic.tmp");
-#elif defined(Q_OS_LINUX)
-    QFile myFile("/etc/cacic.tmp");
-#endif
-    if(myFile.open(QIODevice::ReadWrite | QIODevice::Text)) {
-        if(myFile.exists()){
-            myFile.remove();
+void InstallCacicGui::on_cbHost_stateChanged(int arg1)
+{
+    resolverAcoesAoSelecionarCheckBox(arg1, ui->leHost, QString("applicationUrl"));
+}
+
+void InstallCacicGui::on_cbUsu_stateChanged(int arg1)
+{
+    resolverAcoesAoSelecionarCheckBox(arg1, ui->leUsuario, QString("usuario"));
+}
+
+void InstallCacicGui::on_cbPass_stateChanged(int arg1)
+{
+    resolverAcoesAoSelecionarCheckBox(arg1, ui->leSenha, QString("password"));
+}
+
+void InstallCacicGui::resolverAcoesAoSelecionarCheckBox(int arg1, QLineEdit *le, QString registro){
+    if(arg1 >= 1){
+        le->setReadOnly(false);
+        le->clear();
+        le->setFocus();
+    }else{
+        le->setReadOnly(true);
+        if(registro == "applicationUrl"){
+            le->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
         }
-        return true;
-    } else {
-        return false;
+        if(registro == "usuario"){
+            le->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        }
+        if(registro == "password"){
+            le->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        }
     }
-    return false;
 }

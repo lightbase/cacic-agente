@@ -1,12 +1,15 @@
 #include "installcacicgui.h"
 #include "noroot.h"
+#include "uninstallcacic.h"
 #include <QApplication>
+#include "ccacic.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     InstallCacicGui *w = new InstallCacicGui();
-    if(w->verificarRoot()){
+    CCacic *oCaic = new CCacic();
+    if(oCaic->verificarRoot()){
         w->parent()->connect(w, SIGNAL(finished()), &a, SLOT(quit()));
         if(argc > 1){
             QStringList args;
@@ -16,8 +19,16 @@ int main(int argc, char *argv[])
             w->setGui(false);
             QMetaObject::invokeMethod(w, "run", Qt::QueuedConnection, Q_ARG(QStringList, args), Q_ARG(int, argc));
         }else{
-            w->setGui(true);
-            w->show();
+            if(oCaic->verificarCacicInstalado()){
+                UninstallCacic *uni = new UninstallCacic();
+                uni->parent()->connect(uni, SIGNAL(finished()), &a, SLOT(quit()));
+                uni->setObjInstallCacic(w);
+                uni->show();
+            }else{
+                w->setGui(true);
+                w->setModoDeExecucao(Identificadores::INSTALAR);
+                w->show();
+            }
         }
     }else{
         if(argc > 1){

@@ -29,22 +29,25 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>30</y>
+      <x>10</x>
+      <y>20</y>
       <width>411</width>
       <height>16</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="text">
      <string>O Cacic deve ser instalado com permissões de administrador.</string>
     </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
+    </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btFechar">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -60,6 +63,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>btFechar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

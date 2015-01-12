@@ -297,6 +297,50 @@ std::string CCacic::genRandomString(const int &len)
     return std::string(s);
 }
 
+/**************************************************************
+ * Verifica se esta execultando com permissoes de admnistrador.
+ *************************************************************/
+bool CCacic::verificarRoot(){
+#ifdef Q_OS_WIN
+    QFile myFile("C:\Windows\System32\cacic.tmp");
+#elif defined(Q_OS_LINUX)
+    QFile myFile("/etc/cacic.tmp");
+#endif
+    if(myFile.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        if(myFile.exists()){
+            myFile.remove();
+        }
+        return true;
+    } else {
+        return false;
+    }
+    return false;
+}
+
+/***********************************************************
+ * Verifica se o cacic-agente ja esta instalado.
+ ***********************************************************/
+bool CCacic::verificarCacicInstalado() {
+#ifdef Q_OS_WIN
+    //falta fazer pro windows.
+#elif defined (Q_OS_LINUX)
+    ConsoleObject console;
+    //    QStringList packageInfo = console(QString("dpkg --get-selections | grep -v '\^lib\\|\^fonts' | grep cacic-agente")).split("\n", QString::SkipEmptyParts);
+    //    if(!packageInfo.isEmpty()){
+    //        QStringList novaLista = packageInfo.takeFirst().trimmed().split("\t");
+    //        if(novaLista.takeFirst() == "cacic-agente" && novaLista.takeLast() == "install"){
+    QStringList status = console(QString("service cacic3 status")).trimmed().split(" ", QString::SkipEmptyParts);
+    if(status.isEmpty()){
+        return false;
+    }else{
+        if(QString::fromStdString(status.takeAt(status.size() - 2).toStdString()) == QString("not")){
+            return false;
+        }
+    }
+    return true;
+#endif
+}
+
 /*Getters/Setters
  * Begin:
  */

@@ -14,6 +14,8 @@
 #include "iostream"
 #include "QLogger.h"
 #include <QTextCursor>
+#include <QMessageBox>
+#include <QLineEdit>
 
 
 namespace Ui {
@@ -35,13 +37,13 @@ public:
     void registro();
     bool isGui() const;
     void setGui(bool value);
-    bool verificarRoot();
+    int getModoDeExecucao() const;
+    void setModoDeExecucao(int value);
 
 private:
     Ui::InstallCacicGui *ui;
     bool verificarDadosInseridos();
-    void instanciarObjetos();
-    bool iniciarInstalacao(QStringList parametros);  
+    bool iniciarInstalacao(QStringList parametros);
     void uninstall();
     QStringList listaDeParametros;
     QMap<QString, QString> argumentos;
@@ -50,18 +52,27 @@ private:
     CCacic oCacic;
     QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
+    int modoDeExecucao;
     bool gui;
     void parametrosIncorretos();
     void updateService();
     void configurar(const QMap<QString, QString> &param);
     void install();
     void mensagemDeProgresso(QString msg, bool limparMsgAnterior = false, bool primeiraLinha = false);
+    void resolverModoDeExecucao();
+    void resolverAcoesAoSelecionarCheckBox(int arg1, QLineEdit *le, QString registro);
 
 signals:
     void finished();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_pbInstalar_clicked();
+
+    void on_cbHost_stateChanged(int arg1);
+
+    void on_cbUsu_stateChanged(int arg1);
+
+    void on_cbPass_stateChanged(int arg1);
 
 public slots:
     void run(QStringList argv, int argc);

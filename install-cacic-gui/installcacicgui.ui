@@ -7,108 +7,129 @@
     <x>0</x>
     <y>0</y>
     <width>650</width>
-    <height>270</height>
+    <height>250</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>650</width>
-    <height>270</height>
+    <height>250</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>650</width>
-    <height>270</height>
+    <height>250</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Instalação do Cacic</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>201</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Preencha o formulário:</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>14</x>
-      <y>41</y>
-      <width>301</width>
-      <height>171</height>
+      <x>40</x>
+      <y>0</y>
+      <width>581</width>
+      <height>191</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="0" colspan="2">
-      <widget class="QLabel" name="label_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Senha:</string>
+        <string>Preencha o formulário:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QLineEdit" name="leUsuario"/>
-     </item>
-     <item row="3" column="0" colspan="4">
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Instalar o Cacic</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2" colspan="2">
-      <widget class="QLineEdit" name="leSenha">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="3">
-      <widget class="QLineEdit" name="leHost">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="echoMode">
-        <enum>QLineEdit::Normal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Host:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="3">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Usuário:</string>
-       </property>
-      </widget>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Senha:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2" colspan="2">
+          <widget class="QLineEdit" name="leSenha">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Usuário:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QCheckBox" name="cbUsu">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Host:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="3">
+          <widget class="QLineEdit" name="leHost">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="echoMode">
+            <enum>QLineEdit::Normal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLineEdit" name="leUsuario"/>
+         </item>
+         <item row="0" column="4">
+          <widget class="QCheckBox" name="cbHost">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QCheckBox" name="cbPass">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="4">
+          <widget class="QPushButton" name="pbInstalar">
+           <property name="text">
+            <string>Instalar o Cacic</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="pteResult"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
-   <widget class="QPlainTextEdit" name="pteResult">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>40</y>
-      <width>311</width>
-      <height>161</height>
-     </rect>
-    </property>
-   </widget>
+   <zorder>layoutWidget</zorder>
+   <zorder>cbHost</zorder>
+   <zorder>checkBox_2</zorder>
+   <zorder>cbPass</zorder>
+   <zorder>pushButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -116,7 +137,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
@@ -125,7 +146,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -135,7 +156,7 @@
   <tabstop>leHost</tabstop>
   <tabstop>leUsuario</tabstop>
   <tabstop>leSenha</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>pbInstalar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -16,7 +16,7 @@ public:
     ~NoRoot();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_btFechar_clicked();
 
 signals:
     void finished();

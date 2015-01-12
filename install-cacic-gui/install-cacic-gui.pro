@@ -24,7 +24,8 @@ SOURCES +=  main.cpp\
             ../src/QLogger.cpp \
             ../src/identificadores.cpp \
             ../src/servicecontroller.cpp \
-    noroot.cpp
+    noroot.cpp \
+    uninstallcacic.cpp
 
 HEADERS  += installcacicgui.h \
             ../src/ccacic.h \
@@ -35,8 +36,10 @@ HEADERS  += installcacicgui.h \
             ../src/QLogger.h \
             ../src/console.h \
             ../src/identificadores.h \
-    noroot.h
+    noroot.h \
+    uninstallcacic.h
             ../src/servicecontroller.h
 
 FORMS    += installcacicgui.ui \
-    noroot.ui
+    noroot.ui \
+    uninstallcacic.ui

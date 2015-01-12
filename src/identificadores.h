@@ -36,6 +36,12 @@ public:
 
     static const QString CACIC_SERVICE_NAME;
 
+    enum {
+        INSTALAR = 0,
+        DESISNSTALAR = 1,
+        MODIFICAR = 2
+    };
+
 };
 
 #endif // IDENTIFICADORES_H

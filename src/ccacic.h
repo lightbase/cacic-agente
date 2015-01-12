@@ -17,6 +17,7 @@
 //#include "../src/crypto++/include/base64.h"
 //#include "../src/crypto++/include/modes.h"
 #include <QCryptographicHash>
+#include <console.h>
 
 class CCacic
 {
@@ -39,6 +40,11 @@ public:
     void removeRegistry(QString organization, QString application);
     QString convertDouble(const double &number, const int &precision = 10);
     std::string genRandomString(const int &len = 32);
+    bool Md5IsEqual(QVariant document01, QVariant document02);
+    bool Md5IsEqual(QByteArray document01, QString document02);
+    QString toMD5(QString string);
+    bool verificarRoot();
+    bool verificarCacicInstalado();
 
 //Geters/seters:
 
@@ -60,9 +66,6 @@ public:
     QString getChaveCrypt() const;
     void setChaveCrypt(const QString &value);
 
-    bool Md5IsEqual(QVariant document01, QVariant document02);
-    bool Md5IsEqual(QByteArray document01, QString document02);
-    QString toMD5(QString string);
 private:
     QString cacicMainFolder;
     QString mainModuleName;

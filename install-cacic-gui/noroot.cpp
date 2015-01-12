@@ -13,7 +13,7 @@ NoRoot::~NoRoot()
     delete ui;
 }
 
-void NoRoot::on_pushButton_clicked()
+void NoRoot::on_btFechar_clicked()
 {
     emit finished();
 }
