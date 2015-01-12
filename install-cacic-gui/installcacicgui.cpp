@@ -135,7 +135,6 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     } else if ((param.contains("default")) && (param["default"] == "uninstall")){
         //Se tiver -uninstall como parâmetro, inicia desinstalação.
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Desinstalando cacic!");
-        mensagemDeProgresso("Desinstalando, aguarde ...", true, true);
         this->uninstall();
     } else if ((param.contains("default")) && (param["default"] == "configure")) {
         //Se tiver -configure, inicia configuração (trocar de host, usuário ou senha)
@@ -473,6 +472,7 @@ QMap<QString, QString> InstallCacicGui::validaParametros(QStringList argv, int a
 
 void InstallCacicGui::uninstall()
 {
+    mensagemDeProgresso("Desinstalando, aguarde ...", true, true);
     bool ok;
 #ifdef Q_OS_WIN
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
@@ -485,31 +485,32 @@ void InstallCacicGui::uninstall()
 
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
-    QStringList outputColumns;
+    //QStringList outputColumns;
     mensagemDeProgresso("Parando serviço...");
+    console("killall -eq cacic-service gercols");
     mensagemDeProgresso(QString(console("/etc/init.d/cacic3 stop")));
 
-    outputColumns = console("ps aux | grep cacic-service").split("\n");
-    outputColumns.removeLast();
+    //outputColumns = console("ps aux | grep cacic-service").split("\n");
+   // outputColumns.removeLast();
 
-    foreach(QString processString, outputColumns) {
+//    foreach(QString processString, outputColumns) {
 
-        if(processString.contains("grep"))
-            continue;
+//        if(processString.contains("grep"))
+//            continue;
 
-        QStringList columns = processString.split(" ");
-        int i = 0;
-        foreach(QString column, columns){
-            if( !column.isEmpty() ) {
-                i++;
-                if( i == 2 ) {
-                    mensagemDeProgresso(column);
-                    console("kill -9 " + column);
-                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Cacic-service interrompido."));
-                }
-            }
-        }
-    }
+//        QStringList columns = processString.split(" ");
+//        int i = 0;
+//        foreach(QString column, columns){
+//            if( !column.isEmpty() ) {
+//                i++;
+//                if( i == 2 ) {
+//                    mensagemDeProgresso(column);
+//                    console("kill -9 " + column);
+//                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Cacic-service interrompido."));
+//                }
+//            }
+//        }
+//    }
 #endif
     oCacic.removeRegistry("Lightbase", "Cacic");
 

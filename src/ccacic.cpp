@@ -333,13 +333,16 @@ bool CCacic::verificarCacicInstalado() {
     if(status.isEmpty()){
         return false;
     }else{
-        if(QString::fromStdString(status.takeAt(status.size() - 2).toStdString()) == QString("not")){
+        if((QString::compare(status.takeAt(status.size() - 2), "unrecognized", Qt::CaseSensitive) == 0)
+                || (QString::compare(status.takeAt(status.size() - 2), "not", Qt::CaseSensitive) == 0)){
             return false;
         }
     }
     return true;
 #endif
 }
+
+
 
 /*Getters/Setters
  * Begin:
