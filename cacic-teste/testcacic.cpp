@@ -98,7 +98,13 @@ void CTestCacic::testConsole()
 }
 
 void CTestCacic::testPegarUsu(){
-    QVERIFY(OCacicComp.getUser() != "");
+
+    OperatingSystem OS;
+
+    if(OS.getIdOs() == OperatingSystem::LINUX_ARCH) // No Arch o comando who está retornando vazio
+        QVERIFY(OCacicComp.getUser() == "");
+    else
+        QVERIFY(OCacicComp.getUser() != "");
 }
 
 //void CTestCacic::testJsonValueFromJsonString()
