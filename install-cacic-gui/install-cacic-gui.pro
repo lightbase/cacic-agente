@@ -43,3 +43,6 @@ HEADERS  += installcacicgui.h \
 FORMS    += installcacicgui.ui \
     noroot.ui \
     uninstallcacic.ui
+
+RESOURCES += \
+    cacicfiles.qrc

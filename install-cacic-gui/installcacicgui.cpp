@@ -5,7 +5,7 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
 {
     ui->setupUi(this);
     ui->centralWidget->setWindowFlags(Qt::WindowMaximizeButtonHint);
-    this->setWindowIcon(QIcon("/usr/share/cacic/cacic-logo.png"));
+    this->setWindowIcon(QIcon(":/CacicFiles/cacic-logo.png"));
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     if (oCacic.getCacicMainFolder().isEmpty()){
         this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
