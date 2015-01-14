@@ -333,6 +333,7 @@ bool CCacic::verificarCacicInstalado() {
     //    if(!packageInfo.isEmpty()){
     //        QStringList novaLista = packageInfo.takeFirst().trimmed().split("\t");
     //        if(novaLista.takeFirst() == "cacic-agente" && novaLista.takeLast() == "install"){
+    ConsoleObject console;
     QStringList status = console(QString("service cacic3 status")).trimmed().split(" ", QString::SkipEmptyParts);
     if(status.isEmpty()){
         return false;
