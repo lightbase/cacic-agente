@@ -4,7 +4,6 @@
 #define SERVICECONTROLLER_H
 #include <Windows.h>
 #include <string>
-#include <stdlib.h>
 
 class ServiceController
 {

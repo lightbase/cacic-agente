@@ -23,7 +23,7 @@ QJsonObject cacic_software::coletaWin()
 {
     QJsonObject softwaresJson;
     QStringList regedit;
-    //No windows, ele armazena os dados em 2 locais diferentes se for 64x. Um para programas 86x e outro pra 64x.
+    //No windows, ele armazena os dados em 2 locais diferentes se for x64. Um para programas x86 e outro pra x64.
     regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
     regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
     foreach(QString registry, regedit){

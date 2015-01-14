@@ -302,7 +302,7 @@ std::string CCacic::genRandomString(const int &len)
  *************************************************************/
 bool CCacic::verificarRoot(){
 #ifdef Q_OS_WIN
-    QFile myFile("C:\Windows\System32\cacic.tmp");
+    QFile myFile("C:\\Windows\\System32\\cacic.tmp");
 #elif defined(Q_OS_LINUX)
     QFile myFile("/etc/cacic.tmp");
 #endif
@@ -320,11 +320,15 @@ bool CCacic::verificarRoot(){
 /***********************************************************
  * Verifica se o cacic-agente ja esta instalado.
  ***********************************************************/
-bool CCacic::verificarCacicInstalado() {
+bool CCacic::verificarCacicInstalado() {    
 #ifdef Q_OS_WIN
-    //falta fazer pro windows.
+    ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
+    if(service.isInstalled() || service.isRunning()){
+        return true;
+    }else{
+        return false;
+    }
 #elif defined (Q_OS_LINUX)
-    ConsoleObject console;
     //    QStringList packageInfo = console(QString("dpkg --get-selections | grep -v '\^lib\\|\^fonts' | grep cacic-agente")).split("\n", QString::SkipEmptyParts);
     //    if(!packageInfo.isEmpty()){
     //        QStringList novaLista = packageInfo.takeFirst().trimmed().split("\t");

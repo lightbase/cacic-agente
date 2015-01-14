@@ -5,12 +5,27 @@
 #-------------------------------------------------
 
 QT       += core gui network
-QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
+QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
+CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = install-cacic-gui
 TEMPLATE = app
+
+static {
+    DEFINES += STATIC
+    message("Static build.")
+        QT += axcontainer
+        LIBS += ../lib/libQt5Core.a
+        LIBS += ../lib/libQt5Network.a
+} else {
+    win32 {
+        QT += axcontainer
+    }
+}
+
+
 
 INCLUDEPATH += ../src \
 

@@ -237,7 +237,7 @@ void InstallCacicGui::updateService()
             QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Serviço não instalado, reinstalando..."));
             if(!service.install(QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
                                 L"Cacic Daemon")){
-                mensagemDeProgresso("Não foi possível instalar o serviço: " + service.getLastError());
+                mensagemDeProgresso("Não foi possível instalar o serviço: " + QString::fromStdString(service.getLastError()));
                 QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível instalar o serviço: " +
                                                                                QString::fromStdString(service.getLastError())));
             } else {
@@ -246,7 +246,7 @@ void InstallCacicGui::updateService()
             }
         } else {
             if (!service.start()){
-                mensagemDeProgresso("Não foi possível iniciar o serviço: " + service.getLastError());
+                mensagemDeProgresso("Não foi possível iniciar o serviço: " + QString::fromStdString(service.getLastError()));
                 QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível iniciar o serviço: " +
                                                                                QString::fromStdString(service.getLastError())));
             }
@@ -478,7 +478,7 @@ void InstallCacicGui::uninstall()
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Desinstalando o serviço..."));
     if (!service.uninstall()){
-        mensagemDeProgresso("Não foi possível parar o serviço: " + service.getLastError());
+        mensagemDeProgresso("Não foi possível parar o serviço: " + QString::fromStdString(service.getLastError()));
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
                                                                        QString::fromStdString(service.getLastError())));
     }

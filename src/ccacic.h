@@ -18,6 +18,8 @@
 //#include "../src/crypto++/include/modes.h"
 #include <QCryptographicHash>
 #include <console.h>
+#include "servicecontroller.h"
+#include "identificadores.h"
 
 class CCacic
 {
