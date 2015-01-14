@@ -59,5 +59,7 @@ FORMS    += installcacicgui.ui \
     noroot.ui \
     uninstallcacic.ui
 
+RC_ICONS = cacic-logo.ico
+
 RESOURCES += \
     cacicfiles.qrc
