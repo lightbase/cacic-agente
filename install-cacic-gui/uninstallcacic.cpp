@@ -6,7 +6,6 @@ UninstallCacic::UninstallCacic(QWidget *parent) :
     ui(new Ui::UninstallCacic)
 {
     ui->setupUi(this);
-    this->setWindowIcon(QIcon("/usr/share/cacic/cacic-logo.png"));
 }
 
 UninstallCacic::~UninstallCacic()

@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     InstallCacicGui *w = new InstallCacicGui();
+    w->setWindowIcon(QIcon(":/CacicFiles/cacic-logo.png"));
     CCacic *oCaic = new CCacic();
     if(oCaic->verificarRoot()){
         w->parent()->connect(w, SIGNAL(finished()), &a, SLOT(quit()));
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
         }else{
             if(oCaic->verificarCacicInstalado()){
                 UninstallCacic *uni = new UninstallCacic();
+                uni->setWindowIcon(QIcon(":/CacicFiles/cacic-logo.png"));
                 uni->parent()->connect(uni, SIGNAL(finished()), &a, SLOT(quit()));
                 uni->setObjInstallCacic(w);
                 uni->show();
@@ -41,6 +43,7 @@ int main(int argc, char *argv[])
             QMetaObject::invokeMethod(w, "run", Qt::QueuedConnection, Q_ARG(QStringList, args), Q_ARG(int, argc));
         }else{
             NoRoot *noRoot = new NoRoot();
+            noRoot->setWindowIcon(QIcon(":/CacicFiles/cacic-logo.png"));
             noRoot->parent()->connect(noRoot, SIGNAL(finished()), &a, SLOT(quit()));
             noRoot->show();
         }
