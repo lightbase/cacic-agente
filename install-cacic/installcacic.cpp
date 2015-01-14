@@ -205,6 +205,9 @@ void InstallCacic::install()
     oCacicComm->setUsuario(this->argumentos["user"]);
     oCacicComm->setPassword(this->argumentos["pass"]);
     std::cout << "Realizando login...\n";
+std::cout << this->argumentos["host"].toStdString() << std::endl;
+std::cout << this->argumentos["user"].toStdString() << std::endl;
+std::cout << this->argumentos["pass"].toStdString() << std::endl;
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Realizando login...");
     QJsonObject jsonLogin = oCacicComm->login(&ok);
     if (ok){

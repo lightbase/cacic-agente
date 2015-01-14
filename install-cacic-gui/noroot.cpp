@@ -6,6 +6,7 @@ NoRoot::NoRoot(QWidget *parent) :
     ui(new Ui::NoRoot)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon("/usr/share/cacic/cacic-log.png"));
 }
 
 NoRoot::~NoRoot()

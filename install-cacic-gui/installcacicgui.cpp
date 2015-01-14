@@ -5,6 +5,7 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
 {
     ui->setupUi(this);
     ui->centralWidget->setWindowFlags(Qt::WindowMaximizeButtonHint);
+    this->setWindowIcon(QIcon("/usr/share/cacic/cacic-logo.png"));
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     if (oCacic.getCacicMainFolder().isEmpty()){
         this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
@@ -29,7 +30,7 @@ InstallCacicGui::~InstallCacicGui()
 void InstallCacicGui::on_pbInstalar_clicked()
 {
     QStringList parametros;
-    if(getModoDeExecucao() == Identificadores::DESISNSTALAR){
+    if(getModoDeExecucao() == Identificadores::DESINSTALAR){
         parametros.clear();
         parametros.append(QString("-uninstall"));
         run(parametros, parametros.size());
@@ -92,7 +93,7 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->leSenha->setReadOnly(true);
         ui->pbInstalar->setText("Modificar configurações");
     }
-    if(getModoDeExecucao() == Identificadores::DESISNSTALAR){
+    if(getModoDeExecucao() == Identificadores::DESINSTALAR){
         ui->leHost->setEnabled(false);
         ui->leHost->setReadOnly(true);
         ui->leHost->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());

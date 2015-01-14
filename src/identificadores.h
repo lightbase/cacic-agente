@@ -38,7 +38,7 @@ public:
 
     enum {
         INSTALAR = 0,
-        DESISNSTALAR = 1,
+        DESINSTALAR = 1,
         MODIFICAR = 2
     };
 

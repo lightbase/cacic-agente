@@ -6,6 +6,7 @@ UninstallCacic::UninstallCacic(QWidget *parent) :
     ui(new Ui::UninstallCacic)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon("/usr/share/cacic/cacic-logo.png"));
 }
 
 UninstallCacic::~UninstallCacic()
@@ -28,7 +29,7 @@ void UninstallCacic::on_pushButton_2_clicked()
     }
     if(ui->desinstalar->isChecked()){
         getObjInstallCacic()->setGui(true);
-        getObjInstallCacic()->setModoDeExecucao(Identificadores::DESISNSTALAR);
+        getObjInstallCacic()->setModoDeExecucao(Identificadores::DESINSTALAR);
         getObjInstallCacic()->setWindowTitle("Desinstalar o Cacic");
         getObjInstallCacic()->show();
         this->close();

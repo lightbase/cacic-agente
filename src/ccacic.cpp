@@ -333,8 +333,8 @@ bool CCacic::verificarCacicInstalado() {
     if(status.isEmpty()){
         return false;
     }else{
-        if((QString::compare(status.takeAt(status.size() - 2), "unrecognized", Qt::CaseSensitive) == 0)
-                || (QString::compare(status.takeAt(status.size() - 2), "not", Qt::CaseSensitive) == 0)){
+        if((QString::compare(status.at(status.size() - 2), "unrecognized", Qt::CaseSensitive) == 0)
+                || (QString::compare(status.at(status.size() - 2), "not", Qt::CaseSensitive) == 0)){
             return false;
         }
     }
