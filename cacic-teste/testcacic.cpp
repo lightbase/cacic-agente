@@ -174,17 +174,26 @@ void CTestCacic::testJsonFromFile()
 
 void CTestCacic::testSetRegistry()
 {
-    QVariantMap valueMap;
-    valueMap["teste1"] = QString("Teste 1");
-    valueMap["teste2"] = QString("Teste2");
-    OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
-    QSettings confirmaTeste("Lightbase", "Teste");
-    QVERIFY(confirmaTeste.value("teste1") == QVariant("Teste 1"));
+    if( OCacic.verificarRoot() ) {
+        QVariantMap valueMap;
+        valueMap["teste1"] = QString("Teste 1");
+        valueMap["teste2"] = QString("Teste2");
+        OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
+        QSettings confirmaTeste("Lightbase", "Teste");
+        QCOMPARE(confirmaTeste.value("teste1").toString(), QString("Teste 1"));
+    } else {
+        QSKIP("Requer execução como root.");
+    }
+
 }
 
 void CTestCacic::testGetValueFromRegistry()
 {
-    QVERIFY(OCacic.getValueFromRegistry("Lightbase", "Teste", "teste1") == QVariant("Teste 1"));
+    if( OCacic.verificarRoot() ) {
+        QCOMPARE(OCacic.getValueFromRegistry("Lightbase", "Teste", "teste1"), QVariant("Teste 1"));
+    } else {
+        QSKIP("Requer execução como root.");
+    }
 }
 
 void CTestCacic::testRemoveRegistry()

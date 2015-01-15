@@ -8,7 +8,7 @@ QT       += core
 QT       += network
 QT       -= gui
 
-QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
+QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET    = gercols
 
@@ -27,7 +27,8 @@ SOURCES += \
     ../src/vqtconvert.cpp \
     ../src/wmi.cpp \
     ../src/QLogger.cpp \
-    ../src/identificadores.cpp
+    ../src/identificadores.cpp \
+    ../src/servicecontroller.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -42,7 +43,8 @@ HEADERS += \
     ../src/vqtconvert.h \
     ../src/wmi.h \
     ../src/QLogger.h \
-    ../src/identificadores.h
+    ../src/identificadores.h \
+    ../src/servicecontroller.h
 
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -59,7 +61,7 @@ win32 {
 
 
 
-INCLUDEPATH += ../src \
+INCLUDEPATH += ../src/ \
 #               ../src/crypto++/include/
 
 DEFINES += STATIC
