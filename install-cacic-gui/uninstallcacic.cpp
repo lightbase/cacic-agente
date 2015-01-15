@@ -21,10 +21,10 @@ void UninstallCacic::on_pushButton_clicked()
 void UninstallCacic::on_pushButton_2_clicked()
 {
     if(!ui->desinstalar->isChecked() && !ui->modificar->isChecked()){
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Atenção");
-        msgBox.setText("Escolha uma das opções.");
-        msgBox.exec();
+        QMessageBox(QMessageBox::Information,
+                    "Alerta",
+                    "Escolha uma das opções.",
+                    QMessageBox::Ok).exec();
     }
     if(ui->desinstalar->isChecked()){
         getObjInstallCacic()->setGui(true);
@@ -40,6 +40,16 @@ void UninstallCacic::on_pushButton_2_clicked()
         this->close();
     }
 }
+CCacic *UninstallCacic::getOCCacic() const
+{
+    return oCCacic;
+}
+
+void UninstallCacic::setOCCacic(CCacic *value)
+{
+    oCCacic = value;
+}
+
 InstallCacicGui *UninstallCacic::getObjInstallCacic() const
 {
     return objInstallCacic;

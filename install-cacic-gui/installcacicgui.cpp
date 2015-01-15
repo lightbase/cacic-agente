@@ -84,13 +84,18 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->cbUsu->setVisible(true);
         ui->cbPass->setDisabled(false);
         ui->cbPass->setVisible(true);
+        ui->leHost->setEnabled(true);
         ui->leHost->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
         ui->leHost->setReadOnly(true);
+        ui->leUsuario->setEnabled(true);
         ui->leUsuario->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         ui->leUsuario->setReadOnly(true);
+        ui->leSenha->setEnabled(true);
         ui->leSenha->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         ui->leSenha->setReadOnly(true);
         ui->pbInstalar->setText("Modificar configurações");
+        ui->pbCancelar->setEnabled(false);
+        ui->pbCancelar->setVisible(false);
     }
     if(getModoDeExecucao() == Identificadores::DESINSTALAR){
         ui->leHost->setEnabled(false);
@@ -109,6 +114,8 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->cbPass->setVisible(true);
         ui->cbPass->setEnabled(false);
         ui->pbInstalar->setText("Desinstalar o Cacic");
+        ui->pbCancelar->setEnabled(false);
+        ui->pbCancelar->setVisible(false);
     }
     ui->pteResult->setReadOnly(true);
     ui->pteResult->setFont(QFont("Arial", 10));
@@ -151,6 +158,8 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     logManager->wait();
     if(!isGui()){
         emit finished();
+    }else{
+
     }
 }
 
@@ -491,26 +500,26 @@ void InstallCacicGui::uninstall()
     mensagemDeProgresso(QString(console("/etc/init.d/cacic3 stop")));
 
     //outputColumns = console("ps aux | grep cacic-service").split("\n");
-   // outputColumns.removeLast();
+    // outputColumns.removeLast();
 
-//    foreach(QString processString, outputColumns) {
+    //    foreach(QString processString, outputColumns) {
 
-//        if(processString.contains("grep"))
-//            continue;
+    //        if(processString.contains("grep"))
+    //            continue;
 
-//        QStringList columns = processString.split(" ");
-//        int i = 0;
-//        foreach(QString column, columns){
-//            if( !column.isEmpty() ) {
-//                i++;
-//                if( i == 2 ) {
-//                    mensagemDeProgresso(column);
-//                    console("kill -9 " + column);
-//                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Cacic-service interrompido."));
-//                }
-//            }
-//        }
-//    }
+    //        QStringList columns = processString.split(" ");
+    //        int i = 0;
+    //        foreach(QString column, columns){
+    //            if( !column.isEmpty() ) {
+    //                i++;
+    //                if( i == 2 ) {
+    //                    mensagemDeProgresso(column);
+    //                    console("kill -9 " + column);
+    //                    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Cacic-service interrompido."));
+    //                }
+    //            }
+    //        }
+    //    }
 #endif
     oCacic.removeRegistry("Lightbase", "Cacic");
 
@@ -541,6 +550,13 @@ void InstallCacicGui::uninstall()
     }
 
     mensagemDeProgresso("Cacic desinstalado com sucesso.\n");
+    if (QMessageBox::Ok == QMessageBox(
+                QMessageBox::Information,
+                "Desistalação do Cacic",
+                "Cacic Desinstalado com sucesso.",
+                QMessageBox::Ok).exec()){
+        emit finished();
+    }
 }
 
 int InstallCacicGui::getModoDeExecucao() const
@@ -606,4 +622,12 @@ void InstallCacicGui::resolverAcoesAoSelecionarCheckBox(int arg1, QLineEdit *le,
             le->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         }
     }
+}
+
+void InstallCacicGui::on_pbCancelar_clicked()
+{
+    if(getModoDeExecucao() == Identificadores::INSTALAR){
+        emit finished();
+    }
+
 }

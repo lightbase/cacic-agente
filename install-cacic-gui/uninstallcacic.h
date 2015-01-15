@@ -20,6 +20,9 @@ public:
     InstallCacicGui *getObjInstallCacic() const;
     void setObjInstallCacic(InstallCacicGui *value);
 
+    CCacic *getOCCacic() const;
+    void setOCCacic(CCacic *value);
+
 private slots:
     void on_pushButton_clicked();
 
@@ -31,6 +34,7 @@ signals:
 private:
     Ui::UninstallCacic *ui;
     InstallCacicGui *objInstallCacic;
+    CCacic *oCCacic;
 };
 
 #endif // UNINSTALLCACIC_H

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFile>
 #include "identificadores.h"
+//#include "uninstallcacic.h"
 #include <QObject>
 #include <QtCore>
 #include <cacic_comm.h>
@@ -16,7 +17,6 @@
 #include <QTextCursor>
 #include <QMessageBox>
 #include <QLineEdit>
-
 
 namespace Ui {
 class InstallCacicGui;
@@ -73,6 +73,8 @@ private slots:
     void on_cbUsu_stateChanged(int arg1);
 
     void on_cbPass_stateChanged(int arg1);
+
+    void on_pbCancelar_clicked();
 
 public slots:
     void run(QStringList argv, int argc);

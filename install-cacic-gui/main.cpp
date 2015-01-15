@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
                 UninstallCacic *uni = new UninstallCacic();
                 uni->parent()->connect(uni, SIGNAL(finished()), &a, SLOT(quit()));
                 uni->setObjInstallCacic(w);
+                uni->setOCCacic(oCaic);
                 uni->show();
             }else{
                 w->setGui(true);
