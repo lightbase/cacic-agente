@@ -398,6 +398,13 @@ void InstallCacicGui::install()
                 if (service.start()){
                     mensagemDeProgresso("Instalação realizada com sucesso.");
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Instalação realizada com sucesso."));
+                    if (QMessageBox::Ok == QMessageBox(
+                                QMessageBox::Information,
+                                "Instalação do Cacic",
+                                "Cacic instalado com sucesso.",
+                                QMessageBox::Ok).exec()){
+                        emit finished();
+                    }
                 } else {
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao iniciar o serviço: " +
                                        QString::fromStdString(service.getLastError()));
@@ -423,6 +430,13 @@ void InstallCacicGui::install()
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 start");
                 mensagemDeProgresso("Instalado com sucesso.");
+                if (QMessageBox::Ok == QMessageBox(
+                            QMessageBox::Information,
+                            "Instalação do Cacic",
+                            "Cacic instalado com sucesso.",
+                            QMessageBox::Ok).exec()){
+                    emit finished();
+                }
             }
 
 #endif
