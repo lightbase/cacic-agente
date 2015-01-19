@@ -215,7 +215,6 @@ bool ServiceController::uninstall()
     if (this->isRunning()){
         if (!this->stop()){
             this->trataErro(GetLastError(), "Uninstall Service, can't stop service");
-            this->close();
             return false;
         }
     }
@@ -286,8 +285,10 @@ bool ServiceController::isRunning()
 
 void ServiceController::close()
 {
-    CloseServiceHandle(schService);
-    CloseServiceHandle(schSCManager);
+    if (schService != NULL)
+        CloseServiceHandle(schService);
+    if (schSCManager != NULL)
+        CloseServiceHandle(schSCManager);
 }
 
 std::string ServiceController::getLastError() const
@@ -438,7 +439,7 @@ int ServiceController::trataErro(DWORD error, std::string detailError)
         this->lastError = detailError + ": O serviço não existe";
         this->iLastError = 16;
     } else {
-        this->lastError = detailError + ": Desconhecido - " + std::string(error);
+        this->lastError = detailError + ": Desconhecido - " + std::to_string(error);
         this->iLastError = -1;
     }
 

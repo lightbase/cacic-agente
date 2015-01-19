@@ -107,8 +107,10 @@ bool CacicThread::realizarEnviodeColeta(){
                 enviaColeta["enviaColeta"] = false;
                 ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
             }
+            return true;
         } else if(retornoColeta.contains("error")) {
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha na coleta: " + retornoColeta["error"].toString()));
+            return false;
         }
         return ok;
     } else {
@@ -118,7 +120,7 @@ bool CacicThread::realizarEnviodeColeta(){
 }
 
 bool CacicThread::enviarColeta() {
-    if(this->nomeModulo == "gercols" && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
+    if(this->nomeModulo.contains("gercols") && QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
                 if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()

@@ -204,11 +204,11 @@ QString CacicTimer::getApplicationDirPath() {
 bool CacicTimer::comunicarGerente(){
     bool ok;
     OCacicComm = new CacicComm();
+    //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     OCacic_Computer.coletaDados();
-    //Sempre recuperar as informações aqui caso mude.
     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     QJsonObject resposta = OCacicComm->login(&ok);

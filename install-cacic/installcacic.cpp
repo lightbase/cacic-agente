@@ -205,9 +205,7 @@ void InstallCacic::install()
     oCacicComm->setUsuario(this->argumentos["user"]);
     oCacicComm->setPassword(this->argumentos["pass"]);
     std::cout << "Realizando login...\n";
-std::cout << this->argumentos["host"].toStdString() << std::endl;
-std::cout << this->argumentos["user"].toStdString() << std::endl;
-std::cout << this->argumentos["pass"].toStdString() << std::endl;
+
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Realizando login...");
     QJsonObject jsonLogin = oCacicComm->login(&ok);
     if (ok){
@@ -297,7 +295,6 @@ std::cout << this->argumentos["pass"].toStdString() << std::endl;
                 } else {
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Falha ao iniciar o serviço: " +
                                                                             QString::fromStdString(service.getLastError()));
-                    uninstall();
                 }
             }
     #else
@@ -364,11 +361,13 @@ void InstallCacic::uninstall()
     bool ok;
 #ifdef Q_OS_WIN
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
-    QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Desinstalando o serviço..."));
-    if (!service.uninstall()){
-        std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
-        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
-                                                                       QString::fromStdString(service.getLastError())));
+    if (service.isInstalled()){
+        QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Desinstalando o serviço..."));
+        if (!service.uninstall()){
+            std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
+            QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
+                                                                           QString::fromStdString(service.getLastError())));
+        }
     }
 
 #elif defined(Q_OS_LINUX)
