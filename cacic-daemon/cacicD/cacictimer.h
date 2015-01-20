@@ -54,7 +54,7 @@ private:
     int getPeriodicidadeExecucao() const;
     void iniciarThread();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
-    bool removeCacic280();
+    bool removeCacicAnterior();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;

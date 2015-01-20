@@ -55,9 +55,10 @@ void CacicTimer::iniciarTimer()
 //Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-        if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ) {
+        if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ||
+             QFile(ccacic->getCacicMainFolder() + "/cacic260.exe" ).exists() ) {
             if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ||
-                    !removeCacic280() ) {
+                    !removeCacicAnterior() ) {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
             }
         }
@@ -368,7 +369,7 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
     return retorno;
 }
 
-bool CacicTimer::removeCacic280(){
+bool CacicTimer::removeCacicAnterior(){
     bool retorno = true;
 #if defined(Q_OS_WIN)
     ServiceController oldCacic(QString("cacicsustainservice").toStdWString());
