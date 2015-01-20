@@ -373,6 +373,7 @@ void InstallCacic::uninstall()
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
     QStringList outputColumns;
+    console("killall -eq cacic-service gercols");
     std::cout << "Parando serviço...";
     std::cout << console("/etc/init.d/cacic3 stop").toStdString();
 
