@@ -57,8 +57,10 @@ void CacicTimer::mslot(){
     if(comunicarGerente()){
         if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ||
              QFile(ccacic->getCacicMainFolder() + "/cacic260.exe" ).exists() ) {
-            if( !removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder())) ||
-                    !removeCacicAnterior() ) {
+            bool cacicRemovido;
+            cacicRemovido = this->removeCacicAnterior();
+            cacicRemovido = cacicRemovido && this->removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder()));
+            if(!cacicRemovido) {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
             }
         }
@@ -356,9 +358,9 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
                         retorno = retorno && true;
                     else
                         retorno = retorno && false;
-                } else {
-                    retorno = retorno && ccacic->deleteFolder(list.at(i).absoluteFilePath());
+                } else if (!(list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/bin")){
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo diretorio: " + list.at(i).fileName());
+                    retorno = retorno && ccacic->deleteFolder(list.at(i).absoluteFilePath());
                 }
             } else {
                 retorno = retorno && ccacic->deleteFile(list.at(i).absoluteFilePath());
@@ -379,6 +381,9 @@ bool CacicTimer::removeCacicAnterior(){
                                QString::fromStdString(oldCacic.getLastError()));
         }
     }
+    //Garante a pausa do serviço para que o windows não bloqueie a exclusão
+    QThread::sleep(3);
+
     QStringList cacicFiles;
     cacicFiles << "chksis.inf" << "chksis.exe" << "cacicservice.exe";
     foreach(QString file, cacicFiles){
