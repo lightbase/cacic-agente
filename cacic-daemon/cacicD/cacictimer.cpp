@@ -352,13 +352,12 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
                 !list.at(i).fileName().contains("getConfig.json") ) {
             if ( list.at(i).isDir()) {
                 // Lista diretorios a não serem excluidos
-                if( list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/Logs" ||
-                        list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/temp" ) {
+                if( list.at(i).fileName() == "Logs" || list.at(i).fileName() == "temp" ) {
                     if( removeArquivosEstrangeiros(QDir(list.at(i).absoluteFilePath())) )
                         retorno = retorno && true;
                     else
                         retorno = retorno && false;
-                } else if (!(list.at(i).absoluteFilePath() == ccacic->getCacicMainFolder()+"/bin")){
+                } else if (!(list.at(i).fileName() == "bin")){
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Excluindo diretorio: " + list.at(i).fileName());
                     retorno = retorno && ccacic->deleteFolder(list.at(i).absoluteFilePath());
                 }
