@@ -10,6 +10,7 @@
 #include "operatingsystem.h"
 #include "console.h"
 #include "identificadores.h"
+#include "ccacic.h"
 #ifdef Q_OS_LINUX
 #include <sys/utsname.h>
 #endif
