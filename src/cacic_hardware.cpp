@@ -348,7 +348,7 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxIsNotebook(hardware);
     coletaLinuxPrinters(hardware);
 
-    lshwFile.remove();
+//    lshwFile.remove();
     return hardware;
 }
 
@@ -368,16 +368,48 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
     memory["Caption"] = component["description"];
     memory["DeviceLocator"] = component["physid"];
     memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0));
+
     QStringList consoleOutput;
     consoleOutput = console("dmidecode --type 17").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
         if(line.contains("Type:")){
-            memory["MemoryType"] = QJsonValue::fromVariant(QString(line.split("Type: ", QString::SkipEmptyParts).takeLast()));
+
+            // Mapa criado de acordo com a documentacao MSDN para
+            // Win32_PhysicalMemory. Pode ser que o nome dado pelo
+            // dmidecode difere dos declarados aqui.
+            QMap<QString, int> memMap;
+            memMap.insert("DRAM", 2);
+            memMap.insert("Syncronous DRAM", 3);
+            memMap.insert("Cache DRAM", 4);
+            memMap.insert("EDO", 5);
+            memMap.insert("EDRAM", 6);
+            memMap.insert("VRAM", 7);
+            memMap.insert("SRAM", 8);
+            memMap.insert("RAM", 9);
+            memMap.insert("ROM", 10);
+            memMap.insert("Flash", 11);
+            memMap.insert("EEPROM", 12);
+            memMap.insert("FEPROM", 13);
+            memMap.insert("EPROM", 14);
+            memMap.insert("CDRAM", 15);
+            memMap.insert("3DRAM", 16);
+            memMap.insert("SDRAM", 17);
+            memMap.insert("SGRAM", 18);
+            memMap.insert("RDRAM", 19);
+            memMap.insert("DDR", 20);
+            memMap.insert("DDR2", 21);
+            memMap.insert("DDR3", 22);
+
+            QString memoryTypeS = QString(line.split("Type: ", QString::SkipEmptyParts).takeLast());
+
+            if (memMap.contains(memoryTypeS))
+                memory["MemoryType"] = memMap.value(memoryTypeS);
+            else
+                memory["MemoryType"] = 0;
+
             break;
         }
     }
-
-    //memory["MemoryType"] = QJsonValue::fromVariant(component["children"].toObject()["slot"].toString());
 
     hardware["Win32_PhysicalMemory"] = memory;
 }
