@@ -4,6 +4,11 @@
 #
 #-------------------------------------------------
 
+
+linux-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
+linux-g++-32:QMAKE_TARGET.arch = x86
+linux-g++-64:QMAKE_TARGET.arch = x86_64
+
 QT       += core gui network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 CONFIG += c++11
@@ -61,6 +66,4 @@ FORMS    += installcacicgui.ui \
 
 win32 {
     RC_ICONS = cacic-logo.ico
-} else {
-    RC_ICONS = cacic-logo.png
 }

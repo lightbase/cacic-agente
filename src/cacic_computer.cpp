@@ -67,20 +67,26 @@ QJsonObject CACIC_Computer::toJsonObject()
  *      retorna o usuario logado no sistema. (erro, retorna o usuário que está executando.)
 */
 std::string CACIC_Computer::pegarUsu(){
+    QString user;
 #if defined(Q_OS_WIN)
-    QString text;
-    text = wmi::wmiSearch("Win32_ComputerSystem",QStringList("UserName")).toObject()["UserName"].toString();
-    text = text.split("\\").last();
-    return text.toStdString();
+    user = wmi::wmiSearch("Win32_ComputerSystem",QStringList("UserName")).toObject()["UserName"].toString();
+    user = user.split("\\").last();
 
 #elif defined(Q_OS_LINUX)
-
-    QString user = console("who").split(" ")[0];
-    return user.toStdString();
-
+    user = console("who").split(" ")[0];
 #endif
+    if (user.isEmpty() || user.isNull()) {
+        CCacic oCacic;
+        QJsonObject oldColeta = oCacic.getJsonFromFile(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() + "/coleta.json");
+        QString oldUser = oldColeta["computador"].toObject()["usuario"].toString();
 
-    return "0";
+        if (!oldUser.isEmpty() && !oldUser.isNull()) {
+            user = oldUser;
+        } else {
+            user = '0';
+        }
+    }
+    return user.toStdString();
 }
 
 void CACIC_Computer::coletaDados() {
