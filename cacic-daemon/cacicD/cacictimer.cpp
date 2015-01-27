@@ -117,6 +117,10 @@ bool CacicTimer::verificarModulos()
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         if(!(list.at(i).fileName().contains("cacic-service"))){
+            if (cacicthread->isRunning()){
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Há uma thread sendo executada, aguardando o término.");
+                cacicthread->wait(30000);
+            }
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
