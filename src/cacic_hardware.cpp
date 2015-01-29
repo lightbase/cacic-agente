@@ -79,8 +79,12 @@ QJsonObject cacic_hardware::coletaWin()
     params.clear();
     params << "Manufacturer" << "SMBIOSBIOSVersion" << "BIOSVersion" << "Version" << "SerialNumber" << "ReleaseDate";
     wmiResult = wmi::wmiSearch("Win32_Bios", params);
-    if (!wmiResult.isNull())
-        hardware["Win32_BIOS"] = wmiResult;
+    if (!wmiResult.isNull()){
+        QJsonObject tmp = wmiResult.toObject();
+        tmp["Version"] = QJsonValue::fromVariant(QVariant(wmiResult.toObject()["SMBIOSBIOSVersion"].toString()));
+        tmp["ReleaseDate"] = QJsonValue::fromVariant(QVariant(oCacic.padronizarData(wmiResult.toObject()["ReleaseDate"].toString())));
+        hardware["Win32_BIOS"] = tmp;
+    }
     //Win32_BaseBoard
     //  (Manufacturer, Model, SerialNumber)
     params.clear();
