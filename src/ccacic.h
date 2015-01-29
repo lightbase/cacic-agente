@@ -28,12 +28,12 @@ public:
     QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
     void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
     QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
-//    QString enCrypt(std::string str_in, std::string iv);
-//    QString deCrypt(std::string str_in, std::string iv);
+    //    QString enCrypt(std::string str_in, std::string iv);
+    //    QString deCrypt(std::string str_in, std::string iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
-//    QJsonValue jsonValueFromJsonString(QString json, QString key);
+    //    QJsonValue jsonValueFromJsonString(QString json, QString key);
     bool setJsonToFile(QJsonObject json, QString filepath);
     QJsonObject getJsonFromFile(QString filepath);
     QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());
@@ -47,8 +47,12 @@ public:
     QString toMD5(QString string);
     bool verificarRoot();
     bool verificarCacicInstalado();
+    QString padronizarData(QString data);
+    void modifyJsonValue(QJsonObject &obj, const QString &path, const QJsonValue &newValue);
+    void modifyJsonValue(QJsonDocument &doc, const QString &path, const QJsonValue &newValue);
+    QString getMesFromString(QString mes);
 
-//Geters/seters:
+    //Geters/seters:
 
     QString getCacicMainFolder() const;
     void setCacicMainFolder(const QString &value);
@@ -67,6 +71,7 @@ public:
 
     QString getChaveCrypt() const;
     void setChaveCrypt(const QString &value);
+
 
 private:
     QString cacicMainFolder;

@@ -209,7 +209,7 @@ QJsonObject cacic_hardware::coletaWin()
     params.clear();
     params << "MaxClockSpeed" << "Name" << "Architecture" << "NumberOfCores" << "SocketDesignation" << "Manufacturer"
            << "Architecture" << "NumberOfCores" << "NumberOfLogicalProcessors" << "CurrentClockSpeed" << "MaxClockSpeed" << "L2CacheSize" << "AddressWidth"
-           << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth" << "Caption" << "Family";
+           << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth" << "Caption" << "Family" << "Level";
     wmiResult = wmi::wmiSearch("Win32_Processor", params);
     if (!wmiResult.isNull())
         hardware["Win32_Processor"] = wmiResult;
@@ -348,7 +348,7 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxIsNotebook(hardware);
     coletaLinuxPrinters(hardware);
 
-//    lshwFile.remove();
+    //    lshwFile.remove();
     return hardware;
 }
 
@@ -357,7 +357,7 @@ void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
     OperatingSystem op;
     so["Caption"] = op.getNomeOs();
     so["Version"] = op.coletaVersaoOsEmString();
-    so["InstallDate"] = console("ls -alct /|tail -1|awk '{print $6, $7, $8}'").split("\n").takeFirst();
+    so["InstallDate"] = oCacic.padronizarData(console("tune2fs -l "+console("df").split("\n").takeAt(1).split(" ").takeFirst()+" | grep 'Filesystem created:'").split("\n").takeFirst());
     hardware["OperatingSystem"] = so;
 }
 

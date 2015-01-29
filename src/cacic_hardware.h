@@ -4,7 +4,6 @@
 #include <QtCore>
 #include <QJsonArray>
 #include <cmath>
-#include <ccacic.h>
 #include <console.h>
 #include <operatingsystem.h>
 #include "QLogger.h"

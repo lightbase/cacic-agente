@@ -347,6 +347,55 @@ bool CCacic::verificarCacicInstalado() {
 #endif
 }
 
+QString CCacic::padronizarData(QString data){
+#ifdef Q_OS_WIN
+    return QString(data.mid(6,2) +"/"+ data.mid(4,2)+"/"+data.mid(0,4));
+#elif defined (Q_OS_LINUX)
+    return QString(data.split(" ").at(10)+"/"+getMesFromString(data.split(" ").at(9))+"/"+data.split(" ").takeLast());
+#endif
+}
+
+QString CCacic::getMesFromString(QString mes){
+    if(mes==(QString("Jan"))){return "01";}
+    if(mes==(QString("Fev")) || mes==(QString("Feb"))){return "02";}
+    if(mes==(QString("Mar"))) return "03";
+    if(mes==(QString("Abr")) || mes==(QString("Apr"))){return "04";}
+    if(mes==(QString("Mai")) || mes==(QString("May"))){return "05";}
+    if(mes==(QString("Jun"))){return "06";}
+    if(mes==(QString("Jul"))){return "07";}
+    if(mes==(QString("Ago")) || mes==(QString("Aug"))){return "08";}
+    if(mes==(QString("Set")) || mes==(QString("Sep"))){return "09";}
+    if(mes==(QString("Out")) || mes==(QString("Oct"))){return "10";}
+    if(mes==(QString("Nov"))){return "11";}
+    if(mes==(QString("Dez")) || mes==(QString("Dec"))){return "12";}
+    return "00";
+}
+
+void CCacic::modifyJsonValue(QJsonObject& obj, const QString& path, const QJsonValue& newValue) {
+    qDebug() << newValue;
+    const int indexOfDot = path.indexOf('.');
+    const QString propertyName = path.left(indexOfDot);
+    const QString subPath = indexOfDot>0 ? path.mid(indexOfDot+1) : QString();
+
+    QJsonValue subValue = obj[propertyName];
+
+    if(subPath.isEmpty()) {
+        subValue = newValue;
+    }
+    else {
+        QJsonObject obj = subValue.toObject();
+        modifyJsonValue(obj,subPath,newValue);
+        subValue = obj;
+    }
+
+    obj[propertyName] = subValue;
+}
+
+void CCacic::modifyJsonValue(QJsonDocument& doc, const QString& path, const QJsonValue& newValue) {
+    QJsonObject obj = doc.object();
+    modifyJsonValue(obj,path,newValue);
+    doc = QJsonDocument(obj);
+}
 
 /*Getters/Setters
  * Begin:
