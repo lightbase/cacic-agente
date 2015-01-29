@@ -219,8 +219,17 @@ QJsonObject cacic_hardware::coletaWin()
     params << "Name" << "Version" << "CSDVersion" << "Description" << "InstallDate" << "Organization" << "RegisteredUser"
            << "SerialNumber" << "Caption";
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
-    if (!wmiResult.isNull())
-        hardware["OperatingSystem"] = wmiResult;
+
+    //qDebug() << wmiResult.toObject()["InstallDate"];// = QJsonValue::fromVariant(QString("05/07/1991"));
+   // QJsonObject OsJson = wmiResult["OperatingSystem"].toObject();
+   // OsJson[installdate] = variantJson[operatingSystem] = osjSon;
+
+    if (!wmiResult.isNull()){
+        QJsonObject osJson = wmiResult.toObject();
+        osJson["InstallDate"] = QJsonValue::fromVariant(QVariant(oCacic.padronizarData(wmiResult.toObject()["InstallDate"].toString())));
+        hardware["OperatingSystem"] = osJson;
+
+    }
     //Win32_SystemSlot
     //  (Name, Description, SlotDesignation, CurrentUsage, Status, Shared)
     params.clear();
