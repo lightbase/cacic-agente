@@ -211,24 +211,21 @@ QJsonObject cacic_hardware::coletaWin()
            << "Architecture" << "NumberOfCores" << "NumberOfLogicalProcessors" << "CurrentClockSpeed" << "MaxClockSpeed" << "L2CacheSize" << "AddressWidth"
            << "DataWidth" << "VoltageCaps" << "CpuStatus" << "ProcessorId" << "UniqueId" << "AddressWidth" << "Caption" << "Family" << "Level";
     wmiResult = wmi::wmiSearch("Win32_Processor", params);
-    if (!wmiResult.isNull())
-        hardware["Win32_Processor"] = wmiResult;
+    if (!wmiResult.isNull()){
+        QJsonObject tmp = wmiResult.toObject();
+        tmp["Family"] = QJsonValue::fromVariant(QVariant(wmiResult.toObject()["Level"].toString()));
+        hardware["Win32_Processor"] = tmp;
+    }
     //Win32_OperatingSystem
     //  (Name, Version, CSDVersion, Description, InstallDate, Organization, RegisteredUser, SerialNumber)
     params.clear();
     params << "Name" << "Version" << "CSDVersion" << "Description" << "InstallDate" << "Organization" << "RegisteredUser"
            << "SerialNumber" << "Caption";
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
-
-    //qDebug() << wmiResult.toObject()["InstallDate"];// = QJsonValue::fromVariant(QString("05/07/1991"));
-   // QJsonObject OsJson = wmiResult["OperatingSystem"].toObject();
-   // OsJson[installdate] = variantJson[operatingSystem] = osjSon;
-
     if (!wmiResult.isNull()){
         QJsonObject osJson = wmiResult.toObject();
         osJson["InstallDate"] = QJsonValue::fromVariant(QVariant(oCacic.padronizarData(wmiResult.toObject()["InstallDate"].toString())));
         hardware["OperatingSystem"] = osJson;
-
     }
     //Win32_SystemSlot
     //  (Name, Description, SlotDesignation, CurrentUsage, Status, Shared)
