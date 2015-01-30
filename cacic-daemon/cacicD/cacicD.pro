@@ -4,6 +4,10 @@
 #
 #-------------------------------------------------
 
+#SEMPRE MUDAR A VERSÃO DE BUILD (o último número) AO REALIZAR QUALQUER BUILD.#
+VERSION   = 3.1.5a
+##############################################################################
+
 QT       += core
 QT       -= gui
 QT       -= widgets
@@ -11,6 +15,7 @@ QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET       = cacic-service
+
 CONFIG      += console
 CONFIG      -= app_bundle
 CONFIG      += static

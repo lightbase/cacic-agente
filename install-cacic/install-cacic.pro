@@ -4,6 +4,11 @@
 #
 #-------------------------------------------------
 
+##############################################################################
+#SEMPRE MUDAR A VERSÃO DE BUILD (o último número) AO REALIZAR QUALQUER BUILD.#
+VERSION   = 3.1.5a
+##############################################################################
+
 QT -= core
 QT += network
 QT -= gui
@@ -11,6 +16,9 @@ LIBS -= -lQtGui
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter
 
 TARGET = install-cacic
+
+
+
 #CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
