@@ -371,32 +371,6 @@ QString CCacic::getMesFromString(QString mes){
     return "00";
 }
 
-void CCacic::modifyJsonValue(QJsonObject& obj, const QString& path, const QJsonValue& newValue) {
-    qDebug() << newValue;
-    const int indexOfDot = path.indexOf('.');
-    const QString propertyName = path.left(indexOfDot);
-    const QString subPath = indexOfDot>0 ? path.mid(indexOfDot+1) : QString();
-
-    QJsonValue subValue = obj[propertyName];
-
-    if(subPath.isEmpty()) {
-        subValue = newValue;
-    }
-    else {
-        QJsonObject obj = subValue.toObject();
-        modifyJsonValue(obj,subPath,newValue);
-        subValue = obj;
-    }
-
-    obj[propertyName] = subValue;
-}
-
-void CCacic::modifyJsonValue(QJsonDocument& doc, const QString& path, const QJsonValue& newValue) {
-    QJsonObject obj = doc.object();
-    modifyJsonValue(obj,path,newValue);
-    doc = QJsonDocument(obj);
-}
-
 /*Getters/Setters
  * Begin:
  */

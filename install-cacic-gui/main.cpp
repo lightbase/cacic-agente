@@ -7,7 +7,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+#ifdef Q_OS_LINUX
     a.setWindowIcon(QIcon("/usr/share/cacic/cacic-logo.png"));
+#endif
     InstallCacicGui *w = new InstallCacicGui();
     CCacic *oCaic = new CCacic();
     if(oCaic->verificarRoot()){

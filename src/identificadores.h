@@ -2,6 +2,7 @@
 #define IDENTIFICADORES_H
 
 #include <QString>
+#include <QDir>
 
 class Identificadores
 {
