@@ -430,10 +430,21 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 
     cpu["Caption"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(console(
-                                                       "dmidecode -t processor | grep 'Max Speed'").split(
-                                                       "\n", QString::SkipEmptyParts).takeFirst().split(
-                                                       " ").takeAt(2));
+    QString aux = console("dmidecode -t processor | grep 'Max Speed'");
+    if (!aux.isEmpty()) {
+        QStringList auxList = aux.split("\n", QString::SkipEmptyParts);
+        if (auxList.size() > 0) {
+            aux = auxList.takeFirst();
+            auxList = aux.split(" ");
+            if (auxList.size() >= 2)
+                aux = auxList.takeAt(2);
+            else
+                aux = "";
+        } else {
+            aux = "";
+        }
+    }
+    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(aux);
     QStringList consoleOutput;
     consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
