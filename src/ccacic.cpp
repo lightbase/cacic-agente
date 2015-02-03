@@ -351,7 +351,14 @@ QString CCacic::padronizarData(QString data){
 #ifdef Q_OS_WIN
     return QString(data.mid(6,2) +"/"+ data.mid(4,2)+"/"+data.mid(0,4));
 #elif defined (Q_OS_LINUX)
-    return QString(data.split(" ").at(10)+"/"+getMesFromString(data.split(" ").at(9))+"/"+data.split(" ").takeLast());
+    QString dia, mes, ano;
+    if (data.split(" ").at(10).isEmpty())
+        dia = data.split(" ").at(11);
+    else
+        dia = data.split(" ").at(10);
+    mes = getMesFromString(data.split(" ").at(9));
+    ano = data.split(" ").takeLast();
+    return QString(dia+"/" + mes + "/" + ano);
 #endif
 }
 
