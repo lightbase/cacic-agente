@@ -3,8 +3,10 @@ cacic_hardware::cacic_hardware()
 {
     QDir dir;
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(dir.currentPath() + "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
-    logManager->addDestination(dir.currentPath() + "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
+                               "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
+    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
+                               "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
 }
 
 cacic_hardware::~cacic_hardware()
@@ -369,7 +371,24 @@ void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
     OperatingSystem op;
     so["Caption"] = op.getNomeOs();
     so["Version"] = op.coletaVersaoOsEmString();
-    so["InstallDate"] = oCacic.padronizarData(console("tune2fs -l "+console("df").split("\n").takeAt(1).split(" ").takeFirst()+" | grep 'Filesystem created:'").split("\n").takeFirst());
+    QStringList auxList = console("df").split("\n");
+    QString particao;
+    if (auxList.size() > 0) {
+        particao = auxList.at(1);
+        auxList = particao.split(" ");
+        if (auxList.size() > 0){
+            particao = auxList.takeFirst();
+        }else
+            particao = "";
+    }
+    if (!particao.isEmpty() && !particao.contains("/cow")){
+        QString data = console("tune2fs -l "+ particao +" | grep 'Filesystem created:'");
+        QStringList auxList = data.split("\n");
+        if (auxList.size() > 0)
+            data = auxList.first();
+        so["InstallDate"] = oCacic.padronizarData(data);
+    } else
+        so["InstallDate"] = QString("00/00/0000");
     hardware["OperatingSystem"] = so;
 }
 
