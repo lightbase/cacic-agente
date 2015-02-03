@@ -358,7 +358,9 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxIsNotebook(hardware);
     coletaLinuxPrinters(hardware);
 
-    lshwFile.remove();
+    if(lshwFile.exists()) {
+        lshwFile.remove();
+    }
     return hardware;
 }
 

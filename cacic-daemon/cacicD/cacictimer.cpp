@@ -144,6 +144,7 @@ bool CacicTimer::verificarModulos()
 
 #ifdef Q_OS_LINUX
             ConsoleObject console;
+            console("killall -eq cacic-service");
             console("/etc/init.d/cacic3 stop");
 #endif
             logManager->closeLogger();
@@ -391,7 +392,7 @@ bool CacicTimer::removeCacicAnterior(){
     cacicFiles << "chksis.inf" << "chksis.exe" << "cacicservice.exe";
     foreach(QString file, cacicFiles){
         if(QFile::exists("c:/windows/"+file)){
-            retorno = retorno && ccacic->deleteFile("c:/windows/"+file);
+            retorno = retorno && ccacic->deleteFile(QDir::rootPath()+"windows/"+file);
         }
     }
 #endif
