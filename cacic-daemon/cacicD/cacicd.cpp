@@ -11,7 +11,6 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
         logManager->addDestination(ccacic->getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_DAEMON ,QLogger::ErrorLevel);
         this->createApplication(argc, argv);
         setServiceFlags(QtService::Default);
-        socket = new SocketListener(ccacic->getCacicMainFolder());
     } catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido no construtor."));
     }
@@ -33,7 +32,6 @@ void cacicD::start() {
         Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
         Ocacictimer->iniciarTimer();
-        socket->start_listen(1500);
     }catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido ao iniciar o serviço."));
     }
