@@ -2,6 +2,7 @@
 #define IDENTIFICADORES_H
 
 #include <QString>
+#include <QDir>
 
 class Identificadores
 {
@@ -29,6 +30,8 @@ public:
     static const QString LOG_CACIC_COMM;
 
     static const QString LOG_INSTALL_CACIC;
+
+    static const QString LOG_SOCKET_LISTENER;
 
     static const QString LOG_GERCOLS;
 

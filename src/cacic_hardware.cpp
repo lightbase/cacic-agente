@@ -3,8 +3,10 @@ cacic_hardware::cacic_hardware()
 {
     QDir dir;
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(dir.currentPath() + "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
-    logManager->addDestination(dir.currentPath() + "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
+    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
+                               "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
+    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
+                               "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
 }
 
 cacic_hardware::~cacic_hardware()
@@ -358,7 +360,9 @@ QJsonObject cacic_hardware::coletaLinux()
     coletaLinuxIsNotebook(hardware);
     coletaLinuxPrinters(hardware);
 
-    //    lshwFile.remove();
+    if(lshwFile.exists()) {
+        lshwFile.remove();
+    }
     return hardware;
 }
 
@@ -367,7 +371,24 @@ void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
     OperatingSystem op;
     so["Caption"] = op.getNomeOs();
     so["Version"] = op.coletaVersaoOsEmString();
-    so["InstallDate"] = oCacic.padronizarData(console("tune2fs -l "+console("df").split("\n").takeAt(1).split(" ").takeFirst()+" | grep 'Filesystem created:'").split("\n").takeFirst());
+    QStringList auxList = console("df").split("\n");
+    QString particao;
+    if (auxList.size() > 0) {
+        particao = auxList.at(1);
+        auxList = particao.split(" ");
+        if (auxList.size() > 0){
+            particao = auxList.takeFirst();
+        }else
+            particao = "";
+    }
+    if (!particao.isEmpty() && !particao.contains("/cow")){
+        QString data = console("tune2fs -l "+ particao +" | grep 'Filesystem created:'");
+        QStringList auxList = data.split("\n");
+        if (auxList.size() > 0)
+            data = auxList.first();
+        so["InstallDate"] = oCacic.padronizarData(data);
+    } else
+        so["InstallDate"] = QString("00/00/0000");
     hardware["OperatingSystem"] = so;
 }
 
@@ -430,10 +451,21 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 
     cpu["Caption"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(console(
-                                                       "dmidecode -t processor | grep 'Max Speed'").split(
-                                                       "\n", QString::SkipEmptyParts).takeFirst().split(
-                                                       " ").takeAt(2));
+    QString aux = console("dmidecode -t processor | grep 'Max Speed'");
+    if (!aux.isEmpty()) {
+        QStringList auxList = aux.split("\n", QString::SkipEmptyParts);
+        if (auxList.size() > 0) {
+            aux = auxList.takeFirst();
+            auxList = aux.split(" ");
+            if (auxList.size() >= 2)
+                aux = auxList.takeAt(2);
+            else
+                aux = "";
+        } else {
+            aux = "";
+        }
+    }
+    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(aux);
     QStringList consoleOutput;
     consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){

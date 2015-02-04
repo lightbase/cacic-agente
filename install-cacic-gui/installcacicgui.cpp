@@ -328,12 +328,7 @@ void InstallCacicGui::install()
         if (ok){
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
             oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
-#ifdef Q_OS_WIN
-            oCacic.setCacicMainFolder("c:/cacic");
-#elif defined(Q_OS_LINUX)
-            oCacic.setCacicMainFolder("/usr/share/cacic");
-#endif
-
+            oCacic.setCacicMainFolder(Identificadores::ENDERECO_PATCH_CACIC);
             oCacic.createFolder(oCacic.getCacicMainFolder());
             //grava chave em registro;
             QVariantMap registro;

@@ -82,8 +82,6 @@ std::string CACIC_Computer::pegarUsu(){
 
         if (!oldUser.isEmpty() && !oldUser.isNull()) {
             user = oldUser;
-        } else {
-            user = '0';
         }
     }
     return user.toStdString();

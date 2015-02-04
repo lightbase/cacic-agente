@@ -22,8 +22,8 @@ void UninstallCacic::on_pushButton_2_clicked()
 {
     if(!ui->desinstalar->isChecked() && !ui->modificar->isChecked()){
         QMessageBox(QMessageBox::Information,
-                    "Alerta",
-                    "Escolha uma das opções.",
+                    "Erro",
+                    "Escolha uma das opções disponíveis.",
                     QMessageBox::Ok).exec();
     }
     if(ui->desinstalar->isChecked()){

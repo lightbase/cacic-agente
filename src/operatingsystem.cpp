@@ -27,7 +27,7 @@ int OperatingSystem::coletaIdOs(){
 
     QString line;
     foreach(line, catOutput) {
-        if(line.contains("PRETTY_NAME")) {
+        if(line.contains("DISTRIB_DESCRIPTION")){
             if( line.contains("Arch"))
                 return LINUX_ARCH;
             else if( line.contains("Debian"))
@@ -81,11 +81,10 @@ QString OperatingSystem::coletaVersaoOsEmString(){
             return QString(line.split("=").takeLast().split('"').takeAt(1).split(",").takeFirst());
         }else if (line.contains("VERSION=")){
             return line.split("=").takeLast().split('"').takeAt(1);
+        }else if (line.contains("DISTRIB_RELEASE")){
+            return line.split("=").takeLast();
         }
     }
-    return QString();
-
-#else
     return QString();
 #endif
     return QString();
@@ -108,19 +107,12 @@ QString OperatingSystem::coletaNomeOs()
     }
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;
-    QStringList consoleOutput;
-    QString line;
     QString nomeDistro;
 
-    consoleOutput = console("cat /etc/*release").split("\n");
-    foreach(line, consoleOutput) {
-        if(line.contains("PRETTY_NAME")) {
-            QStringList split = line.split("=");
-            nomeDistro = split[1].mid(1, split[1].size()-2 ).trimmed();
-        }
-    }
+    QStringList split = console("cat /etc/*release | grep DISTRIB_DESCRIPTION").split("=");
+    nomeDistro = split[1].mid(1, split[1].trimmed().size()-2 ).trimmed();
 
-    consoleOutput = console("uname -i").split("\n");
+    QStringList consoleOutput = console("uname -i").split("\n");
 
     if(consoleOutput.contains("unknown"))
         consoleOutput = console("uname -m").split("\n");

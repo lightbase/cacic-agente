@@ -349,10 +349,21 @@ bool CCacic::verificarCacicInstalado() {
 
 QString CCacic::padronizarData(QString data){
 #ifdef Q_OS_WIN
-    return QString(data.mid(6,2) +"/"+ data.mid(4,2)+"/"+data.mid(0,4));
+    if (!data.isEmpty() && !data.isNull())
+        return QString(data.mid(6,2) +"/"+ data.mid(4,2)+"/"+data.mid(0,4));
 #elif defined (Q_OS_LINUX)
-    return QString(data.split(" ").at(10)+"/"+getMesFromString(data.split(" ").at(9))+"/"+data.split(" ").takeLast());
+    if (!data.isEmpty() && !data.isNull()){
+        QString dia, mes, ano;
+        if (data.split(" ").at(10).isEmpty())
+            dia = data.split(" ").at(11);
+        else
+            dia = data.split(" ").at(10);
+        mes = getMesFromString(data.split(" ").at(9));
+        ano = data.split(" ").takeLast();
+        return QString(dia+"/" + mes + "/" + ano);
+    }
 #endif
+    return "";
 }
 
 QString CCacic::getMesFromString(QString mes){
@@ -369,32 +380,6 @@ QString CCacic::getMesFromString(QString mes){
     if(mes==(QString("Nov"))){return "11";}
     if(mes==(QString("Dez")) || mes==(QString("Dec"))){return "12";}
     return "00";
-}
-
-void CCacic::modifyJsonValue(QJsonObject& obj, const QString& path, const QJsonValue& newValue) {
-    qDebug() << newValue;
-    const int indexOfDot = path.indexOf('.');
-    const QString propertyName = path.left(indexOfDot);
-    const QString subPath = indexOfDot>0 ? path.mid(indexOfDot+1) : QString();
-
-    QJsonValue subValue = obj[propertyName];
-
-    if(subPath.isEmpty()) {
-        subValue = newValue;
-    }
-    else {
-        QJsonObject obj = subValue.toObject();
-        modifyJsonValue(obj,subPath,newValue);
-        subValue = obj;
-    }
-
-    obj[propertyName] = subValue;
-}
-
-void CCacic::modifyJsonValue(QJsonDocument& doc, const QString& path, const QJsonValue& newValue) {
-    QJsonObject obj = doc.object();
-    modifyJsonValue(obj,path,newValue);
-    doc = QJsonDocument(obj);
 }
 
 /*Getters/Setters

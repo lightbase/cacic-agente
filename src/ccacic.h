@@ -48,8 +48,6 @@ public:
     bool verificarRoot();
     bool verificarCacicInstalado();
     QString padronizarData(QString data);
-    void modifyJsonValue(QJsonObject &obj, const QString &path, const QJsonValue &newValue);
-    void modifyJsonValue(QJsonDocument &doc, const QString &path, const QJsonValue &newValue);
     QString getMesFromString(QString mes);
 
     //Geters/seters:

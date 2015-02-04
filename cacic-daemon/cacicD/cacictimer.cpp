@@ -65,17 +65,18 @@ void CacicTimer::mslot(){
             }
         }
 
+        if (!checkModules->start()){
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
+        }
+
         if (verificarEIniciarQMutex()) {
+            verificarModulos();
             iniciarThread();
             if(verificarPeriodicidade()){
                 reiniciarTimer();
             }
         }
 
-        if (!checkModules->start()){
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
-        }
-        verificarModulos();
     } else {
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao comunicar com gerente."));
     }
@@ -121,7 +122,6 @@ bool CacicTimer::verificarModulos()
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Há uma thread sendo executada, aguardando o término.");
                 cacicthread->wait(30000);
             }
-            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" encontrado para atualização.");
             QFile novoModulo(list.at(i).filePath());
             if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
                 QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
@@ -130,6 +130,8 @@ bool CacicTimer::verificarModulos()
                 novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
                 if (!novoModulo.remove())
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
+                else
+                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
             } else {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
             }
@@ -144,6 +146,7 @@ bool CacicTimer::verificarModulos()
 
 #ifdef Q_OS_LINUX
             ConsoleObject console;
+            console("killall -eq cacic-service");
             console("/etc/init.d/cacic3 stop");
 #endif
             logManager->closeLogger();
@@ -391,7 +394,7 @@ bool CacicTimer::removeCacicAnterior(){
     cacicFiles << "chksis.inf" << "chksis.exe" << "cacicservice.exe";
     foreach(QString file, cacicFiles){
         if(QFile::exists("c:/windows/"+file)){
-            retorno = retorno && ccacic->deleteFile("c:/windows/"+file);
+            retorno = retorno && ccacic->deleteFile(QDir::rootPath()+"windows/"+file);
         }
     }
 #endif
