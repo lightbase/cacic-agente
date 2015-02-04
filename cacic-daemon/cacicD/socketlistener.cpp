@@ -8,7 +8,7 @@ SocketListener::SocketListener(QString applicationDirPath, QObject *parent) :
     connect(&server_socket, SIGNAL(readyRead()),
             this, SLOT(tcpReady()));
     connect(this, SIGNAL(newConnection()), this, SLOT(newRequest()));
-            server_socket.setSocketOption(QAbstractSocket::KeepAliveOption, true);
+    server_socket.setSocketOption(QAbstractSocket::KeepAliveOption, true);
     iniciarInstancias(applicationDirPath);
 }
 
@@ -44,8 +44,13 @@ bool SocketListener::start_listen(int port_no)
 
 bool SocketListener::newRequest()
 {
-    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + server_socket.peerAddress().toString()));
-    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + server_socket.peerName()));
+    this->pendingConnection = this->nextPendingConnection();
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + pendingConnection->peerAddress().toString()));
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + pendingConnection->peerName()));
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request: " + QString::fromLocal8Bit(pendingConnection->readAll())));
+    this->pendingConnection->close();
+
+    return true;
 }
 
 void SocketListener::incomingConnection(int descriptor)

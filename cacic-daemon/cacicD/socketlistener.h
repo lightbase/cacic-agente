@@ -13,6 +13,7 @@ public:
     explicit SocketListener(QString applicationDirPath, QObject *parent = 0);
     ~SocketListener();
     QTcpSocket server_socket;
+    QTcpSocket *pendingConnection;
     void setApplicationDirPath(const QString &value);
 
 private:
