@@ -8,6 +8,7 @@
 #include "checkmodules.h"
 #include "identificadores.h"
 #include "ccacic.h"
+#include "socketlistener.h"
 
 #define APP_VERSION "3.0"
 
@@ -19,6 +20,7 @@ public:
     CacicTimer *Ocacictimer;
     CCacic *ccacic;
     CheckModules *OcheckModules;
+    SocketListener *socket;
 
     cacicD(int argc, char **argv);
     ~cacicD();

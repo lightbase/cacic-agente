@@ -1,13 +1,15 @@
 #include "socketlistener.h"
 
-SocketListener::SocketListener(QObject *parent) :
+SocketListener::SocketListener(QString applicationDirPath, QObject *parent) :
     QTcpServer(parent)
 {
     connect(&server_socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(tcpError(QAbstractSocket::SocketError)) );
     connect(&server_socket, SIGNAL(readyRead()),
             this, SLOT(tcpReady()));
-    server_socket.setSocketOption(QAbstractSocket::KeepAliveOption, true);
+    connect(this, SIGNAL(newConnection()), this, SLOT(newRequest()));
+            server_socket.setSocketOption(QAbstractSocket::KeepAliveOption, true);
+    iniciarInstancias(applicationDirPath);
 }
 
 SocketListener::~SocketListener()
@@ -23,7 +25,7 @@ void SocketListener::tcpReady()
 
 void SocketListener::tcpError(QAbstractSocket::SocketError error)
 {
-    QMessageBox::warning((QWidget *)this->parent(), tr("Error"),tr("TCP error: %1").arg(server_socket.errorString()));
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("TCP error: " + server_socket.errorString()));
 }
 
 
@@ -31,17 +33,32 @@ bool SocketListener::start_listen(int port_no)
 {
     if( !this->listen( QHostAddress::Any, port_no ) )
     {
-        QMessageBox::warning((QWidget *)this->parent(), tr("Error!"), tr("Cannot listen to port %1").arg(port_no));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Cannot listen to port " + port_no));
+        return false;
     }
     else
         return true;
+
+    this->newConnection();
+}
+
+bool SocketListener::newRequest()
+{
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + server_socket.peerAddress().toString()));
+    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + server_socket.peerName()));
 }
 
 void SocketListener::incomingConnection(int descriptor)
 {
     if( !server_socket.setSocketDescriptor(descriptor))
     {
-        QMessageBox::warning((QWidget *)this->parent(), tr("Error!"), tr("Socket error!"));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Socket error!"));
         return;
     }
+}
+
+void SocketListener::iniciarInstancias(QString applicationDirPath){
+    logManager = QLogger::QLoggerManager::getInstance();
+    logManager->addDestination(applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::InfoLevel);
+    logManager->addDestination(applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::ErrorLevel);
 }

@@ -31,6 +31,8 @@ public:
 
     static const QString LOG_INSTALL_CACIC;
 
+    static const QString LOG_SOCKET_LISTENER;
+
     static const QString LOG_GERCOLS;
 
     static const QString AGENTE_VERSAO;
