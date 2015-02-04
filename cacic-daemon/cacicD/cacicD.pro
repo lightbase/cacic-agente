@@ -43,7 +43,8 @@ SOURCES     += main.cpp \
                ../../src/QLogger.cpp \
                ../../src/checkmodules.cpp \
                ../../src/identificadores.cpp \
-               ../../src/servicecontroller.cpp
+               ../../src/servicecontroller.cpp \
+               socketlistener.cpp
 
 
 HEADERS     += cacicd.h \
@@ -57,7 +58,8 @@ HEADERS     += cacicd.h \
                ../../src/QLogger.h \
                ../../src/checkmodules.h \
                ../../src/identificadores.h \
-               ../../src/servicecontroller.h
+               ../../src/servicecontroller.h \
+               socketlistener.h
 
 include(../../src/qtservice/src/qtservice.pri)
 
