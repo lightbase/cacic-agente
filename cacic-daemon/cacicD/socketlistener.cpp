@@ -38,19 +38,21 @@ bool SocketListener::start_listen(int port_no)
     }
     else
         return true;
-
-    this->newConnection();
 }
 
 bool SocketListener::newRequest()
 {
-    this->pendingConnection = this->nextPendingConnection();
-    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + pendingConnection->peerAddress().toString()));
-    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + pendingConnection->peerName()));
-    QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request: " + QString::fromLocal8Bit(pendingConnection->readAll())));
-    this->pendingConnection->close();
-
-    return true;
+    try{
+        this->pendingConnection = this->nextPendingConnection();
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + pendingConnection->peerAddress().toString()));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + pendingConnection->peerName()));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request: " + QString::fromLocal8Bit(pendingConnection->readAll())));
+        this->pendingConnection->close();
+        return true;
+    }catch (...) {
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Erro ao receber socket request."));
+        return false;
+    }
 }
 
 void SocketListener::incomingConnection(int descriptor)

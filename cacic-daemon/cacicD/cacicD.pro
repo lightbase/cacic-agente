@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 #SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
-VERSION   = 3.1.6
+VERSION   = 3.1.7
 ##############################################################################
 
 QT       += core
@@ -43,7 +43,8 @@ SOURCES     += main.cpp \
                ../../src/QLogger.cpp \
                ../../src/checkmodules.cpp \
                ../../src/identificadores.cpp \
-               ../../src/servicecontroller.cpp
+               ../../src/servicecontroller.cpp \
+               socketlistener.cpp
 
 
 HEADERS     += cacicd.h \
@@ -57,7 +58,8 @@ HEADERS     += cacicd.h \
                ../../src/QLogger.h \
                ../../src/checkmodules.h \
                ../../src/identificadores.h \
-               ../../src/servicecontroller.h
+               ../../src/servicecontroller.h \
+               socketlistener.h
 
 include(../../src/qtservice/src/qtservice.pri)
 
