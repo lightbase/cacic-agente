@@ -19,6 +19,7 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::InfoLevel);
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::ErrorLevel);
+    connect(this, SIGNAL(finished()), this, SLOT(quit()));
 }
 
 InstallCacicGui::~InstallCacicGui()
@@ -134,7 +135,7 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     if (ok){
         //inicia a instalação.
         if(!oCacic.verificarRoot()){
-            mensagemDeProgresso("O Cacic deve ser instalado com premissões de administrador.\n\n");
+            mensagemDeProgresso("O Cacic deve ser instalado com permissões de administrador.\n\n");
             if(!isGui()){
                 emit finished();
             }
@@ -160,8 +161,6 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     logManager->wait();
     if(!isGui()){
         emit finished();
-    }else{
-
     }
 }
 
@@ -492,19 +491,20 @@ QMap<QString, QString> InstallCacicGui::validaParametros(QStringList argv, int a
 
 void InstallCacicGui::uninstall()
 {
+    ConsoleObject console;
     mensagemDeProgresso("Desinstalando, aguarde ...", true, true);
-    bool ok;
 #ifdef Q_OS_WIN
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Desinstalando o serviço..."));
+    console("TASKKILL /F /IM cacic-service.exe");
     if (!service.uninstall()){
         mensagemDeProgresso("Não foi possível parar o serviço: " + QString::fromStdString(service.getLastError()));
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
                                                                        QString::fromStdString(service.getLastError())));
+        return;
     }
 
 #elif defined(Q_OS_LINUX)
-    ConsoleObject console;
     //QStringList outputColumns;
     mensagemDeProgresso("Parando serviço...");
     console("killall -eq cacic-service gercols");
