@@ -16,16 +16,11 @@ class UninstallCacic : public QMainWindow
 public:
     explicit UninstallCacic(QWidget *parent = 0);
     ~UninstallCacic();
-
-    InstallCacicGui *getObjInstallCacic() const;
     void setObjInstallCacic(InstallCacicGui *value);
-
-    CCacic *getOCCacic() const;
     void setOCCacic(CCacic *value);
 
 private slots:
     void on_pushButton_clicked();
-
     void on_pushButton_2_clicked();
 
 signals:
@@ -35,6 +30,8 @@ private:
     Ui::UninstallCacic *ui;
     InstallCacicGui *objInstallCacic;
     CCacic *oCCacic;
+    InstallCacicGui *getObjInstallCacic() const;
+    CCacic *getOCCacic() const;
 };
 
 #endif // UNINSTALLCACIC_H

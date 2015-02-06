@@ -1,15 +1,16 @@
 #include "socketlistener.h"
 
-SocketListener::SocketListener(QString applicationDirPath, QObject *parent) :
+SocketListener::SocketListener(QString DirPath, QObject *parent) :
     QTcpServer(parent)
 {
+    this->applicationDirPath = DirPath;
     connect(&server_socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(tcpError(QAbstractSocket::SocketError)) );
     connect(&server_socket, SIGNAL(readyRead()),
             this, SLOT(tcpReady()));
     connect(this, SIGNAL(newConnection()), this, SLOT(newRequest()));
     server_socket.setSocketOption(QAbstractSocket::KeepAliveOption, true);
-    iniciarInstancias(applicationDirPath);
+    iniciarInstancias();
 }
 
 SocketListener::~SocketListener()
@@ -31,22 +32,22 @@ void SocketListener::tcpError(QAbstractSocket::SocketError error)
 
 bool SocketListener::start_listen(int port_no)
 {
-    if( !this->listen( QHostAddress::Any, port_no ) )
+    if(!this->listen(QHostAddress::Any, port_no))
     {
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Cannot listen to port " + port_no));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Não foi possivel iniciar escuta na porta: " + QString::number(port_no)));
         return false;
-    }
-    else
+    }else{
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Escuta na porta " + QString::number(port_no) + " iniciada com sucesso."));
         return true;
+    }
 }
 
 bool SocketListener::newRequest()
 {
     try{
         this->pendingConnection = this->nextPendingConnection();
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerAddress() : " + pendingConnection->peerAddress().toString()));
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request peerName() : " + pendingConnection->peerName()));
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Request: " + QString::fromLocal8Bit(pendingConnection->readAll())));
+        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Ordem para forçar coleta recebida de: " + pendingConnection->peerAddress().toString()));
+        iniciarColetaForcada();
         this->pendingConnection->close();
         return true;
     }catch (...) {
@@ -57,15 +58,19 @@ bool SocketListener::newRequest()
 
 void SocketListener::incomingConnection(int descriptor)
 {
-    if( !server_socket.setSocketDescriptor(descriptor))
+    if(!server_socket.setSocketDescriptor(descriptor))
     {
         QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Socket error!"));
         return;
     }
 }
 
-void SocketListener::iniciarInstancias(QString applicationDirPath){
+void SocketListener::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::InfoLevel);
-    logManager->addDestination(applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::ErrorLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::InfoLevel);
+    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::ErrorLevel);
+}
+
+void SocketListener::iniciarColetaForcada(){
+
 }

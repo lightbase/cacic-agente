@@ -5,20 +5,25 @@
 #include <QtNetwork>
 #include "identificadores.h"
 #include "QLogger.h"
+#include "cacicthread.h"
+#include "cacic_comm.h"
+#include "ccacic.h"
 
 class SocketListener : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit SocketListener(QString applicationDirPath, QObject *parent = 0);
+    explicit SocketListener(QString DirPath, QObject *parent = 0);
     ~SocketListener();
-    QTcpSocket server_socket;
-    QTcpSocket *pendingConnection;
     void setApplicationDirPath(const QString &value);
 
 private:
+    QTcpSocket server_socket;
+    QTcpSocket *pendingConnection;
     QLogger::QLoggerManager *logManager;
-    void iniciarInstancias(QString applicationDirPath);
+    QString applicationDirPath;
+    void iniciarInstancias();
+    void iniciarColetaForcada();
 
 public slots:
     void tcpReady();

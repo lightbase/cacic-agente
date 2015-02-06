@@ -94,8 +94,9 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->leSenha->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         ui->leSenha->setReadOnly(true);
         ui->pbInstalar->setText("Modificar configurações");
-        ui->pbCancelar->setEnabled(false);
-        ui->pbCancelar->setVisible(false);
+        ui->pbCancelar->setText("Cancelar");
+        ui->pbCancelar->setEnabled(true);
+        ui->pbCancelar->setVisible(true);
     }
     if(getModoDeExecucao() == Identificadores::DESINSTALAR){
         ui->leHost->setEnabled(false);
@@ -114,8 +115,9 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->cbPass->setVisible(true);
         ui->cbPass->setEnabled(false);
         ui->pbInstalar->setText("Desinstalar o Cacic");
-        ui->pbCancelar->setEnabled(false);
-        ui->pbCancelar->setVisible(false);
+        ui->pbCancelar->setText("Cancelar");
+        ui->pbCancelar->setEnabled(true);
+        ui->pbCancelar->setVisible(true);
     }
     ui->pteResult->setReadOnly(true);
     ui->pteResult->setFont(QFont("Arial", 10));
@@ -637,6 +639,7 @@ void InstallCacicGui::on_pbCancelar_clicked()
 {
     if(getModoDeExecucao() == Identificadores::INSTALAR){
         emit finished();
+    }else{
+        this->close();
     }
-
 }

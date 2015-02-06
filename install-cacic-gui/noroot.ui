@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>429</width>
+    <width>440</width>
     <height>114</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>429</width>
+    <width>440</width>
     <height>114</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>429</width>
+    <width>440</width>
     <height>114</height>
    </size>
   </property>
@@ -31,7 +31,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>411</width>
+      <width>451</width>
       <height>16</height>
      </rect>
     </property>
@@ -41,7 +41,7 @@
      </font>
     </property>
     <property name="text">
-     <string>O Cacic deve ser instalado com permissões de administrador.</string>
+     <string>O Cacic deve ser executado com permissões de administrador.</string>
     </property>
     <property name="textFormat">
      <enum>Qt::PlainText</enum>

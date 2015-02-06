@@ -81,8 +81,6 @@ void CacicTimer::mslot(){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao comunicar com gerente."));
     }
 
-
-
 }
 
 /*************************************************************
