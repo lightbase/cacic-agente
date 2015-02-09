@@ -19,7 +19,6 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::InfoLevel);
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::ErrorLevel);
-    connect(this, SIGNAL(finished()), this, SLOT(quit()));
 }
 
 InstallCacicGui::~InstallCacicGui()
@@ -155,7 +154,11 @@ void InstallCacicGui::run(QStringList argv, int argc) {
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Atualizando cacic!");
         updateService();
     } else {
-        parametrosIncorretos();
+        if(!isGui()) {
+            parametrosIncorretos();
+        }else{
+            mensagemDeProgresso("Parametros de configuração inválidos.",true, true);
+        }
     }
     logManager->closeLogger();
     logManager->wait();
@@ -394,11 +397,15 @@ void InstallCacicGui::install()
                 if (service.start()){
                     mensagemDeProgresso("Instalação realizada com sucesso.");
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Instalação realizada com sucesso."));
-                    if (QMessageBox::Ok == QMessageBox(
-                                QMessageBox::Information,
-                                "Instalação do Cacic",
-                                "Cacic instalado com sucesso.",
-                                QMessageBox::Ok).exec()){
+                    if(isGui()){
+                        if (QMessageBox::Ok == QMessageBox(
+                                    QMessageBox::Information,
+                                    "Instalação do Cacic",
+                                    "Cacic instalado com sucesso.",
+                                    QMessageBox::Ok).exec()){
+                            emit finished();
+                        }
+                    }else{
                         emit finished();
                     }
                 } else {
@@ -561,11 +568,15 @@ void InstallCacicGui::uninstall()
     }
 
     mensagemDeProgresso("Cacic desinstalado com sucesso.\n");
-    if (QMessageBox::Ok == QMessageBox(
-                QMessageBox::Information,
-                "Desistalação do Cacic",
-                "Cacic Desinstalado com sucesso.",
-                QMessageBox::Ok).exec()){
+    if(isGui()){
+        if (QMessageBox::Ok == QMessageBox(
+                    QMessageBox::Information,
+                    "Desistalação do Cacic",
+                    "Cacic Desinstalado com sucesso.",
+                    QMessageBox::Ok).exec()){
+            emit finished();
+        }
+    }else{
         emit finished();
     }
 }
