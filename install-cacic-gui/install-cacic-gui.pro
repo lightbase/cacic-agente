@@ -66,3 +66,6 @@ FORMS    += installcacicgui.ui \
 win32 {
     RC_ICONS = cacic-logo.ico
 }
+
+RESOURCES += \
+    imagens.qrc

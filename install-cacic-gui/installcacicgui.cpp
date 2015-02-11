@@ -19,6 +19,10 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::InfoLevel);
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::ErrorLevel);
+    trayMenu = new QMenu(this);
+    tray = new QSystemTrayIcon(this);
+    tray->setIcon(QIcon(":/cacic-logo.ico"));
+    trayIcon(true, QString("Sobre o cacic"), true, QString("Cacic"), QString("Cacic iniciado com sucesso."));tray->show();
 }
 
 InstallCacicGui::~InstallCacicGui()
@@ -432,18 +436,20 @@ void InstallCacicGui::install()
                 mensagemDeProgresso("Iniciando serviço...");
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 start");
-                mensagemDeProgresso("Instalado com sucesso.");
-                if (QMessageBox::Ok == QMessageBox(
-                            QMessageBox::Information,
-                            "Instalação do Cacic",
-                            "Cacic instalado com sucesso.",
-                            QMessageBox::Ok).exec()){
+                mensagemDeProgresso("Instalado com sucesso.\n\n");
+                if(isGui()){
+                    if (QMessageBox::Ok == QMessageBox(
+                                QMessageBox::Information,
+                                "Instalação do Cacic",
+                                "Cacic instalado com sucesso.",
+                                QMessageBox::Ok).exec()){
+                        emit finished();
+                    }
+                }else{
                     emit finished();
                 }
             }
-
 #endif
-
         } else {
             mensagemDeProgresso("Falha ao pegar configurações: " + configs["error"].toString());
             QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Falha ao pegar configurações: ") + configs["error"].toString());
@@ -652,5 +658,22 @@ void InstallCacicGui::on_pbCancelar_clicked()
         emit finished();
     }else{
         this->close();
+    }
+}
+
+void InstallCacicGui::trayIcon(bool addMenu, QString menu, bool sendMsg, QString titulo, QString msg){
+    if(addMenu){
+        if(!menu.isEmpty() && !menu.isNull()){
+            trayMenu->addAction(menu);
+        }else{
+            return;
+        }
+        tray->setContextMenu(trayMenu);
+    }
+    tray->show();
+    if(sendMsg){
+        if(!titulo.isEmpty() && !titulo.isNull() && !msg.isNull() && !msg.isEmpty()){
+            tray->showMessage(titulo, msg);
+        }
     }
 }

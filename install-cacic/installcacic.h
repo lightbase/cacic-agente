@@ -36,6 +36,7 @@ private:
     void updateService();
     void configurar(const QMap<QString, QString> &param);
     void install();
+
 signals:
     void finished();
 

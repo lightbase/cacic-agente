@@ -26,13 +26,13 @@
    <string>Opções</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
       <width>391</width>
-      <height>116</height>
+      <height>111</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -96,7 +96,7 @@
      <x>0</x>
      <y>0</y>
      <width>410</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
