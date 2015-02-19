@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>cacic-logo.ico</file>
+    </qresource>
+</RCC>

@@ -124,16 +124,33 @@ bool CacicThread::enviarColeta() {
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
                 if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
+                    registrarDataEnvioDeColeta();
                     return true;
                 }
                 return false;
             }else{
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
-                return false;
+                if(!ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().isEmpty()){
+                    int dataUltimaColeta = QDate(ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().split("/").takeAt(2).toInt(),
+                                                 ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().split("/").takeAt(1).toInt(),
+                                                 ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().split("/").takeAt(0).toInt()).dayOfYear(); //recupera a data de envio do ultima coleta no formato "dayOfYears"
+                    int dataAtual = QDate::currentDate().dayOfYear(); //data atual no formato "dayOfYears"
+                    if((dataAtual-dataUltimaColeta) >= 7){ //se já tiver passado 7 dias desde o envio da ultima coleta, enviar mesmo sem alteração
+                        if(realizarEnviodeColeta()){
+                            registrarDataEnvioDeColeta();
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
+                        return false;
+                    }
+                }
             }
         }else{
             if(realizarEnviodeColeta()){
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta forçada enviada com sucesso."));
+                registrarDataEnvioDeColeta();
                 return true;
             }
             return false;
@@ -165,4 +182,10 @@ void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
+}
+
+void CacicThread::registrarDataEnvioDeColeta(){
+    QVariantMap qvm;
+    qvm["dataColetaEnviada"] = QDate::currentDate().toString("dd/MM/yyyy");
+    this->ccacic->setValueToRegistry("Lightbase", "Cacic", qvm);
 }

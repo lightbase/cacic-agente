@@ -34,6 +34,7 @@ private:
     QString nomeModulo;
     CCacic *ccacic;
     CacicComm *OCacicComm;
+    void registrarDataEnvioDeColeta();
 };
 
 #endif // CACICTHREAD_H

@@ -26,7 +26,7 @@
    <string>Instalação do Cacic</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -146,13 +146,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>pbCancelar</zorder>
-   <zorder>pbInstalar</zorder>
-   <zorder></zorder>
-   <zorder>pbInstalar</zorder>
-   <zorder></zorder>
-   <zorder>pteResult</zorder>
-   <zorder>label_4</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -160,7 +153,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

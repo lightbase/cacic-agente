@@ -31,13 +31,13 @@ void UninstallCacic::on_pushButton_2_clicked()
         getObjInstallCacic()->setModoDeExecucao(Identificadores::DESINSTALAR);
         getObjInstallCacic()->setWindowTitle("Desinstalar o Cacic");
         getObjInstallCacic()->show();
-        this->close();
+        //this->close();
     }
     if(ui->modificar->isChecked()){
         getObjInstallCacic()->setGui(true);
         getObjInstallCacic()->setModoDeExecucao(Identificadores::MODIFICAR);
         getObjInstallCacic()->show();
-        this->close();
+        //this->close();
     }
 }
 CCacic *UninstallCacic::getOCCacic() const

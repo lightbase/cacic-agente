@@ -19,6 +19,10 @@ InstallCacicGui::InstallCacicGui(QWidget *parent) : QMainWindow(parent), ui(new 
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::InfoLevel);
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log", Identificadores::LOG_INSTALL_CACIC ,QLogger::ErrorLevel);
+    trayMenu = new QMenu(this);
+    tray = new QSystemTrayIcon(this);
+    tray->setIcon(QIcon(":/cacic-logo.ico"));
+    trayIcon(true, QString("Sobre o cacic"), true, QString("Cacic"), QString("Cacic iniciado com sucesso."));tray->show();
 }
 
 InstallCacicGui::~InstallCacicGui()
@@ -94,8 +98,9 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->leSenha->setText(oCacic.getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         ui->leSenha->setReadOnly(true);
         ui->pbInstalar->setText("Modificar configurações");
-        ui->pbCancelar->setEnabled(false);
-        ui->pbCancelar->setVisible(false);
+        ui->pbCancelar->setText("Cancelar");
+        ui->pbCancelar->setEnabled(true);
+        ui->pbCancelar->setVisible(true);
     }
     if(getModoDeExecucao() == Identificadores::DESINSTALAR){
         ui->leHost->setEnabled(false);
@@ -114,8 +119,9 @@ void InstallCacicGui::resolverModoDeExecucao(){
         ui->cbPass->setVisible(true);
         ui->cbPass->setEnabled(false);
         ui->pbInstalar->setText("Desinstalar o Cacic");
-        ui->pbCancelar->setEnabled(false);
-        ui->pbCancelar->setVisible(false);
+        ui->pbCancelar->setText("Cancelar");
+        ui->pbCancelar->setEnabled(true);
+        ui->pbCancelar->setVisible(true);
     }
     ui->pteResult->setReadOnly(true);
     ui->pteResult->setFont(QFont("Arial", 10));
@@ -132,7 +138,7 @@ void InstallCacicGui::run(QStringList argv, int argc) {
     if (ok){
         //inicia a instalação.
         if(!oCacic.verificarRoot()){
-            mensagemDeProgresso("O Cacic deve ser instalado com premissões de administrador.\n\n");
+            mensagemDeProgresso("O Cacic deve ser instalado com permissões de administrador.\n\n");
             if(!isGui()){
                 emit finished();
             }
@@ -152,14 +158,16 @@ void InstallCacicGui::run(QStringList argv, int argc) {
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, "Atualizando cacic!");
         updateService();
     } else {
-        parametrosIncorretos();
+        if(!isGui()) {
+            parametrosIncorretos();
+        }else{
+            mensagemDeProgresso("Parametros de configuração inválidos.",true, true);
+        }
     }
     logManager->closeLogger();
     logManager->wait();
     if(!isGui()){
         emit finished();
-    }else{
-
     }
 }
 
@@ -393,11 +401,15 @@ void InstallCacicGui::install()
                 if (service.start()){
                     mensagemDeProgresso("Instalação realizada com sucesso.");
                     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Instalação realizada com sucesso."));
-                    if (QMessageBox::Ok == QMessageBox(
-                                QMessageBox::Information,
-                                "Instalação do Cacic",
-                                "Cacic instalado com sucesso.",
-                                QMessageBox::Ok).exec()){
+                    if(isGui()){
+                        if (QMessageBox::Ok == QMessageBox(
+                                    QMessageBox::Information,
+                                    "Instalação do Cacic",
+                                    "Cacic instalado com sucesso.",
+                                    QMessageBox::Ok).exec()){
+                            emit finished();
+                        }
+                    }else{
                         emit finished();
                     }
                 } else {
@@ -424,18 +436,20 @@ void InstallCacicGui::install()
                 mensagemDeProgresso("Iniciando serviço...");
                 ConsoleObject console;
                 console("/etc/init.d/cacic3 start");
-                mensagemDeProgresso("Instalado com sucesso.");
-                if (QMessageBox::Ok == QMessageBox(
-                            QMessageBox::Information,
-                            "Instalação do Cacic",
-                            "Cacic instalado com sucesso.",
-                            QMessageBox::Ok).exec()){
+                mensagemDeProgresso("Instalado com sucesso.\n\n");
+                if(isGui()){
+                    if (QMessageBox::Ok == QMessageBox(
+                                QMessageBox::Information,
+                                "Instalação do Cacic",
+                                "Cacic instalado com sucesso.",
+                                QMessageBox::Ok).exec()){
+                        emit finished();
+                    }
+                }else{
                     emit finished();
                 }
             }
-
 #endif
-
         } else {
             mensagemDeProgresso("Falha ao pegar configurações: " + configs["error"].toString());
             QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Falha ao pegar configurações: ") + configs["error"].toString());
@@ -490,19 +504,20 @@ QMap<QString, QString> InstallCacicGui::validaParametros(QStringList argv, int a
 
 void InstallCacicGui::uninstall()
 {
+    ConsoleObject console;
     mensagemDeProgresso("Desinstalando, aguarde ...", true, true);
-    bool ok;
 #ifdef Q_OS_WIN
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
     QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Desinstalando o serviço..."));
+    console("TASKKILL /F /IM cacic-service.exe");
     if (!service.uninstall()){
         mensagemDeProgresso("Não foi possível parar o serviço: " + QString::fromStdString(service.getLastError()));
         QLogger::QLog_Info(Identificadores::LOG_INSTALL_CACIC, QString("Não foi possível parar o serviço: " +
                                                                        QString::fromStdString(service.getLastError())));
+        return;
     }
 
 #elif defined(Q_OS_LINUX)
-    ConsoleObject console;
     //QStringList outputColumns;
     mensagemDeProgresso("Parando serviço...");
     console("killall -eq cacic-service gercols");
@@ -559,11 +574,15 @@ void InstallCacicGui::uninstall()
     }
 
     mensagemDeProgresso("Cacic desinstalado com sucesso.\n");
-    if (QMessageBox::Ok == QMessageBox(
-                QMessageBox::Information,
-                "Desistalação do Cacic",
-                "Cacic Desinstalado com sucesso.",
-                QMessageBox::Ok).exec()){
+    if(isGui()){
+        if (QMessageBox::Ok == QMessageBox(
+                    QMessageBox::Information,
+                    "Desistalação do Cacic",
+                    "Cacic Desinstalado com sucesso.",
+                    QMessageBox::Ok).exec()){
+            emit finished();
+        }
+    }else{
         emit finished();
     }
 }
@@ -637,6 +656,24 @@ void InstallCacicGui::on_pbCancelar_clicked()
 {
     if(getModoDeExecucao() == Identificadores::INSTALAR){
         emit finished();
+    }else{
+        this->close();
     }
+}
 
+void InstallCacicGui::trayIcon(bool addMenu, QString menu, bool sendMsg, QString titulo, QString msg){
+    if(addMenu){
+        if(!menu.isEmpty() && !menu.isNull()){
+            trayMenu->addAction(menu);
+        }else{
+            return;
+        }
+        tray->setContextMenu(trayMenu);
+    }
+    tray->show();
+    if(sendMsg){
+        if(!titulo.isEmpty() && !titulo.isNull() && !msg.isNull() && !msg.isEmpty()){
+            tray->showMessage(titulo, msg);
+        }
+    }
 }
