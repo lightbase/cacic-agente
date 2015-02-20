@@ -15,26 +15,25 @@ public:
     void setModuloDirPath(const QString &value);
     void setCMutex(QMutex *value);
     void setNomeModulo(const QString &value);
-    bool enviarColeta();
     void setCcacic(CCacic *value);
-    void setOCacicComm(CacicComm *value);
 
 private:
-    QString moduloDirPath;
-    QString applicationDirPath;
-    QLogger::QLoggerManager *logManager;
     void iniciarInstancias();
     void registraInicioColeta();
     void registraFimColeta(bool tipo);
-    void iniciarModulo();
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
     bool enviarColetaDiff();
+    bool enviarColeta();
+    void registrarDataEnvioDeColeta();
+    void iniciarModulo();
+
+    QString moduloDirPath;
+    QString applicationDirPath;
+    QLogger::QLoggerManager *logManager;
     QMutex *cMutex;
     QString nomeModulo;
     CCacic *ccacic;
-    CacicComm *OCacicComm;
-    void registrarDataEnvioDeColeta();
 };
 
 #endif // CACICTHREAD_H

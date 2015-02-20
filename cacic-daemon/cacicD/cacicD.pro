@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 #SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
-VERSION   = 3.1.7
+VERSION   = 3.1.8a
 ##############################################################################
 
 QT       += core

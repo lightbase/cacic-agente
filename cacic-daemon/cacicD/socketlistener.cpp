@@ -15,7 +15,7 @@ void SocketListener::newConnection() {
     socket->flush();
     socket->waitForBytesWritten(3000);
     socket->close();
-    iniciarColetaForcada();
+    emit forcaColeta();
 }
 
 void SocketListener::setPort_no(int value) {
@@ -35,17 +35,4 @@ void SocketListener::iniciarInstancias() {
     } else {
         QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Escuta na porta " + QString::number(this->port_no) + " iniciada com sucesso."));
     }
-}
-
-void SocketListener::iniciarColetaForcada() {
-    cacicthread = new CacicThread(this->applicationDirPath);
-    ccacic = new CCacic();
-    oCacicComm = new CacicComm();
-    cMutex = new QMutex();
-    cacicthread->setCcacic(ccacic);
-    cacicthread->setOCacicComm(oCacicComm);
-    cacicthread->setNomeModulo("gercols.exe");
-    cacicthread->setCMutex(cMutex);
-    cacicthread->setModuloDirPath(this->applicationDirPath+"/gercols.exe");
-    cacicthread->start(QThread::NormalPriority);
 }
