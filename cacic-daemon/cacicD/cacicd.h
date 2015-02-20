@@ -14,11 +14,6 @@ class cacicD : public QtService<QCoreApplication>
 {
 public:
 //    QCoreApplication *app;
-    QLogger::QLoggerManager *logManager;
-    CacicTimer *Ocacictimer;
-    CCacic *ccacic;
-    CheckModules *OcheckModules;
-    SocketListener *socket;
 
     cacicD(int argc, char **argv);
     ~cacicD();
@@ -27,5 +22,8 @@ public:
     void resume();
     void stop();
 
+private:
+    QLogger::QLoggerManager *logManager;
+    CCacic *ccacic;
 };
 #endif // CACICD_H

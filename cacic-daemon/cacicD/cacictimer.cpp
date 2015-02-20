@@ -49,6 +49,7 @@ void CacicTimer::iniciarTimer()
     //    }
 
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
+    verificarPeriodicidade();
     timer->start(2 * 60000);
 }
 
@@ -65,6 +66,9 @@ void CacicTimer::mslot(){
             }
         }
 
+        //Verifica atualizações.
+        CheckModules *checkModules;
+        checkModules = new CheckModules(this->applicationDirPath, Identificadores::LOG_DAEMON_TIMER);
         if (!checkModules->start()){
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas ao checkar módulos."));
         }
@@ -72,9 +76,10 @@ void CacicTimer::mslot(){
         if (verificarEIniciarQMutex()) {
             verificarModulos();
             iniciarThread();
-            if(verificarPeriodicidade()){
-                reiniciarTimer();
-            }
+        }
+
+        if(verificarPeriodicidade()){
+            reiniciarTimer();
         }
 
     } else {
@@ -132,6 +137,12 @@ bool CacicTimer::verificarModulos()
                 if (!novoModulo.remove())
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
                 else
+                    //Garantir a coleta com o gercols atualizado
+                    if (list.at(i).fileName().contains("gercols")){
+                        QVariantMap coletar;
+                        coletar["enviaColeta"] = true;
+                        ccacic->setValueToRegistry("Lightbase", "Cacic", coletar);
+                    }
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
             } else {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
@@ -190,7 +201,6 @@ void CacicTimer::iniciarThread(){
                 //              if(!verificarseModuloJaFoiExecutado(nome,hash)){
                 if (QFile::exists(getDirProgram())) {
                     cacicthread->setCcacic(ccacic);
-                    cacicthread->setOCacicComm(OCacicComm);
                     cacicthread->setNomeModulo(nome);
                     cacicthread->setCMutex(cMutex);
                     cacicthread->setModuloDirPath(getDirProgram());
@@ -214,12 +224,12 @@ QString CacicTimer::getApplicationDirPath() {
 
 bool CacicTimer::comunicarGerente(){
     bool ok;
+    CacicComm *OCacicComm;
     OCacicComm = new CacicComm();
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-    OCacic_Computer.coletaDados();
     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Realizando comunicação em: " + OCacicComm->getUrlGerente());
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     QJsonObject resposta = OCacicComm->login(&ok);
@@ -231,9 +241,9 @@ bool CacicTimer::comunicarGerente(){
             return false;
         }
     }
-    resposta = getTest();
+    resposta = getTest(*OCacicComm);
     if(!resposta.contains("error")){
-        resposta = getConfig();
+        resposta = getConfig(*OCacicComm);
         if(!resposta.contains("error")){
             return true;
         } else{
@@ -244,13 +254,14 @@ bool CacicTimer::comunicarGerente(){
     }
 }
 
-QJsonObject CacicTimer::getTest(){
+QJsonObject CacicTimer::getTest(CacicComm &OCacicComm){
     bool ok;
     QJsonObject as;
+    CACIC_Computer OCacic_Computer;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm->comm(Identificadores::ROTA_GETTEST, &ok, as, true);
+    QJsonObject jsonresult = OCacicComm.comm(Identificadores::ROTA_GETTEST, &ok, as, true);
     if(!ok){
-        jsonresult = OCacicComm->comm(Identificadores::ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
+        jsonresult = OCacicComm.comm(Identificadores::ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
     }
     if(jsonresult.contains("error")){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getTest(). " + jsonresult["error"].toString());
@@ -266,11 +277,12 @@ QJsonObject CacicTimer::getTest(){
     }
 }
 
-QJsonObject CacicTimer::getConfig(){
+QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     bool ok;
     QJsonObject as;
+    CACIC_Computer OCacic_Computer;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm->comm(Identificadores::ROTA_GETCONFIG, &ok, as, true);
+    QJsonObject jsonresult = OCacicComm.comm(Identificadores::ROTA_GETCONFIG, &ok, as, true);
     if(jsonresult.contains("error")){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;
@@ -312,7 +324,6 @@ void CacicTimer::iniciarInstancias(){
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
     ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-    checkModules = new CheckModules(this->applicationDirPath, Identificadores::LOG_DAEMON_TIMER);
 }
 
 bool CacicTimer::verificarPeriodicidade()
