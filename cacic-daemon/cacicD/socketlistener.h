@@ -19,7 +19,7 @@ public:
     void setPort_no(int value);
 
 signals:
-
+    void forcaColeta();
 public slots:
     void newConnection();
 
