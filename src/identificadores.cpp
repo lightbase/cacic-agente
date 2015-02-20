@@ -36,6 +36,6 @@ const QString Identificadores::LOG_INSTALL_CACIC = QString("Install Cacic");
 
 const QString Identificadores::LOG_SOCKET_LISTENER = QString("Cacic Daemon (Socket Listener)");
 
-const QString Identificadores::AGENTE_VERSAO = QString("3.1.7");
+const QString Identificadores::AGENTE_VERSAO = QString("3.1.7a");
 
 const QString Identificadores::CACIC_SERVICE_NAME = QString("cacicdaemon");
