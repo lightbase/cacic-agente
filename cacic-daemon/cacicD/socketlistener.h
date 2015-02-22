@@ -2,38 +2,38 @@
 #define SOCKETLISTENER_H
 
 #include <QObject>
-#include <QtNetwork>
-#include "identificadores.h"
+#include <QTcpServer>
+#include <QTcpSocket>
 #include "QLogger.h"
+#include "identificadores.h"
 #include "cacicthread.h"
-#include "cacic_comm.h"
 #include "ccacic.h"
+#include "cacic_comm.h"
 
-class SocketListener : public QTcpServer
+class SocketListener : public QObject
 {
     Q_OBJECT
 public:
     explicit SocketListener(QString DirPath, QObject *parent = 0);
     ~SocketListener();
-    void setApplicationDirPath(const QString &value);
+    void setPort_no(int value);
 
-private:
-    QTcpSocket server_socket;
-    QTcpSocket *pendingConnection;
-    QLogger::QLoggerManager *logManager;
-    QString applicationDirPath;
-    void iniciarInstancias();
-    void iniciarColetaForcada();
+signals:
 
 public slots:
-    void tcpReady();
-    void tcpError(QAbstractSocket::SocketError error);
-    bool start_listen(int port_no);
-    bool newRequest();
+    void newConnection();
 
-protected:
-    void incomingConnection(int descriptor);
-
+private:
+    QTcpServer *server;
+    QLogger::QLoggerManager *logManager;
+    QString applicationDirPath;
+    CacicThread *cacicthread;
+    CCacic *ccacic;
+    CacicComm *oCacicComm;
+    QMutex *cMutex;
+    int port_no = 1500; //porta padrão
+    void iniciarInstancias();
+    void iniciarColetaForcada();
 };
 
 #endif // SOCKETLISTENER_H
