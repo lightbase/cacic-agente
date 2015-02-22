@@ -12,7 +12,7 @@ linux-g++-64:QMAKE_TARGET.arch = x86_64
 QT                      += core gui network
 QMAKE_CXXFLAGS_WARN_ON   = -Wall -Wno-unused-parameter -fpermissive
 CONFIG                  += c++11
-CONFIG                  += console
+#CONFIG                  += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
