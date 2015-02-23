@@ -34,23 +34,9 @@ void CacicTimer::reiniciarTimer(){
 
 void CacicTimer::iniciarTimer()
 {
-    //    if(comunicarGerente()){
-    //        checkModules->start();
-    //        //TODO: FAZER O SERVIÇO SE MATAR APÓS A CHAMADA DO INSTALLCACIC CASO ELE PRECISE SER ATUALIZADO.
-    //        verificarModulos();
-    //        verificarPeriodicidade();r
-    //        if (verificarEIniciarQMutex()) {
-    //            iniciarThread();
-    //        }
-    //        timer->start(getPeriodicidadeExecucao());
-    //    }else{
-    //        timer->start(this->periodicidadeExecucaoPadrao * 60000);
-    //        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Problemas na comunicação com o gerente. Setando periodicidade padrão."));
-    //    }
-
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
-    verificarPeriodicidade();
-    timer->start(2 * 60000);
+    setPeriodicidadeExecucao(2 * 60000);
+    timer->start(getPeriodicidadeExecucao());
 }
 
 //Slot que será iniciado sempre der a contagem do timer.
@@ -197,22 +183,29 @@ void CacicTimer::iniciarThread(){
             QString nome = listaModulos.at(var).toObject().value("nome").toString();
             QString hash = listaModulos.at(var).toObject().value("hash").toString();
             definirDirModulo(getApplicationDirPath(), nome);
-            if(nome.contains("gercols")){
-                //              if(!verificarseModuloJaFoiExecutado(nome,hash)){
+            //Se não for cacic-service, nem install cacic, nem mapa OU Se for Mapa, não tiver sido
+            //executado E o patrimônio estiver executado, iniciar a thread.
+            if((!nome.contains("cacic-service")  &&
+                !nome.contains("install-cacic")  &&
+                !nome.contains("mapacacic")         ) ||
+              (nome.contains("mapacacic") &&
+               ccacic->getValueFromRegistry("Lightbase", "Cacic", nome).isNull() &&
+               agenteConfigJson["actions"].toObject()["col_patr"].toBool())){
                 if (QFile::exists(getDirProgram())) {
                     cacicthread->setCcacic(ccacic);
                     cacicthread->setNomeModulo(nome);
                     cacicthread->setCMutex(cMutex);
                     cacicthread->setModuloDirPath(getDirProgram());
                     cacicthread->start(QThread::NormalPriority);
+                    cacicthread->wait();
+                    if(nome.contains("gercols")){
+                        enviarColeta();
+                    }
                     modulosExecutados[nome] = hash;
                     ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
                 } else {
                     QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "Modulo \""+ nome + "\" não foi encontrado para execução.");
                 }
-                //                }else{
-                //                    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, "O ("+ nome +") com o hash ("+ hash +") já foi executado antes.");
-                //                }
             }
         }
     }
@@ -302,6 +295,128 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     }
 }
 
+bool CacicTimer::verificaForcarColeta(){
+    QJsonObject agenteConfigJson;
+    QJsonObject configuracoes;
+    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    if(!result.contains("error") && !result.isEmpty()){
+        agenteConfigJson = result["agentcomputer"].toObject();
+        configuracoes = agenteConfigJson["configuracoes"].toObject();
+        if(!configuracoes["nu_forca_coleta"].isNull()){
+            if(configuracoes["nu_forca_coleta"].toString() == "true" || configuracoes["nu_forca_coleta"].toString() == "True"){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool CacicTimer::enviarColetaDiff(){
+    if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
+        bool ok = false;
+        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
+        if (!jsonColeta.isEmpty()){
+            CacicComm *OCacicComm = new CacicComm();
+            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+            QJsonObject retornoColeta;
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Enviando coleta Diff ao gerente."));
+            retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
+            if(retornoColeta.contains("error")) {
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Falha ao enviar a deferença de coleta: " + retornoColeta["error"].toString()));
+            }
+            return ok;
+        } else {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Falha ao ler a diferença de coleta: Arquivo JSON vazio ou inexistente."));
+            return false;
+        }
+    }
+    return false;
+}
+
+bool CacicTimer::realizarEnviodeColeta(){
+    bool ok = false;
+    QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+    if (!jsonColeta.isEmpty()){
+        CacicComm *OCacicComm = new CacicComm();
+        OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        QJsonObject retornoColeta;
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Enviando coleta ao gerente."));
+        retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
+        if (ok){
+            if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
+                QVariantMap enviaColeta;
+                enviaColeta["enviaColeta"] = false;
+                ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+            }
+            return true;
+        } else if(retornoColeta.contains("error")) {
+            QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Falha na coleta: " + retornoColeta["error"].toString()));
+            return false;
+        }
+        return ok;
+    } else {
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Falha na coleta: Arquivo JSON vazio ou inexistente."));
+        return false;
+    }
+}
+
+bool CacicTimer::enviarColeta() {
+    if(QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
+        if(!verificaForcarColeta()){
+            if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
+                if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
+                    registrarDataEnvioDeColeta();
+                    return true;
+                }
+                return false;
+            }else{
+                if(!ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().isEmpty()){
+                    QDate dataUltimaColeta = QDate::fromString(ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString(), "dd/MM/yyyy"); //recupera a data de envio do ultima coleta no formato "dayOfYears"
+                    QDate dataAtual = QDate::currentDate(); //data atual no formato "dayOfYears"
+                    if(dataUltimaColeta.daysTo(dataAtual) >= 7){ //se já tiver passado 7 dias desde o envio da ultima coleta, enviar mesmo sem alteração
+                        if(realizarEnviodeColeta()){
+                            registrarDataEnvioDeColeta();
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Sem diferença na coleta."));
+                        return false;
+                    }
+                } else {
+                    if(realizarEnviodeColeta()){
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Data da antiga coleta não encontrada, forçando o envio da coleta."));
+                        registrarDataEnvioDeColeta();
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        }else{
+            if(realizarEnviodeColeta()){
+                QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Coleta forçada enviada com sucesso."));
+                registrarDataEnvioDeColeta();
+                return true;
+            }
+            return false;
+        }
+    }
+    QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("Arquivo de coleta não encontrado."));
+    return false;
+}
+
+void CacicTimer::registrarDataEnvioDeColeta(){
+    QVariantMap qvm;
+    qvm["dataColetaEnviada"] = QDate::currentDate().toString("dd/MM/yyyy");
+    this->ccacic->setValueToRegistry("Lightbase", "Cacic", qvm);
+}
+
 QString CacicTimer::getDirProgram() const
 {
     return dirProgram;
@@ -328,17 +443,17 @@ void CacicTimer::iniciarInstancias(){
 
 bool CacicTimer::verificarPeriodicidade()
 {
-    QJsonObject agenteConfigJson;
     QJsonObject configuracoes;
     QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
-        agenteConfigJson = result["agentcomputer"].toObject();
-        configuracoes = agenteConfigJson["configuracoes"].toObject();
-        if((!configuracoes["nu_intervalo_exec"].isNull()) && ((getPeriodicidadeExecucao() / 60000) != configuracoes["nu_intervalo_exec"].toString().toInt())){
-            setPeriodicidadeExecucaoAnterior(getPeriodicidadeExecucao());
-            setPeriodicidadeExecucao(configuracoes["nu_intervalo_exec"].toString().toInt() * 60000);
+        configuracoes = result["agentcomputer"].toObject()["configuracoes"].toObject();
+        QString tempoExec = configuracoes["nu_intervalo_exec"].toString();
+        if((!tempoExec.isNull()) &&
+           ((getPeriodicidadeExecucao() / 60000) != tempoExec.toInt())) {
+            setPeriodicidadeExecucaoAnterior(this->getPeriodicidadeExecucao());
+            setPeriodicidadeExecucao(tempoExec.toInt() * 60000);
             return true;
-        } else if(configuracoes["nu_intervalo_exec"].isNull() || configuracoes["nu_intervalo_exec"].toString().toInt() == 0) {
+        } else if(tempoExec.isNull() || tempoExec.toInt() == 0) {
             setPeriodicidadeExecucao(this->periodicidadeExecucaoPadrao * 60000);
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_TIMER, QString("valor do timer com erro ou vazio"));
             return false;
@@ -424,5 +539,5 @@ int CacicTimer::getPeriodicidadeExecucao() const
 
 void CacicTimer::setPeriodicidadeExecucao(int value)
 {
-    periodicidadeExecucao = value;
+    this->periodicidadeExecucao = value;
 }

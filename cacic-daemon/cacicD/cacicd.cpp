@@ -32,7 +32,7 @@ void cacicD::start() {
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
         QObject::connect(socket, SIGNAL(forcaColeta()), Ocacictimer, SLOT(iniciarThread()));
 
-        QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Servico iniciado em " + ccacic->getCacicMainFolder() + "."));
+        QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado em " + ccacic->getCacicMainFolder() + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){
         QLogger::QLog_Info(Identificadores::LOG_DAEMON, QString("Erro desconhecido ao iniciar o serviço."));
