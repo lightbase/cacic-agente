@@ -32,10 +32,9 @@ public:
     void setApplicationDirPath(const QString &value);
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);
-    void setPeriodicidadeExecucao(int value);
     bool comunicarGerente();
-    int getPeriodicidadeExecucaoAnterior() const;
     void setPeriodicidadeExecucaoAnterior(int value);
+    int getPeriodicidadeExecucaoAnterior() const;
 
 signals:
     void finalizar();
@@ -48,11 +47,17 @@ private:
     bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
+    void setPeriodicidadeExecucao(int value);
     int getPeriodicidadeExecucao() const;
     bool removeArquivosEstrangeiros(const QDir &diretorio);
     bool removeCacicAnterior();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     QString getDirProgram() const;
+    bool verificaForcarColeta();
+    bool realizarEnviodeColeta();
+    bool enviarColetaDiff();
+    bool enviarColeta();
+    void registrarDataEnvioDeColeta();
 
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
@@ -61,7 +66,7 @@ private:
     QJsonObject jsonConfig;
 
     int periodicidadeExecucao = 0;
-    int periodicidadeExecucaoAnterior;
+    int periodicidadeExecucaoAnterior = 0;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
 
 

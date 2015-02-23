@@ -21,10 +21,6 @@ private:
     void iniciarInstancias();
     void registraInicioColeta();
     void registraFimColeta(bool tipo);
-    bool verificaForcarColeta();
-    bool realizarEnviodeColeta();
-    bool enviarColetaDiff();
-    bool enviarColeta();
     void registrarDataEnvioDeColeta();
     void iniciarModulo();
 

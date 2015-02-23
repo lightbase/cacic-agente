@@ -32,7 +32,8 @@ void SocketListener::iniciarInstancias() {
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::ErrorLevel);
     if(!server->listen(QHostAddress::Any, this->port_no)) {
         QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Erro ao iniciar escuta de socket."));
-    } else {
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Escuta na porta " + QString::number(this->port_no) + " iniciada com sucesso."));
     }
+//    else {
+//        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Escuta na porta " + QString::number(this->port_no) + " iniciada com sucesso."));
+//    }
 }
