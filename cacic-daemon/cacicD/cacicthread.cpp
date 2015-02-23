@@ -43,11 +43,6 @@ void CacicThread::iniciarModulo()
     cMutex->unlock();
 }
 
-void CacicThread::setOCacicComm(CacicComm *value)
-{
-    OCacicComm = value;
-}
-
 void CacicThread::setCcacic(CCacic *value)
 {
     ccacic = value;
@@ -79,9 +74,13 @@ bool CacicThread::enviarColetaDiff(){
         bool ok = false;
         QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
         if (!jsonColeta.isEmpty()){
+            CacicComm *OCacicComm = new CacicComm();
+            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
             QJsonObject retornoColeta;
             QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta Diff ao gerente."));
-            retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
+            retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
             if(retornoColeta.contains("error")) {
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Falha ao enviar a deferença de coleta: " + retornoColeta["error"].toString()));
             }
@@ -98,9 +97,13 @@ bool CacicThread::realizarEnviodeColeta(){
     bool ok = false;
     QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
+        CacicComm *OCacicComm = new CacicComm();
+        OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
         QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Enviando coleta ao gerente."));
-        retornoColeta = this->OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
+        retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
         if (ok){
             if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
                 QVariantMap enviaColeta;
@@ -124,16 +127,39 @@ bool CacicThread::enviarColeta() {
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
                 if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
+                    registrarDataEnvioDeColeta();
                     return true;
                 }
                 return false;
             }else{
-                QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
-                return false;
+                if(!ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().isEmpty()){
+                    QDate dataUltimaColeta = QDate::fromString(ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString(), "dd/MM/yyyy"); //recupera a data de envio do ultima coleta no formato "dayOfYears"
+                    QDate dataAtual = QDate::currentDate(); //data atual no formato "dayOfYears"
+                    if(dataUltimaColeta.daysTo(dataAtual) >= 7){ //se já tiver passado 7 dias desde o envio da ultima coleta, enviar mesmo sem alteração
+                        if(realizarEnviodeColeta()){
+                            registrarDataEnvioDeColeta();
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Sem diferença na coleta."));
+                        return false;
+                    }
+                } else {
+                    if(realizarEnviodeColeta()){
+                        QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Data da antiga coleta não encontrada, forçando o envio da coleta."));
+                        registrarDataEnvioDeColeta();
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
             }
         }else{
             if(realizarEnviodeColeta()){
                 QLogger::QLog_Info(Identificadores::LOG_DAEMON_THREAD, QString("Coleta forçada enviada com sucesso."));
+                registrarDataEnvioDeColeta();
                 return true;
             }
             return false;
@@ -165,4 +191,10 @@ void CacicThread::iniciarInstancias(){
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_DAEMON_THREAD,QLogger::InfoLevel);
     logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_DAEMON_THREAD,QLogger::ErrorLevel);
+}
+
+void CacicThread::registrarDataEnvioDeColeta(){
+    QVariantMap qvm;
+    qvm["dataColetaEnviada"] = QDate::currentDate().toString("dd/MM/yyyy");
+    this->ccacic->setValueToRegistry("Lightbase", "Cacic", qvm);
 }

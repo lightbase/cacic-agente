@@ -75,13 +75,17 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     moduloTemp = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
     moduloTemp->open(QFile::ReadOnly);
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if ((!(modulo->exists()     && modulo->size()>1)     || !oCacic.Md5IsEqual(modulo->readAll(), moduloHash))){
+    if ((!(modulo->exists() && modulo->size() > 1) ||
+         !oCacic.Md5IsEqual(modulo->readAll(), moduloHash))){
+
         modulo->close();
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
         QJsonObject metodoDownload;
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
-        metodoDownload = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+        metodoDownload = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json")
+                            ["agentcomputer"].toObject()
+                            ["metodoDownload"].toObject();
         if (!metodoDownload.isEmpty()){
             //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
             if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !oCacic.Md5IsEqual(moduloTemp->readAll(), moduloHash))){
@@ -114,6 +118,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                     return true;
                 }
             } else {
+                QLogger::QLog_Info("CheckModules", QString("Problemas durante o download de " + moduloName));
                 return false;
             }
         } else {

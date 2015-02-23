@@ -24,13 +24,11 @@ public:
     CacicTimer(QString dirpath);
     ~CacicTimer();
     QTimer *timer;
-    CacicComm *OCacicComm;
-    CACIC_Computer OCacic_Computer;
     CCacic *ccacic;
     QMutex *cMutex;
     void iniciarTimer();
-    QJsonObject getTest();
-    QJsonObject getConfig();
+    QJsonObject getTest(CacicComm &OCacicComm);
+    QJsonObject getConfig(CacicComm &OCacicComm);
     void setApplicationDirPath(const QString &value);
     QString getApplicationDirPath();
     void setDirProgram(const QString &value);
@@ -46,29 +44,32 @@ private:
     bool verificarEIniciarQMutex();
     bool verificarModulos();
     void reiniciarTimer();
-    QString getDirProgram() const;
     void iniciarInstancias();
     bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
     int getPeriodicidadeExecucao() const;
-    void iniciarThread();
     bool removeArquivosEstrangeiros(const QDir &diretorio);
     bool removeCacicAnterior();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
+    QString getDirProgram() const;
+
     QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
-    CheckModules *checkModules;
     QString dirProgram;
     QString applicationDirPath;
     QJsonObject jsonConfig;
-    int periodicidadeExecucao;
+
+    int periodicidadeExecucao = 0;
     int periodicidadeExecucaoAnterior;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
 
 
 private slots:
     void mslot();
+
+public slots:
+    void iniciarThread();
 };
 
 #endif // CACICTIMER_H
