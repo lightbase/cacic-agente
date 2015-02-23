@@ -74,8 +74,8 @@ void CacicTimer::mslot(){
         }
 
         if (verificarEIniciarQMutex()) {
-            verificarModulos();
             iniciarThread();
+            verificarModulos();
         }
 
         if(verificarPeriodicidade()){

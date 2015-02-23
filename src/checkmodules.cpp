@@ -78,7 +78,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     if ((!(modulo->exists() && modulo->size() > 1) ||
          !oCacic.Md5IsEqual(modulo->readAll(), moduloHash))){
 
+        QString filePath;
+        filePath = modulo->exists() ? oCacic.getCacicMainFolder() + "/temp/":
+                                      oCacic.getCacicMainFolder() + "/";
         modulo->close();
+
         QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
         QJsonObject metodoDownload;
@@ -97,12 +101,12 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                                                     this->applicationUrl,
                                                     metodoDownload["path"].toString() +
                                                     (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
-                                                    oCacic.getCacicMainFolder() + "/temp");
+                                                    filePath);
             } else {
                 moduloTemp->close();
                 return true;
             }
-            novoModulo = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
+            novoModulo = new QFile(filePath + moduloName);
             if (downloadOk){
                 //faz uma verificação do novo módulo.
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
