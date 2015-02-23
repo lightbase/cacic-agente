@@ -137,7 +137,7 @@ QJsonObject OperatingSystem::toJsonObject()
     QStringList param;
     param << "SystemUpTime";
     json["tipo"] = QJsonValue::fromVariant(QString("windows"));
-    json["upTime"] = QJsonValue::fromVariant(wmi::wmiSearch("Win32_PerfFormattedData_PerfOS_System", param).toObject()["SystemUpTime"].toInt());
+    json["upTime"] = QJsonValue::fromVariant(wmi::wmiSearch("Win32_PerfFormattedData_PerfOS_System", param).toObject()["SystemUpTime"].toString().toInt());
 #else
     ConsoleObject console;
     json["tipo"] = QJsonValue::fromVariant(QString("linux"));
