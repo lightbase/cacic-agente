@@ -562,6 +562,7 @@ void InstallCacicGui::uninstall()
                     list.at(i).fileName() != ".." &&
                     list.at(i).fileName() != "bin" &&
                     !list.at(i).fileName().contains("install-cacic") &&
+                    !list.at(i).fileName().contains("cacic-logo.png") &&
                     !list.at(i).fileName().contains("Logs") &&
                     !list.at(i).fileName().contains("cacic.log") ) {
 
