@@ -708,21 +708,20 @@ void cacic_hardware::coletaLinuxMotherboard(QJsonObject &hardware)
 }
 
 void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
-{
-
+{    
     QStringList consoleOutput;
-
+    QJsonObject notebook;
     consoleOutput= console("dmidecode -t 3").split("\n");
-
     foreach(QString line, consoleOutput){
-        if(line.contains("Type:")
-                && (line.contains("Notebook") || line.contains("Portable")) ){
-            QJsonObject notebook;
+        if(line.contains("Type:") && (line.contains("Notebook") || line.contains("Portable")) ){
             notebook["Value"] = QJsonValue::fromVariant(true);
             hardware["IsNotebook"] = notebook;
+            break;
+            return;
         }
     }
-
+    notebook["Value"] = QJsonValue::fromVariant(false);
+    hardware["IsNotebook"] = notebook;
 }
 
 void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
