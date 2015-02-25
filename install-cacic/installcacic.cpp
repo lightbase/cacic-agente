@@ -4,7 +4,7 @@ InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
-
+    oCacic.salvarVersao("install-cacic");
     if (oCacic.getCacicMainFolder().isEmpty()){
         this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
         oCacic.setCacicMainFolder(applicationDirPath);

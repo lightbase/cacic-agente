@@ -48,7 +48,8 @@ public:
     bool verificarRoot();
     bool verificarCacicInstalado();
     QString padronizarData(QString data);
-    QString getMesFromString(QString mes);
+    QString getMesFromString(QString mes);   
+    void salvarVersao(QString modulo);
 
     //Geters/seters:
 
@@ -69,7 +70,6 @@ public:
 
     QString getChaveCrypt() const;
     void setChaveCrypt(const QString &value);
-
 
 private:
     QString cacicMainFolder;
