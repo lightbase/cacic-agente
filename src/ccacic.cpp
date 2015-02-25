@@ -382,6 +382,12 @@ QString CCacic::getMesFromString(QString mes){
     return "00";
 }
 
+void CCacic::salvarVersao(QString modulo){
+    QVariantMap ver;
+    ver[QString("versao_").append(modulo)] = Identificadores::AGENTE_VERSAO;
+    setValueToRegistry("Lightbase", "Cacic", ver);
+}
+
 /*Getters/Setters
  * Begin:
  */

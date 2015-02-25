@@ -3,6 +3,7 @@
 cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CacicDaemon")
 {
     ccacic = new CCacic();
+    ccacic->salvarVersao("cacic-service");
     QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC);
     logManager = QLogger::QLoggerManager::getInstance();

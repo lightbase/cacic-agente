@@ -6,6 +6,7 @@ Gercols::Gercols(QObject *parent)
     //Pega chave do registro, que será pega na instalação.
     oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
     oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
+    oCacic.salvarVersao("gercols");
     logManager = QLogger::QLoggerManager::getInstance();
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::InfoLevel);
     logManager->addDestination(oCacic.getCacicMainFolder() + "/Logs/cacic.log",Identificadores::LOG_GERCOLS,QLogger::ErrorLevel);
