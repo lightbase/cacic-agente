@@ -7,6 +7,7 @@
 ##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
 VERSION   = 3.1.8
+DEFINES  += AGENTE_VERSION=\"$$VERSION\"
 ##############################################################################
 
 QT       += core
