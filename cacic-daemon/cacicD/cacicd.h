@@ -4,16 +4,16 @@
 #include <QEventLoop>
 #include "qtservice.h"
 #include "cacictimer.h"
-#include "QLogger.h"
 #include "checkmodules.h"
 #include "identificadores.h"
 #include "ccacic.h"
 #include "socketlistener.h"
+#include "logcacic.h"
 
 class cacicD : public QtService<QCoreApplication>
 {
 public:
-//    QCoreApplication *app;
+    //    QCoreApplication *app;
 
     cacicD(int argc, char **argv);
     ~cacicD();
@@ -23,7 +23,7 @@ public:
     void stop();
 
 private:
-    QLogger::QLoggerManager *logManager;
     CCacic *ccacic;
+    LogCacic *logcacic;
 };
 #endif // CACICD_H

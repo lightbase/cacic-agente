@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "QLogger.h"
+#include "logcacic.h"
 #include "identificadores.h"
 #include "cacicthread.h"
 #include "ccacic.h"
@@ -25,14 +25,13 @@ public slots:
 
 private:
     QTcpServer *server;
-    QLogger::QLoggerManager *logManager;
+    LogCacic *logcacic;
     QString applicationDirPath;
     CacicThread *cacicthread;
     CCacic *ccacic;
     CacicComm *oCacicComm;
     QMutex *cMutex;
     int port_no = 1500; //porta padrão
-    void iniciarInstancias();
     void iniciarColetaForcada();
 };
 

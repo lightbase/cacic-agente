@@ -5,8 +5,13 @@
 #-------------------------------------------------
 ##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
-VERSION   = 3.1.8
-DEFINES += APPLICATION_VERSION=\"$$VERSION\"
+VERSION_MAJOR = 3
+VERSION_MINOR = 1
+VERSION_BUILD = 8
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+           "VERSION_MINOR=$$VERSION_MINOR"\
+           "VERSION_BUILD=$$VERSION_BUILD"
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
 
 QT       += core
@@ -45,7 +50,8 @@ SOURCES     += main.cpp \
                ../../src/checkmodules.cpp \
                ../../src/identificadores.cpp \
                ../../src/servicecontroller.cpp \
-               socketlistener.cpp
+               socketlistener.cpp \
+    ../../src/logcacic.cpp
 
 
 HEADERS     += cacicd.h \
@@ -60,7 +66,8 @@ HEADERS     += cacicd.h \
                ../../src/checkmodules.h \
                ../../src/identificadores.h \
                ../../src/servicecontroller.h \
-               socketlistener.h
+               socketlistener.h \
+    ../../src/logcacic.h
 
 include(../../src/qtservice/src/qtservice.pri)
 

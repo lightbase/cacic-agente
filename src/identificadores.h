@@ -35,6 +35,8 @@ public:
 
     static const QString LOG_GERCOLS;
 
+    static const QString LOG_CHECKMODULES;
+
     static const QString AGENTE_VERSAO;
 
     static const QString CACIC_SERVICE_NAME;

@@ -26,32 +26,32 @@ namespace QLogger
 {
     void QLog_Trace(const QString &module, const QString &message)
     {
-        QLog_(module, TraceLevel, message);
+        QLog_(module, LogLevel::TraceLevel, message);
     }
 
     void QLog_Debug(const QString &module, const QString &message)
     {
-        QLog_(module, DebugLevel, message);
+        QLog_(module, LogLevel::DebugLevel, message);
     }
 
     void QLog_Info(const QString &module, const QString &message)
     {
-        QLog_(module, InfoLevel, message);
+        QLog_(module, LogLevel::InfoLevel, message);
     }
 
     void QLog_Warning(const QString &module, const QString &message)
     {
-        QLog_(module, WarnLevel, message);
+        QLog_(module, LogLevel::WarnLevel, message);
     }
 
     void QLog_Error(const QString &module, const QString &message)
     {
-        QLog_(module, ErrorLevel, message);
+        QLog_(module, LogLevel::ErrorLevel, message);
     }
 
     void QLog_Fatal(const QString &module, const QString &message)
     {
-        QLog_(module, FatalLevel, message);
+        QLog_(module, LogLevel::FatalLevel, message);
     }
 
     void QLog_(const QString &module, LogLevel level, const QString &message)

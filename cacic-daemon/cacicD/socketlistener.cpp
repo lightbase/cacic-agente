@@ -6,7 +6,10 @@ SocketListener::SocketListener(QString DirPath, QObject *parent) :
     this->applicationDirPath = DirPath;
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-    iniciarInstancias();
+    logcacic = new LogCacic(Identificadores::LOG_SOCKET_LISTENER, DirPath+"/Logs");
+    if(!server->listen(QHostAddress::Any, this->port_no)) {
+        logcacic->escrever(LogCacic::ErrorLevel, QString("Erro ao iniciar escuta de socket."));
+    }
 }
 
 void SocketListener::newConnection() {
@@ -24,16 +27,4 @@ void SocketListener::setPort_no(int value) {
 
 SocketListener::~SocketListener(){
     server->close();
-}
-
-void SocketListener::iniciarInstancias() {
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::InfoLevel);
-    logManager->addDestination(this->applicationDirPath + "/Logs/cacic_error.log",Identificadores::LOG_SOCKET_LISTENER, QLogger::ErrorLevel);
-    if(!server->listen(QHostAddress::Any, this->port_no)) {
-        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Erro ao iniciar escuta de socket."));
-    }
-//    else {
-//        QLogger::QLog_Info(Identificadores::LOG_SOCKET_LISTENER, QString("Escuta na porta " + QString::number(this->port_no) + " iniciada com sucesso."));
-//    }
 }

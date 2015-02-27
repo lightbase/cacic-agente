@@ -2,7 +2,7 @@
 #define CACICTHREAD_H
 #include <QtCore>
 #include <QMutex>
-#include "QLogger.h"
+#include "logcacic.h"
 #include "ccacic.h"
 #include "cacic_comm.h"
 #include "identificadores.h"
@@ -18,15 +18,13 @@ public:
     void setCcacic(CCacic *value);
 
 private:
-    void iniciarInstancias();
     void registraInicioColeta();
     void registraFimColeta(bool tipo);
     void registrarDataEnvioDeColeta();
     void iniciarModulo();
-
+    LogCacic *logcacic;
     QString moduloDirPath;
     QString applicationDirPath;
-    QLogger::QLoggerManager *logManager;
     QMutex *cMutex;
     QString nomeModulo;
     CCacic *ccacic;

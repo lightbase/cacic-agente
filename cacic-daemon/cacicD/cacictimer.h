@@ -11,7 +11,7 @@
 #include "ccacic.h"
 #include "cacic_comm.h"
 #include "cacic_computer.h"
-#include "QLogger.h"
+#include "logcacic.h"
 #include "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
@@ -58,13 +58,11 @@ private:
     bool enviarColetaDiff();
     bool enviarColeta();
     void registrarDataEnvioDeColeta();
-
-    QLogger::QLoggerManager *logManager;
     CacicThread *cacicthread;
     QString dirProgram;
     QString applicationDirPath;
     QJsonObject jsonConfig;
-
+    LogCacic *logcacic;
     int periodicidadeExecucao = 0;
     int periodicidadeExecucaoAnterior = 0;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
