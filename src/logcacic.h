@@ -20,7 +20,6 @@ public:
     void escrever(CacicLogLevel level, QString msg);
 
 private:
-    QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
     CCacic *ccacic;
     QString identificador;
     QString enderecoArquivoLog;
