@@ -2,13 +2,13 @@
 
 CColeta::CColeta(QObject *parent)
 {
-
+    logcacic = new LogCacic(Identificadores::LOG_GERCOLS, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
 }
 
 void CColeta::coletaHardware()
 {
     oHardware.iniciaColeta();
-    QLogger::QLog_Info("Gercols", QString("Coleta de hardware finalizada."));
+    logcacic->escrever(LogCacic::InfoLevel, "Coleta de hardware finalizada.");
     emit hardwareFinish();
 }
 
@@ -16,7 +16,7 @@ void CColeta::coletaHardware()
 void CColeta::coletaSoftware()
 {
     oSoftware.iniciaColeta();
-    QLogger::QLog_Info("Gercols", QString("Coleta de software finalizada."));
+    logcacic->escrever(LogCacic::InfoLevel, QString("Coleta de software finalizada."));
     emit softwareFinish();
 }
 
@@ -48,7 +48,7 @@ void CColeta::run()
 
     //se for pra coletar hardware...
     if( actions.contains("col_hard") && actions["col_hard"].toBool()){
-        QLogger::QLog_Info("Gercols", QString("Iniciando coleta de hardware."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Iniciando coleta de hardware."));
         this->hardwareIsFinish = false;
         emit beginHardware();
     } else
@@ -56,7 +56,7 @@ void CColeta::run()
 
     //se for pra coletar software...
     if ( actions.contains("col_soft") && actions["col_soft"].toBool()){
-        QLogger::QLog_Info("Gercols", QString("Iniciando coleta de software."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Iniciando coleta de software."));
         this->softwareIsFinish = false;
         emit beginSoftware();
     } else

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <servicecontroller.h>
 #include "iostream"
-#include "QLogger.h"
+#include "logcacic.h"
 
 class InstallCacic : public QObject
 {
@@ -25,12 +25,12 @@ public:
     void registro();
 
 private:
+    LogCacic *logcacic;
     void uninstall();
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
     CCacic oCacic;
-    QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
     void parametrosIncorretos();
     void updateService();

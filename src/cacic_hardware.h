@@ -6,7 +6,7 @@
 #include <cmath>
 #include <console.h>
 #include <operatingsystem.h>
-#include "QLogger.h"
+#include "logcacic.h"
 #ifdef Q_OS_WIN
     #include <wmi.h>
 #elif defined(Q_OS_LINUX)
@@ -43,7 +43,7 @@ private:
 
     CCacic oCacic;
     QJsonObject coletaHardware;
-    QLogger::QLoggerManager *logManager;
+    LogCacic *logcacic;
 };
 
 #endif // CACIC_HARDWARE_H

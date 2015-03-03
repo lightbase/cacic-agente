@@ -4,17 +4,18 @@
 #include <QJsonObject>
 #include <ccoleta.h>
 #include <ccacic.h>
-#include "QLogger.h"
+#include "logcacic.h"
+#include "identificadores.h"
 
 class Gercols : public QObject
 {
     Q_OBJECT
 
 private:
+    LogCacic *logcacic;
     CCacic oCacic;
     CColeta *oColeta;
     QJsonObject configReq;
-    QLogger::QLoggerManager *logManager;
     bool percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno);
     bool verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta);
 

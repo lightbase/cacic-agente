@@ -5,9 +5,14 @@
 #-------------------------------------------------
 
 ##############################################################################
-#SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
-VERSION   = 3.1.8
-DEFINES += APPLICATION_VERSION=\"$$VERSION\"
+#SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
+VERSION_MAJOR = 3
+VERSION_MINOR = 1
+VERSION_BUILD = 9
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+           "VERSION_MINOR=$$VERSION_MINOR"\
+           "VERSION_BUILD=$$VERSION_BUILD"
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
 
 QT       += core
@@ -34,7 +39,8 @@ SOURCES += \
     ../src/wmi.cpp \
     ../src/QLogger.cpp \
     ../src/identificadores.cpp \
-    ../src/servicecontroller.cpp
+    ../src/servicecontroller.cpp \
+    ../src/logcacic.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -50,7 +56,8 @@ HEADERS += \
     ../src/wmi.h \
     ../src/QLogger.h \
     ../src/identificadores.h \
-    ../src/servicecontroller.h
+    ../src/servicecontroller.h \
+    ../src/logcacic.h
 
 CONFIG   += console
 CONFIG   -= app_bundle

@@ -8,7 +8,7 @@
 #include <cacic_computer.h>
 #include <cacic_software.h>
 #include <cacic_hardware.h>
-
+#include "logcacic.h"
 
 class CColeta : public QObject
 {
@@ -21,6 +21,7 @@ private:
     cacic_hardware oHardware;
     bool hardwareIsFinish;
     bool softwareIsFinish;
+    LogCacic *logcacic;
 
 public:
     explicit CColeta(QObject *parent = 0);

@@ -33,6 +33,8 @@ const QString Identificadores::LOG_CACIC_COMM = QString("Cacic Comm");
 
 const QString Identificadores::LOG_GERCOLS = QString("Gercols");
 
+const QString Identificadores::LOG_GERCOLS_HARDWARE = QString("Gercols (hardware)");
+
 const QString Identificadores::LOG_INSTALL_CACIC = QString("Install Cacic");
 
 const QString Identificadores::LOG_SOCKET_LISTENER = QString("Cacic Daemon (Socket Listener)");

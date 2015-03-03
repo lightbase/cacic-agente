@@ -1,18 +1,13 @@
 #include "cacic_hardware.h"
 cacic_hardware::cacic_hardware()
 {
-    QDir dir;
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
-                               "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
-                               "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
+    logcacic = new LogCacic(Identificadores::LOG_GERCOLS_HARDWARE, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
 }
 
 cacic_hardware::~cacic_hardware()
 {
-    logManager->closeLogger();
-    delete logManager;
+    logcacic->~LogCacic();
+    delete logcacic;
 }
 
 void cacic_hardware::iniciaColeta()
@@ -28,7 +23,7 @@ void cacic_hardware::iniciaColeta()
 
     // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
     if( console("lshw").contains("/bin/sh:") ){
-        QLogger::QLog_Info("Gercols (hardware)", "lshw nao estava instalado.");
+        logcacic->escrever(LogCacic::InfoLevel, "lshw nao estava instalado.");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm lshw");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
@@ -37,7 +32,7 @@ void cacic_hardware::iniciaColeta()
     }
 
     if( console("dmidecode").contains("/bin/sh:") ){
-        QLogger::QLog_Info("Gercols (hardware)", "dmidecode nao estava instalado");
+        logcacic->escrever(LogCacic::InfoLevel, "dmidecode nao estava instalado");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm dmidecode");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
