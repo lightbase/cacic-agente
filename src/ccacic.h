@@ -78,7 +78,6 @@ private:
     QString gerColsInfFilePath;
     QString chksisInfFilePath;
     QString chaveCrypt;
-
 };
 
 #endif // CCACIC_H

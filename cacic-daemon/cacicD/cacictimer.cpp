@@ -228,7 +228,7 @@ bool CacicTimer::comunicarGerente(){
         //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
         resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
-            logcacic->escrever(LogCacic::ErrorLevel, "Erro no login: " + resposta["error"].toString());
+            logcacic->escrever(LogCacic::ErrorLevel, QString("Erro no login: " + resposta["error"].toString()));
             return false;
         }
     }

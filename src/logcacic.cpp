@@ -12,9 +12,11 @@ LogCacic::~LogCacic()
 
 void LogCacic::escrever(LogCacic::CacicLogLevel level, QString msg)
 {
-    QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(resolverEnderecoArquivo(level), this->identificador, resolverLevel(level));
+    QLogger::QLoggerManager::getInstance()->addDestination(resolverEnderecoArquivo(level),
+                                                           this->identificador,
+                                                           resolverLevel(level));
     QLogger::QLog_(this->identificador, resolverLevel(level), msg);
+    QLogger::QLoggerManager::getInstance()->cleanDestination();
 }
 
 QString LogCacic::resolverEnderecoArquivo(LogCacic::CacicLogLevel level){
@@ -35,9 +37,10 @@ QString LogCacic::resolverEnderecoArquivo(LogCacic::CacicLogLevel level){
         return this->enderecoArquivoLog + "/cacic_error.log";
         break;
     case LogCacic::CacicLogLevel::FatalLevel:
-        return this->enderecoArquivoLog + "/cacic_fatal.log";
+        return this->enderecoArquivoLog + "/cacic_fatalerror.log";
         break;
     }
+    return this->enderecoArquivoLog + "/cacic.log";
 }
 
 QLogger::LogLevel LogCacic::resolverLevel(LogCacic::CacicLogLevel level){
@@ -61,4 +64,5 @@ QLogger::LogLevel LogCacic::resolverLevel(LogCacic::CacicLogLevel level){
         return QLogger::LogLevel::FatalLevel;
         break;
     }
+    return QLogger::LogLevel::InfoLevel;
 }
