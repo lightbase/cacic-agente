@@ -257,37 +257,30 @@ void CTestCacic::testColetaHardware()
 
 void CTestCacic::testLogger()
 {
-    QLogger::QLoggerManager *logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination("./log.txt","teste",QLogger::DebugLevel);
-    logManager->addDestination("log01.txt","teste01",QLogger::DebugLevel);
-    logManager->addDestination("./log02.txt","teste02",QLogger::DebugLevel);
-    logManager->addDestination("../log03.txt","teste03",QLogger::DebugLevel);
-    logManager->addDestination("logs/log04.txt","teste04",QLogger::DebugLevel);
-    logManager->addDestination("./logs/log05.txt","teste05",QLogger::DebugLevel);
-    logManager->addDestination("../logs/log06.txt","teste06",QLogger::DebugLevel);
+    LogCacic logcacic("Cacic-Teste", Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste");
 
-    QLogger::QLog_Debug("teste01", "Teste do modulo logger.");
-    QLogger::QLog_Debug("teste02", "Teste do modulo logger.");
-    QLogger::QLog_Debug("teste03", "Teste do modulo logger.");
-    QLogger::QLog_Debug("teste04", "Teste do modulo logger.");
-    QLogger::QLog_Debug("teste05", "Teste do modulo logger.");
-    QLogger::QLog_Debug("teste06", "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::InfoLevel, "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::DebugLevel, "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::ErrorLevel, "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::FatalLevel, "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::TraceLevel, "Teste do modulo logger.");
+    logcacic.escrever(LogCacic::WarnLevel, "Teste do modulo logger.");
 
-    QFile logFile01("log01.txt");
+
+    QFile logFile01(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic.log");
     if(logFile01.exists()) logFile01.open(QIODevice::ReadOnly);
-    QFile logFile02("./log02.txt");
+    QFile logFile02(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_debug.log");
     if(logFile02.exists()) logFile02.open(QIODevice::ReadOnly);
-    QFile logFile03("../log03.txt");
+    QFile logFile03(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_error.log");
     if(logFile03.exists()) logFile03.open(QIODevice::ReadOnly);
-    QFile logFile04("logs/log04.txt");
+    QFile logFile04(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_fatalerror.log");
     if(logFile04.exists()) logFile04.open(QIODevice::ReadOnly);
-    QFile logFile05("./logs/log05.txt");
+    QFile logFile05(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_trace.log");
     if(logFile05.exists()) logFile05.open(QIODevice::ReadOnly);
-    QFile logFile06("../logs/log06.txt");
+    QFile logFile06(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_warn.log");
     if(logFile06.exists()) logFile06.open(QIODevice::ReadOnly);
 
-    QVERIFY(logManager &&
-            logFile01.exists() &&
+    QVERIFY(logFile01.exists() &&
             logFile01.readLine().contains("Teste do modulo logger.") &&
             logFile02.exists() &&
             logFile02.readLine().contains("Teste do modulo logger.") &&
@@ -301,13 +294,13 @@ void CTestCacic::testLogger()
             logFile06.readLine().contains("Teste do modulo logger.")
             );
 
-    logManager->closeLogger();
     logFile01.close();
     logFile02.close();
     logFile03.close();
     logFile04.close();
     logFile05.close();
     logFile06.close();
+    QDir(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/").removeRecursively();
 }
 
 void CTestCacic::testDownload()
@@ -409,14 +402,6 @@ void CTestCacic::testGetModulesValues()
 void CTestCacic::cleanupTestCase()
 {
     OCacic.deleteFile("gpl-2.0.txt");
-    OCacic.deleteFile("log01.txt");
-    OCacic.deleteFile("./log02.txt");
-    OCacic.deleteFile("../log03.txt");
-    OCacic.deleteFile("logs/log04.txt");
-    OCacic.deleteFile("./logs/log05.txt");
-    OCacic.deleteFolder("./Logs");
-    OCacic.deleteFile("../logs/log06.txt");
-    OCacic.deleteFolder("../logs");
     OCacic.deleteFile("configRequest.json");
     OCacic.deleteFile("teste.json");
     //    OCacic.deleteFile("getConfig.json");

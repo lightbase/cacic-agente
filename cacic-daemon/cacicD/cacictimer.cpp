@@ -350,6 +350,7 @@ bool CacicTimer::realizarEnviodeColeta(){
                 enviaColeta["enviaColeta"] = false;
                 ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
             }
+            logcacic->escrever(LogCacic::InfoLevel, "Coleta enviada com sucesso.");
             return true;
         } else if(retornoColeta.contains("error")) {
             logcacic->escrever(LogCacic::ErrorLevel, QString("Falha na coleta: " + retornoColeta["error"].toString()));

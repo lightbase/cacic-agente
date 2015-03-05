@@ -17,7 +17,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
 #include <ccoleta.h>
-#include <QLogger.h>
+#include <logcacic.h>
 #include <checkmodules.h>
 #include <servicecontroller.h>
 

@@ -3,7 +3,16 @@
 # Project created by QtCreator 2014-06-13T10:42:39
 #
 #-------------------------------------------------
-
+##############################################################################
+#SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
+VERSION_MAJOR = 3
+VERSION_MINOR = 1
+VERSION_BUILD = 9
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+           "VERSION_MINOR=$$VERSION_MINOR"\
+           "VERSION_BUILD=$$VERSION_BUILD"
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
+##############################################################################
 QT += testlib
 QT += network
 QT -= gui
@@ -16,7 +25,7 @@ win32 {
     QT += axcontainer
 #    LIBS += -LC:\Users\Cacic-Devel\Documents\Lightbase\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
-    LIBS += -L/usr/lib -lcryptopp
+#    LIBS += -L/usr/lib -lcryptopp
 }
 
 SOURCES += \
@@ -34,7 +43,8 @@ SOURCES += \
     ../src/QLogger.cpp \
     ../src/checkmodules.cpp \
     ../src/servicecontroller.cpp \
-    ../src/identificadores.cpp
+    ../src/identificadores.cpp \
+    ../src/logcacic.cpp
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -58,7 +68,8 @@ HEADERS += \
     ../src/QLogger.h \
     ../src/checkmodules.h \
     ../src/servicecontroller.h \
-    ../src/identificadores.h
+    ../src/identificadores.h \
+    ../src/logcacic.h
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \
