@@ -198,6 +198,7 @@ void CacicTimer::iniciarThread(){
                     cacicthread->wait();
                     if(nome.contains("gercols")){
                         enviarColeta();
+                        //enviarLogs(); ativar quando a parte do gerente estiver feita.
                     }
                     modulosExecutados[nome] = hash;
                     ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
