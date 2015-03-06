@@ -52,12 +52,14 @@ private:
     bool removeArquivosEstrangeiros(const QDir &diretorio);
     bool removeCacicAnterior();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
-    QString getDirProgram() const;
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
+    bool realizarEnvioDeLog(LogCacic::CacicLogLevel level);
     bool enviarColetaDiff();
     bool enviarColeta();
+    bool enviarLogs();
     void registrarDataEnvioDeColeta();
+    QString getDirProgram() const;
     CacicThread *cacicthread;
     QString dirProgram;
     QString applicationDirPath;
@@ -66,7 +68,6 @@ private:
     int periodicidadeExecucao = 0;
     int periodicidadeExecucaoAnterior = 0;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
-
 
 private slots:
     void mslot();

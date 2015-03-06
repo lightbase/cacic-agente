@@ -14,6 +14,8 @@ const QString Identificadores::ROTA_COLETA = QString("/ws/neo/coleta");
 
 const QString Identificadores::ROTA_COLETA_DIFF = QString("/ws/neo/modifications");
 
+const QString Identificadores::ROTA_LOG = QString("/ws/neo/logs");
+
 const QString Identificadores::ENDERECO_PATCH_CACIC = QString(
             #ifdef Q_OS_LINUX
             QDir::rootPath()+"usr/share/cacic"

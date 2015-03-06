@@ -66,3 +66,27 @@ QLogger::LogLevel LogCacic::resolverLevel(LogCacic::CacicLogLevel level){
     }
     return QLogger::LogLevel::InfoLevel;
 }
+
+QString LogCacic::getLevelEmString(LogCacic::CacicLogLevel level){
+    switch (level) {
+    case LogCacic::CacicLogLevel::TraceLevel:
+        return "TraceLevel";
+        break;
+    case LogCacic::CacicLogLevel::DebugLevel:
+        return "DebugLevel";
+        break;
+    case LogCacic::CacicLogLevel::InfoLevel:
+        return "InfoLevel";
+        break;
+    case LogCacic::CacicLogLevel::WarnLevel:
+        return "WarnLevel";
+        break;
+    case LogCacic::CacicLogLevel::ErrorLevel:
+        return "ErrorLevel";
+        break;
+    case LogCacic::CacicLogLevel::FatalLevel:
+        return "FatalLevel";
+        break;
+    }
+    return "InfoLevel";
+}

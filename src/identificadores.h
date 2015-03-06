@@ -19,6 +19,8 @@ public:
 
     static const QString ROTA_COLETA_DIFF;
 
+    static const QString ROTA_LOG;
+
     static const QString ENDERECO_PATCH_CACIC;
 
     static const QString LOG_DAEMON;
