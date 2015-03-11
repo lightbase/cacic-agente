@@ -35,3 +35,7 @@ HEADERS  += cacicmessage.h \
             ../src/identificadores.h
 
 FORMS    += cacicmessage.ui
+
+win32 {
+    RC_ICONS = cacic-logo.ico
+}
