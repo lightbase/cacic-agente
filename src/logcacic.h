@@ -4,7 +4,6 @@
 #include "QLogger.h"
 #include "ccacic.h"
 
-
 class LogCacic
 {
 
@@ -17,7 +16,8 @@ public:
         InfoLevel,
         WarnLevel,
         ErrorLevel,
-        FatalLevel
+        FatalLevel,
+        MessageControler
     };
     void escrever(CacicLogLevel level, QString msg);
     QString getLevelEmString(LogCacic::CacicLogLevel level);

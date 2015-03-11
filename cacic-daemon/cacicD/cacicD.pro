@@ -51,7 +51,7 @@ SOURCES     += main.cpp \
                ../../src/identificadores.cpp \
                ../../src/servicecontroller.cpp \
                socketlistener.cpp \
-    ../../src/logcacic.cpp
+               ../../src/logcacic.cpp
 
 
 HEADERS     += cacicd.h \
@@ -67,7 +67,7 @@ HEADERS     += cacicd.h \
                ../../src/identificadores.h \
                ../../src/servicecontroller.h \
                socketlistener.h \
-    ../../src/logcacic.h
+               ../../src/logcacic.h
 
 include(../../src/qtservice/src/qtservice.pri)
 
