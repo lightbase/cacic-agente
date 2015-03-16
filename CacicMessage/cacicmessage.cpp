@@ -23,18 +23,22 @@ void CacicMessage::validaArgumentos(QStringList args){
 }
 
 void CacicMessage::exibeMensagem(){
+    if (!getTitulo().isNull() && !getMensagem().isNull()){
 #ifdef Q_OS_WIN
-    QMessageBox box;
-    box.setWindowTitle("Cacic Messages");
-    box.setText(getTitulo());
-#elif Q_OS_LINUX
-    QMessageBox box(QMessageBox::Information, getTitulo(), getMensagem(), QMessageBox::Ok);
-    box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
+        QMessageBox box;
+        box.setWindowTitle("Cacic Messages");
+        box.setText(getTitulo());
+#elif defined(Q_OS_LINUX)
+        QMessageBox box(QMessageBox::Information, getTitulo(), getMensagem(), QMessageBox::Ok);
+        box.setWindowFlags(box.windowFlags() & ~Qt::WindowCloseButtonHint);
 #endif
-    box.setDetailedText(getMensagem()); //caso queria enviar mensagens maiores e mais detalhadas
-    if (QMessageBox::Ok == box.exec()){
-        logcacic->escrever(LogCacic::MessageControler,
-                           QString("hash=" + getHash() + " ; ok=" + QDateTime::currentDateTime().toLocalTime().toString()));
+        box.setDetailedText(getMensagem()); //caso queria enviar mensagens maiores e mais detalhadas
+        if (QMessageBox::Ok == box.exec() ){
+            logcacic->escrever(LogCacic::MessageControler,
+                               QString("hash=" + getHash() + " ; ok=" + QDateTime::currentDateTime().toLocalTime().toString()));
+            emit finished();
+        }
+    } else {
         emit finished();
     }
 }

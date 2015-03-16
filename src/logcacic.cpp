@@ -66,6 +66,9 @@ QLogger::LogLevel LogCacic::resolverLevel(LogCacic::CacicLogLevel level){
     case LogCacic::FatalLevel:
         return QLogger::FatalLevel;
         break;
+    default:
+        //para remover warning do compilador.
+        break;
     }
     return QLogger::InfoLevel;
 }
@@ -89,6 +92,9 @@ QString LogCacic::getLevelEmString(LogCacic::CacicLogLevel level){
         break;
     case LogCacic::FatalLevel:
         return "FatalLevel";
+        break;
+    default:
+        //para remover warning do compilador.
         break;
     }
     return "InfoLevel";
