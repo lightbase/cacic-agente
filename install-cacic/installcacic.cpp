@@ -75,7 +75,6 @@ void InstallCacic::parametrosIncorretos(){
 void InstallCacic::updateService()
 {
 #ifdef Q_OS_WIN
-    bool ok;
     ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
 #endif
     bool serviceUpdate = false;
@@ -92,7 +91,6 @@ void InstallCacic::updateService()
                 serviceUpdate = true;
                 logcacic->escrever(LogCacic::InfoLevel, "Parando serviço para atualização.");
 #ifdef Q_OS_WIN
-                ok = false;
                 if(service.isRunning()){
                     if (!service.stop()){
                         std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
