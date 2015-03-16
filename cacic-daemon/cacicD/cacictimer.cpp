@@ -230,6 +230,7 @@ bool CacicTimer::comunicarGerente(){
         resposta = OCacicComm->login(&ok);
         if(resposta.isEmpty() || resposta.contains("error")){
             logcacic->escrever(LogCacic::ErrorLevel, QString("Erro no login: " + resposta["error"].toString()));
+            logcacic->escrever(LogCacic::InfoLevel, QString("Falha na tentativa de login."));
             return false;
         }
     }
@@ -240,8 +241,10 @@ bool CacicTimer::comunicarGerente(){
             return true;
         } else{
             logcacic->escrever(LogCacic::ErrorLevel, "Erro ao pegar informações do gerente: " + resposta["error"].toString());            return false;
+            logcacic->escrever(LogCacic::InfoLevel, QString("Falha ao tentar pegar informações do gerente."));
         }
     }else{
+        logcacic->escrever(LogCacic::InfoLevel, QString("Falha ao tentar pegar informações do gerente."));
         return false;
     }
 }
@@ -282,11 +285,12 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     try{
         ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
                               ccacic->getCacicMainFolder() + "/getConfig.json");
-        if (!jsonresult["reply"].toObject()["applicationUrl"].toString().isEmpty()){
-            QVariantMap registro;
-            registro["applicationUrl"] = jsonresult["reply"].toObject()["applicationUrl"].toString();
-            ccacic->setValueToRegistry("Lightbase", "Cacic", registro);
-        }
+        QVariantMap registro;
+        registro["applicationUrl"] = QVariant::fromValue(ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json")
+                                                            ["agentcomputer"].toObject()
+                                                            ["applicationUrl"].toString());
+        ccacic->setValueToRegistry("Lightbase", "Cacic", registro);
+
         return jsonresult;
     } catch (...) {
         logcacic->escrever(LogCacic::ErrorLevel, "Erro ao salvar o arquivo de configurações.");
@@ -363,6 +367,7 @@ bool CacicTimer::realizarEnvioDeLog(LogCacic::CacicLogLevel level){
             return false;
         }
     }
+    return ok;
 }
 
 bool CacicTimer::enviarLogs(){
@@ -425,6 +430,7 @@ bool CacicTimer::enviarLogs(){
             }
         }
     }
+    return false;
 }
 
 bool CacicTimer::realizarEnviodeColeta(){
