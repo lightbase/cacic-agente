@@ -3,12 +3,10 @@
 cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CacicDaemon")
 {
     ccacic = new CCacic();
-    ccacic->salvarVersao("cacic-service");
     QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC);
+    logcacic = new LogCacic(LOG_DAEMON, ccacic->getCacicMainFolder()+"/Logs");
     this->createApplication(argc, argv);
-    setServiceFlags(QtService::Default);
-    logcacic = new LogCacic(Identificadores::LOG_DAEMON, ccacic->getCacicMainFolder()+"/Logs");
 }
 
 cacicD::~cacicD()
@@ -30,7 +28,6 @@ void cacicD::start() {
 //        socket = new SocketListener(ccacic->getCacicMainFolder());
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
 //        QObject::connect(socket, SIGNAL(forcaColeta()), Ocacictimer, SLOT(iniciarThread()));
-
         logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado em " + ccacic->getCacicMainFolder() + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){

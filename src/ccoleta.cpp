@@ -2,7 +2,7 @@
 
 CColeta::CColeta(QObject *parent)
 {
-    logcacic = new LogCacic(Identificadores::LOG_GERCOLS, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
+    logcacic = new LogCacic(LOG_GERCOLS, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
 }
 
 void CColeta::coletaHardware()

@@ -8,10 +8,10 @@ InstallCacic::InstallCacic(QObject *parent) :
     if (oCacic.getCacicMainFolder().isEmpty()){
         this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
         oCacic.setCacicMainFolder(applicationDirPath);
-        logcacic = new LogCacic(Identificadores::LOG_INSTALL_CACIC, oCacic.getCacicMainFolder()+"/Logs");
+        logcacic = new LogCacic(LOG_INSTALL_CACIC, oCacic.getCacicMainFolder()+"/Logs");
     } else {
         this->applicationDirPath = oCacic.getCacicMainFolder();
-        logcacic = new LogCacic(Identificadores::LOG_INSTALL_CACIC, this->applicationDirPath+"/Logs");
+        logcacic = new LogCacic(LOG_INSTALL_CACIC, this->applicationDirPath+"/Logs");
     }
 
     QDir dir(oCacic.getCacicMainFolder());
@@ -75,7 +75,7 @@ void InstallCacic::parametrosIncorretos(){
 void InstallCacic::updateService()
 {
 #ifdef Q_OS_WIN
-    ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
+    ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
 #endif
     bool serviceUpdate = false;
     logcacic->escrever(LogCacic::InfoLevel, "Verificando a existência de módulos na pasta temporária.");
@@ -215,7 +215,7 @@ void InstallCacic::install()
         jsonComm["computador"] = oCacicComputer.toJsonObject();
         std::cout << "Pegando informações do gerente...\n";
         logcacic->escrever(LogCacic::InfoLevel, "Pegando informações do gerente...");
-        QJsonObject configs = oCacicComm->comm(Identificadores::ROTA_GETCONFIG, &ok, jsonComm, true);
+        QJsonObject configs = oCacicComm->comm(ROTA_GETCONFIG, &ok, jsonComm, true);
         if (ok){
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
             oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
@@ -264,7 +264,7 @@ void InstallCacic::install()
                 fileService.close();
                 this->uninstall();
             } else {
-                ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
+                ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
                 //Tenta instalar o serviço
                 if (service.isInstalled()){
                     std::cout << "Reinstalando serviço." << "\n";
@@ -355,7 +355,7 @@ QMap<QString, QString> InstallCacic::validaParametros(QStringList argv, int argc
 void InstallCacic::uninstall()
 {
 #ifdef Q_OS_WIN
-    ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
+    ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
     if (service.isInstalled()){
         logcacic->escrever(LogCacic::InfoLevel, QString("Desinstalando o serviço..."));
         if (!service.uninstall()){

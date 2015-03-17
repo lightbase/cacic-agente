@@ -3,7 +3,7 @@
 CacicThread::CacicThread(QString applicationDirPath)
 {
     this->applicationDirPath = applicationDirPath;
-    logcacic = new LogCacic(Identificadores::LOG_DAEMON_THREAD, applicationDirPath+"/Logs");
+    logcacic = new LogCacic(LOG_DAEMON_THREAD, applicationDirPath+"/Logs");
 }
 
 void CacicThread::run(){

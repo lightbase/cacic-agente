@@ -9,7 +9,7 @@ Gercols::Gercols(QObject *parent)
     oCacic.salvarVersao("gercols");
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
-    logcacic = new LogCacic(Identificadores::LOG_GERCOLS, oCacic.getCacicMainFolder()+"/Logs");
+    logcacic = new LogCacic(LOG_GERCOLS, oCacic.getCacicMainFolder()+"/Logs");
 }
 
 void Gercols::run()

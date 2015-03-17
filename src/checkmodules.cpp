@@ -2,7 +2,7 @@
 
 CheckModules::CheckModules(const QString &workingPath, const QString &workingModule)
 {
-    logcacic = new LogCacic(Identificadores::LOG_CHECKMODULES, workingPath+"/Logs");
+    logcacic = new LogCacic(LOG_CHECKMODULES, workingPath+"/Logs");
     oCacic.setCacicMainFolder(workingPath);
     QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
     if (!tempPath.exists()){

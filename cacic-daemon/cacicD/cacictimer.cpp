@@ -4,8 +4,8 @@ CacicTimer::CacicTimer(QString dirpath)
 {
     setApplicationDirPath(dirpath);
     iniciarInstancias();
+    logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
-    logcacic = new LogCacic(Identificadores::LOG_DAEMON_TIMER, dirpath+"/Logs");
 }
 
 CacicTimer::~CacicTimer()
@@ -32,6 +32,7 @@ void CacicTimer::reiniciarTimer(){
 
 void CacicTimer::iniciarTimer()
 {
+    ccacic->salvarVersao("cacic-service");
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
     setPeriodicidadeExecucao(2 * 60000);
     timer->start(getPeriodicidadeExecucao());
@@ -52,7 +53,7 @@ void CacicTimer::mslot(){
 
         //Verifica atualizações.
         CheckModules *checkModules;
-        checkModules = new CheckModules(this->applicationDirPath, Identificadores::LOG_DAEMON_TIMER);
+        checkModules = new CheckModules(this->applicationDirPath, LOG_DAEMON_TIMER);
         if (!checkModules->start()){
             logcacic->escrever(LogCacic::ErrorLevel, QString("Problemas ao checkar módulos."));
         }
@@ -254,9 +255,9 @@ QJsonObject CacicTimer::getTest(CacicComm &OCacicComm){
     QJsonObject as;
     CACIC_Computer OCacic_Computer;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm.comm(Identificadores::ROTA_GETTEST, &ok, as, true);
+    QJsonObject jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true);
     if(!ok){
-        jsonresult = OCacicComm.comm(Identificadores::ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
+        jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
     }
     if(jsonresult.contains("error")){
         logcacic->escrever(LogCacic::ErrorLevel, "Falha na execução do getTest(). " + jsonresult["error"].toString());
@@ -277,7 +278,7 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     QJsonObject as;
     CACIC_Computer OCacic_Computer;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm.comm(Identificadores::ROTA_GETCONFIG, &ok, as, true);
+    QJsonObject jsonresult = OCacicComm.comm(ROTA_GETCONFIG, &ok, as, true);
     if(jsonresult.contains("error")){
         logcacic->escrever(LogCacic::ErrorLevel, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;
@@ -325,7 +326,7 @@ bool CacicTimer::enviarColetaDiff(){
             OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
             QJsonObject retornoColeta;
             logcacic->escrever(LogCacic::InfoLevel, QString("Enviando coleta Diff ao gerente."));
-            retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA_DIFF, &ok, jsonColeta , true);
+            retornoColeta = OCacicComm->comm(ROTA_COLETA_DIFF, &ok, jsonColeta , true);
             if(retornoColeta.contains("error")) {
                 logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar a deferença de coleta: " + retornoColeta["error"].toString()));
             }
@@ -348,7 +349,7 @@ bool CacicTimer::realizarEnvioDeLog(LogCacic::CacicLogLevel level){
         OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando Log "+logcacic->getLevelEmString(level)+" ao gerente."));
-        retornoColeta = OCacicComm->comm(Identificadores::ROTA_LOG, &ok, jsonColeta , true);
+        retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonColeta , true);
         if (ok){
             if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
                 logcacic->escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
@@ -443,7 +444,7 @@ bool CacicTimer::realizarEnviodeColeta(){
         OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando coleta ao gerente."));
-        retornoColeta = OCacicComm->comm(Identificadores::ROTA_COLETA, &ok, jsonColeta , true);
+        retornoColeta = OCacicComm->comm(ROTA_COLETA, &ok, jsonColeta , true);
         if (ok){
             if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
                 QVariantMap enviaColeta;
@@ -467,7 +468,7 @@ bool CacicTimer::enviarColeta() {
     if(QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
         if(!verificaForcarColeta()){
             if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
-                if(realizarEnviodeColeta()){ // quando a Identificadores::ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
+                if(realizarEnviodeColeta()){ // quando a ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
                     registrarDataEnvioDeColeta();
                     return true;
                 }

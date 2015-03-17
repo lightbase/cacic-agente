@@ -1,7 +1,7 @@
 #include "cacic_hardware.h"
 cacic_hardware::cacic_hardware()
 {
-    logcacic = new LogCacic(Identificadores::LOG_GERCOLS_HARDWARE, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
+    logcacic = new LogCacic(LOG_GERCOLS_HARDWARE, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
 }
 
 cacic_hardware::~cacic_hardware()

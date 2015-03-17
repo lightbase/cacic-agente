@@ -4,10 +4,9 @@
 #include <QEventLoop>
 #include "qtservice.h"
 #include "cacictimer.h"
-#include "checkmodules.h"
 #include "identificadores.h"
 #include "ccacic.h"
-#include "socketlistener.h"
+//#include "socketlistener.h"
 #include "logcacic.h"
 
 class cacicD : public QtService<QCoreApplication>
