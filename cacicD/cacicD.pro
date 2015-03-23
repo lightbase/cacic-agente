@@ -28,7 +28,7 @@ CONFIG      -= app_bundle
 CONFIG      += static
 CONFIG      += c++11
 TEMPLATE     = app
-INCLUDEPATH += ../../src \
+INCLUDEPATH += ../src \
 #               ../../src/crypto++/include/
 
 win32 {
@@ -42,33 +42,33 @@ SOURCES     += main.cpp \
                cacicd.cpp \
                cacictimer.cpp \
                cacicthread.cpp \
-               ../../src/cacic_comm.cpp \
-               ../../src/ccacic.cpp \
-               ../../src/wmi.cpp \
-               ../../src/cacic_computer.cpp \
-               ../../src/operatingsystem.cpp \
-               ../../src/QLogger.cpp \
-               ../../src/checkmodules.cpp \
-               ../../src/identificadores.cpp \
-               ../../src/servicecontroller.cpp \
+               ../src/cacic_comm.cpp \
+               ../src/ccacic.cpp \
+               ../src/wmi.cpp \
+               ../src/cacic_computer.cpp \
+               ../src/operatingsystem.cpp \
+               ../src/QLogger.cpp \
+               ../src/checkmodules.cpp \
+               ../src/identificadores.cpp \
+               ../src/servicecontroller.cpp \
                socketlistener.cpp \
-               ../../src/logcacic.cpp
+               ../src/logcacic.cpp
 
 
 HEADERS     += cacicd.h \
                cacictimer.h \
                cacicthread.h \
-               ../../src/ccacic.h \
-               ../../src/wmi.h \
-               ../../src/cacic_computer.h \
-               ../../src/operatingsystem.h \
-               ../../src/cacic_comm.h \
-               ../../src/QLogger.h \
-               ../../src/checkmodules.h \
-               ../../src/identificadores.h \
-               ../../src/servicecontroller.h \
+               ../src/ccacic.h \
+               ../src/wmi.h \
+               ../src/cacic_computer.h \
+               ../src/operatingsystem.h \
+               ../src/cacic_comm.h \
+               ../src/QLogger.h \
+               ../src/checkmodules.h \
+               ../src/identificadores.h \
+               ../src/servicecontroller.h \
                socketlistener.h \
-               ../../src/logcacic.h
+               ../src/logcacic.h
 
-include(../../src/qtservice/src/qtservice.pri)
+include(../src/qtservice/src/qtservice.pri)
 
