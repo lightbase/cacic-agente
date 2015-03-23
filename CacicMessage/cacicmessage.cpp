@@ -4,7 +4,7 @@
 CacicMessage::CacicMessage(QStringList args, QWidget *parent) : QMainWindow(parent), ui(new Ui::CacicMessage)
 {
     ui->setupUi(this);
-    logcacic = new LogCacic(Identificadores::LOG_CACIC_MESSAGE, Identificadores::ENDERECO_PATCH_CACIC + "/Logs");
+    logcacic = new LogCacic(LOG_CACIC_MESSAGE, Identificadores::ENDERECO_PATCH_CACIC + "/Logs");
     validaArgumentos(args);
 }
 

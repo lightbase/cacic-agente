@@ -11,6 +11,7 @@
 #define ROTA_COLETA_DIFF "/ws/neo/modifications"
 #define ROTA_LOG "/ws/neo/logs"
 #define LOG_DAEMON "Cacic Daemon"
+#define LOG_CACICDEPLOY "Cacic Deploy"
 #define LOG_DAEMON_THREAD "Cacic Daemon (Thread)"
 #define LOG_DAEMON_TIMER "Cacic Daemon (Timer)"
 #define LOG_CACIC_COMM "Cacic Comm"
