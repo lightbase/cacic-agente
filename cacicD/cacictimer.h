@@ -54,6 +54,7 @@ private:
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
+    bool realizarEnvioDeLogs(const QStringList &logLvls);
     bool enviarColetaDiff();
     bool enviarColeta();
     bool enviarLogs();

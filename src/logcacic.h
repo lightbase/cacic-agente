@@ -2,9 +2,6 @@
 #define LOGCACIC_H
 
 #include "QLogger.h"
-#include "cacic_comm.h"
-#include "identificadores.h"
-#include "ccacic.h"
 
 class LogCacic
 {
@@ -27,7 +24,6 @@ public:
     QString getLevelEmString(CacicLogLevel level);
     QString resolverEnderecoArquivo(CacicLogLevel level);
     CacicLogLevel levelName2Value(const QString &levelName) throw(int);
-    bool realizarEnvioDeLogs(const QStringList &logLvls);
 
 private:
     QString identificador;

@@ -339,6 +339,51 @@ bool CacicTimer::enviarColetaDiff(){
     return false;
 }
 
+bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
+    bool ok = false;
+
+    if( logLvls.isEmpty() )
+        return ok;
+
+    foreach ( QString stringLvl, logLvls ){
+
+        LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
+
+        QJsonObject jsonColeta = ccacic->getJsonFromFile(logcacic->resolverEnderecoArquivo(level));
+
+        if (!jsonColeta.isEmpty()){
+
+            CacicComm *OCacicComm = new CacicComm();
+            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+            QJsonObject retornoColeta;
+
+            logcacic->escrever(LogCacic::InfoLevel, QString("Enviando Log "+logcacic->getLevelEmString(level)+" ao gerente."));
+
+            retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonColeta , true);
+            if (ok){
+                if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
+                    logcacic->escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
+                    return true;
+                } else if(retornoColeta.contains("error")) {
+                    logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar log "
+                                                                     +logcacic->getLevelEmString(level)
+                                                                     + " para o gerente: " + retornoColeta["error"].toString()));
+                    return false;
+                }
+                return ok;
+            } else {
+                logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar aquivo de log "
+                                                                 + logcacic->getLevelEmString(level)
+                                                                 + " para o gerente: Arquivo de Log vazio ou inexistente."));
+                return false;
+            }
+        }
+    }
+    return ok;
+}
+
 bool CacicTimer::enviarLogs(){
     if(QFile::exists(ccacic->getCacicMainFolder() + "/getConfig.json")){
 
@@ -358,7 +403,7 @@ bool CacicTimer::enviarLogs(){
                         logLvls2Send.append(logLvl);
                 }
 
-                return logcacic->realizarEnvioDeLogs(logLvls2Send);
+                return realizarEnvioDeLogs(logLvls2Send);
             }
         }
     }

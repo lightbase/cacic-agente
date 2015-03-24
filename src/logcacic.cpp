@@ -17,6 +17,7 @@ void LogCacic::escrever(LogCacic::CacicLogLevel level, QString msg)
                                                            resolverLevel(level));
     QLogger::QLog_(this->identificador, resolverLevel(level), msg);
     QLogger::QLoggerManager::getInstance()->cleanDestination();
+
 }
 
 QString LogCacic::resolverEnderecoArquivo(LogCacic::CacicLogLevel level){
@@ -119,49 +120,4 @@ LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName) thro
 
 }
 
-bool LogCacic::realizarEnvioDeLogs(const QStringList &logLvls) {
-    bool ok = false;
 
-    if( logLvls.isEmpty() )
-        return ok;
-
-    foreach ( QString stringLvl, logLvls ){
-
-        LogCacic::CacicLogLevel level = levelName2Value( stringLvl );
-
-        CCacic *ccacic = new CCacic();
-        QJsonObject jsonColeta = ccacic->getJsonFromFile(resolverEnderecoArquivo(level));
-        delete ccacic;
-
-        if (!jsonColeta.isEmpty()){
-
-            CacicComm *OCacicComm = new CacicComm();
-            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-            QJsonObject retornoColeta;
-
-            escrever(LogCacic::InfoLevel, QString("Enviando Log "+getLevelEmString(level)+" ao gerente."));
-
-            retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonColeta , true);
-            if (ok){
-                if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
-                    escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
-                    return true;
-                } else if(retornoColeta.contains("error")) {
-                    escrever(LogCacic::ErrorLevel, QString("Falha ao enviar log "
-                                                                     +getLevelEmString(level)
-                                                                     + " para o gerente: " + retornoColeta["error"].toString()));
-                    return false;
-                }
-                return ok;
-            } else {
-                escrever(LogCacic::ErrorLevel, QString("Falha ao enviar aquivo de log "
-                                                                 + getLevelEmString(level)
-                                                                 + " para o gerente: Arquivo de Log vazio ou inexistente."));
-                return false;
-            }
-        }
-    }
-    return ok;
-}
