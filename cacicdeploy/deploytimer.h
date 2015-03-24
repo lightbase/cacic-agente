@@ -5,6 +5,13 @@
 #include <QTimer>
 #include <logcacic.h>
 #include <ccacic.h>
+#include <qtunixsocket.h>
+#include <QDateTime>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <cacic_computer.h>
+#include <cacic_comm.h>
 
 class deployTimer : public QObject
 {
@@ -13,14 +20,18 @@ private:
     LogCacic *log;
     CCacic *oCacic;
     QTimer *timerDeploy;
+    QTimer *timerCheckService;
+
+    bool autorizaExecucao(QString rota, bool statusExec);
 public:
     explicit deployTimer(QObject *parent = 0);
     explicit deployTimer(CCacic *cacic);
-    bool start(int msec);
+    bool start(int msecDeploy, int msecCheckService);
 signals:
 
 public slots:
     void onTimer();
+    void onTimerCheckService();
 
 };
 

@@ -6,7 +6,8 @@
 #include "cacictimer.h"
 #include "identificadores.h"
 #include "ccacic.h"
-//#include "socketlistener.h"
+#include "socketlistener.h"
+#include <qlocalserver.h>
 #include "logcacic.h"
 
 class cacicD : public QtService<QCoreApplication>
@@ -22,7 +23,9 @@ public:
     void stop();
 
 private:
+    QLocalServer *serverListener;
     CCacic *ccacic;
     LogCacic *logcacic;
+
 };
 #endif // CACICD_H

@@ -7,6 +7,8 @@
 #define ROTA_GETTEST "/ws/neo/getTest"
 #define ROTA_GETLOGIN "/ws/neo/getLogin"
 #define ROTA_GETCONFIG "/ws/neo/config"
+#define ROTA_AUTORIZA "/ws/neo/autoriza"
+#define ROTA_CONFIRMA "/ws/neo/confirma"
 #define ROTA_COLETA "/ws/neo/coleta"
 #define ROTA_COLETA_DIFF "/ws/neo/modifications"
 #define ROTA_LOG "/ws/neo/logs"

@@ -48,6 +48,9 @@ void InstallCacic::run(QStringList argv, int argc) {
         //Se tiver -updateService, verifica a pasta temporária se há algum módulo para update.
         logcacic->escrever(LogCacic::InfoLevel, "Atualizando cacic!");
         updateService();
+    } else if ((param.contains("default")) && (param["default"] == "forcaColeta")){
+        logcacic->escrever(LogCacic::InfoLevel, "Forçando coleta!");
+        forcaColeta();
     } else {
         parametrosIncorretos();
     }
@@ -325,6 +328,23 @@ void InstallCacic::install()
                   << "  Código: " << jsonLogin["codestatus"].toString().toStdString() << "\n"
                   << "  " << jsonLogin["error"].toString().toStdString() << "\n";
         logcacic->escrever(LogCacic::ErrorLevel, QString("Falha no login: ") + jsonLogin["error"].toString());
+    }
+}
+
+void InstallCacic::forcaColeta()
+{
+    QLocalSocket socket;
+    socket.setServerName("CacicDaemon");
+    socket.connectToServer();
+    if (socket.isOpen()){
+        socket.write("Coletar");
+        socket.flush();
+        if (!socket.waitForBytesWritten(3000))
+            logcacic->escrever(LogCacic::InfoLevel, "Falha ao enviar sinal de coleta.");
+        socket.close();
+        logcacic->escrever(LogCacic::InfoLevel, "Sinal para forçar coleta enviado.");
+    } else {
+        logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível conectar ao server.");
     }
 }
 

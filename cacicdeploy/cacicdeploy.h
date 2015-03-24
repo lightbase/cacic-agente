@@ -27,8 +27,5 @@ private:
     LogCacic *logcacic;
     deployTimer *timer;
 
-public slots:
-    void onTimer();
-
 };
 #endif // CACICD_H

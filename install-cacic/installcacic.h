@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtCore>
+#include <QLocalSocket>
 #include <cacic_comm.h>
 #include <cacic_computer.h>
 #include <ccacic.h>
@@ -36,6 +37,7 @@ private:
     void updateService();
     void configurar(const QMap<QString, QString> &param);
     void install();
+    void forcaColeta();
 
 signals:
     void finished();

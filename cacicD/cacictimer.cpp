@@ -109,26 +109,35 @@ bool CacicTimer::verificarModulos()
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         if(!(list.at(i).fileName().contains("cacic-service"))){
+            //verificar se há alguma thread sendo executada no momento.
             if (cacicthread->isRunning()){
                 logcacic->escrever(LogCacic::InfoLevel, "Há uma thread sendo executada, aguardando o término.");
-                cacicthread->wait(30000);
+                if (!cacicthread->wait(30000)){
+                    cacicthread->terminate();
+                }
             }
+            //Se o módulo for install-cacic, deverá ficar na pasta "/bin"
             QFile novoModulo(list.at(i).filePath());
-            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                QFile::remove(applicationDirPath + "/" + list.at(i).fileName());
+            if (QFile::exists(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                         "bin/" + list.at(i).fileName() :
+                                                         list.at(i).fileName()))){
+                QFile::remove(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                              "bin/" + list.at(i).fileName() :
+                                                               list.at(i).fileName()));
+                //Garante a exclusão. às vezes o SO demora a reconhecer, dunno why.
+                QThread::sleep(1);
             }
-            if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
+
+            if (!QFile::exists(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                           "bin/" + list.at(i).fileName() :
+                                                            list.at(i).fileName()))){
+                novoModulo.copy(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                            "bin/" + list.at(i).fileName() :
+                                                             list.at(i).fileName()));
                 if (!novoModulo.remove())
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
                 else
-                    //Garantir a coleta com o gercols atualizado
-                    if (list.at(i).fileName().contains("gercols")){
-                        QVariantMap coletar;
-                        coletar["enviaColeta"] = true;
-                        ccacic->setValueToRegistry("Lightbase", "Cacic", coletar);
-                    }
-                logcacic->escrever(LogCacic::InfoLevel, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
+                    logcacic->escrever(LogCacic::InfoLevel, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
             } else {
                 logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
             }
