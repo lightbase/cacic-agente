@@ -99,3 +99,69 @@ QString LogCacic::getLevelEmString(LogCacic::CacicLogLevel level){
     }
     return "InfoLevel";
 }
+
+LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName) throw(int){
+
+    if (levelName == "TraceLevel")
+        return LogCacic::TraceLevel;
+    else if (levelName == "DebugLevel")
+        return LogCacic::DebugLevel;
+    else if (levelName == "InfoLevel")
+        return LogCacic::InfoLevel;
+    else if (levelName == "WarnLevel")
+        return LogCacic::WarnLevel;
+    else if (levelName == "ErrorLevel")
+        return LogCacic::ErrorLevel;
+    else if (levelName == "FatalLevel")
+        return LogCacic::FatalLevel;
+    else
+        throw -1;
+
+}
+
+bool LogCacic::realizarEnvioDeLogs(const QStringList &logLvls) {
+    bool ok = false;
+
+    if( logLvls.isEmpty() )
+        return ok;
+
+    foreach ( QString stringLvl, logLvls ){
+
+        LogCacic::CacicLogLevel level = levelName2Value( stringLvl );
+
+        CCacic *ccacic = new CCacic();
+        QJsonObject jsonColeta = ccacic->getJsonFromFile(resolverEnderecoArquivo(level));
+        delete ccacic;
+
+        if (!jsonColeta.isEmpty()){
+
+            CacicComm *OCacicComm = new CacicComm();
+            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+            QJsonObject retornoColeta;
+
+            escrever(LogCacic::InfoLevel, QString("Enviando Log "+getLevelEmString(level)+" ao gerente."));
+
+            retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonColeta , true);
+            if (ok){
+                if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
+                    escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
+                    return true;
+                } else if(retornoColeta.contains("error")) {
+                    escrever(LogCacic::ErrorLevel, QString("Falha ao enviar log "
+                                                                     +getLevelEmString(level)
+                                                                     + " para o gerente: " + retornoColeta["error"].toString()));
+                    return false;
+                }
+                return ok;
+            } else {
+                escrever(LogCacic::ErrorLevel, QString("Falha ao enviar aquivo de log "
+                                                                 + getLevelEmString(level)
+                                                                 + " para o gerente: Arquivo de Log vazio ou inexistente."));
+                return false;
+            }
+        }
+    }
+    return ok;
+}

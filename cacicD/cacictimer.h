@@ -54,7 +54,6 @@ private:
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
-    bool realizarEnvioDeLog(LogCacic::CacicLogLevel level);
     bool enviarColetaDiff();
     bool enviarColeta();
     bool enviarLogs();
