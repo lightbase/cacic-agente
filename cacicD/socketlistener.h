@@ -26,7 +26,9 @@ private:
     QLocalServer *server;
     LogCacic *logcacic;
     QString applicationDirPath;
-    CCacic *ccacic;
+    CacicThread *cacicthread;
+    CacicComm *oCacicComm;
+    QMutex *cMutex;
     void iniciarColetaForcada();
 };
 

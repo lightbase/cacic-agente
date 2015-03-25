@@ -17,6 +17,7 @@ void LogCacic::escrever(LogCacic::CacicLogLevel level, QString msg)
                                                            resolverLevel(level));
     QLogger::QLog_(this->identificador, resolverLevel(level), msg);
     QLogger::QLoggerManager::getInstance()->cleanDestination();
+
 }
 
 QString LogCacic::resolverEnderecoArquivo(LogCacic::CacicLogLevel level){
@@ -99,3 +100,24 @@ QString LogCacic::getLevelEmString(LogCacic::CacicLogLevel level){
     }
     return "InfoLevel";
 }
+
+LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName) throw(int){
+
+    if (levelName == "TraceLevel")
+        return LogCacic::TraceLevel;
+    else if (levelName == "DebugLevel")
+        return LogCacic::DebugLevel;
+    else if (levelName == "InfoLevel")
+        return LogCacic::InfoLevel;
+    else if (levelName == "WarnLevel")
+        return LogCacic::WarnLevel;
+    else if (levelName == "ErrorLevel")
+        return LogCacic::ErrorLevel;
+    else if (levelName == "FatalLevel")
+        return LogCacic::FatalLevel;
+    else
+        throw -1;
+
+}
+
+

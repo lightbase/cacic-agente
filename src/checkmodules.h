@@ -15,9 +15,10 @@ public:
     bool start();
     QVariantMap getModules() const;
 private:
-    CCacic oCacic;
+
     CacicComm oCacicComm;
     QString applicationUrl;
+    QString cacicMainFolder;
     QVariantMap modules; //modules["name"] = hash;
     bool verificaModulo(const QString &moduloName, const QString &moduloHash);
     //    void lerArquivoConfig(const QJsonObject& jsonConfig);

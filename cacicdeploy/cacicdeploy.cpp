@@ -2,10 +2,10 @@
 
 cacicdeploy::cacicdeploy(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CacicDeploy")
 {
-    ccacic = new CCacic();
-    QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
-    ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC);
-    logcacic = new LogCacic(LOG_CACICDEPLOY, ccacic->getCacicMainFolder()+"/Logs");
+    this->cacicFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+    if (this->cacicFolder.isEmpty() || this->cacicFolder.isNull())
+        this->cacicFolder = Identificadores::ENDERECO_PATCH_CACIC;
+    logcacic = new LogCacic(LOG_CACICDEPLOY, this->cacicFolder+"/Logs");
     this->createApplication(argc, argv);
 }
 
@@ -21,7 +21,7 @@ cacicdeploy::~cacicdeploy()
 
 void cacicdeploy::start() {
     try{
-        timer = new deployTimer(ccacic);
+        timer = new deployTimer(this->cacicFolder);
         timer->start(10000, 5000);
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));

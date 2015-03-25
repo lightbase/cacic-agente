@@ -3,20 +3,20 @@
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
-    oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
-    oCacic.salvarVersao("install-cacic");
-    if (oCacic.getCacicMainFolder().isEmpty()){
+    cacicMainFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+    CCacic::salvarVersao("install-cacic");
+    if (cacicMainFolder.isEmpty()){
         this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
-        oCacic.setCacicMainFolder(applicationDirPath);
-        logcacic = new LogCacic(LOG_INSTALL_CACIC, oCacic.getCacicMainFolder()+"/Logs");
+        cacicMainFolder = applicationDirPath;
+        logcacic = new LogCacic(LOG_INSTALL_CACIC, cacicMainFolder+"/Logs");
     } else {
-        this->applicationDirPath = oCacic.getCacicMainFolder();
+        this->applicationDirPath = cacicMainFolder;
         logcacic = new LogCacic(LOG_INSTALL_CACIC, this->applicationDirPath+"/Logs");
     }
 
-    QDir dir(oCacic.getCacicMainFolder());
+    QDir dir(cacicMainFolder);
     if (!dir.exists()){
-        oCacic.createFolder(oCacic.getCacicMainFolder());
+        CCacic::createFolder(cacicMainFolder);
     }
 }
 
@@ -82,7 +82,7 @@ void InstallCacic::updateService()
 #endif
     bool serviceUpdate = false;
     logcacic->escrever(LogCacic::InfoLevel, "Verificando a existência de módulos na pasta temporária.");
-    QDir dir(oCacic.getCacicMainFolder() + "/temp");
+    QDir dir(cacicMainFolder + "/temp");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -137,7 +137,7 @@ void InstallCacic::updateService()
         if(!service.isInstalled()){
             std::cout << "Serviço não instalado, reinstalando...\n";
             logcacic->escrever(LogCacic::InfoLevel, QString("Serviço não instalado, reinstalando..."));
-            if(!service.install(QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
+            if(!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
                                 L"Cacic Daemon")){
                 std::cout << "Não foi possível instalar o serviço: " + service.getLastError() +"\n";
                 logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível instalar o serviço: " +
@@ -183,7 +183,7 @@ void InstallCacic::configurar(const QMap<QString, QString> &param)
             std::cout << "Senha alterada.\n";
         }
         if (reg.size() > 0) {
-            oCacic.setValueToRegistry("Lightbase", "Cacic", reg);
+            CCacic::setValueToRegistry("Lightbase", "Cacic", reg);
             std::cout << "\nRegistro atualizado.\n\n";
         }
     } else {
@@ -213,7 +213,7 @@ void InstallCacic::install()
         QJsonObject jsonComm;
         QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
         //conectado, grava a chave na classe;
-        oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecript"].toString());
+        //oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecript"].toString());
 
         jsonComm["computador"] = oCacicComputer.toJsonObject();
         std::cout << "Pegando informações do gerente...\n";
@@ -223,23 +223,23 @@ void InstallCacic::install()
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
             oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
 #ifdef Q_OS_WIN
-            oCacic.setCacicMainFolder("c:/cacic");
+            cacicMainFolder = "c:/cacic";
 #elif defined(Q_OS_LINUX)
-            oCacic.setCacicMainFolder("/usr/share/cacic");
+            cacicMainFolder = "/usr/share/cacic";
 #endif
 
-            oCacic.createFolder(oCacic.getCacicMainFolder());
+            CCacic::createFolder(cacicMainFolder);
             //grava chave em registro;
             QVariantMap registro;
-            registro["key"] = oCacic.getChaveCrypt();
+            //registro["key"] = oCacic.getChaveCrypt();
             registro["password"] = oCacicComm->getPassword();
             registro["usuario"] = oCacicComm->getUsuario();
-            registro["mainFolder"] = oCacic.getCacicMainFolder();
+            registro["mainFolder"] = cacicMainFolder;
             registro["applicationUrl"] = oCacicComm->getUrlGerente();
-            oCacic.setValueToRegistry("Lightbase", "Cacic", registro);
+            CCacic::setValueToRegistry("Lightbase", "Cacic", registro);
             std::cout << "Sucesso, salvando configurações em arquivo...\n";
             logcacic->escrever(LogCacic::InfoLevel, "Sucesso! Salvando configurações em arquivo...");
-            oCacic.setJsonToFile(configs["reply"].toObject(), oCacic.getCacicMainFolder() + "/getConfig.json");
+            CCacic::setJsonToFile(configs["reply"].toObject(), cacicMainFolder + "/getConfig.json");
 
             //Baixa serviço
 
@@ -256,11 +256,11 @@ void InstallCacic::install()
                     metodoDownload["path"].toString() +
                     (!metodoDownload["path"].toString().endsWith("/") ? "/" : "") +
                     "cacic-service.exe",
-                    oCacic.getCacicMainFolder());
+                    cacicMainFolder);
 
             //verifica e start o serviço
 
-            QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service.exe");
+            QFile fileService(cacicMainFolder+"/cacic-service.exe");
             if ((!fileService.exists() || !fileService.size() > 0)) {
                 std::cout << "Falha ao baixar arquivo.\n";
                 logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar o serviço...");
@@ -282,7 +282,7 @@ void InstallCacic::install()
                     logcacic->escrever(LogCacic::InfoLevel, QString("Instalando serviço."));
                 }
 
-                if (!service.install(QString(oCacic.getCacicMainFolder()+"/cacic-service.exe").toStdWString(),
+                if (!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
                                      QString("Cacic Daemon").toStdWString())){
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
                                                                             QString::fromStdString(service.getLastError()));
@@ -302,9 +302,9 @@ void InstallCacic::install()
                     metodoDownload["url"].toString(),
                     metodoDownload["path"].toString() +
                     (metodoDownload["path"].toString().endsWith("/") ? "" : "/") + "cacic-service",
-                    oCacic.getCacicMainFolder());
+                    cacicMainFolder);
 
-            QFile fileService(oCacic.getCacicMainFolder()+"/cacic-service");
+            QFile fileService(cacicMainFolder+"/cacic-service");
             if ((!fileService.exists() || !fileService.size() > 0)) {
                 std::cout << "Falha ao baixar arquivo.\n";
                 logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar o serviço...");
@@ -414,12 +414,12 @@ void InstallCacic::uninstall()
         }
     }
 #endif
-    oCacic.removeRegistry("Lightbase", "Cacic");
+    CCacic::removeRegistry("Lightbase", "Cacic");
 
     // Exclui tudo no diretorio, menos o install-cacic
-    if (!oCacic.getCacicMainFolder().isEmpty()) {
+    if (!cacicMainFolder.isEmpty()) {
 
-        QDir dir(oCacic.getCacicMainFolder());
+        QDir dir(cacicMainFolder);
         dir.setFilter(QDir::AllEntries | QDir::Hidden );
         dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -435,9 +435,9 @@ void InstallCacic::uninstall()
                 !list.at(i).fileName().contains("cacic.log") ) {
 
                 if ( list.at(i).isDir())
-                    oCacic.deleteFolder(list.at(i).absoluteFilePath());
+                    CCacic::deleteFolder(list.at(i).absoluteFilePath());
                 else
-                    oCacic.deleteFile(list.at(i).absoluteFilePath());
+                    CCacic::deleteFile(list.at(i).absoluteFilePath());
             }
         }
     }

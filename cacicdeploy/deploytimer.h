@@ -18,14 +18,14 @@ class deployTimer : public QObject
     Q_OBJECT
 private:
     LogCacic *log;
-    CCacic *oCacic;
     QTimer *timerDeploy;
     QTimer *timerCheckService;
+    QString cacicFolder;
 
-    bool autorizaExecucao(QString rota, bool statusExec);
+    bool commExecucao(QJsonObject modulo, QString rota, bool statusExec = false);
 public:
     explicit deployTimer(QObject *parent = 0);
-    explicit deployTimer(CCacic *cacic);
+    explicit deployTimer(QString cacicFolder);
     bool start(int msecDeploy, int msecCheckService);
 signals:
 

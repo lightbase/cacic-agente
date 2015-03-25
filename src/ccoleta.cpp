@@ -43,7 +43,7 @@ bool CColeta::waitToCollect()
 
 void CColeta::run()
 {
-    QJsonObject coleta = oCacic.getJsonFromFile("getConfig.json");
+    QJsonObject coleta = CCacic::getJsonFromFile("getConfig.json");
     QJsonObject actions = coleta["agentcomputer"].toObject()["actions"].toObject();
 
     //se for pra coletar hardware...

@@ -2,10 +2,9 @@
 
 cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CacicDaemon")
 {
-    ccacic = new CCacic();
-    QString folder = ccacic->getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
-    ccacic->setCacicMainFolder(!folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC);
-    logcacic = new LogCacic(LOG_DAEMON, ccacic->getCacicMainFolder()+"/Logs");
+    QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+    cacicMainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
+    logcacic = new LogCacic(LOG_DAEMON, cacicMainFolder + "/Logs");
     this->createApplication(argc, argv);
 }
 
@@ -22,12 +21,13 @@ cacicD::~cacicD()
 void cacicD::start() {
     try{
         CacicTimer *Ocacictimer;
-        Ocacictimer = new CacicTimer(ccacic->getCacicMainFolder());
         SocketListener *socket;
-        socket = new SocketListener(ccacic->getCacicMainFolder());
+        socket = new SocketListener(cacicMainFolder);
+        Ocacictimer = new CacicTimer(cacicMainFolder);
+
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
         QObject::connect(socket, SIGNAL(forcaColeta()), Ocacictimer, SLOT(iniciarThread()));
-        logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado em " + ccacic->getCacicMainFolder() + "."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado em " + cacicMainFolder + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));

@@ -24,7 +24,6 @@ public:
     CacicTimer(QString dirpath);
     ~CacicTimer();
     QTimer *timer;
-    CCacic *ccacic;
     QMutex *cMutex;
     void iniciarTimer();
     QJsonObject getTest(CacicComm &OCacicComm);
@@ -54,13 +53,15 @@ private:
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     bool verificaForcarColeta();
     bool realizarEnviodeColeta();
-    bool realizarEnvioDeLog(LogCacic::CacicLogLevel level);
+    bool realizarEnvioDeLogs(const QStringList &logLvls);
     bool enviarColetaDiff();
     bool enviarColeta();
     bool enviarLogs();
     void registrarDataEnvioDeColeta();
     QString getDirProgram() const;
+
     CacicThread *cacicthread;
+    QString cacicMainFolder;
     QString dirProgram;
     QString applicationDirPath;
     QJsonObject jsonConfig;

@@ -24,7 +24,7 @@ public:
 
 private:
     QLocalServer *serverListener;
-    CCacic *ccacic;
+    QString cacicMainFolder;
     LogCacic *logcacic;
 
 };

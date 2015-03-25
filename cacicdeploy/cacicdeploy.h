@@ -23,7 +23,7 @@ public:
     void stop();
 
 private:
-    CCacic *ccacic;
+    QString cacicFolder;
     LogCacic *logcacic;
     deployTimer *timer;
 

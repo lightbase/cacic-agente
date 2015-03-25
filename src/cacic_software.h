@@ -25,7 +25,6 @@ private:
     QJsonObject coletaDebian();
 #endif
 
-    CCacic oCacic;
     QJsonObject coletaSoftware;
 };
 

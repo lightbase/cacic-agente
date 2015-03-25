@@ -31,8 +31,8 @@ private:
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
-    CCacic oCacic;
     QString applicationDirPath;
+    QString cacicMainFolder;
     void parametrosIncorretos();
     void updateService();
     void configurar(const QMap<QString, QString> &param);

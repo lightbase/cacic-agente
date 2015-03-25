@@ -43,8 +43,11 @@ SOURCES     += main.cpp \
                ../src/identificadores.cpp \
                ../src/servicecontroller.cpp \
                ../src/logcacic.cpp \
-    cacicdeploy.cpp \
-    deploytimer.cpp
+               ../src/cacic_computer.cpp \
+               ../src/cacic_comm.cpp \
+               ../src/operatingsystem.cpp \
+                cacicdeploy.cpp \
+                deploytimer.cpp
 
 
 HEADERS     += cacicd.h \
@@ -53,8 +56,11 @@ HEADERS     += cacicd.h \
                ../src/identificadores.h \
                ../src/servicecontroller.h \
                ../src/logcacic.h \
-    cacicdeploy.h \
-    deploytimer.h
+               ../src/cacic_computer.h \
+               ../src/cacic_comm.h \
+               ../src/operatingsystem.h \
+               cacicdeploy.h \
+               deploytimer.h
 
 include(../src/qtservice/src/qtservice.pri)
 

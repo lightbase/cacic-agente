@@ -5,9 +5,9 @@ deployTimer::deployTimer(QObject *parent) :
 {
 }
 
-deployTimer::deployTimer(CCacic *cacic){
-    oCacic = cacic;
-    log = new LogCacic(LOG_CACICDEPLOY, oCacic->getCacicMainFolder()+"/Logs");
+deployTimer::deployTimer(QString cacicFolder){
+    this->cacicFolder = cacicFolder;
+    log = new LogCacic(LOG_CACICDEPLOY, this->cacicFolder+"/Logs");
     timerDeploy = new QTimer();
     QObject::connect(timerDeploy, SIGNAL(timeout()), this, SLOT(onTimer()));
 
@@ -35,7 +35,7 @@ bool deployTimer::start(int msecDeploy, int msecCheckService)
 
 void deployTimer::onTimer()
 {
-    QJsonArray outrosModulos = oCacic->getJsonFromFile(oCacic->getCacicMainFolder() + "/getConfig.json")
+    QJsonArray outrosModulos = CCacic::getJsonFromFile(this->cacicFolder + "/getConfig.json")
                                                     ["agentcomputer"].toObject()["modulos"].toObject()
                                                     ["outros"].toArray();
     if (!outrosModulos.empty()) {
@@ -43,7 +43,7 @@ void deployTimer::onTimer()
             //Se a data/hora de execução for menor que a data/hora atual, segue para a próxima etapa, que é autorização.
             if (QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd/mm/yyyy hh:mm:ss").
                     secsTo(QDateTime::currentDateTime()) < 0){
-                if (commExecucao(ROTA_AUTORIZA)){
+                if (commExecucao(outrosModulos.at(i).toObject(), ROTA_AUTORIZA)){
                     //executa módulo
                 }
             }
@@ -53,11 +53,11 @@ void deployTimer::onTimer()
     log->escrever(LogCacic::InfoLevel, "OnTimer");
 }
 
-bool deployTimer::commExecucao(QString rota, bool statusExec = false)
+bool deployTimer::commExecucao(QJsonObject modulo, QString rota, bool statusExec)
 {
     QJsonObject jsonComm;
     CACIC_Computer oComputer;
-    jsonComm["modulo"] = outrosModulos.at(i);
+    jsonComm["modulo"] = modulo;
     jsonComm["data"] = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
     jsonComm["computador"] = oComputer.toJsonObject();
 
@@ -66,23 +66,20 @@ bool deployTimer::commExecucao(QString rota, bool statusExec = false)
         jsonComm["statusExec"] = statusExec;
     }
     CacicComm comm;
-    oCacic->setUrlGerente(oCacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl"));
-    if (oCacic->getUrlGerente().isEmpty()){
-        QString urlGerente = oCacic->getJsonFromFile(oCacic->getCacicMainFolder()+"/getConfig.json")
+    comm.setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    if (comm.getUrlGerente().isEmpty()){
+        QString urlGerente = CCacic::getJsonFromFile(this->cacicFolder+"/getConfig.json")
                                 ["agentcomputer"].toObject()["applicationUrl"].toString();
         if (!urlGerente.isEmpty() && !urlGerente.isNull())
-            oCacic->setUrlGerente(urlGerente);
+            comm.setUrlGerente(urlGerente);
         else {
             log->escrever(LogCacic::InfoLevel, "Erro durante tentativa de comunicação.");
-            log->escrever(LogCacic::ErrorLevel, "Url do cacic não encontrada. Para configurar novamente, execute "+
-                                                "manualmente o install-cacic com a opção configure. (para maiores"+
-                                                " informações digite install-cacic -h");
+            log->escrever(LogCacic::ErrorLevel, "Url do cacic não encontrada. Para configurar novamente, execute o install-cacic com a opção -configure");
             return false;
         }
     }
-    comm.setUrlGerente(urlGerente);
-    comm.setUsuario(oCacic->getValueFromRegistry("Lightbase", "Cacic", "usuario"));
-    comm.setPassword(oCacic->getValueFromRegistry("Lightbase", "Cacic", "password"));
+    comm.setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+    comm.setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     bool ok;
     jsonComm = comm.comm(rota, &ok, jsonComm, true);
     if (rota == ROTA_AUTORIZA)

@@ -21,13 +21,14 @@ public:
     };
 
     void escrever(CacicLogLevel level, QString msg);
-    QString getLevelEmString(LogCacic::CacicLogLevel level);
-    QString resolverEnderecoArquivo(LogCacic::CacicLogLevel level);
+    QString getLevelEmString(CacicLogLevel level);
+    QString resolverEnderecoArquivo(CacicLogLevel level);
+    CacicLogLevel levelName2Value(const QString &levelName) throw(int);
 
 private:
     QString identificador;
     QString enderecoArquivoLog;
-    QLogger::LogLevel resolverLevel(LogCacic::CacicLogLevel level);
+    QLogger::LogLevel resolverLevel(CacicLogLevel level);
 
 };
 

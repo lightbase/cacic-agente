@@ -15,7 +15,7 @@ public:
     void setModuloDirPath(const QString &value);
     void setCMutex(QMutex *value);
     void setNomeModulo(const QString &value);
-    void setCcacic(CCacic *value);
+
 
 private:
     void registraInicioColeta();
@@ -27,7 +27,7 @@ private:
     QString applicationDirPath;
     QMutex *cMutex;
     QString nomeModulo;
-    CCacic *ccacic;
+
 };
 
 #endif // CACICTHREAD_H

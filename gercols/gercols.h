@@ -11,14 +11,6 @@ class Gercols : public QObject
 {
     Q_OBJECT
 
-private:
-    LogCacic *logcacic;
-    CCacic oCacic;
-    CColeta *oColeta;
-    QJsonObject configReq;
-    bool percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno);
-    bool verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta);
-
 public:
     explicit Gercols(QObject *parent = 0);
 
@@ -30,6 +22,17 @@ signals:
     void iniciaConfiguracao();
     void iniciaColeta();
     void fimColeta();
+
+private:
+
+    bool percorreColeta(const QJsonValue &primeiroValor, const QJsonValue &segundoValor, QJsonValue &jsonRetorno);
+    bool verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject &novaColeta);
+
+    LogCacic *logcacic;
+    CColeta *oColeta;
+    QJsonObject configReq;
+    QString cacicMainFolder;
+
 };
 
 #endif // GERCOLS_H
