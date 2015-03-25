@@ -4,12 +4,12 @@ Gercols::Gercols(QObject *parent)
 {
     oColeta = new CColeta;
     //Pega chave do registro, que será pega na instalação.
-    oCacic.setCacicMainFolder(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString());
-    oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
-    oCacic.salvarVersao("gercols");
+    cacicMainFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+//    oCacic.setChaveCrypt(oCacic.getValueFromRegistry("Lightbase", "Cacic", "key").toString());
+    CCacic::salvarVersao("gercols");
     QObject::connect(this, SIGNAL(iniciaConfiguracao()), oColeta, SLOT(configuraColetas()));
     QObject::connect(this, SIGNAL(iniciaColeta()), oColeta, SLOT(run()));
-    logcacic = new LogCacic(LOG_GERCOLS, oCacic.getCacicMainFolder()+"/Logs");
+    logcacic = new LogCacic(LOG_GERCOLS, cacicMainFolder+"/Logs");
 }
 
 void Gercols::run()
@@ -22,18 +22,18 @@ void Gercols::run()
     //salva json em arquivo
     if (!oColeta->toJsonObject().isEmpty()){
         QJsonObject oldColeta;
-        oldColeta = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/coleta.json");
+        oldColeta = CCacic::getJsonFromFile(cacicMainFolder + "/coleta.json");
         QVariantMap enviaColeta;
-        oCacic.setJsonToFile(oColeta->toJsonObject(), oCacic.getCacicMainFolder() + "/coleta.json");
+        CCacic::setJsonToFile(oColeta->toJsonObject(), cacicMainFolder + "/coleta.json");
         //verificando quantidade de chaves. Se for diferente, envia a coleta.
         if (oldColeta.isEmpty() || this->verificaColeta(oldColeta, oColeta->toJsonObject())) {
             enviaColeta["enviaColeta"] = true;
-            oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+            CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
             logcacic->escrever(LogCacic::InfoLevel, QString("Novas informações prontas para o envio ao gerente."));
         } else {
             logcacic->escrever(LogCacic::InfoLevel, QString("Coleta sem alterações."));
             enviaColeta["enviaColeta"] = false;
-            oCacic.setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+            CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
         }
     } else {
         logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao realizar coleta."));
@@ -78,10 +78,10 @@ bool Gercols::verificaColeta(const QJsonObject &coletaAntiga, const QJsonObject 
     }
     if (!diferencaColeta.isEmpty()){
         coletaDiff["computador"] = oColeta->getOComputer().toJsonObject();
-        if (QFile::exists(oCacic.getCacicMainFolder() + "/coletaDiff.json")){
-            oCacic.deleteFile(oCacic.getCacicMainFolder() + "/coletaDiff.json");
+        if (QFile::exists(cacicMainFolder + "/coletaDiff.json")){
+            CCacic::deleteFile(cacicMainFolder + "/coletaDiff.json");
         }
-        oCacic.setJsonToFile(coletaDiff, oCacic.getCacicMainFolder() + "/coletaDiff.json");
+        CCacic::setJsonToFile(coletaDiff, cacicMainFolder + "/coletaDiff.json");
     }
     //true se houver diferença.
     return retorno;

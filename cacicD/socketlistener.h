@@ -28,7 +28,6 @@ private:
     LogCacic *logcacic;
     QString applicationDirPath;
     CacicThread *cacicthread;
-    CCacic *ccacic;
     CacicComm *oCacicComm;
     QMutex *cMutex;
     int port_no = 1500; //porta padrão

@@ -22,7 +22,7 @@ public:
     void stop();
 
 private:
-    CCacic *ccacic;
+    QString cacicMainFolder;
     LogCacic *logcacic;
 };
 #endif // CACICD_H

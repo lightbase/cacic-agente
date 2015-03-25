@@ -15,7 +15,7 @@ class CColeta : public QObject
     Q_OBJECT
 
 private:
-    CCacic oCacic;
+
     CACIC_Computer oComputer;
     cacic_software oSoftware;
     cacic_hardware oHardware;

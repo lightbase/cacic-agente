@@ -38,11 +38,6 @@ void CacicThread::iniciarModulo()
     cMutex->unlock();
 }
 
-void CacicThread::setCcacic(CCacic *value)
-{
-    ccacic = value;
-}
-
 void CacicThread::setNomeModulo(const QString &value)
 {
     nomeModulo = value;

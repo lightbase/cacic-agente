@@ -32,7 +32,7 @@ void CacicTimer::reiniciarTimer(){
 
 void CacicTimer::iniciarTimer()
 {
-    ccacic->salvarVersao("cacic-service");
+    CCacic::salvarVersao("cacic-service");
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
     setPeriodicidadeExecucao(2 * 60000);
     timer->start(getPeriodicidadeExecucao());
@@ -41,11 +41,11 @@ void CacicTimer::iniciarTimer()
 //Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
     if(comunicarGerente()){
-        if ( QFile(ccacic->getCacicMainFolder() + "/cacic280.exe" ).exists() ||
-             QFile(ccacic->getCacicMainFolder() + "/cacic260.exe" ).exists() ) {
+        if ( QFile(cacicMainFolder + "/cacic280.exe" ).exists() ||
+             QFile(cacicMainFolder + "/cacic260.exe" ).exists() ) {
             bool cacicRemovido;
             cacicRemovido = this->removeCacicAnterior();
-            cacicRemovido = cacicRemovido && this->removeArquivosEstrangeiros(QDir(ccacic->getCacicMainFolder()));
+            cacicRemovido = cacicRemovido && this->removeArquivosEstrangeiros(QDir(cacicMainFolder));
             if(!cacicRemovido) {
                 logcacic->escrever(LogCacic::ErrorLevel, QString("Problemas ao remover arquivos não pertencentes a esta versão do Cacic."));
             }
@@ -102,7 +102,7 @@ bool CacicTimer::verificarEIniciarQMutex(){
  **********************************************************************************************/
 bool CacicTimer::verificarModulos()
 {
-    QDir dir(ccacic->getCacicMainFolder() + "/temp");
+    QDir dir(cacicMainFolder + "/temp");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
@@ -126,7 +126,7 @@ bool CacicTimer::verificarModulos()
                     if (list.at(i).fileName().contains("gercols")){
                         QVariantMap coletar;
                         coletar["enviaColeta"] = true;
-                        ccacic->setValueToRegistry("Lightbase", "Cacic", coletar);
+                        CCacic::setValueToRegistry("Lightbase", "Cacic", coletar);
                     }
                 logcacic->escrever(LogCacic::InfoLevel, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
             } else {
@@ -139,7 +139,7 @@ bool CacicTimer::verificarModulos()
             QStringList arg;
             arg << "-updateService";
             QProcess installCacicProc;
-            installCacicProc.startDetached(ccacic->getCacicMainFolder() + "/install-cacic", arg);
+            installCacicProc.startDetached(cacicMainFolder + "/install-cacic", arg);
 
 #ifdef Q_OS_LINUX
             ConsoleObject console;
@@ -156,7 +156,7 @@ bool CacicTimer::verificarModulos()
 }
 
 bool CacicTimer::verificarseModuloJaFoiExecutado(QString nome, QString hash){
-    return ccacic->getValueFromRegistry("Lightbase", "Cacic", nome).toString() == hash;
+    return CCacic::getValueFromRegistry("Lightbase", "Cacic", nome).toString() == hash;
 }
 
 int CacicTimer::getPeriodicidadeExecucaoAnterior() const
@@ -173,7 +173,7 @@ void CacicTimer::setPeriodicidadeExecucaoAnterior(int value)
 void CacicTimer::iniciarThread(){    
     QJsonObject agenteConfigJson;
     QJsonArray listaModulos;
-    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    QJsonObject result = CCacic::getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
         agenteConfigJson = result["agentcomputer"].toObject();
         listaModulos = agenteConfigJson["modulos"].toObject()["cacic"].toArray();
@@ -188,10 +188,9 @@ void CacicTimer::iniciarThread(){
                 !nome.contains("install-cacic")  &&
                 !nome.contains("mapacacic")         ) ||
                     (nome.contains("mapacacic") &&
-                     ccacic->getValueFromRegistry("Lightbase", "Cacic", nome).isNull() &&
+                     CCacic::getValueFromRegistry("Lightbase", "Cacic", nome).isNull() &&
                      agenteConfigJson["actions"].toObject()["col_patr"].toBool())){
                 if (QFile::exists(getDirProgram())) {
-                    cacicthread->setCcacic(ccacic);
                     cacicthread->setNomeModulo(nome);
                     cacicthread->setCMutex(cMutex);
                     cacicthread->setModuloDirPath(getDirProgram());
@@ -202,7 +201,7 @@ void CacicTimer::iniciarThread(){
                         //enviarLogs(); ativar quando a parte do gerente estiver feita.
                     }
                     modulosExecutados[nome] = hash;
-                    ccacic->setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
+                    CCacic::setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
                 } else {
                     logcacic->escrever(LogCacic::InfoLevel, "Modulo \""+ nome + "\" não foi encontrado para execução.");
                 }
@@ -220,11 +219,11 @@ bool CacicTimer::comunicarGerente(){
     CacicComm *OCacicComm;
     OCacicComm = new CacicComm();
     //Sempre recuperar as informações aqui caso mude.
-    OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-    OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-    OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+    OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     logcacic->escrever(LogCacic::InfoLevel, QString("Realizando comunicação em: " + OCacicComm->getUrlGerente()));
-    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
+//    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
     QJsonObject resposta = OCacicComm->login(&ok);
     if(resposta.isEmpty() || resposta.contains("error")){
         //de vez enquando a conexão da erro, é bom tentar 2 vezes pra garantir.
@@ -264,8 +263,8 @@ QJsonObject CacicTimer::getTest(CacicComm &OCacicComm){
         return jsonresult;
     }
     try{
-        ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
-                              ccacic->getCacicMainFolder() + "/getTest.json");
+        CCacic::setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
+                              cacicMainFolder + "/getTest.json");
         return jsonresult;
     } catch (...) {
         logcacic->escrever(LogCacic::ErrorLevel, "Erro ao salvar o arquivo de configurações.");
@@ -284,13 +283,13 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
         return jsonresult;
     }
     try{
-        ccacic->setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
-                              ccacic->getCacicMainFolder() + "/getConfig.json");
+        CCacic::setJsonToFile(jsonresult.contains("reply") ? jsonresult["reply"].toObject() : jsonresult,
+                              cacicMainFolder + "/getConfig.json");
         QVariantMap registro;
-        registro["applicationUrl"] = QVariant::fromValue(ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json")
+        registro["applicationUrl"] = QVariant::fromValue(CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json")
                                                             ["agentcomputer"].toObject()
                                                             ["applicationUrl"].toString());
-        ccacic->setValueToRegistry("Lightbase", "Cacic", registro);
+        CCacic::setValueToRegistry("Lightbase", "Cacic", registro);
 
         return jsonresult;
     } catch (...) {
@@ -302,7 +301,7 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
 bool CacicTimer::verificaForcarColeta(){
     QJsonObject agenteConfigJson;
     QJsonObject configuracoes;
-    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    QJsonObject result = CCacic::getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
         agenteConfigJson = result["agentcomputer"].toObject();
         configuracoes = agenteConfigJson["configuracoes"].toObject();
@@ -316,14 +315,14 @@ bool CacicTimer::verificaForcarColeta(){
 }
 
 bool CacicTimer::enviarColetaDiff(){
-    if(QFile::exists(ccacic->getCacicMainFolder() + "/coletaDiff.json")){
+    if(QFile::exists(cacicMainFolder+ "/coletaDiff.json")){
         bool ok = false;
-        QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
+        QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
         if (!jsonColeta.isEmpty()){
             CacicComm *OCacicComm = new CacicComm();
-            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+            OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
             QJsonObject retornoColeta;
             logcacic->escrever(LogCacic::InfoLevel, QString("Enviando coleta Diff ao gerente."));
             retornoColeta = OCacicComm->comm(ROTA_COLETA_DIFF, &ok, jsonColeta , true);
@@ -349,14 +348,14 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
 
         LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
 
-        QJsonObject jsonColeta = ccacic->getJsonFromFile(logcacic->resolverEnderecoArquivo(level));
+        QJsonObject jsonColeta = CCacic::getJsonFromFile(logcacic->resolverEnderecoArquivo(level));
 
         if (!jsonColeta.isEmpty()){
 
             CacicComm *OCacicComm = new CacicComm();
-            OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-            OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-            OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+            OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+            OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
             QJsonObject retornoColeta;
 
             logcacic->escrever(LogCacic::InfoLevel, QString("Enviando Log "+logcacic->getLevelEmString(level)+" ao gerente."));
@@ -385,11 +384,11 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
 }
 
 bool CacicTimer::enviarLogs(){
-    if(QFile::exists(ccacic->getCacicMainFolder() + "/getConfig.json")){
+    if(QFile::exists(cacicMainFolder + "/getConfig.json")){
 
         QJsonObject agenteConfigJson;
         QJsonObject logs;
-        QJsonObject result = ccacic->getJsonFromFile(ccacic->getCacicMainFolder() + "/getConfig.json");
+        QJsonObject result = CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json");
 
         if(!result.contains("error") && !result.isEmpty()){
 
@@ -412,12 +411,12 @@ bool CacicTimer::enviarLogs(){
 
 bool CacicTimer::realizarEnviodeColeta(){
     bool ok = false;
-    QJsonObject jsonColeta = this->ccacic->getJsonFromFile(this->applicationDirPath + "/coleta.json");
+    QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
         CacicComm *OCacicComm = new CacicComm();
-        OCacicComm->setUrlGerente(ccacic->getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-        OCacicComm->setUsuario(ccacic->getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        OCacicComm->setPassword(ccacic->getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando coleta ao gerente."));
         retornoColeta = OCacicComm->comm(ROTA_COLETA, &ok, jsonColeta , true);
@@ -425,7 +424,7 @@ bool CacicTimer::realizarEnviodeColeta(){
             if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
                 QVariantMap enviaColeta;
                 enviaColeta["enviaColeta"] = false;
-                ccacic->setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+                CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
             }
             logcacic->escrever(LogCacic::InfoLevel, "Coleta enviada com sucesso.");
             return true;
@@ -441,17 +440,17 @@ bool CacicTimer::realizarEnviodeColeta(){
 }
 
 bool CacicTimer::enviarColeta() {
-    if(QFile::exists(ccacic->getCacicMainFolder() + "/coleta.json")){
+    if(QFile::exists(cacicMainFolder + "/coleta.json")){
         if(!verificaForcarColeta()){
-            if (ccacic->getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
+            if (CCacic::getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
                 if(realizarEnviodeColeta()){ // quando a ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
                     registrarDataEnvioDeColeta();
                     return true;
                 }
                 return false;
             }else{
-                if(!ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().isEmpty()){
-                    QDate dataUltimaColeta = QDate::fromString(ccacic->getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString(), "dd/MM/yyyy"); //recupera a data de envio do ultima coleta no formato "dayOfYears"
+                if(!CCacic::getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString().isEmpty()){
+                    QDate dataUltimaColeta = QDate::fromString(CCacic::getValueFromRegistry("Lightbase", "Cacic", "dataColetaEnviada").toString(), "dd/MM/yyyy"); //recupera a data de envio do ultima coleta no formato "dayOfYears"
                     QDate dataAtual = QDate::currentDate(); //data atual no formato "dayOfYears"
                     if(dataUltimaColeta.daysTo(dataAtual) >= 7){ //se já tiver passado 7 dias desde o envio da ultima coleta, enviar mesmo sem alteração
                         if(realizarEnviodeColeta()){
@@ -490,7 +489,7 @@ bool CacicTimer::enviarColeta() {
 void CacicTimer::registrarDataEnvioDeColeta(){
     QVariantMap qvm;
     qvm["dataColetaEnviada"] = QDate::currentDate().toString("dd/MM/yyyy");
-    this->ccacic->setValueToRegistry("Lightbase", "Cacic", qvm);
+    CCacic::setValueToRegistry("Lightbase", "Cacic", qvm);
 }
 
 QString CacicTimer::getDirProgram() const
@@ -509,18 +508,17 @@ void CacicTimer::setApplicationDirPath(const QString &value)
 }
 
 void CacicTimer::iniciarInstancias(){
-    ccacic = new CCacic();
-    ccacic->setCacicMainFolder(this->applicationDirPath);
+    cacicMainFolder = this->applicationDirPath;
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
-    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
+//    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
 }
 
 bool CacicTimer::verificarPeriodicidade()
 {
     QJsonObject configuracoes;
-    QJsonObject result = ccacic->getJsonFromFile(this->applicationDirPath + "/getConfig.json");
+    QJsonObject result = CCacic::getJsonFromFile(this->applicationDirPath + "/getConfig.json");
     if(!result.contains("error") && !result.isEmpty()){
         configuracoes = result["agentcomputer"].toObject()["configuracoes"].toObject();
         QString tempoExec = configuracoes["nu_intervalo_exec"].toString();
@@ -569,10 +567,10 @@ bool CacicTimer::removeArquivosEstrangeiros(const QDir &diretorio)
                         retorno = retorno && false;
                 } else if (!(list.at(i).fileName() == "bin")){
                     logcacic->escrever(LogCacic::InfoLevel, "Excluindo diretorio: " + list.at(i).fileName());
-                    retorno = retorno && ccacic->deleteFolder(list.at(i).absoluteFilePath());
+                    retorno = retorno && CCacic::deleteFolder(list.at(i).absoluteFilePath());
                 }
             } else {
-                retorno = retorno && ccacic->deleteFile(list.at(i).absoluteFilePath());
+                retorno = retorno && CCacic::deleteFile(list.at(i).absoluteFilePath());
                 logcacic->escrever(LogCacic::InfoLevel, "Excluindo arquivo: " + list.at(i).fileName());
             }
         }
@@ -597,7 +595,7 @@ bool CacicTimer::removeCacicAnterior(){
     cacicFiles << "chksis.inf" << "chksis.exe" << "cacicservice.exe";
     foreach(QString file, cacicFiles){
         if(QFile::exists("c:/windows/"+file)){
-            retorno = retorno && ccacic->deleteFile(QDir::rootPath()+"windows/"+file);
+            retorno = retorno && CCacic::deleteFile(QDir::rootPath()+"windows/"+file);
         }
     }
 #endif

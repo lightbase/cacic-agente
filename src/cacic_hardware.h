@@ -41,7 +41,6 @@ private:
     void coletaLinuxPrinters(QJsonObject &hardware);
 #endif
 
-    CCacic oCacic;
     QJsonObject coletaHardware;
     LogCacic *logcacic;
 };
