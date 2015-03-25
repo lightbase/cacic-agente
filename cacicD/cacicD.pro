@@ -41,7 +41,7 @@ win32 {
 SOURCES     += main.cpp \
                cacicd.cpp \
                cacictimer.cpp \
-               cacicthread.cpp \
+               ../src/cacicthread.cpp \
                ../src/cacic_comm.cpp \
                ../src/ccacic.cpp \
                ../src/wmi.cpp \
@@ -57,7 +57,7 @@ SOURCES     += main.cpp \
 
 HEADERS     += cacicd.h \
                cacictimer.h \
-               cacicthread.h \
+               ../src/cacicthread.h \
                ../src/ccacic.h \
                ../src/wmi.h \
                ../src/cacic_computer.h \

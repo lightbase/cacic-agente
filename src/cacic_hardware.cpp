@@ -727,6 +727,7 @@ void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
     QStringList consoleOutput;
 
     if( console("lpstat").contains("/bin/sh:") ) { // Cups não instalado
+        logcacic->escrever(LogCacic::ErrorLevel, "lpstat não instalado para verificação de impressoras.");
         return;
     } else {
 

@@ -12,6 +12,7 @@
 #include <QJsonValue>
 #include <cacic_computer.h>
 #include <cacic_comm.h>
+#include <cacicthread.h>
 
 class deployTimer : public QObject
 {
@@ -21,17 +22,26 @@ private:
     QTimer *timerDeploy;
     QTimer *timerCheckService;
     QString cacicFolder;
+    QMutex *mutex;
+    int timeout;
 
     bool commExecucao(QJsonObject modulo, QString rota, bool statusExec = false);
+    bool downloadModulo(QString nome);
 public:
     explicit deployTimer(QObject *parent = 0);
     explicit deployTimer(QString cacicFolder);
     bool start(int msecDeploy, int msecCheckService);
+    int getTimeout() const;
+    void setTimeout(int value);
+
 signals:
 
 public slots:
     void onTimer();
     void onTimerCheckService();
+
+private slots:
+    void confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStatusProc);
 
 };
 

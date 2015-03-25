@@ -207,7 +207,6 @@ void CacicTimer::iniciarThread(){
                     cacicthread->wait();
                     if(nome.contains("gercols")){
                         enviarColeta();
-                        //enviarLogs(); ativar quando a parte do gerente estiver feita.
                     }
                     modulosExecutados[nome] = hash;
                     CCacic::setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
@@ -216,6 +215,8 @@ void CacicTimer::iniciarThread(){
                 }
             }
         }
+        //Deve ser enviado tendo ou não módulos.
+        //enviarLogs();
     }
 }
 
@@ -612,7 +613,7 @@ bool CacicTimer::removeCacicAnterior(){
 }
 
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
-    setDirProgram(appDirPath + "/"+ nome);
+    setDirProgram(appDirPath + (appDirPath.endsWith("/") ? nome : "/" + nome));
 }
 
 int CacicTimer::getPeriodicidadeExecucao() const

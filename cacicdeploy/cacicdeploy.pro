@@ -46,6 +46,7 @@ SOURCES     += main.cpp \
                ../src/cacic_computer.cpp \
                ../src/cacic_comm.cpp \
                ../src/operatingsystem.cpp \
+               ../src/cacicthread.cpp \
                 cacicdeploy.cpp \
                 deploytimer.cpp
 
@@ -59,6 +60,7 @@ HEADERS     += cacicd.h \
                ../src/cacic_computer.h \
                ../src/cacic_comm.h \
                ../src/operatingsystem.h \
+               ../src/cacicthread.h \
                cacicdeploy.h \
                deploytimer.h
 

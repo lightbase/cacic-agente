@@ -5,6 +5,7 @@ cacicdeploy::cacicdeploy(int argc, char **argv) : QtService<QCoreApplication>(ar
     this->cacicFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     if (this->cacicFolder.isEmpty() || this->cacicFolder.isNull())
         this->cacicFolder = Identificadores::ENDERECO_PATCH_CACIC;
+    if (!this->cacicFolder.endsWith("/")) this->cacicFolder.append("/");
     logcacic = new LogCacic(LOG_CACICDEPLOY, this->cacicFolder+"/Logs");
     this->createApplication(argc, argv);
 }
