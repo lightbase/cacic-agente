@@ -708,7 +708,10 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
     QJsonObject notebook;
     consoleOutput= console("dmidecode -t 3").split("\n");
     foreach(QString line, consoleOutput){
-        if(line.contains("Type:") && (line.contains("Notebook") || line.contains("Portable")) ){
+        if(line.contains("Type:") && (line.contains("Notebook") ||
+                                      line.contains("Portable") ||
+                                      line.contains("Laptop")   ||
+                                      line.contais("Sub Notebook")) ) {
             notebook["Value"] = QJsonValue::fromVariant(true);
             hardware["IsNotebook"] = notebook;
             break;

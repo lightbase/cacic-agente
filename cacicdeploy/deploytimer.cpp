@@ -43,8 +43,9 @@ void deployTimer::onTimer()
             //Se a data/hora de execução for menor que a data/hora atual, segue para a próxima etapa, que é autorização.
             if (QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd/mm/yyyy hh:mm:ss").
                     secsTo(QDateTime::currentDateTime()) < 0){
-                commExecucao(ROTA_AUTORIZA);
-
+                if (commExecucao(ROTA_AUTORIZA)){
+                    //executa módulo
+                }
             }
 
         }
