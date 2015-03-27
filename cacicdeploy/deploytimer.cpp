@@ -35,47 +35,71 @@ bool deployTimer::start(int msecDeploy, int msecCheckService)
 
 void deployTimer::onTimer()
 {
+    log->escrever(LogCacic::InfoLevel, "Iniciando timer");
     QJsonArray outrosModulos = CCacic::getJsonFromFile(this->cacicFolder + "/getConfig.json")
                                                     ["agentcomputer"].toObject()["modulos"].toObject()
                                                     ["outros"].toArray();
+    QJsonArray modulesToExec;
     if (!outrosModulos.empty()) {
+        log->escrever(LogCacic::InfoLevel, "verificando data hora dos modulos");
         for (int i = 0; i < outrosModulos.size(); i++) {
+            log->escrever(LogCacic::InfoLevel, "Modulo "+ outrosModulos.at(i).toObject()["nome"].toString()+
+                                               " Data: "+ outrosModulos.at(i).toObject()["dataExecucao"].toString());
+
+            //ARRUMAR DATA E HORA ------------------------------------
+
             //Se a data/hora de execução for menor que a data/hora atual, segue para a próxima etapa, que é autorização.
-            if (QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd/mm/yyyy hh:mm:ss").
+            if (QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd/mm/yyyy HH:mm:ss").
                     secsTo(QDateTime::currentDateTime()) < 0){
-                if (commExecucao(outrosModulos.at(i).toObject(), ROTA_AUTORIZA)){
-                    QString nome = outrosModulos.at(i).toObject()["nome"].toString();
-                    QString hash = outrosModulos.at(i).toObject()["hash"].toString();
-                    int timeout  = outrosModulos.at(i).toObject()["timeout"].toInt();
-                    QFile modulo(this->cacicFolder + "deploy/" + nome);
-                    //verificar existência e concistência do módulo
-                    if(!modulo.exists() || !CCacic::Md5IsEqual(modulo.readAll(), hash)){
-                        if (!downloadModulo(nome)) return;
-                    } else if (modulo.exists()) {
-                        if (!modulo.open(QIODevice::ReadOnly) || modulo.size() < 1){
-                            if (modulo.remove()){
-                                if (!downloadModulo(nome)) return;
-                            } else {
-                                log->escrever(LogCacic::ErrorLevel, "Não foi possível remover módulo antigo durante tentativa de atualização");
-                                return;
-                            }
+                modulesToExec.append(outrosModulos.at(i));
+            }
+        }
+        for (int i = 0; i < modulesToExec.size(); i++) {
+            if (commExecucao(outrosModulos.at(i).toObject(), ROTA_AUTORIZA) || true){
+                log->escrever(LogCacic::InfoLevel, "Iniciando módulo");
+                this->timerDeploy->stop();
+                QString nome = outrosModulos.at(i).toObject()["nome"].toString();
+                QString hash = outrosModulos.at(i).toObject()["hash"].toString();
+                int timeout  = outrosModulos.at(i).toObject()["timeout"].toInt();
+                QFile modulo(this->cacicFolder + "deploy/" + nome);
+                //verificar existência e concistência do módulo
+                if(!modulo.exists() || !CCacic::Md5IsEqual(modulo.readAll(), hash)){
+                    log->escrever(LogCacic::InfoLevel, "Verificando hash e consistencia do módulo");
+                    if (!downloadModulo(nome)) return;
+                } else if (modulo.exists()) {
+                    log->escrever(LogCacic::InfoLevel, "Modulo existe, verificando consistencia.");
+                    if (!modulo.open(QIODevice::ReadOnly) || modulo.size() < 1){
+                        if (modulo.remove()){
+                            if (!downloadModulo(nome)) return;
+                        } else {
+                            modulo.close();
+                            log->escrever(LogCacic::ErrorLevel, "Não foi possível remover módulo antigo durante tentativa de atualização");
+                            return;
                         }
                     }
-
-                    this->mutex->lock();
-                    CacicThread *thread = new CacicThread(this->cacicFolder);
-                    connect(thread, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(confirmaExecucao(int, QProcess::ExitStatus)));
-                    thread->setCMutex(this->mutex);
-                    thread->setNomeModulo(nome);
-                    thread->setModuloDirPath(this->cacicFolder + nome);
-                    thread->setTimeout(timeout);
-                    thread->start(QThread::NormalPriority);
                 }
+                if (i >= 1) {
+                    //Confirmar se funciona se o objeto já estiver null;
+                    if (thread != NULL) {
+                        thread->isRunning();
+                        thread->wait();
+                    }
+                }
+                log->escrever(LogCacic::InfoLevel, "Iniciando thread");
+                //Uso do tryLock, pois caso ainda esteja travado
+                this->mutex->lock();
+                thread = new CacicThread(this->cacicFolder);
+                //Conecto o finished() ao slot confirmaExecucao a baixo para não ser necessário causar dead lock nessa classe.
+                connect(thread, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(confirmaExecucao(int, QProcess::ExitStatus)));
+                thread->setCMutex(this->mutex);
+                thread->setNomeModulo(nome);
+                thread->setModuloDirPath(this->cacicFolder + nome);
+                thread->setTimeoutSec(timeout);
+                this->moduloExec = outrosModulos.at(i).toObject();
+                thread->start(QThread::NormalPriority);
             }
-
         }
     }
-    log->escrever(LogCacic::InfoLevel, "OnTimer");
 }
 
 void deployTimer::confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStatusProc)
@@ -85,10 +109,13 @@ void deployTimer::confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStat
         log->escrever(LogCacic::ErrorLevel, "Fim da execução do módulo com código de erro: " + exitStatus);
     }
 
-    /* TO DO:
-     * Bolar um jeito de pegar o nome do módulo que foi executado e enviar para o gerente.
-     *
-     */
+    if (!this->commExecucao(this->moduloExec, ROTA_CONFIRMA, exitStatusProc == QProcess::NormalExit)){
+        log->escrever(LogCacic::ErrorLevel, "Falha ao confirmar execução.");
+        //Fazer algo pra não executar o módulo novamente.
+    }
+    if(!QFile::remove(this->cacicFolder + "deploy/" + this->moduloExec["nome"].toString()))
+        log->escrever(LogCacic::ErrorLevel, "Falha ao excluir " + this->moduloExec["nome"].toString());
+    this->timerDeploy->start();
 }
 
 
@@ -167,7 +194,7 @@ bool deployTimer::downloadModulo(QString nome)
 
 void deployTimer::onTimerCheckService()
 {
-    log->escrever(LogCacic::InfoLevel, "OnTimerCheckService");
+//    log->escrever(LogCacic::InfoLevel, "OnTimerCheckService");
 }
 
 
