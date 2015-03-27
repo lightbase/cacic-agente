@@ -227,7 +227,7 @@ QString CacicTimer::getApplicationDirPath() {
 bool CacicTimer::comunicarGerente(){
     bool ok;
     CacicComm *OCacicComm;
-    OCacicComm = new CacicComm();
+    OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
     //Sempre recuperar as informações aqui caso mude.
     OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
@@ -329,7 +329,7 @@ bool CacicTimer::enviarColetaDiff(){
         bool ok = false;
         QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
         if (!jsonColeta.isEmpty()){
-            CacicComm *OCacicComm = new CacicComm();
+            CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
             OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
             OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
             OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
@@ -362,7 +362,7 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
 
         if (!jsonColeta.isEmpty()){
 
-            CacicComm *OCacicComm = new CacicComm();
+            CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
             OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
             OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
             OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
@@ -423,7 +423,7 @@ bool CacicTimer::realizarEnviodeColeta(){
     bool ok = false;
     QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
-        CacicComm *OCacicComm = new CacicComm();
+        CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
         OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());

@@ -46,29 +46,35 @@ void deployTimer::onTimer()
             log->escrever(LogCacic::InfoLevel, "Modulo "+ outrosModulos.at(i).toObject()["nome"].toString()+
                                                " Data: "+ outrosModulos.at(i).toObject()["dataExecucao"].toString());
 
-            //ARRUMAR DATA E HORA ------------------------------------
-
+            log->escrever(LogCacic::InfoLevel, QString::number(QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd'/'MM'/'yyyy' 'HH:mm:ss").
+                    secsTo(QDateTime::currentDateTime())));
             //Se a data/hora de execução for menor que a data/hora atual, segue para a próxima etapa, que é autorização.
-            if (QDateTime::fromString(outrosModulos.at(i).toObject()["dataExecucao"].toString(), "dd/mm/yyyy HH:mm:ss").
-                    secsTo(QDateTime::currentDateTime()) < 0){
+            if (QDateTime::currentDateTime().secsTo(
+                        QDateTime::fromString(outrosModulos.at(i).toObject()
+                                              ["dataExecucao"].toString(), "dd'/'MM'/'yyyy' 'HH:mm:ss")) < 0){
                 modulesToExec.append(outrosModulos.at(i));
             }
         }
         for (int i = 0; i < modulesToExec.size(); i++) {
             if (commExecucao(outrosModulos.at(i).toObject(), ROTA_AUTORIZA) || true){
                 log->escrever(LogCacic::InfoLevel, "Iniciando módulo");
-                this->timerDeploy->stop();
                 QString nome = outrosModulos.at(i).toObject()["nome"].toString();
                 QString hash = outrosModulos.at(i).toObject()["hash"].toString();
                 int timeout  = outrosModulos.at(i).toObject()["timeout"].toInt();
                 QFile modulo(this->cacicFolder + "deploy/" + nome);
                 //verificar existência e concistência do módulo
-                if(!modulo.exists() || !CCacic::Md5IsEqual(modulo.readAll(), hash)){
+                log->escrever(LogCacic::InfoLevel, "hash: " + hash);
+
+                if(!modulo.exists() || (modulo.open(QIODevice::ReadOnly) && !CCacic::Md5IsEqual(modulo.readAll(), hash))){
                     log->escrever(LogCacic::InfoLevel, "Verificando hash e consistencia do módulo");
-                    if (!downloadModulo(nome)) return;
+                    modulo.close();
+                    if (!downloadModulo(nome)) {
+                        log->escrever(LogCacic::InfoLevel, QString("Falha ao baixar " + nome));
+                        log->escrever(LogCacic::ErrorLevel, QString("Falha ao baixar " + nome));
+                        return;
+                    }
                 } else if (modulo.exists()) {
-                    log->escrever(LogCacic::InfoLevel, "Modulo existe, verificando consistencia.");
-                    if (!modulo.open(QIODevice::ReadOnly) || modulo.size() < 1){
+                    if (modulo.size() < 1){
                         if (modulo.remove()){
                             if (!downloadModulo(nome)) return;
                         } else {
@@ -78,6 +84,7 @@ void deployTimer::onTimer()
                         }
                     }
                 }
+                this->timerDeploy->stop();
                 if (i >= 1) {
                     //Confirmar se funciona se o objeto já estiver null;
                     if (thread != NULL) {
@@ -97,6 +104,7 @@ void deployTimer::onTimer()
                 thread->setTimeoutSec(timeout);
                 this->moduloExec = outrosModulos.at(i).toObject();
                 thread->start(QThread::NormalPriority);
+                log->escrever(LogCacic::InfoLevel, "Iniciado");
             }
         }
     }
@@ -106,7 +114,7 @@ void deployTimer::confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStat
 {
     log->escrever(LogCacic::InfoLevel, "Fim da execução do módulo ");
     if (exitStatusProc == QProcess::CrashExit) {
-        log->escrever(LogCacic::ErrorLevel, "Fim da execução do módulo com código de erro: " + exitStatus);
+        log->escrever(LogCacic::ErrorLevel, "Fim da execução do módulo com código de erro: " + QString::number(exitStatus));
     }
 
     if (!this->commExecucao(this->moduloExec, ROTA_CONFIRMA, exitStatusProc == QProcess::NormalExit)){
@@ -140,7 +148,7 @@ bool deployTimer::commExecucao(QJsonObject modulo, QString rota, bool statusExec
     if (rota == ROTA_CONFIRMA) {
         jsonComm["statusExec"] = statusExec;
     }
-    CacicComm comm;
+    CacicComm comm(LOG_CACICDEPLOY, this->cacicFolder);
     comm.setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     if (comm.getUrlGerente().isEmpty()){
         QString urlGerente = CCacic::getJsonFromFile(this->cacicFolder+"/getConfig.json")
@@ -170,7 +178,7 @@ bool deployTimer::downloadModulo(QString nome)
 {
     QJsonObject metodoDownload = CCacic::getJsonFromFile(this->cacicFolder+"getConfig.json")["agentcomputer"].toObject()
                                  ["metodoDownload"].toObject();
-    CacicComm comm;
+    CacicComm comm(LOG_CACICDEPLOY, this->cacicFolder);
     comm.setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
     if (comm.getUrlGerente().isEmpty()){
         QString urlGerente = CCacic::getJsonFromFile(this->cacicFolder+"getConfig.json")
@@ -185,11 +193,13 @@ bool deployTimer::downloadModulo(QString nome)
     }
     comm.setFtpPass(metodoDownload["senha"].toString());
     comm.setFtpUser(metodoDownload["usuario"].toString());
-    return comm.fileDownload(metodoDownload["tipo"].toString(),
-                             comm.getUrlGerente(),
-                             metodoDownload["path"].toString() +
-                                (metodoDownload["path"].toString().endsWith("/") ? nome : "/" + nome),
-                             this->cacicFolder + "deploy/");
+    log->escrever(LogCacic::InfoLevel, "comunicando");
+    bool retorno = comm.fileDownload(metodoDownload["tipo"].toString(),
+                                     comm.getUrlGerente(),
+                                     metodoDownload["path"].toString() +
+                                        (metodoDownload["path"].toString().endsWith("/") ? nome : "/" + nome),
+                                     this->cacicFolder + "deploy/");
+    return retorno;
 }
 
 void deployTimer::onTimerCheckService()
