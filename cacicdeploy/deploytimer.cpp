@@ -13,6 +13,7 @@ deployTimer::deployTimer(QString cacicFolder){
 
     timerCheckService = new QTimer();
     QObject::connect(timerCheckService, SIGNAL(timeout()), this, SLOT(onTimerCheckService()));
+    this->timeout = 0;
 
 }
 
@@ -70,13 +71,15 @@ void deployTimer::onTimer()
                     modulo.close();
                     if (!downloadModulo(nome)) {
                         log->escrever(LogCacic::InfoLevel, QString("Falha ao baixar " + nome));
-                        log->escrever(LogCacic::ErrorLevel, QString("Falha ao baixar " + nome));
                         return;
                     }
                 } else if (modulo.exists()) {
                     if (modulo.size() < 1){
                         if (modulo.remove()){
-                            if (!downloadModulo(nome)) return;
+                            if (!downloadModulo(nome)) {
+                                log->escrever(LogCacic::InfoLevel, QString("Falha ao baixar " + nome));
+                                return;
+                            }
                         } else {
                             modulo.close();
                             log->escrever(LogCacic::ErrorLevel, "Não foi possível remover módulo antigo durante tentativa de atualização");
@@ -93,8 +96,11 @@ void deployTimer::onTimer()
                     }
                 }
                 log->escrever(LogCacic::InfoLevel, "Iniciando thread");
-                //Uso do tryLock, pois caso ainda esteja travado
-                this->mutex->lock();
+                if (this->timeout > 0)
+                    this->mutex->tryLock(this->timeout);
+                else
+                    this->mutex->lock();
+
                 thread = new CacicThread(this->cacicFolder);
                 //Conecto o finished() ao slot confirmaExecucao a baixo para não ser necessário causar dead lock nessa classe.
                 connect(thread, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(confirmaExecucao(int, QProcess::ExitStatus)));
@@ -102,6 +108,7 @@ void deployTimer::onTimer()
                 thread->setNomeModulo(nome);
                 thread->setModuloDirPath(this->cacicFolder + nome);
                 thread->setTimeoutSec(timeout);
+                this->timeout = timeout;
                 this->moduloExec = outrosModulos.at(i).toObject();
                 thread->start(QThread::NormalPriority);
                 log->escrever(LogCacic::InfoLevel, "Iniciado");

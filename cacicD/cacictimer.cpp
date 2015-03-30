@@ -405,7 +405,7 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
 
     if (!jsonObject.isEmpty()){
 
-        CacicComm *OCacicComm = new CacicComm();
+        CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
         OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
