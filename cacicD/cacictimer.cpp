@@ -216,7 +216,7 @@ void CacicTimer::iniciarThread(){
             }
         }
         //Deve ser enviado tendo ou não módulos.
-        //enviarLogs();
+        enviarLogs();
     }
 }
 
@@ -354,69 +354,117 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
     if( logLvls.isEmpty() )
         return ok;
 
+    logcacic->escrever(LogCacic::InfoLevel, "Iniciando envio de log.");
+    QJsonObject jsonObject;
+    CACIC_Computer oComputer;
+
+    jsonObject["computador"] = oComputer.toJsonObject();
+
     foreach ( QString stringLvl, logLvls ){
 
         LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
 
-        QJsonObject jsonColeta = CCacic::getJsonFromFile(logcacic->resolverEnderecoArquivo(level));
+        if ( level == LogCacic::InfoLevel ||
+             level == LogCacic::ErrorLevel) {
 
-        if (!jsonColeta.isEmpty()){
+            QFile *logFile;
+            logFile = new QFile(logcacic->resolverEnderecoArquivo(level));
 
-            CacicComm *OCacicComm = new CacicComm();
-            OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-            OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-            OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-            QJsonObject retornoColeta;
+            QJsonArray logLevelArray;
+            if (logFile->exists() &&
+                logFile->open(QIODevice::ReadOnly)) {
 
-            logcacic->escrever(LogCacic::InfoLevel, QString("Enviando Log "+logcacic->getLevelEmString(level)+" ao gerente."));
+                QStringList linesList;
+                QTextStream stream(logFile);
 
-            retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonColeta , true);
-            if (ok){
-                if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
-                    logcacic->escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
-                    return true;
-                } else if(retornoColeta.contains("error")) {
-                    logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar log "
-                                                                     +logcacic->getLevelEmString(level)
-                                                                     + " para o gerente: " + retornoColeta["error"].toString()));
-                    return false;
+                while ( !stream.atEnd() ) {
+                    linesList.append( stream.readLine() );
                 }
-                return ok;
-            } else {
-                logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar aquivo de log "
-                                                                 + logcacic->getLevelEmString(level)
-                                                                 + " para o gerente: Arquivo de Log vazio ou inexistente."));
-                return false;
+
+                logFile->close();
+                delete logFile;
+
+                for ( int i = linesList.size()-1; i > linesList.size()-N_LOGS_ENVIO-1; i-- ) {
+                    QString timestamp = linesList.at(i).mid(1, linesList.at(i).indexOf("]")-1);
+                    QString message = linesList.at(i).mid(linesList.at(i).indexOf("]")+2);
+
+                    QJsonObject lineJson;
+                    lineJson["timestamp"] = QJsonValue::fromVariant(timestamp);
+                    lineJson["message"] = QJsonValue::fromVariant(message);
+                    logLevelArray.append( lineJson );
+
+                }
             }
+            if( level == LogCacic::InfoLevel )
+                jsonObject["logInfo"] = logLevelArray;
+            if (level == LogCacic::ErrorLevel )
+                jsonObject["logError"] = logLevelArray;
+
         }
     }
+
+    if (!jsonObject.isEmpty()){
+
+        CacicComm *OCacicComm = new CacicComm();
+        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        QJsonObject retornoColeta;
+
+        logcacic->escrever(LogCacic::InfoLevel, QString("Enviando logs ao gerente."));
+
+        retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonObject , true);
+        if (ok){
+            if(!retornoColeta.isEmpty() && !retornoColeta.contains("error")){
+                logcacic->escrever(LogCacic::InfoLevel, "Log enviado com sucesso.");
+                return true;
+            } else if(retornoColeta.contains("error")) {
+                logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar logs para o gerente: "
+                                                                 + retornoColeta["error"].toString()));
+                return false;
+            }
+            return ok;
+        } else {
+            logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao enviar logs para o gerente: Arquivo de Log vazio ou inexistente."));
+            return false;
+        }
+    }
+
     return ok;
 }
 
 bool CacicTimer::enviarLogs(){
-    if(QFile::exists(cacicMainFolder + "/getConfig.json")){
+    QStringList list;
 
-        QJsonObject agenteConfigJson;
-        QJsonObject logs;
-        QJsonObject result = CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json");
+    list.append("InfoLevel");
+    list.append("ErrorLevel");
 
-        if(!result.contains("error") && !result.isEmpty()){
+    return realizarEnvioDeLogs( list );
 
-            agenteConfigJson = result["agentcomputer"].toObject();
-            logs = agenteConfigJson["logs"].toObject();
+// Código para ler o getConfig e mandar os logs de acordo com o que o gerente escolher.
+//    if(QFile::exists(cacicMainFolder + "/getConfig.json")){
 
-            if ( !logs.isEmpty() ) {
-                QStringList logLvls2Send;
-                foreach ( QString logLvl, logs.keys() ) {
-                    if ( !logs[logLvl].isNull() && logs[logLvl].toString() == "true" )
-                        logLvls2Send.append(logLvl);
-                }
+//        QJsonObject agenteConfigJson;
+//        QJsonObject logs;
+//        QJsonObject result = CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json");
 
-                return realizarEnvioDeLogs(logLvls2Send);
-            }
-        }
-    }
-    return false;
+//        if(!result.contains("error") && !result.isEmpty()){
+
+//            agenteConfigJson = result["agentcomputer"].toObject();
+//            logs = agenteConfigJson["logs"].toObject();
+
+//            if ( !logs.isEmpty() ) {
+//                QStringList logLvls2Send;
+//                foreach ( QString logLvl, logs.keys() ) {
+//                    if ( !logs[logLvl].isNull() && logs[logLvl].toString() == "true" )
+//                        logLvls2Send.append(logLvl);
+//                }
+
+//                return realizarEnvioDeLogs(logLvls2Send);
+//            }
+//        }
+//    }
+//    return false;
 }
 
 bool CacicTimer::realizarEnviodeColeta(){
