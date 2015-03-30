@@ -24,6 +24,7 @@
 #define LOG_CHECKMODULES "CheckModules"
 #define LOG_CACIC_MESSAGE "Cacic Message"
 #define CACIC_SERVICE_NAME "cacicdaemon"
+#define N_LOGS_ENVIO 10
 
 class Identificadores
 {
