@@ -15,8 +15,8 @@ public:
     void setNomeModulo(const QString &value);
 
 
-    int getTimeout() const;
-    void setTimeout(int value);
+    int getTimeoutSec() const;
+    void setTimeoutSec(int value);
 
 private:
     void registraInicioExecucao();
@@ -28,7 +28,7 @@ private:
     QString applicationDirPath;
     QMutex *cMutex;
     QString nomeModulo;
-    int timeout;
+    int timeoutSec;
 
 };
 

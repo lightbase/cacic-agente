@@ -24,6 +24,8 @@ private:
     QString cacicFolder;
     QMutex *mutex;
     int timeout;
+    QJsonObject moduloExec;
+    CacicThread *thread;
 
     bool commExecucao(QJsonObject modulo, QString rota, bool statusExec = false);
     bool downloadModulo(QString nome);

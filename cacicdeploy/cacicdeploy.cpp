@@ -23,7 +23,7 @@ cacicdeploy::~cacicdeploy()
 void cacicdeploy::start() {
     try{
         timer = new deployTimer(this->cacicFolder);
-        timer->start(10000, 5000);
+        timer->start(60000, 5000);
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));
     }

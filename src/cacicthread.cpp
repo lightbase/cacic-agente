@@ -4,7 +4,7 @@ CacicThread::CacicThread(QString applicationDirPath)
 {
     this->applicationDirPath = applicationDirPath;
     logcacic = new LogCacic(LOG_DAEMON_THREAD, applicationDirPath+"/Logs");
-    this->timeout = 0;
+    this->timeoutSec = 0;
 }
 
 void CacicThread::run(){
@@ -23,8 +23,8 @@ void CacicThread::iniciarModulo()
         QDir::setCurrent(this->applicationDirPath);
         QProcess proc;
         proc.setWorkingDirectory(this->applicationDirPath);
-        if (this->timeout > 0)
-            QTimer::singleShot(this->timeout, &proc, SLOT(kill()));
+        if (this->timeoutSec > 0)
+            QTimer::singleShot(this->timeoutSec, &proc, SLOT(kill()));
         proc.execute(this->moduloDirPath);
         if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
             registraExecucao(true, proc.errorString());
@@ -41,14 +41,14 @@ void CacicThread::iniciarModulo()
     }
     cMutex->unlock();
 }
-int CacicThread::getTimeout() const
+int CacicThread::getTimeoutSec() const
 {
-    return timeout;
+    return timeoutSec;
 }
 
-void CacicThread::setTimeout(int value)
+void CacicThread::setTimeoutSec(int value)
 {
-    timeout = value;
+    timeoutSec = value;
 }
 
 

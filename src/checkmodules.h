@@ -16,7 +16,6 @@ public:
     QVariantMap getModules() const;
 private:
 
-    CacicComm oCacicComm;
     QString applicationUrl;
     QString cacicMainFolder;
     QVariantMap modules; //modules["name"] = hash;

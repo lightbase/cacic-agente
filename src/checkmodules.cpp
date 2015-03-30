@@ -89,10 +89,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
             if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
                 moduloTemp->close();
-                oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
-                oCacicComm.setFtpPass(metodoDownload["senha"].toString());
+                CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
+                oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                oCacicComm->setFtpPass(metodoDownload["senha"].toString());
 
-                downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
+                downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                         this->applicationUrl,
                         metodoDownload["path"].toString() +
                         (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
