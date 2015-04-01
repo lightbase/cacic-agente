@@ -1,6 +1,5 @@
 #include "mapa.h"
 
-
 Mapa::Mapa(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
