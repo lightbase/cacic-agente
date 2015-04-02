@@ -2,7 +2,11 @@
 #define MAPA_H
 
 #include <QMainWindow>
-#include <QMessageBox>
+#include <QtCore>
+#include "cacic_comm.h"
+#include "ccacic.h"
+#include "logcacic.h"
+#include "identificadores.h"
 #include "ui_mapa_default.h"
 
 namespace Ui {
@@ -21,6 +25,8 @@ private slots:
     void on_okButton_clicked();
 
 private:
+    LogCacic *logcacic;
+    QString mainFolder;
     Ui::Mapa *ui;
 };
 

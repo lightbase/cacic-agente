@@ -32,7 +32,7 @@
    <string>Mapa</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="mapa.qrc">
     <normaloff>:/cacic-logo.png</normaloff>:/cacic-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -84,7 +84,7 @@
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_1">
+          <widget class="QLabel" name="labelPatrimonioComputador">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -97,10 +97,10 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_1"/>
+          <widget class="QLineEdit" name="editPatrimonioComputador"/>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="labelPatrimonioMonitor">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -113,7 +113,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="editPatrimonioMonitor">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -148,10 +148,12 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>lineEdit_1</tabstop>
-  <tabstop>lineEdit_2</tabstop>
+  <tabstop>editPatrimonioComputador</tabstop>
+  <tabstop>editPatrimonioMonitor</tabstop>
   <tabstop>okButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="mapa.qrc"/>
+ </resources>
  <connections/>
 </ui>
