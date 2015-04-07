@@ -218,6 +218,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
             this, SLOT(setError(QNetworkReply::NetworkError)));
 
     eventLoop.exec();
+
     if (reply->error() == QNetworkReply::NoError){
         return true;
     } else {
@@ -229,12 +230,16 @@ void CacicComm::fileDownloadFinished()
 {
     fileHandler->flush();
     reply->close();
-    if (fileHandler->exists() && fileHandler->size() > 0){
-        fileHandler->setPermissions( fileHandler->permissions() |
-                                    QFileDevice::ExeUser |
-                                    QFileDevice::ExeOther);
-        fileHandler->close();
-    } else {
+    if (reply->error() == QNetworkReply::NoError) {
+        if (fileHandler->exists() && fileHandler->size() > 0){
+            fileHandler->setPermissions( fileHandler->permissions() |
+                                        QFileDevice::ExeUser |
+                                        QFileDevice::ExeOther);
+            fileHandler->close();
+        } else {
+            fileHandler->remove();
+        }
+    } else if(fileHandler->exists()){
         fileHandler->remove();
     }
 

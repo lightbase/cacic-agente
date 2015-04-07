@@ -7,6 +7,25 @@
 
 class CacicThread : public QThread
 {
+
+private:
+    Q_OBJECT
+    CacicThread();
+    void registraInicioExecucao();
+    void registraExecucao(bool tipo, QString status);
+    void registrarDataEnvioDeColeta();
+    void iniciarModulo();
+    void setLastStatus(const QProcess::ExitStatus &value);
+    void setLastError(const QString &value);
+    LogCacic *logcacic;
+    QString moduloDirPath;
+    QString applicationDirPath;
+    QMutex *cMutex;
+    QString nomeModulo;
+    int timeoutSec;
+    QProcess::ExitStatus lastStatus;
+    QString lastError;
+
 public:
     CacicThread(QString applicationDirPath);
     void run();
@@ -14,22 +33,13 @@ public:
     void setCMutex(QMutex *value);
     void setNomeModulo(const QString &value);
 
-
     int getTimeoutSec() const;
     void setTimeoutSec(int value);
+    QProcess::ExitStatus getLastStatus() const;
+    QString getLastError() const;
 
-private:
-    void registraInicioExecucao();
-    void registraExecucao(bool tipo, QString status);
-    void registrarDataEnvioDeColeta();
-    void iniciarModulo();
-    LogCacic *logcacic;
-    QString moduloDirPath;
-    QString applicationDirPath;
-    QMutex *cMutex;
-    QString nomeModulo;
-    int timeoutSec;
-
+signals:
+    void endExecution();
 };
 
 #endif // CACICTHREAD_H

@@ -43,7 +43,7 @@ public slots:
     void onTimerCheckService();
 
 private slots:
-    void confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStatusProc);
+    void confirmaExecucao();
 
 };
 

@@ -15,6 +15,7 @@ deployTimer::deployTimer(QString cacicFolder){
     QObject::connect(timerCheckService, SIGNAL(timeout()), this, SLOT(onTimerCheckService()));
     this->timeout = 0;
 
+    this->mutex = new QMutex();
 }
 
 bool deployTimer::start(int msecDeploy, int msecCheckService)
@@ -64,7 +65,6 @@ void deployTimer::onTimer()
                 int timeout  = outrosModulos.at(i).toObject()["timeout"].toInt();
                 QFile modulo(this->cacicFolder + "deploy/" + nome);
                 //verificar existência e concistência do módulo
-                log->escrever(LogCacic::InfoLevel, "hash: " + hash);
 
                 if(!modulo.exists() || (modulo.open(QIODevice::ReadOnly) && !CCacic::Md5IsEqual(modulo.readAll(), hash))){
                     log->escrever(LogCacic::InfoLevel, "Verificando hash e consistencia do módulo");
@@ -96,17 +96,30 @@ void deployTimer::onTimer()
                     }
                 }
                 log->escrever(LogCacic::InfoLevel, "Iniciando thread");
-                if (this->timeout > 0)
-                    this->mutex->tryLock(this->timeout);
-                else
-                    this->mutex->lock();
 
+                //se o timeout for 0, quer dizer que é a primeira thread a ser iniciada.
+                if (this->timeout != 0) {
+                    log->escrever(LogCacic::InfoLevel, "timeout diferente de 0");
+                    if (!this->mutex->tryLock(this->timeout*1000)) {
+                        log->escrever(LogCacic::ErrorLevel, "Falha ao parar semáforo.");
+                        //se não conseguir travar o mutex, não deve continar.
+                        this->timerDeploy->start();
+                        return;
+                    }
+                } else {
+                    log->escrever(LogCacic::InfoLevel, "Tentando parar mutex");
+                    this->mutex->lock();
+                }
+
+                log->escrever(LogCacic::InfoLevel, "Criando objeto..");
                 thread = new CacicThread(this->cacicFolder);
+
                 //Conecto o finished() ao slot confirmaExecucao a baixo para não ser necessário causar dead lock nessa classe.
-                connect(thread, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(confirmaExecucao(int, QProcess::ExitStatus)));
+                connect(thread, SIGNAL(endExecution()), this, SLOT(confirmaExecucao()));
+                log->escrever(LogCacic::InfoLevel, "Slots e signals conectados");
                 thread->setCMutex(this->mutex);
                 thread->setNomeModulo(nome);
-                thread->setModuloDirPath(this->cacicFolder + nome);
+                thread->setModuloDirPath(this->cacicFolder + "deploy/" + nome);
                 thread->setTimeoutSec(timeout);
                 this->timeout = timeout;
                 this->moduloExec = outrosModulos.at(i).toObject();
@@ -117,11 +130,12 @@ void deployTimer::onTimer()
     }
 }
 
-void deployTimer::confirmaExecucao(int exitStatus, QProcess::ExitStatus exitStatusProc)
+void deployTimer::confirmaExecucao()
 {
+    QProcess::ExitStatus exitStatusProc = thread->getLastStatus();
     log->escrever(LogCacic::InfoLevel, "Fim da execução do módulo ");
     if (exitStatusProc == QProcess::CrashExit) {
-        log->escrever(LogCacic::ErrorLevel, "Fim da execução do módulo com código de erro: " + QString::number(exitStatus));
+        log->escrever(LogCacic::ErrorLevel, "Fim da execução do módulo com código de erro: " + thread->getLastError());
     }
 
     if (!this->commExecucao(this->moduloExec, ROTA_CONFIRMA, exitStatusProc == QProcess::NormalExit)){

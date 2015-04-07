@@ -34,13 +34,38 @@ void CacicThread::iniciarModulo()
                 proc.kill();
             }
         }
+        //parece que signals são somente privados. Confirmar quando voltar.
+        setLastStatus(proc.exitStatus());
+        setLastError(proc.errorString());
         proc.close();
     } else {
         logcacic->escrever(LogCacic::InfoLevel, QString("Módulo inexistente."));
         logcacic->escrever(LogCacic::ErrorLevel, QString("Módulo inexistente."));
     }
+    emit endExecution();
     cMutex->unlock();
 }
+QProcess::ExitStatus CacicThread::getLastStatus() const
+{
+    return lastStatus;
+}
+
+void CacicThread::setLastStatus(const QProcess::ExitStatus &value)
+{
+    lastStatus = value;
+}
+QString CacicThread::getLastError() const
+{
+    return lastError;
+}
+
+void CacicThread::setLastError(const QString &value)
+{
+    lastError = value;
+}
+
+
+
 int CacicThread::getTimeoutSec() const
 {
     return timeoutSec;
