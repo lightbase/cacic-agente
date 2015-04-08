@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCore>
+#include <QMessageBox>
 #include "cacic_comm.h"
 #include "ccacic.h"
 #include "logcacic.h"
@@ -25,6 +26,8 @@ private slots:
     void on_okButton_clicked();
 
 private:
+    bool checarPreenchimento() const;
+
     LogCacic *logcacic;
     QString mainFolder;
     Ui::Mapa *ui;

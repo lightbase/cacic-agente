@@ -36,6 +36,12 @@
     <normaloff>:/cacic-logo.png</normaloff>:/cacic-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>800</width>
@@ -57,13 +63,16 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>801</width>
+      <x>2</x>
+      <y>6</y>
+      <width>791</width>
       <height>591</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
      <property name="leftMargin">
       <number>10</number>
      </property>
@@ -77,14 +86,38 @@
       <number>10</number>
      </property>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_1">
+       <item>
+        <widget class="QLabel" name="label_1">
+         <property name="text">
+          <string>Campos preenchidos automaticamente:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_1">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>178</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QFormLayout" name="formLayout_1">
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="labelPatrimonioComputador">
+          <widget class="QLabel" name="labelIdUsuario">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -92,15 +125,77 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Patrimonio do Computador</string>
+            <string>ID usuário logado</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="editPatrimonioComputador"/>
+          <widget class="QLineEdit" name="lineIdUsuario"/>
          </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="formLayout_2">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
          <item row="1" column="0">
-          <widget class="QLabel" name="labelPatrimonioMonitor">
+          <widget class="QLabel" name="labelNomeComputador">
+           <property name="text">
+            <string>Nome do computador</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineNomeComputador"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelEnderecoIp">
+           <property name="text">
+            <string>Endereço IP</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lineEnderecoIp"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_02">
+         <property name="text">
+          <string>Campos a preencher:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <layout class="QFormLayout" name="formLayout_3">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelNomeUsuario">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -108,12 +203,12 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Patrimonio do Monitor</string>
+            <string>Nome de Usuário</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="editPatrimonioMonitor">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lineNomeUsuario">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -122,25 +217,109 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelCoordenacao">
+           <property name="text">
+            <string>Coordenação/setor</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineCoordenacao"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelSala">
+           <property name="text">
+            <string>Sala</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lineSala"/>
+         </item>
         </layout>
        </item>
        <item>
-        <layout class="QFormLayout" name="formLayout_2"/>
+        <layout class="QFormLayout" name="formLayout_4">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelPatrimonioComputador">
+           <property name="text">
+            <string>Patrimônio Computador</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="linePatrimonioComputador"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelPatrimonioMonitor1">
+           <property name="text">
+            <string>Patrimônio Monitor 1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="linePatrimonioMonitor1"/>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelPatrimonioMonitor2">
+           <property name="text">
+            <string>Patrimônio Monitor 2</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="linePatrimonioMonitor2"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="okButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <property name="text">
-        <string>Ok</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="okButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Ok</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -148,9 +327,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>editPatrimonioComputador</tabstop>
-  <tabstop>editPatrimonioMonitor</tabstop>
-  <tabstop>okButton</tabstop>
+  <tabstop>lineNomeUsuario</tabstop>
  </tabstops>
  <resources>
   <include location="mapa.qrc"/>
