@@ -22,19 +22,19 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
     //conecta ao script (Como já estamos usando QObject, o WbemScripting... não funciona chamando normal,
     // por isso deve ser usado o CoInitializeEx)
     ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
     QAxObject *objIWbemLocator = new QAxObject();
     objIWbemLocator->setControl("WbemScripting.SWbemLocator");
     if (objIWbemLocator->isNull())
         return QJsonValue();
+
     //conecta ao wmi
     QAxObject *objWMIService = objIWbemLocator->querySubObject("ConnectServer(QString&,QString&)",
-                                                                    QString("."),
-                                                                    QString("root\\CIMV2")
+                                                                  QString("."),
+                                                                  QString("root\\CIMV2")
                                                                );
-
     //Faz a pesquisa no wmi
-    QAxObject* returnList = objWMIService->querySubObject("ExecQuery(QString&)", query);
-
+    QAxObject *returnList = objWMIService->querySubObject("ExecQuery(QString&)", query);
     QAxObject *enum1 = returnList->querySubObject("_NewEnum");
 
     IEnumVARIANT* enumInterface = 0;
@@ -100,4 +100,12 @@ QJsonValue wmi::wmiSearch(QString classe, QStringList params)
 
     return wmiReturn;
 }
+
+//void wmi::logException(int code, const QString & source, const QString & desc, const QString & help)
+//{
+//    LogCacic logcacic("WMI Exception", Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
+//    logcacic.escrever(LogCacic::ErrorLevel, "Code: "          + QString::number(code) +
+//                                             ", Source: "      + source +
+//                                             ", Description: " + desc);
+//}
 #endif //def Q_OS_WIN

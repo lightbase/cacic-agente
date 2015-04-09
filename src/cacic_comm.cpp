@@ -275,7 +275,8 @@ QNetworkReply::NetworkError *CacicComm::getError()
 
 void CacicComm::setError(QNetworkReply::NetworkError error)
 {
-    logcacic->escrever(LogCacic::ErrorLevel, "Ocorreu um erro ao tentar comunicação: " + reply->errorString());
+    logcacic->escrever(LogCacic::ErrorLevel, "Ocorreu um erro ao tentar comunicação com " + this->urlGerente +
+                                             ": " + reply->errorString());
     *this->lastError = error;
 }
 

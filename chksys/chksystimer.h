@@ -23,7 +23,7 @@ private:
     QString cacicFolder;
 
     bool downloadService();
-
+    bool verificarModulos();
 public:
     explicit chksysTimer(QObject *parent = 0);
     explicit chksysTimer(QString cacicFolder);

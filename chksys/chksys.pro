@@ -18,6 +18,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 QT       += core
 QT       -= gui
 QT       -= widgets
+QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET       = chksys
@@ -26,6 +27,7 @@ CONFIG      += console
 CONFIG      -= app_bundle
 CONFIG      += static
 
+CONFIG      += c++11
 TEMPLATE     = app
 INCLUDEPATH += ../src \
 #               ../../src/crypto++/include/

@@ -1,12 +1,12 @@
 #include "chksys.h"
 
-chksys::chksys(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "Check Cacic")
+chksys::chksys(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CheckCacic")
 {
     this->cacicFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     if (this->cacicFolder.isEmpty() || this->cacicFolder.isNull())
         this->cacicFolder = Identificadores::ENDERECO_PATCH_CACIC;
     if (!this->cacicFolder.endsWith("/")) this->cacicFolder.append("/");
-    logcacic = new LogCacic(LOG_CHKSYS, this->cacicFolder+"/Logs");
+    logcacic = new LogCacic(CHKSYS, this->cacicFolder+"/Logs");
     this->createApplication(argc, argv);
 }
 
@@ -23,7 +23,7 @@ chksys::~chksys()
 void chksys::start() {
     try{
         timer = new chksysTimer(this->cacicFolder);
-        timer->start(60000);
+        timer->start(5000);
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));
     }
