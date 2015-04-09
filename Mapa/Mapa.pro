@@ -28,6 +28,8 @@ SOURCES += main.cpp\
         mapa.cpp\
         ../src/cacic_comm.cpp\
         ../src/ccacic.cpp\
+        ../src/cacic_computer.cpp\
+        ../src/operatingsystem.cpp\
         ../src/QLogger.cpp\
         ../src/logcacic.cpp\
         ../src/identificadores.cpp
@@ -35,6 +37,8 @@ SOURCES += main.cpp\
 HEADERS  += mapa.h\
         ../src/cacic_comm.h\
         ../src/ccacic.h\
+        ../src/cacic_computer.h\
+        ../src/operatingsystem.h\
         ../src/QLogger.h\
         ../src/logcacic.h\
         ../src/identificadores.h
