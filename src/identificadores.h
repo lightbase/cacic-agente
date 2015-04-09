@@ -14,6 +14,7 @@
 #define ROTA_LOG "/ws/neo/logs"
 #define ROTA_MAPA "/ws/neo/mapa"
 #define LOG_DAEMON "Cacic Daemon"
+#define LOG_CHKSYS "Check Cacic"
 #define LOG_CACICDEPLOY "Cacic Deploy"
 #define LOG_DAEMON_THREAD "Cacic Daemon (Thread)"
 #define LOG_DAEMON_TIMER "Cacic Daemon (Timer)"

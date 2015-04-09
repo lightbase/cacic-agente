@@ -20,7 +20,7 @@ QT       -= gui
 QT       -= widgets
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
-TARGET       = cacicdeploy
+TARGET       = chksys
 
 CONFIG      += console
 CONFIG      -= app_bundle
@@ -30,39 +30,27 @@ TEMPLATE     = app
 INCLUDEPATH += ../src \
 #               ../../src/crypto++/include/
 
-win32 {
-#    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
-    QT      += axcontainer
-} else {
-#    LIBS    += -L/usr/lib -lcryptopp
-}
-
 SOURCES     += main.cpp \
+               chksys.cpp \
                ../src/ccacic.cpp \
                ../src/QLogger.cpp \
                ../src/identificadores.cpp \
                ../src/servicecontroller.cpp \
                ../src/logcacic.cpp \
-               ../src/cacic_computer.cpp \
-               ../src/cacic_comm.cpp \
-               ../src/operatingsystem.cpp \
                ../src/cacicthread.cpp \
-                cacicdeploy.cpp \
-                deploytimer.cpp
+               ../src/cacic_comm.cpp \
+               chksystimer.cpp
 
 
-HEADERS     += cacicd.h \
+HEADERS     += chksys.h \
                ../src/ccacic.h \
                ../src/QLogger.h \
                ../src/identificadores.h \
                ../src/servicecontroller.h \
                ../src/logcacic.h \
-               ../src/cacic_computer.h \
-               ../src/cacic_comm.h \
-               ../src/operatingsystem.h \
                ../src/cacicthread.h \
-               cacicdeploy.h \
-               deploytimer.h
+               ../src/cacic_comm.h \
+               chksystimer.h
 
 include(../src/qtservice/src/qtservice.pri)
 

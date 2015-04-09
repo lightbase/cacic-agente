@@ -225,7 +225,7 @@ bool deployTimer::downloadModulo(QString nome)
 
 void deployTimer::onTimerCheckService()
 {
-//    log->escrever(LogCacic::InfoLevel, "OnTimerCheckService");
+
 }
 
 
