@@ -221,7 +221,10 @@ QJsonObject cacic_hardware::coletaWin()
     //  (Name, Version, CSDVersion, Description, InstallDate, Organization, RegisteredUser, SerialNumber)
     params.clear();
     params << "Name" << "Version" << "CSDVersion" << "Description" << "InstallDate" << "Organization" << "RegisteredUser"
-           << "SerialNumber" << "Caption" << "OSArchitecture";
+           << "SerialNumber" << "Caption"
+              /* ARRUMAR O OSARCHITECTURE
+               *  << "OSArchitecture" */
+              ;
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!wmiResult.isNull()){
         QJsonObject osJson = wmiResult.toObject();
