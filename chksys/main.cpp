@@ -1,8 +1,11 @@
-#include <QCoreApplication>
+#include "chksys.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-    QCoreApplication a(argc, argv);
+    chksys service(argc, argv);
+    service.setServiceDescription("Check Cacic");
+    service.setStartupType(QtServiceController::AutoStartup);
+    service.setServiceFlags(chksys::Default);
 
-    return a.exec();
+    return service.exec();
 }
