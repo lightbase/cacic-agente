@@ -161,7 +161,7 @@ bool chksysTimer::verificarModulos()
 #ifdef Q_OS_WIN
                     ServiceController *service = new ServiceController(QString("CheckCacic").toStdWString());
                     if (service->isRunning()) {
-                        logcacic->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
+                        log->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
                         QProcess stopService;
                         QStringList args;
                         args << "stop" << list.at(i).fileName();
