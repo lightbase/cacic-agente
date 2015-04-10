@@ -56,7 +56,7 @@ void chksysTimer::onTimerCheckService()
 #else
     if (!CCacic::findProc("cacic-service")){
         QFile fileService(cacicFolder+"/cacic-service");
-        if ((!fileService.exists() || !fileService.size() > 0)) {
+        if (!fileService.exists()) {
             log->escrever(LogCacic::ErrorLevel, "Não foi possível logalizar o módulo do cacicdaemon.");
             fileService.close();
 
@@ -157,9 +157,9 @@ bool chksysTimer::verificarModulos()
 #else
             if (QFile::exists(this->cacicFolder + "/" + list.at(i).fileName())){
 #endif
-                if (list.at(i).fileName().contains("chksys")){
+                if (list.at(i).fileName().contains("cacic-service")){
 #ifdef Q_OS_WIN
-                    ServiceController *service = new ServiceController(QString("CheckCacic").toStdWString());
+                    ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
                     if (service->isRunning()) {
                         logcacic->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
                         QProcess stopService;
@@ -170,7 +170,7 @@ bool chksysTimer::verificarModulos()
                     delete service;
 #else
                     ConsoleObject console;
-                    if (CCacic::findProc("chksys")) console("killall -9 \"chksys\"");
+                    if (CCacic::findProc("cacic-service")) console("killall -9 \"cacic-service\"");
 #endif
                 }
 #ifdef Q_OS_WIN
