@@ -20,13 +20,13 @@ cacicD::~cacicD()
 
 void cacicD::start() {
     try{
+//        SocketListener *socket;
+//        socket = new SocketListener(cacicMainFolder);
+//        QObject::connect(socket, SIGNAL(forcaColeta()), Ocacictimer, SLOT(iniciarThread()));
         CacicTimer *Ocacictimer;
-        SocketListener *socket;
-        socket = new SocketListener(cacicMainFolder);
         Ocacictimer = new CacicTimer(cacicMainFolder);
-
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
-        QObject::connect(socket, SIGNAL(forcaColeta()), Ocacictimer, SLOT(iniciarThread()));
+
         logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado em " + cacicMainFolder + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){

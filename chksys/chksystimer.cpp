@@ -26,6 +26,7 @@ bool chksysTimer::start(int msecCheckService)
 void chksysTimer::onTimerCheckService()
 {
     this->timerCheckService->stop();
+    this->verificarModulos();
 #ifdef Q_OS_WIN
     QFile fileService(cacicFolder+"/cacic-service.exe");
     ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
@@ -37,7 +38,6 @@ void chksysTimer::onTimerCheckService()
 
             this->downloadService();
         }
-        this->verificarModulos();
 
         if (!service.isInstalled()){
             if(!service.install(QString(this->cacicFolder + "/cacic-service.exe").toStdWString(),
@@ -54,13 +54,15 @@ void chksysTimer::onTimerCheckService()
         }
     }
 #else
-    QFile fileService(cacicFolder+"/cacic-service");
-    if ((!fileService.exists() || !fileService.size() > 0)) {
-        log->escrever(LogCacic::ErrorLevel, "Não foi possível logalizar o módulo do cacicdaemon.");
-        fileService.close();
+    if (!CCacic::findProc("cacic-service")){
+        QFile fileService(cacicFolder+"/cacic-service");
+        if ((!fileService.exists() || !fileService.size() > 0)) {
+            log->escrever(LogCacic::ErrorLevel, "Não foi possível logalizar o módulo do cacicdaemon.");
+            fileService.close();
 
-        this->downloadService();
-    } else {
+            this->downloadService();
+        }
+
         ConsoleObject console;
         console("/etc/init.d/cacic3 start").toStdString();
     }
@@ -142,43 +144,57 @@ bool chksysTimer::verificarModulos()
     QDir dir(this->cacicFolder + "/temp");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
     dir.setSorting(QDir::Size | QDir::Reversed);
-    bool serviceUpdate= false;
+    bool serviceUpdate;
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
+        serviceUpdate = false;
         //Se o módulo for install-cacic, deverá ficar na pasta "/bin"
         QFile novoModulo(list.at(i).filePath());
-        if((list.at(i).fileName().contains("cacic-service"))){
-            serviceUpdate = true;
-            log->escrever(LogCacic::InfoLevel, "Parando serviço para atualização.");
 #ifdef Q_OS_WIN
-            ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
-            if(service->isRunning()){
-                QProcess stopService;
-                QStringList args;
-                args << "stop" << list.at(i).fileName();
-                stopService.execute("SC", args);
-            }
+            if (QFile::exists(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                         "bin/" + list.at(i).fileName() :
+                                                         list.at(i).fileName()))){
 #else
-            ConsoleObject console;
-            console("/etc/init.d/cacic3 stop");
+            if (QFile::exists(this->cacicFolder + "/" + list.at(i).fileName())){
 #endif
-        }
-        if (QFile::exists(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
-                                                     "bin/" + list.at(i).fileName() :
-                                                     list.at(i).fileName()))){
-            QFile::remove(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
-                                                          "bin/" + list.at(i).fileName() :
-                                                           list.at(i).fileName()));
-            //Garante a exclusão. às vezes o SO demora a reconhecer, dunno why.
-            QThread::sleep(1);
-        }
+                if (list.at(i).fileName().contains("chksys")){
+#ifdef Q_OS_WIN
+                    ServiceController *service = new ServiceController(QString("CheckCacic").toStdWString());
+                    if (service->isRunning()) {
+                        logcacic->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
+                        QProcess stopService;
+                        QStringList args;
+                        args << "stop" << list.at(i).fileName();
+                        stopService.execute("SC", args);
+                    }
+                    delete service;
+#else
+                    ConsoleObject console;
+                    if (CCacic::findProc("chksys")) console("killall -9 \"chksys\"");
+#endif
+                }
+#ifdef Q_OS_WIN
+                QFile::remove(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                              "bin/" + list.at(i).fileName() :
+                                                               list.at(i).fileName()));
+#else
+                QFile::remove(this->cacicFolder + "/" + list.at(i).fileName());
+#endif
+                //Garante a exclusão. às vezes o SO demora a reconhecer, dunno why.
+                QThread::sleep(1);
+            }
 
-        if (!QFile::exists(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
-                                                       "bin/" + list.at(i).fileName() :
-                                                        list.at(i).fileName()))){
-            novoModulo.copy(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
-                                                        "bin/" + list.at(i).fileName() :
-                                                         list.at(i).fileName()));
+#ifdef Q_OS_WIN
+            if (!QFile::exists(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                           "bin/" + list.at(i).fileName() :
+                                                            list.at(i).fileName()))){
+                novoModulo.copy(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
+                                                            "bin/" + list.at(i).fileName() :
+                                                             list.at(i).fileName()));
+#else
+            if (!QFile::exists(this->cacicFolder + "/" + list.at(i).fileName())){
+                novoModulo.copy(this->cacicFolder + "/" + list.at(i).fileName());
+#endif
             if (!novoModulo.remove())
                 log->escrever(LogCacic::ErrorLevel, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
             else {
@@ -189,7 +205,7 @@ bool chksysTimer::verificarModulos()
                     if (!service->isRunning()) service->start();
     #else
                     ConsoleObject console;
-                    console("/etc/init.d/chksys start");
+                    if (!CCacic::findProc("cacic-service")) console("/etc/init.d/cacic3 start");
     #endif
                 }
             }

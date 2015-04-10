@@ -2,6 +2,7 @@
 #define CACICTHREAD_H
 #include <QtCore>
 #include <QMutex>
+#include "ccacic.h"
 #include "logcacic.h"
 #include "identificadores.h"
 

@@ -24,6 +24,7 @@ private:
 
     bool downloadService();
     bool verificarModulos();
+    bool findProc(const char* name);
 public:
     explicit chksysTimer(QObject *parent = 0);
     explicit chksysTimer(QString cacicFolder);

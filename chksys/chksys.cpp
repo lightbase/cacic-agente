@@ -22,6 +22,7 @@ chksys::~chksys()
 
 void chksys::start() {
     try{
+        logcacic->escrever(LogCacic::InfoLevel, QString("Check Cacic iniciado."));
         timer = new chksysTimer(this->cacicFolder);
         timer->start(60000);
     }catch (...){

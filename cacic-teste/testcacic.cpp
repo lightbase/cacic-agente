@@ -63,6 +63,11 @@ void CTestCacic::testDeleteFile()
     QVERIFY(!file.exists());
 }
 
+void CTestCacic::testProcFind()
+{
+    QVERIFY(CCacic::findProc("init"));
+}
+
 void CTestCacic::testDeleteFolder()
 {
     QDir folder(testPath);
@@ -359,6 +364,7 @@ void CTestCacic::testServiceController()
 
 void CTestCacic::testStopCheckCacicService()
 {
+#ifdef Q_OS_WIN
     bool ok;
     wchar_t serviceName[] = L"CheckCacic";
     ServiceController *service = new ServiceController(serviceName);
@@ -367,8 +373,8 @@ void CTestCacic::testStopCheckCacicService()
     QThread::sleep(3);
     qDebug() << "PASSOU";
     QVERIFY(ok);
-
-    qDebug() << "PASSOU";
+#endif
+    QSKIP("Teste desnecessário nessa plataforma");
 }
 
 void CTestCacic::testEnviaColeta()

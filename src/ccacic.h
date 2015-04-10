@@ -48,6 +48,7 @@ namespace CCacic {
     QString padronizarData(QString data);
     QString getMesFromString(QString mes);
     void salvarVersao(QString modulo);
+    bool findProc(const char *name);
 
 };
 

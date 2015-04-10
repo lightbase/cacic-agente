@@ -52,6 +52,7 @@ private slots:
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();
+    void testProcFind();
     void testInterfaceDeRede();
     void testConsole();
     void testPegarUsu();

@@ -19,13 +19,21 @@ void CacicThread::setModuloDirPath(const QString &value)
 void CacicThread::iniciarModulo()
 {
     registraInicioExecucao();
+#ifndef Q_OS_WIN
+    if (!CCacic::findProc(this->moduloDirPath.split("/").last().toStdString().c_str())){
+#endif
     if (QFile::exists(this->moduloDirPath)){
         QDir::setCurrent(this->applicationDirPath);
         QProcess proc;
         proc.setWorkingDirectory(this->applicationDirPath);
         if (this->timeoutSec > 0)
             QTimer::singleShot(this->timeoutSec, &proc, SLOT(kill()));
-        proc.execute(this->moduloDirPath);
+#ifndef Q_OS_WIN
+        if (this->moduloDirPath.split("/").last().contains("chksys"))
+            proc.startDetached(this->moduloDirPath);
+        else
+#endif
+            proc.execute(this->moduloDirPath);
         if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
             registraExecucao(true, proc.errorString());
         }else{
@@ -39,9 +47,13 @@ void CacicThread::iniciarModulo()
         setLastError(proc.errorString());
         proc.close();
     } else {
-        logcacic->escrever(LogCacic::InfoLevel, QString("Módulo inexistente."));
-        logcacic->escrever(LogCacic::ErrorLevel, QString("Módulo inexistente."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Módulo inexistente ou já em execucao."));
+        logcacic->escrever(LogCacic::ErrorLevel, QString("Módulo "+ this->moduloDirPath.split("/").last()+
+                                                         " inexistente."));
     }
+#ifndef Q_OS_WIN
+    }
+#endif
     emit endExecution();
     cMutex->unlock();
 }

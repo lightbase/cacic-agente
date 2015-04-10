@@ -384,3 +384,44 @@ void CCacic::salvarVersao(QString modulo){
     ver[QString("versao_").append(modulo)] = Identificadores::AGENTE_VERSAO;
     setValueToRegistry("Lightbase", "Cacic", ver);
 }
+
+bool CCacic::findProc(const char *name)
+{
+    QDir dir;
+    char buf[512];
+
+    long  pid;
+    char pname[100] = {0,};
+    char state;
+    FILE *fp=NULL;
+
+    dir.setPath("/proc");
+    if (!dir.isReadable()) {
+        return false;
+    }
+
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs);
+    for (int i = 0; i<list.size(); i++){
+        long lpid = atol(list.at(i).baseName().toStdString().c_str());
+        if(lpid < 0)
+            continue;
+        snprintf(buf, sizeof(buf), "/proc/%ld/stat", lpid);
+        fp = fopen(buf, "r");
+
+        if (fp) {
+            if ( (fscanf(fp, "%ld (%[^)]) %c", &pid, pname, &state)) != 3 ){
+                printf("fscanf failed \n");
+                fclose(fp);
+                return false;
+            }
+            if (!strcmp(pname, name)) {
+                fclose(fp);
+                return true;
+            }
+            fclose(fp);
+        }
+    }
+
+
+    return false;
+}

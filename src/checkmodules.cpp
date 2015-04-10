@@ -65,9 +65,13 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
+#ifdef Q_OS_WIN
     modulo = new QFile(cacicMainFolder +
                        (moduloName.contains("install-cacic") ? "/bin/" : "/") +
                        moduloName);
+#else
+    modulo = new QFile(cacicMainFolder + moduloName);
+#endif
     modulo->open(QFile::ReadOnly);
     moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
     moduloTemp->open(QFile::ReadOnly);
@@ -76,8 +80,14 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
          !CCacic::Md5IsEqual(modulo->readAll(), moduloHash))){
 
         QString filePath;
-        filePath = modulo->exists() ? cacicMainFolder + "/temp/":
-                                      cacicMainFolder + (moduloName.contains("install-cacic") ? "/bin/" : "/");
+#ifdef Q_OS_WIN
+        if (moduloName.contains("install-cacic")){
+            filePath = modulo->exists() ? cacicMainFolder + "/temp/":
+                                          cacicMainFolder + "/bin/";
+        } else
+#endif
+            filePath = modulo->exists() ? cacicMainFolder + "/temp/":
+                                          cacicMainFolder + "/";
         modulo->close();
 
         logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
