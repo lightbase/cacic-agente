@@ -23,7 +23,7 @@ chksys::~chksys()
 void chksys::start() {
     try{
         timer = new chksysTimer(this->cacicFolder);
-        timer->start(5000);
+        timer->start(60000);
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));
     }
