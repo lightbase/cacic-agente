@@ -31,7 +31,7 @@ CONFIG      += c++11
 TEMPLATE     = app
 INCLUDEPATH += ../src \
 #               ../../src/crypto++/include/
-
+@CONFIG += debug_and_release@
 SOURCES     += main.cpp \
                chksys.cpp \
                ../src/ccacic.cpp \
