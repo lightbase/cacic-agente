@@ -29,7 +29,6 @@ public:
 
 private:
     CacicComm *OCacicComm;
-    CCacic OCacic;
     CACIC_Computer OCacicComp;
     cacic_software OCacicSoftware;
     cacic_hardware OCacicHardware;
@@ -48,8 +47,8 @@ public slots:
 private slots:
     void initTestCase();
     void testCommStatus();
-    void testGetAndSetValueFromFile();
-    void testGetValueFromTags();
+//    void testGetAndSetValueFromFile();
+//    void testGetValueFromTags();
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();
@@ -78,6 +77,7 @@ private slots:
     void testEnviaColeta();
     void testDownload();
     void testServiceController();
+    void testStopCheckCacicService();
     void testGetModulesValues();
     void cleanupTestCase();
 };

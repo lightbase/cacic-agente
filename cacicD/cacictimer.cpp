@@ -34,7 +34,7 @@ void CacicTimer::iniciarTimer()
 {
     CCacic::salvarVersao("cacic-service");
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
-    setPeriodicidadeExecucao(2 * 60000);
+    setPeriodicidadeExecucao(1* 60000);
     timer->start(getPeriodicidadeExecucao());
 }
 
@@ -121,6 +121,22 @@ bool CacicTimer::verificarModulos()
             if (QFile::exists(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
                                                          "bin/" + list.at(i).fileName() :
                                                          list.at(i).fileName()))){
+                if (list.at(i).fileName().contains("chksys")){
+#ifdef Q_OS_WIN
+                    ServiceController *service = new ServiceController(QString("CheckCacic").toStdWString());
+                    if (service->isRunning()) {
+                        logcacic->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
+                        QProcess stopService;
+                        QStringList args;
+                        args << "stop" << list.at(i).fileName();
+                        stopService.execute("SC", args);
+                    }
+                    delete service;
+#else
+                    ConsoleObject console;
+                    console("/etc/init.d/chksys stop");
+#endif
+                }
                 QFile::remove(applicationDirPath + "/" + (list.at(i).fileName().contains("install-cacic") ?
                                                               "bin/" + list.at(i).fileName() :
                                                                list.at(i).fileName()));
@@ -139,16 +155,21 @@ bool CacicTimer::verificarModulos()
                 else
                     logcacic->escrever(LogCacic::InfoLevel, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
             } else {
-                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
+                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir módulo antigo "+list.at(i).fileName()+" da pasta temporária.");
             }
 
+            if (list.at(i).fileName().contains("chksys")){
+#ifdef Q_OS_WIN
+                ServiceController *service = new ServiceController(QString("CheckCacic").toStdWString());
+                if (!service->isRunning()) service->start();
+#else
+                ConsoleObject console;
+                console("/etc/init.d/chksys start");
+#endif
+            }
             novoModulo.close();
         } else {
             logcacic->escrever(LogCacic::InfoLevel, "Atualização do serviço necessária.");
-            QStringList arg;
-            arg << "-updateService";
-            QProcess installCacicProc;
-            installCacicProc.startDetached(cacicMainFolder + "/install-cacic", arg);
 
 #ifdef Q_OS_LINUX
             ConsoleObject console;
@@ -200,8 +221,10 @@ void CacicTimer::iniciarThread(){
                      CCacic::getValueFromRegistry("Lightbase", "Cacic", nome).isNull() &&
                      agenteConfigJson["actions"].toObject()["col_patr"].toBool())){
                 if (QFile::exists(getDirProgram())) {
-                    cacicthread->setNomeModulo(nome);
+                    if (var > 0) this->cMutex->lock();
+
                     cacicthread->setCMutex(cMutex);
+                    cacicthread->setNomeModulo(nome);
                     cacicthread->setModuloDirPath(getDirProgram());
                     cacicthread->start(QThread::NormalPriority);
                     cacicthread->wait();

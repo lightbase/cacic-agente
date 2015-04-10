@@ -38,18 +38,16 @@ void chksysTimer::onTimerCheckService()
             this->downloadService();
         }
         this->verificarModulos();
-        log->escrever(LogCacic::InfoLevel, "Reinstalando serviço.");
 
-        if (!service.isInstalled() &&
-            !service.install(QString(this->cacicFolder + "/cacic-service.exe").toStdWString(),
-                             QString("Cacic Daemon").toStdWString())){
-            log->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
-                                                                    QString::fromStdString(service.getLastError()));
+        if (!service.isInstalled()){
+            if(!service.install(QString(this->cacicFolder + "/cacic-service.exe").toStdWString(),
+                                QString("Cacic Daemon").toStdWString()))
+                log->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
+                                                    QString::fromStdString(service.getLastError()));
         }
     }
     if (!service.isRunning()){
         if (service.start()){
-            log->escrever(LogCacic::InfoLevel, QString("Servico CacicDaemon reiniciado."));
         } else {
             log->escrever(LogCacic::ErrorLevel, "Falha ao iniciar o serviço: " +
                                                                     QString::fromStdString(service.getLastError()));
@@ -102,7 +100,6 @@ bool chksysTimer::downloadService()
             oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
             oCacicComm->setFtpPass(metodoDownload["senha"].toString());
 
-            log->escrever(LogCacic::InfoLevel, "Realizando download do serviço.");
             downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                                                   metodoDownload["url"].toString(),
                                                   metodoDownload["path"].toString() +
@@ -123,7 +120,6 @@ bool chksysTimer::downloadService()
                     novoModulo->remove();
                     return false;
                 } else {
-                    log->escrever(LogCacic::InfoLevel, QString(moduloName + " baixado com sucesso!"));
                     return true;
                 }
             } else {
@@ -146,11 +142,27 @@ bool chksysTimer::verificarModulos()
     QDir dir(this->cacicFolder + "/temp");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
     dir.setSorting(QDir::Size | QDir::Reversed);
-
+    bool serviceUpdate= false;
     QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i<list.size(); i++){
         //Se o módulo for install-cacic, deverá ficar na pasta "/bin"
         QFile novoModulo(list.at(i).filePath());
+        if((list.at(i).fileName().contains("cacic-service"))){
+            serviceUpdate = true;
+            log->escrever(LogCacic::InfoLevel, "Parando serviço para atualização.");
+#ifdef Q_OS_WIN
+            ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
+            if(service->isRunning()){
+                QProcess stopService;
+                QStringList args;
+                args << "stop" << list.at(i).fileName();
+                stopService.execute("SC", args);
+            }
+#else
+            ConsoleObject console;
+            console("/etc/init.d/cacic3 stop");
+#endif
+        }
         if (QFile::exists(this->cacicFolder + "/" + (list.at(i).fileName().contains("install-cacic") ?
                                                      "bin/" + list.at(i).fileName() :
                                                      list.at(i).fileName()))){
@@ -169,8 +181,18 @@ bool chksysTimer::verificarModulos()
                                                          list.at(i).fileName()));
             if (!novoModulo.remove())
                 log->escrever(LogCacic::ErrorLevel, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
-            else
+            else {
                 log->escrever(LogCacic::InfoLevel, "Módulo \"" + list.at(i).filePath() + "\" atualizado.");
+                if (list.at(i).fileName().contains("cacic-service") && serviceUpdate){
+    #ifdef Q_OS_WIN
+                    ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
+                    if (!service->isRunning()) service->start();
+    #else
+                    ConsoleObject console;
+                    console("/etc/init.d/chksys start");
+    #endif
+                }
+            }
         } else {
             log->escrever(LogCacic::ErrorLevel, "Falha ao excluir módulo antigo"+list.at(i).fileName()+" da pasta temporária.");
         }

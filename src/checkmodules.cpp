@@ -65,7 +65,9 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
-    modulo = new QFile(cacicMainFolder + "/" + moduloName);
+    modulo = new QFile(cacicMainFolder +
+                       (moduloName.contains("install-cacic") ? "/bin/" : "/") +
+                       moduloName);
     modulo->open(QFile::ReadOnly);
     moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
     moduloTemp->open(QFile::ReadOnly);
@@ -75,7 +77,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
 
         QString filePath;
         filePath = modulo->exists() ? cacicMainFolder + "/temp/":
-                                      cacicMainFolder + "/";
+                                      cacicMainFolder + (moduloName.contains("install-cacic") ? "/bin/" : "/");
         modulo->close();
 
         logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
@@ -108,7 +110,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
                     logcacic->escrever(LogCacic::ErrorLevel,
                                        QString("Falha ao baixar " + moduloName +
-                                               "("+metodoDownload["tipo"].toString()+ "://" +
+                                       "("+metodoDownload["tipo"].toString()+ "://" +
                                        this->applicationUrl + metodoDownload["path"].toString() +
                             (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
                     novoModulo->remove();

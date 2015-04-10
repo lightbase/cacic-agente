@@ -128,10 +128,8 @@ bool ServiceController::stop()
       SERVICE_CONTROL_STOP,
       lpsStatus
     );
-
     // Verifica o status em caso de não estar parado.
     if (lpsStatus->dwCurrentState == SERVICE_STOPPED){
-//        printf("Serviço parado com sucesso");
         this->close();
         return true;
     } else if (lpsStatus->dwCurrentState != SERVICE_STOP_PENDING){
@@ -139,7 +137,6 @@ bool ServiceController::stop()
         this->close();
         return false;
     }
-
     // Verifica o status até que não fique pendente
     this->waitPending();
 

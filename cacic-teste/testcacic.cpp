@@ -9,12 +9,13 @@ CTestCacic::CTestCacic(QObject *parent) :
 
 void CTestCacic::initTestCase()
 {
-    this->OCacicComm = new CacicComm();
+    this->OCacicComm = new CacicComm("Cacic Teste", this->testPath);
+    this->testPath = QDir::currentPath() + "/teste";
+    this->testIniPath = testPath + "/teste.ini";
     OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
-    this->testPath = QDir::currentPath() + "/teste";
-    this->testIniPath = testPath + "/teste.ini";
+
     QVariantMap jsonMap;
     jsonMap["session"] = "lakdhfalkfhsaklfhasfhsl";
     this->session = QJsonObject::fromVariantMap(jsonMap);
@@ -24,20 +25,20 @@ void CTestCacic::testCreateFolder()
 {
     ConsoleObject console;
     qDebug() << QString::number(static_cast<int> (console("cat /proc/uptime | awk '{print $1}'").toDouble()));
-    QVERIFY(OCacic.createFolder(testPath));
+    QVERIFY(CCacic::createFolder(testPath));
 }
 
-void CTestCacic::testGetAndSetValueFromFile()
-{
-    OCacic.setValueToFile("Teste", "teste", "Valor de teste", testIniPath);
-    QVERIFY( OCacic.getValueFromFile("Teste", "teste", testIniPath) == "Valor de teste");
-}
+//void CTestCacic::testGetAndSetValueFromFile()
+//{
+//    CCacic::setValueToFile("Teste", "teste", "Valor de teste", testIniPath);
+//    QVERIFY( CCacic::getValueFromFile("Teste", "teste", testIniPath) == "Valor de teste");
+//}
 
-void CTestCacic::testGetValueFromTags()
-{
-    QString value = "blablab[teste]Valor de teste[/teste]feihgj";
-    QVERIFY(OCacic.getValueFromTags(value, "teste") == "Valor de teste");
-}
+//void CTestCacic::testGetValueFromTags()
+//{
+//    QString value = "blablab[teste]Valor de teste[/teste]feihgj";
+//    QVERIFY(CCacic::getValueFromTags(value, "teste") == "Valor de teste");
+//}
 
 void CTestCacic::testCommStatus()
 {
@@ -50,7 +51,7 @@ void CTestCacic::testCommStatus()
 //    if (OCacicComm->commStatus()){
 //        QJsonObject jsonreply = OCacicComm->comm("/ws/neo", &ok);
 //        //      qDebug() << jsonreply["codestatus"].toString();
-//        QVERIFY(OCacic.getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
+//        QVERIFY(CCacic::getValueFromTags(jsonreply["reply"].toString(), "Comm_Status", "<>") == QString("OK"));
 //    } else
 //        QSKIP("Teste de comunicação negativo!");
 //}
@@ -58,14 +59,14 @@ void CTestCacic::testCommStatus()
 void CTestCacic::testDeleteFile()
 {
     QDir file(testIniPath);
-    OCacic.deleteFile(testIniPath);
+    CCacic::deleteFile(testIniPath);
     QVERIFY(!file.exists());
 }
 
 void CTestCacic::testDeleteFolder()
 {
     QDir folder(testPath);
-    OCacic.deleteFolder(testPath);
+    CCacic::deleteFolder(testPath);
     QVERIFY(!folder.exists());
 }
 
@@ -109,7 +110,7 @@ void CTestCacic::testPegarUsu(){
 
 //void CTestCacic::testJsonValueFromJsonString()
 //{
-//    QVERIFY(OCacic.jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
+//    QVERIFY(CCacic::jsonValueFromJsonString("{\"nome\":\"teste\"}", "nome").toString() == "teste");
 //}
 
 void CTestCacic::testLogin(){
@@ -117,7 +118,7 @@ void CTestCacic::testLogin(){
     QJsonObject jsonReply = OCacicComm->login(&ok);
     //  qDebug() << jsonReply;
     QJsonObject sessionvalue = jsonReply["reply"].toObject();
-    OCacic.setChaveCrypt(sessionvalue["chavecrip"].toString());
+//    CCacic::setChaveCrypt(sessionvalue["chavecrip"].toString());
     QVERIFY(ok);
 }
 
@@ -135,22 +136,22 @@ void CTestCacic::testSslConnection()
 //void CTestCacic::testEnCrypt(){
 //    std::string IV = "0123456789123456"; //iv nunca se repete para a mesma senha.
 //    std::string input = "aqui vai a url que sera encriptada";
-//    OCacic.setChaveCrypt("testecript123456");
-//    this->cripTeste = OCacic.enCrypt(input, IV);
+//    CCacic::setChaveCrypt("testecript123456");
+//    this->cripTeste = CCacic::enCrypt(input, IV);
 //    QVERIFY(!this->cripTeste.isEmpty() && !this->cripTeste.isNull());
 //}
 
 //void CTestCacic::testDeCrypt(){
 //    std::string IV = "0123456789123456asas"; //iv nunca se repete para a mesma senha.
 //    std::string input = this->cripTeste.toStdString();
-//    QVERIFY(OCacic.deCrypt(input, IV) == "aqui vai a url que sera encriptada");
+//    QVERIFY(CCacic::deCrypt(input, IV) == "aqui vai a url que sera encriptada");
 
 //}
 
 void CTestCacic::testCacicCompToJsonObject()
 {
     //    qDebug() << OCacicComp.toJsonObject();
-    //    OCacic.setJsonToFile(OCacicComp.toJsonObject(), "jsoncomp.json");
+    //    CCacic::setJsonToFile(OCacicComp.toJsonObject(), "jsoncomp.json");
     QVERIFY(!OCacicComp.toJsonObject().empty());
 }
 
@@ -163,22 +164,22 @@ void CTestCacic::testJsonToFile()
 {
     QJsonObject json;
     json["teste"] = QJsonValue::fromVariant(QString("teste"));
-    QVERIFY(OCacic.setJsonToFile(json, "teste.json"));
+    QVERIFY(CCacic::setJsonToFile(json, "teste.json"));
 }
 
 void CTestCacic::testJsonFromFile()
 {
-    //    qDebug() << OCacic.getJsonFromFile("teste123.json");
-    QVERIFY(OCacic.getJsonFromFile("teste.json")["teste"].toString() == "teste");
+    //    qDebug() << CCacic::getJsonFromFile("teste123.json");
+    QVERIFY(CCacic::getJsonFromFile("teste.json")["teste"].toString() == "teste");
 }
 
 void CTestCacic::testSetRegistry()
 {
-    if( OCacic.verificarRoot() ) {
+    if( CCacic::verificarRoot() ) {
         QVariantMap valueMap;
         valueMap["teste1"] = QString("Teste 1");
         valueMap["teste2"] = QString("Teste2");
-        OCacic.setValueToRegistry("Lightbase", "Teste", valueMap);
+        CCacic::setValueToRegistry("Lightbase", "Teste", valueMap);
         QSettings confirmaTeste("Lightbase", "Teste");
         QCOMPARE(confirmaTeste.value("teste1").toString(), QString("Teste 1"));
     } else {
@@ -189,8 +190,8 @@ void CTestCacic::testSetRegistry()
 
 void CTestCacic::testGetValueFromRegistry()
 {
-    if( OCacic.verificarRoot() ) {
-        QCOMPARE(OCacic.getValueFromRegistry("Lightbase", "Teste", "teste1"), QVariant("Teste 1"));
+    if( CCacic::verificarRoot() ) {
+        QCOMPARE(CCacic::getValueFromRegistry("Lightbase", "Teste", "teste1"), QVariant("Teste 1"));
     } else {
         QSKIP("Requer execução como root.");
     }
@@ -198,7 +199,7 @@ void CTestCacic::testGetValueFromRegistry()
 
 void CTestCacic::testRemoveRegistry()
 {
-    OCacic.removeRegistry("Lightbase", "Teste");
+    CCacic::removeRegistry("Lightbase", "Teste");
     QSettings confirmaTeste("Lightbase", "Teste");
     QVERIFY(confirmaTeste.allKeys().isEmpty());
     confirmaTeste.clear();
@@ -209,7 +210,7 @@ void CTestCacic::testConvertDouble()
 {
     double number = 4.0905;
 
-    QString converted = OCacic.convertDouble(number);
+    QString converted = CCacic::convertDouble(number);
 
     QVERIFY(converted.toDouble() == number);
 }
@@ -231,14 +232,14 @@ void CTestCacic::testGetConfig()
     configEnvio["computador"] = oColeta.getOComputer().toJsonObject();
     QJsonObject getConfig = OCacicComm->comm("/ws/neo/config", &ok, configEnvio);
     //    qDebug() << getConfig;
-    OCacic.setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
+    CCacic::setJsonToFile(getConfig["reply"].toObject(), "getConfig.json");
 
     QVERIFY(ok);
 }
 
 void CTestCacic::testColetaSoftware()
 {
-    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool()){
+    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool()){
         oColeta.configuraColetas();
         oColeta.run();
         oColeta.waitToCollect();
@@ -249,7 +250,7 @@ void CTestCacic::testColetaSoftware()
 
 void CTestCacic::testColetaHardware()
 {
-    if (OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool())
+    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool())
         QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     else
         QSKIP("Ação coleta de hardware desativada.");
@@ -307,7 +308,7 @@ void CTestCacic::testDownload()
 {
     QJsonObject ftp;
 
-    ftp = OCacic.getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+    ftp = CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
 
     OCacicComm->setFtpPass(ftp["senha"].toString());
     OCacicComm->setFtpUser(ftp["usuario"].toString());
@@ -356,11 +357,25 @@ void CTestCacic::testServiceController()
 #endif
 }
 
+void CTestCacic::testStopCheckCacicService()
+{
+    bool ok;
+    wchar_t serviceName[] = L"CheckCacic";
+    ServiceController *service = new ServiceController(serviceName);
+    if (service->isRunning())
+        ok =service->stop();
+    QThread::sleep(3);
+    qDebug() << "PASSOU";
+    QVERIFY(ok);
+
+    qDebug() << "PASSOU";
+}
+
 void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
-    OCacic.setJsonToFile(oColeta.toJsonObject(), "coleta.json");
+    CCacic::setJsonToFile(oColeta.toJsonObject(), "coleta.json");
     //    qDebug() << coletaEnvio;
     OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);
@@ -401,12 +416,12 @@ void CTestCacic::testGetModulesValues()
 
 void CTestCacic::cleanupTestCase()
 {
-    OCacic.deleteFile("gpl-2.0.txt");
-    OCacic.deleteFile("configRequest.json");
-    OCacic.deleteFile("teste.json");
-    //    OCacic.deleteFile("getConfig.json");
-    OCacic.deleteFolder("./temp");
-    OCacic.deleteFile("./install-cacic");
-    OCacic.deleteFile("./gercols");
-    //    OCacic.deleteFile("./coleta.json");
+    CCacic::deleteFile("gpl-2.0.txt");
+    CCacic::deleteFile("configRequest.json");
+    CCacic::deleteFile("teste.json");
+    //    CCacic::deleteFile("getConfig.json");
+    CCacic::deleteFolder("./temp");
+    CCacic::deleteFile("./install-cacic");
+    CCacic::deleteFile("./gercols");
+    //    CCacic::deleteFile("./coleta.json");
 }
