@@ -18,11 +18,11 @@ void CacicThread::setModuloDirPath(const QString &value)
 
 void CacicThread::iniciarModulo()
 {
-    registraInicioExecucao();
 #ifndef Q_OS_WIN
     if (!CCacic::findProc(this->moduloDirPath.split("/").last().toStdString().c_str())){
 #endif
     if (QFile::exists(this->moduloDirPath)){
+        registraInicioExecucao();
         QDir::setCurrent(this->applicationDirPath);
         QProcess proc;
         proc.setWorkingDirectory(this->applicationDirPath);
