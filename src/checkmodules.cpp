@@ -61,17 +61,10 @@ bool CheckModules::start(){
  *******************************************************/
 bool CheckModules::verificaModulo(const QString &moduloName, const QString &moduloHash)
 {
-
     QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
-#ifdef Q_OS_WIN
-    modulo = new QFile(cacicMainFolder +
-                       (moduloName.contains("install-cacic") ? "/bin/" : "/") +
-                       moduloName);
-#else
-    modulo = new QFile(cacicMainFolder + moduloName);
-#endif
+    modulo = new QFile(cacicMainFolder + "/" + moduloName);
     modulo->open(QFile::ReadOnly);
     moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
     moduloTemp->open(QFile::ReadOnly);
@@ -79,15 +72,8 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     if ((!(modulo->exists() && modulo->size() > 1) ||
          !CCacic::Md5IsEqual(modulo->readAll(), moduloHash))){
 
-        QString filePath;
-#ifdef Q_OS_WIN
-        if (moduloName.contains("install-cacic")){
-            filePath = modulo->exists() ? cacicMainFolder + "/temp/":
-                                          cacicMainFolder + "/bin/";
-        } else
-#endif
-            filePath = modulo->exists() ? cacicMainFolder + "/temp/":
-                                          cacicMainFolder + "/";
+        QString filePath = modulo->exists() ? cacicMainFolder + "/temp/":
+                                              cacicMainFolder + "/";
         modulo->close();
 
         logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
@@ -102,8 +88,10 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
                 moduloTemp->close();
                 CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
-                oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-                oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+                if (!metodoDownload["usuario"].isNull())
+                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                if (!metodoDownload["senha"].isNull())
+                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
 
                 downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                         this->applicationUrl,
@@ -120,7 +108,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
                     logcacic->escrever(LogCacic::ErrorLevel,
                                        QString("Falha ao baixar " + moduloName +
-                                       "("+metodoDownload["tipo"].toString()+ "://" +
+                                               "("+metodoDownload["tipo"].toString()+ "://" +
                                        this->applicationUrl + metodoDownload["path"].toString() +
                             (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
                     novoModulo->remove();
