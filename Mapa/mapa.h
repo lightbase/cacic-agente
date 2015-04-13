@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCore>
+#include <QCloseEvent>
 #include <QMessageBox>
 #include "cacic_comm.h"
 #include "ccacic.h"
@@ -27,9 +28,10 @@ private slots:
     void on_okButton_clicked();
 
 private:
-    bool checarCampos();
     bool checarPreenchimento() const;
+    void closeEvent(QCloseEvent *event);
     bool enviarInfo(const QJsonObject &jsonMapa);
+    bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;
     LogCacic *logcacic;
