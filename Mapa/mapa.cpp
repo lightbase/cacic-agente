@@ -34,11 +34,7 @@ Mapa::~Mapa()
 
 bool Mapa::checarPreenchimento() const
 {
-    if ( ui->lineNomeUsuario->text().isEmpty() ||
-         ui->lineCoordenacao->text().isEmpty() ||
-         ui->lineSala->text().isEmpty() ||
-         ui->linePatrimonioComputador->text().isEmpty() ||
-         ui->linePatrimonioMonitor1->text().isEmpty() ) {
+    if ( ui->lineNomeUsuario->text().isEmpty() ) {
 
         QMessageBox box(QMessageBox::Warning, "Formulário incompleto", "Há campo(s) não preenchido(s).", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
@@ -46,25 +42,9 @@ bool Mapa::checarPreenchimento() const
 
             if(ui->lineNomeUsuario->text().isEmpty())
                 ui->lineNomeUsuario->setFocus();
-            else if(ui->lineCoordenacao->text().isEmpty())
-                ui->lineCoordenacao->setFocus();
-            else if(ui->lineSala->text().isEmpty())
-                ui->lineSala->setFocus();
-            else if(ui->linePatrimonioComputador->text().isEmpty())
-                ui->linePatrimonioComputador->setFocus();
-            else if(ui->linePatrimonioMonitor1->text().isEmpty())
-                ui->linePatrimonioMonitor1->setFocus();
 
             return false;
         }
-    } else if(ui->linePatrimonioMonitor2->text().isEmpty()) {
-        QMessageBox box(QMessageBox::Warning, "Patrimônio Monitor 2 vazio", "Campo Patrimônio Monitor 2 vazio. \
-Preencha com patrimônio ou digite 0 para completar o formulário.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
-        if( box.exec() == QMessageBox::Ok )
-            ui->linePatrimonioMonitor2->setFocus();
-
-         return false;
     } else {
         return true;
     }
@@ -131,6 +111,7 @@ bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
 
     QRegExp regAlfa("^([\'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+((\s[\'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+)?$");
     QRegExp regNum("^[0-9]$");
+
     if( nomeUsuario.size() <= 2 ) {
         ui->lineNomeUsuario->setFocus();
 
@@ -145,49 +126,49 @@ bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
-    } else if(coordenacao.size() < 2) {
+    } else if( !coordenacao.isEmpty() && coordenacao.size() < 2) {
         ui->lineCoordenacao->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Coordenação deve ter ao menos 2 caracteres.", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
-    } else if(sala.toInt() == 0) {
+    } else if( !sala.isEmpty() && sala.toInt() == 0) {
         ui->lineSala->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Sala deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
-    } else if(patrimonioComputador.toInt() == 0) {
+    } else if( !patrimonioComputador.isEmpty() && patrimonioComputador.toInt() == 0) {
         ui->linePatrimonioComputador->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Computador deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
-    } else if(patrimonioMonitor1.toInt() == 0) {
+    } else if( !patrimonioMonitor1.isEmpty() && patrimonioMonitor1.toInt() == 0) {
         ui->linePatrimonioMonitor1->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Monitor 1 deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
-    } else if( !regNum.exactMatch(patrimonioMonitor2)) {
+    } else if( !patrimonioMonitor2.isEmpty() && patrimonioMonitor2.toInt() == 0) {
         ui->linePatrimonioMonitor2->setFocus();
 
-        QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Monitor 2 deve conter dígitos numéricos.", QMessageBox::Ok);
+        QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Monitor 2 deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
         box.setWindowFlags(Qt::WindowStaysOnTopHint);
         if( box.exec() == QMessageBox::Ok )
             return false;
     }
 
     listaValores.append( QPair<QString,QString>("nomeUsuario",nomeUsuario));
-    listaValores.append( QPair<QString,QString>("coordenacao",coordenacao));
-    listaValores.append( QPair<QString,QString>("sala",sala));
-    listaValores.append( QPair<QString,QString>("patrimonioComputador",patrimonioComputador));
-    listaValores.append( QPair<QString,QString>("patrimonioMonitor1",patrimonioMonitor1));
-    listaValores.append( QPair<QString,QString>("patrimonioMonitor2",patrimonioMonitor2));
+    if( !coordenacao.isEmpty() ) listaValores.append( QPair<QString,QString>("coordenacao",coordenacao));
+    if( !sala.isEmpty() ) listaValores.append( QPair<QString,QString>("sala",sala));
+    if( !patrimonioComputador.isEmpty() ) listaValores.append( QPair<QString,QString>("patrimonioComputador",patrimonioComputador));
+    if( !patrimonioMonitor1.isEmpty() ) listaValores.append( QPair<QString,QString>("patrimonioMonitor1",patrimonioMonitor1));
+    if( !patrimonioMonitor2.isEmpty() ) listaValores.append( QPair<QString,QString>("patrimonioMonitor2",patrimonioMonitor2));
 
     return true;
 }
