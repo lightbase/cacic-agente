@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtCore>
 #include <QCloseEvent>
+#include <QDesktopWidget>
 #include <QMessageBox>
 #include "cacic_comm.h"
 #include "ccacic.h"

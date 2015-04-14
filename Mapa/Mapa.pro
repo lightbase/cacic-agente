@@ -22,6 +22,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Mapa
 TEMPLATE = app
 
+win32 {
+#    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
+    QT      += axcontainer
+} else {
+#    LIBS    += -L/usr/lib -lcryptopp
+}
+
 INCLUDEPATH += ../src
 
 SOURCES += main.cpp\
@@ -32,7 +39,9 @@ SOURCES += main.cpp\
         ../src/operatingsystem.cpp\
         ../src/QLogger.cpp\
         ../src/logcacic.cpp\
-        ../src/identificadores.cpp
+        ../src/identificadores.cpp\
+        ../src/wmi.cpp \
+        ../src/servicecontroller.cpp
 
 HEADERS  += mapa.h\
         ../src/cacic_comm.h\
@@ -41,7 +50,9 @@ HEADERS  += mapa.h\
         ../src/operatingsystem.h\
         ../src/QLogger.h\
         ../src/logcacic.h\
-        ../src/identificadores.h
+        ../src/identificadores.h\
+        ../src/wmi.h \
+        ../src/servicecontroller.h
 
 FORMS    += \
     mapa_default.ui

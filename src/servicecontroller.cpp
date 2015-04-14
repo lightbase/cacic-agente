@@ -436,7 +436,8 @@ int ServiceController::trataErro(DWORD error, std::string detailError)
         this->lastError = detailError + ": O serviço não existe";
         this->iLastError = 16;
     } else {
-        this->lastError = detailError + ": Desconhecido - " + std::to_string(error);
+//        this->lastError = detailError + ": Desconhecido - " + std::to_string(error);
+        this->lastError = detailError + ": Desconhecido - ";
         this->iLastError = -1;
     }
 

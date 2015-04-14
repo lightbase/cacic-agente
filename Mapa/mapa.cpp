@@ -13,6 +13,13 @@ Mapa::Mapa(QWidget *parent) :
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
     this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
 
+#if defined(Q_OS_WIN)
+    QDesktopWidget desktopWidget;
+    QRect screenSize = desktopWidget.frameGeometry();
+
+    this->setMinimumSize(screenSize.size());
+#endif
+
     ui->setupUi(this);
 
     QJsonObject computerJson = computer.toJsonObject();
