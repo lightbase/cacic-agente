@@ -1,3 +1,12 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente, module install-cacic, created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
+
 #ifndef CACIC_HARDWARE_H
 #define CACIC_HARDWARE_H
 #include <ccacic.h>

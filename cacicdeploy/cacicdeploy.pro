@@ -1,8 +1,12 @@
-#-------------------------------------------------
+#-----------------------------------------------------------------------------------------
 #
-# Project created by Lightbase 2014-08-18T11:06:08
+# Project Cacic Agente, module cacic-service, created by Lightbase
 #
-#-------------------------------------------------
+# Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+#             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+#
+#-----------------------------------------------------------------------------------------
+
 ##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
