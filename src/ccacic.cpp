@@ -351,12 +351,15 @@ QString CCacic::padronizarData(QString data){
 #elif defined (Q_OS_LINUX)
     if (!data.isEmpty() && !data.isNull()){
         QString dia, mes, ano;
-        if (data.split(" ").at(10).isEmpty())
-            dia = data.split(" ").at(11);
-        else
-            dia = data.split(" ").at(10);
-        mes = getMesFromString(data.split(" ").at(9));
-        ano = data.split(" ").takeLast();
+        QStringList aux = data.split(" ");
+        if (aux.size() >= 10){
+            if (aux.at(10).isEmpty() && aux.size() >= 11)
+                dia = aux.at(11);
+            else
+                dia = aux.at(10);
+            mes = getMesFromString(aux.at(9));
+            ano = aux.takeLast();
+        }
         return QString(dia+"/" + mes + "/" + ano);
     }
 #endif
@@ -410,7 +413,6 @@ bool CCacic::findProc(const char *name)
 
         if (fp) {
             if ( (fscanf(fp, "%ld (%[^)]) %c", &pid, pname, &state)) != 3 ){
-                printf("fscanf failed \n");
                 fclose(fp);
                 return false;
             }

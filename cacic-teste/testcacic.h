@@ -72,14 +72,13 @@ private slots:
     void testConvertDouble();
     void testGetTest();
     void testGetConfig();
-    void testColetaSoftware();
-    void testColetaHardware();
+    void testDownload();
+    void testGetModulesValues();
+    void testColeta();
     void testLogger();
     void testEnviaColeta();
-    void testDownload();
     void testServiceController();
     void testStopCheckCacicService();
-    void testGetModulesValues();
     void cleanupTestCase();
 };
 

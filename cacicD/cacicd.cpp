@@ -27,7 +27,7 @@ void cacicD::start() {
         Ocacictimer = new CacicTimer(cacicMainFolder);
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
 
-        logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + " iniciado."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro desconhecido ao iniciar o serviço."));

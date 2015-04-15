@@ -65,7 +65,7 @@
      <enum>QLayout::SetMinAndMaxSize</enum>
     </property>
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinAndMaxSize</enum>
       </property>
@@ -199,7 +199,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Nome de Usuário</string>
+             <string>Nome de Usuário *</string>
             </property>
            </widget>
           </item>
@@ -273,6 +273,13 @@
          </layout>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>* Campo de preenchimento obrigatório</string>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="verticalSpacer">

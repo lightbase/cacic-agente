@@ -69,16 +69,20 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
 #else
     modulo = new QFile(cacicMainFolder + "/" + moduloName);
 #endif
-    modulo->open(QFile::ReadOnly);
     moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
-    moduloTemp->open(QFile::ReadOnly);
-    //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if ((!(modulo->exists() && modulo->size() > 1) ||
-         !CCacic::Md5IsEqual(modulo->readAll(), moduloHash))){
+    if (modulo->exists()) {
+        if (!modulo->open(QFile::ReadOnly)) {
+            logcacic->escrever(LogCacic::ErrorLevel, "#2 Falha ao tentar recuperar hash do módulo atual");
+            return false;
+        }
+    }
 
+    logcacic->escrever(LogCacic::InfoLevel, moduloName + ": " + modulo->size());
+    //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
+    if ((!modulo->exists() || (modulo->isOpen() && !CCacic::Md5IsEqual(modulo->readAll(), moduloHash)))) {
+        modulo->close();
         QString filePath = modulo->exists() ? cacicMainFolder + "/temp/":
                                               cacicMainFolder + "/";
-        modulo->close();
 
         logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
         QFile *novoModulo;
@@ -89,7 +93,13 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                 ["metodoDownload"].toObject();
         if (!metodoDownload.isEmpty()){
             //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
-            if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
+            if (moduloTemp->exists()) {
+                if (!moduloTemp->open(QFile::ReadOnly)){
+                    logcacic->escrever(LogCacic::ErrorLevel, "#3 Falha ao tentar recuperar hash do módulo da pasta temporária.");
+                    return false;
+                }
+            }
+            if ((!moduloTemp->exists() || (moduloTemp->isOpen() && !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash)))){
                 moduloTemp->close();
                 CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
                 if (!metodoDownload["usuario"].isNull())
@@ -111,7 +121,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                 //faz uma verificação do novo módulo.
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
                     logcacic->escrever(LogCacic::ErrorLevel,
-                                       QString("Falha ao baixar " + moduloName +
+                                       QString("#4 Falha ao baixar " + moduloName +
                                                "("+metodoDownload["tipo"].toString()+ "://" +
                                        this->applicationUrl + metodoDownload["path"].toString() +
                             (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
@@ -122,11 +132,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                     return true;
                 }
             } else {
-                logcacic->escrever(LogCacic::ErrorLevel, QString("Problemas durante o download de " + moduloName));
+                logcacic->escrever(LogCacic::ErrorLevel, QString("#5 Problemas durante o download de " + moduloName));
                 return false;
             }
         } else {
-            logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível recuperar json de " +
+            logcacic->escrever(LogCacic::ErrorLevel, QString("#6 Não foi possível recuperar json de " +
                                                              cacicMainFolder + "/getConfig.json ao tentar baixar " +
                                                              moduloName));
             return false;
