@@ -64,7 +64,11 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
+#ifdef Q_OS_WIN
+    modulo = new QFile(cacicMainFolder + "/bin/" + moduloName);
+#else
     modulo = new QFile(cacicMainFolder + "/" + moduloName);
+#endif
     modulo->open(QFile::ReadOnly);
     moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
     moduloTemp->open(QFile::ReadOnly);
