@@ -163,7 +163,6 @@ QJsonObject cacic_software::coletaDebian()
         }
 
         if (!packageName.isEmpty()) {
-
             QString treatedPackageName = packageName;
             if(treatedPackageName.contains("amd64") || treatedPackageName.contains("i386"))
                 treatedPackageName = treatedPackageName.split(":").at(0);

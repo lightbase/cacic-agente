@@ -350,11 +350,16 @@ QJsonObject cacic_hardware::coletaLinux()
 
     }
 
-    if ( getuid() != 0 ) qDebug() << "Coleta de Bios e Motherboard requer root.";
+    if ( getuid() != 0 ) logcacic->escrever(LogCacic::InfoLevel, "Coleta de Bios e Motherboard requer root.");
+//    qDebug() << "OS";
     coletaLinuxOperatingSystem(hardware);
+//    qDebug() << "BIOS";
     coletaLinuxBios(hardware);
+//    qDebug() << "Motherboard";
     coletaLinuxMotherboard(hardware);
+//    qDebug() << "Notebook";
     coletaLinuxIsNotebook(hardware);
+//    qDebug() << "Printers";
     coletaLinuxPrinters(hardware);
 
     if(lshwFile.exists()) {
