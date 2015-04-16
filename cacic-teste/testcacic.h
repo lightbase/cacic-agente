@@ -1,3 +1,12 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
 #ifndef TESTINSTALLCACIC_H
 #define TESTINSTALLCACIC_H
 
@@ -72,14 +81,13 @@ private slots:
     void testConvertDouble();
     void testGetTest();
     void testGetConfig();
-    void testColetaSoftware();
-    void testColetaHardware();
+    void testDownload();
+    void testGetModulesValues();
+    void testColeta();
     void testLogger();
     void testEnviaColeta();
-    void testDownload();
     void testServiceController();
     void testStopCheckCacicService();
-    void testGetModulesValues();
     void cleanupTestCase();
 };
 

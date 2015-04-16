@@ -1,3 +1,11 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *
+ *-----------------------------------------------------------------------------------------*/
 #ifndef WMI_H
 #define WMI_H
 

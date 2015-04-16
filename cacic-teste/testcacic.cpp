@@ -12,6 +12,7 @@ void CTestCacic::initTestCase()
     this->OCacicComm = new CacicComm("Cacic Teste", this->testPath);
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
+
     OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
@@ -23,8 +24,6 @@ void CTestCacic::initTestCase()
 
 void CTestCacic::testCreateFolder()
 {
-    ConsoleObject console;
-    qDebug() << QString::number(static_cast<int> (console("cat /proc/uptime | awk '{print $1}'").toDouble()));
     QVERIFY(CCacic::createFolder(testPath));
 }
 
@@ -70,8 +69,9 @@ void CTestCacic::testProcFind()
 
 void CTestCacic::testDeleteFolder()
 {
-    QDir folder(testPath);
-    CCacic::deleteFolder(testPath);
+    QDir folder(testPath+"/testDeleteFolder/");
+    CCacic::createFolder(folder.absolutePath());
+    CCacic::deleteFolder(folder.absolutePath());
     QVERIFY(!folder.exists());
 }
 
@@ -169,13 +169,13 @@ void CTestCacic::testJsonToFile()
 {
     QJsonObject json;
     json["teste"] = QJsonValue::fromVariant(QString("teste"));
-    QVERIFY(CCacic::setJsonToFile(json, "teste.json"));
+    QVERIFY(CCacic::setJsonToFile(json, this->testPath + "/teste.json"));
 }
 
 void CTestCacic::testJsonFromFile()
 {
     //    qDebug() << CCacic::getJsonFromFile("teste123.json");
-    QVERIFY(CCacic::getJsonFromFile("teste.json")["teste"].toString() == "teste");
+    QVERIFY(CCacic::getJsonFromFile(this->testPath + "/teste.json")["teste"].toString() == "teste");
 }
 
 void CTestCacic::testSetRegistry()
@@ -242,28 +242,22 @@ void CTestCacic::testGetConfig()
     QVERIFY(ok);
 }
 
-void CTestCacic::testColetaSoftware()
+void CTestCacic::testColeta()
 {
-    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool()){
+    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool() &&
+        CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
         oColeta.run();
         oColeta.waitToCollect();
-        QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty());
+        QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
+                !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     } else
         QSKIP("Ação coleta de software desativada.");
 }
 
-void CTestCacic::testColetaHardware()
-{
-    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool())
-        QVERIFY(!oColeta.toJsonObject()["hardware"].toObject().isEmpty());
-    else
-        QSKIP("Ação coleta de hardware desativada.");
-}
-
 void CTestCacic::testLogger()
 {
-    LogCacic logcacic("Cacic-Teste", Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste");
+    LogCacic logcacic("Cacic-Teste", this->testPath + "/Logs/teste");
 
     logcacic.escrever(LogCacic::InfoLevel, "Teste do modulo logger.");
     logcacic.escrever(LogCacic::DebugLevel, "Teste do modulo logger.");
@@ -273,17 +267,17 @@ void CTestCacic::testLogger()
     logcacic.escrever(LogCacic::WarnLevel, "Teste do modulo logger.");
 
 
-    QFile logFile01(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic.log");
+    QFile logFile01(this->testPath + "/Logs/teste/cacic.log");
     if(logFile01.exists()) logFile01.open(QIODevice::ReadOnly);
-    QFile logFile02(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_debug.log");
+    QFile logFile02(this->testPath + "/Logs/teste/cacic_debug.log");
     if(logFile02.exists()) logFile02.open(QIODevice::ReadOnly);
-    QFile logFile03(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_error.log");
+    QFile logFile03(this->testPath + "/Logs/teste/cacic_error.log");
     if(logFile03.exists()) logFile03.open(QIODevice::ReadOnly);
-    QFile logFile04(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_fatalerror.log");
+    QFile logFile04(this->testPath + "/Logs/teste/cacic_fatalerror.log");
     if(logFile04.exists()) logFile04.open(QIODevice::ReadOnly);
-    QFile logFile05(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_trace.log");
+    QFile logFile05(this->testPath + "/Logs/teste/cacic_trace.log");
     if(logFile05.exists()) logFile05.open(QIODevice::ReadOnly);
-    QFile logFile06(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/cacic_warn.log");
+    QFile logFile06(this->testPath + "/Logs/teste/cacic_warn.log");
     if(logFile06.exists()) logFile06.open(QIODevice::ReadOnly);
 
     QVERIFY(logFile01.exists() &&
@@ -306,26 +300,34 @@ void CTestCacic::testLogger()
     logFile04.close();
     logFile05.close();
     logFile06.close();
-    QDir(Identificadores::ENDERECO_PATCH_CACIC+"/Logs/teste/").removeRecursively();
+    QDir(this->testPath + "/Logs/teste/").removeRecursively();
 }
 
 void CTestCacic::testDownload()
 {
     QJsonObject ftp;
 
-    ftp = CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
-
-    OCacicComm->setFtpPass(ftp["senha"].toString());
-    OCacicComm->setFtpUser(ftp["usuario"].toString());
-    OCacicComm->fileDownload(ftp["tipo"].toString(),
-                             ftp["url"].toString(),
-                             (ftp["path"].toString().endsWith("/") ? ftp["path"].toString() : ftp["path"].toString() +"/") +
-                             "cacic-service",
-                             "");
-    QFile downloaded("cacic-service");
-    QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
-             downloaded.exists()                  &&
-             (downloaded.size() > 0) );
+    if(QFile::exists("getConfig.json")){
+        ftp = CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+        if (!ftp.isEmpty()) {
+            OCacicComm->setFtpPass(ftp["senha"].toString());
+            OCacicComm->setFtpUser(ftp["usuario"].toString());
+            OCacicComm->fileDownload(ftp["tipo"].toString(),
+                                     ftp["url"].toString(),
+                                     (ftp["path"].toString().endsWith("/") ? ftp["path"].toString() : ftp["path"].toString() +"/") +
+                                     "cacic-service",
+                                     this->testPath);
+            QFile downloaded(this->testPath + "/cacic-service");
+            QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
+                     downloaded.exists()                  &&
+                     (downloaded.size() > 0) );
+        }
+        else {
+            QVERIFY2(false, "Não foi possível pegar as informações do arquivo de configuração.");
+        }
+    } else {
+        QVERIFY2(false, "Não existe o arquivo de configuração.");
+    }
 }
 
 void CTestCacic::testServiceController()
@@ -333,7 +335,7 @@ void CTestCacic::testServiceController()
 #ifdef Q_OS_WIN
     wchar_t serviceName[] = L"cacicdaemon";
     wchar_t *servicePath;
-    QString aux = QDir::currentPath() + "/cacic-service.exe";
+    QString aux = testPath + "/cacic-service.exe";
     servicePath = (wchar_t*) malloc(sizeof(wchar_t)*aux.size());
     aux.toWCharArray(servicePath);
     ServiceController service(serviceName);
@@ -381,7 +383,7 @@ void CTestCacic::testEnviaColeta()
 {
     bool ok;
     QJsonObject coletaEnvio = oColeta.toJsonObject();
-    CCacic::setJsonToFile(oColeta.toJsonObject(), "coleta.json");
+    CCacic::setJsonToFile(oColeta.toJsonObject(), this->testPath + "/coleta.json");
     //    qDebug() << coletaEnvio;
     OCacicComm->comm("/ws/neo/coleta", &ok, coletaEnvio, true);
     QVERIFY(ok);
@@ -390,31 +392,17 @@ void CTestCacic::testEnviaColeta()
 void CTestCacic::testGetModulesValues()
 {
     bool ok = true;
-    oCheckModules = new CheckModules(QDir::currentPath(), "teste");
+    oCheckModules = new CheckModules(this->testPath, "teste");
     oCheckModules->start();
-    qDebug() << "passed";
     QVariantMap modules = oCheckModules->getModules();
     QVariantMap::const_iterator i = modules.constBegin();
     if (!modules.empty()) {
         do {
-            QFile modulo("./temp/" + i.key());
+            QFile modulo(this->testPath + "/" + i.key());
+//            qDebug() << i.key() << " exists: " << modulo.exists();
             ok = modulo.exists() && ok;
             i++;
         } while (i!=modules.constEnd());
-    }
-
-    QDir dir("./temp");
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks | QDir::Executable);
-    dir.setSorting(QDir::Size | QDir::Reversed);
-
-    QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i<list.size(); i++){
-        QFile novoModulo(list.at(i).filePath());
-        if (QFile::exists(QDir::currentPath() + "/" + list.at(i).fileName())){
-            QFile::remove(QDir::currentPath() + "/" + list.at(i).fileName());
-        }
-        novoModulo.copy(QDir::currentPath() + "/" + list.at(i).fileName());
-        novoModulo.close();
     }
 
     QVERIFY(ok);
@@ -422,12 +410,6 @@ void CTestCacic::testGetModulesValues()
 
 void CTestCacic::cleanupTestCase()
 {
-    CCacic::deleteFile("gpl-2.0.txt");
-    CCacic::deleteFile("configRequest.json");
-    CCacic::deleteFile("teste.json");
-    //    CCacic::deleteFile("getConfig.json");
-    CCacic::deleteFolder("./temp");
-    CCacic::deleteFile("./install-cacic");
-    CCacic::deleteFile("./gercols");
-    //    CCacic::deleteFile("./coleta.json");
+    CCacic::deleteFile("getConfig.json");
+    CCacic::deleteFolder(this->testPath);
 }
