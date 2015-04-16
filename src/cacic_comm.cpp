@@ -169,6 +169,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     reply = manager.get(request);
 
     eventLoop.exec();
+    fileHandler->close();
 
     delete fileHandler;
     delete reply;
@@ -180,16 +181,14 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
 bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload)
 {
     QStringList splitPath = path.split("/");
-
-    fileHandler = new QFile((!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1]);
-    try {
-        if( !fileHandler->open(QIODevice::WriteOnly) ) {
-            logcacic->escrever(LogCacic::InfoLevel, "fileDownload: fileHandler nâo pode abrir arquivo.");
-            logcacic->escrever(LogCacic::ErrorLevel, fileHandler->errorString());
-            return false;
-        }
-    } catch(...) {
-        logcacic->escrever(LogCacic::ErrorLevel, "Exception error ao tentar abrir arquivo para download.");
+    QString fileName = (!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1];
+    fileHandler = new QFile(fileName);
+    fileHandler->isReadable();
+    if( !fileHandler->open(QIODevice::WriteOnly) ) {
+        logcacic->escrever(LogCacic::InfoLevel, "fileDownload: fileHandler nâo pode abrir arquivo.");
+        logcacic->escrever(LogCacic::ErrorLevel,"Erro ao abrir " + fileName + ": " +
+                                                 fileHandler->errorString());
+        return false;
     }
 
     QString urlParsed = urlServer;

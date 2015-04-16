@@ -65,7 +65,10 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
 #ifdef Q_OS_WIN
-    modulo = new QFile(cacicMainFolder + "/bin/" + moduloName);
+    if (moduloName == "install-cacic.exe")
+        modulo = new QFile(cacicMainFolder + "/bin/" + moduloName);
+    else
+        modulo = new QFile(cacicMainFolder + "/" + moduloName);
 #else
     modulo = new QFile(cacicMainFolder + "/" + moduloName);
 #endif
@@ -76,15 +79,13 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             return false;
         }
     }
-
-    logcacic->escrever(LogCacic::InfoLevel, moduloName + ": " + modulo->size());
+    QString filePath = modulo->exists() ? cacicMainFolder + "/temp/":
+                                          cacicMainFolder + "/";
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if ((!modulo->exists() || (modulo->isOpen() && !CCacic::Md5IsEqual(modulo->readAll(), moduloHash)))) {
+    if ((!modulo->exists() || !CCacic::Md5IsEqual(modulo->readAll(), moduloHash))) {
         modulo->close();
-        QString filePath = modulo->exists() ? cacicMainFolder + "/temp/":
-                                              cacicMainFolder + "/";
-
         logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
+        logcacic->escrever(LogCacic::InfoLevel, "Baixando em: " + filePath);
         QFile *novoModulo;
         QJsonObject metodoDownload;
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
@@ -99,7 +100,7 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
                     return false;
                 }
             }
-            if ((!moduloTemp->exists() || (moduloTemp->isOpen() && !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash)))){
+            if ((!moduloTemp->exists() || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
                 moduloTemp->close();
                 CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
                 if (!metodoDownload["usuario"].isNull())

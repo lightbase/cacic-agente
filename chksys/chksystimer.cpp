@@ -26,6 +26,11 @@ bool chksysTimer::start(int msecCheckService)
 void chksysTimer::onTimerCheckService()
 {
     this->timerCheckService->stop();
+    if (!QFile::exists(this->cacicFolder + "/getConfig.json")){
+        log->escrever(LogCacic::ErrorLevel, "Falha ao localizar arquivo de configuração.");
+        this->timerCheckService->start();
+        return;
+    }
     this->verificarModulos();
 #ifdef Q_OS_WIN
     QFile fileService(cacicFolder+"/cacic-service.exe");
@@ -164,7 +169,7 @@ bool chksysTimer::verificarModulos()
                         log->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
                         QProcess stopService;
                         QStringList args;
-                        args << "stop" << list.at(i).fileName();
+                        args << "stop" << "cacicdaemon";
                         stopService.execute("SC", args);
                     }
                     delete service;

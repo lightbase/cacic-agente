@@ -3,17 +3,14 @@
 InstallCacic::InstallCacic(QObject *parent) :
     QObject(parent)
 {
-    cacicMainFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     CCacic::salvarVersao("install-cacic");
+
+    cacicMainFolder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     if (cacicMainFolder.isEmpty()){
-        this->applicationDirPath = Identificadores::ENDERECO_PATCH_CACIC;
-        cacicMainFolder = applicationDirPath;
-        logcacic = new LogCacic(LOG_INSTALL_CACIC, cacicMainFolder+"/Logs");
-    } else {
-        this->applicationDirPath = cacicMainFolder;
-        logcacic = new LogCacic(LOG_INSTALL_CACIC, this->applicationDirPath+"/Logs");
+        cacicMainFolder = Identificadores::ENDERECO_PATCH_CACIC;
     }
 
+    logcacic = new LogCacic(LOG_INSTALL_CACIC, cacicMainFolder+"/Logs");
     QDir dir(cacicMainFolder);
     if (!dir.exists()){
         CCacic::createFolder(cacicMainFolder);
@@ -109,21 +106,21 @@ void InstallCacic::updateService()
             //Ter certeza de que o serviço parou
             QThread::sleep(3);
             QFile novoModulo(list.at(i).filePath());
-            if (QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+            if (QFile::exists(cacicMainFolder + "/" + list.at(i).fileName())){
                 logcacic->escrever(LogCacic::InfoLevel, "Excluindo versão antiga de "+list.at(i).fileName());
-                if (!QFile::remove(applicationDirPath + "/" + list.at(i).fileName())){
+                if (!QFile::remove(cacicMainFolder + "/" + list.at(i).fileName())){
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir "+list.at(i).fileName());
                 } else {
                     //Garantir a exclusão
                     QThread::sleep(1);
                     //Nova verificação pra ter certeza de que não existe, porque se existir ele não vai copiar.
-                    if (!QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
-                        novoModulo.copy(applicationDirPath + "/" + list.at(i).fileName());
-                        logcacic->escrever(LogCacic::InfoLevel, "Copiando arquivo para " + applicationDirPath);
+                    if (!QFile::exists(cacicMainFolder + "/" + list.at(i).fileName())){
+                        novoModulo.copy(cacicMainFolder + "/" + list.at(i).fileName());
+                        logcacic->escrever(LogCacic::InfoLevel, "Copiando arquivo para " + cacicMainFolder);
                     }
                     //Garantir a cópia
                     QThread::sleep(1);
-                    if(QFile::exists(applicationDirPath + "/" + list.at(i).fileName())){
+                    if(QFile::exists(cacicMainFolder + "/" + list.at(i).fileName())){
                         if (!novoModulo.remove())
                             logcacic->escrever(LogCacic::ErrorLevel, "Falha ao excluir "+list.at(i).fileName()+" da pasta temporária.");
                     }
@@ -222,11 +219,6 @@ void InstallCacic::install()
         if (ok){
             QJsonObject configsJson = configs["reply"].toObject()["agentcomputer"].toObject();
             oCacicComm->setUrlGerente(configsJson["applicationUrl"].toString());
-#ifdef Q_OS_WIN
-            cacicMainFolder = "c:/cacic";
-#elif defined(Q_OS_LINUX)
-            cacicMainFolder = "/usr/share/cacic";
-#endif
 
             CCacic::createFolder(cacicMainFolder);
             //grava chave em registro;
@@ -247,54 +239,71 @@ void InstallCacic::install()
             metodoDownload = configsJson["metodoDownload"].toObject();
             oCacicComm->setFtpPass(metodoDownload["senha"].toString());
             oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-            std::cout << "Realizando download do serviço...\n";
-            logcacic->escrever(LogCacic::InfoLevel, "Realizando download do serviço...");
-            std::cout << "Baixando serviço...\n";
-#ifdef Q_OS_WIN
-            oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
-                    metodoDownload["url"].toString(),
-                    metodoDownload["path"].toString() +
-                    (!metodoDownload["path"].toString().endsWith("/") ? "/" : "") +
-                    "cacic-service.exe",
-                    cacicMainFolder);
 
+            logcacic->escrever(LogCacic::InfoLevel, "Verificando serviço...");
+            std::cout << "Verificando serviço...\n";
+#ifdef Q_OS_WIN
             //verifica e start o serviço
 
             QFile fileService(cacicMainFolder+"/cacic-service.exe");
-            if ((!fileService.exists() || !fileService.size() > 0)) {
-                std::cout << "Falha ao baixar arquivo.\n";
-                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar o serviço...");
-                fileService.close();
-                this->uninstall();
-            } else {
-                ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
+            ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
+            ServiceController checkCacic(QString("checkcacic").toStdWString());
+            if (fileService.exists()) {
+                if (!fileService.open(QFile::ReadOnly)){
+                    logcacic->escrever(LogCacic::InfoLevel, "Falha ao abrir o arquivo "+fileService.fileName());
+                    logcacic->escrever(LogCacic::ErrorLevel, fileService.errorString());
+                }
                 //Tenta instalar o serviço
                 if (service.isInstalled()){
-                    std::cout << "Reinstalando serviço." << "\n";
-                    logcacic->escrever(LogCacic::InfoLevel, "Reinstalando serviço.");
-                    if (!service.uninstall()){
-                        logcacic->escrever(LogCacic::ErrorLevel, "Falha ao desinstalar o serviço: " +
+                    QString hashService;
+                    foreach(QJsonValue modulo, configsJson["modulos"].toObject()["cacic"].toArray()){
+                        if(modulo.toObject()["name"].toString().contains("cacic-service")){
+                            hashService = modulo.toObject()["hash"].toString();
+                        }
+                    }
+                    if (!CCacic::Md5IsEqual(fileService.readAll(), hashService)){
+                        if (service.isRunning()) {
+                            logcacic->escrever(LogCacic::InfoLevel, "Servico atual desatualizado. Preparando atualização.");
+                            service.stop();
+                            checkCacic.stop();
+                        }
+                    } else {
+                        logcacic->escrever(LogCacic::InfoLevel, "Servico ja instalado e atualizado.");
+                        if (!service.isRunning()) service.start();
+                        emit finished();
+                        return;
+                    }
+                }
+            }
+            logcacic->escrever(LogCacic::InfoLevel, "Realizando download do servico.");
+            QThread::sleep(2);
+            oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
+                    metodoDownload["url"].toString(),
+                    metodoDownload["path"].toString() +
+                        (metodoDownload["path"].toString().endsWith("/") ? "" : "/") +
+                        "cacic-service.exe",
+                    cacicMainFolder);
+            QThread::sleep(1);
+            if (fileService.exists()){
+                if (!service.isInstalled()){
+                    if (!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
+                                         QString("Cacic Daemon").toStdWString())){
+                        logcacic->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
                                                                                 QString::fromStdString(service.getLastError()));
                         uninstall();
                     }
-                } else {
-                    std::cout << "Instalando serviço." << "\n";
-                    logcacic->escrever(LogCacic::InfoLevel, QString("Instalando serviço."));
-                }
-
-                if (!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
-                                     QString("Cacic Daemon").toStdWString())){
-                    logcacic->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
-                                                                            QString::fromStdString(service.getLastError()));
-                    uninstall();
                 }
                 if (service.start()){
                     std::cout << "Instalação realizada com sucesso." << "\n";
                     logcacic->escrever(LogCacic::InfoLevel, QString("Instalação realizada com sucesso."));
                 } else {
+                    logcacic->escrever(LogCacic::InfoLevel, "Falha ao iniciar o serviço. Reinicie o computador!");
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao iniciar o serviço: " +
                                                                             QString::fromStdString(service.getLastError()));
                 }
+            } else {
+                logcacic->escrever(LogCacic::InfoLevel, "Falha ao baixar servico.");
+                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar servico.");
             }
     #else
 

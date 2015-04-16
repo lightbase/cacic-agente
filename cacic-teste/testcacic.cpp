@@ -64,7 +64,11 @@ void CTestCacic::testDeleteFile()
 
 void CTestCacic::testProcFind()
 {
+#ifndef Q_OS_WIN
     QVERIFY(CCacic::findProc("init"));
+#else
+    QSKIP("Teste desnecessário nessa plataforma");
+#endif
 }
 
 void CTestCacic::testDeleteFolder()
@@ -315,9 +319,17 @@ void CTestCacic::testDownload()
             OCacicComm->fileDownload(ftp["tipo"].toString(),
                                      ftp["url"].toString(),
                                      (ftp["path"].toString().endsWith("/") ? ftp["path"].toString() : ftp["path"].toString() +"/") +
+#ifndef Q_OS_WIN
                                      "cacic-service",
+#else
+                                     "cacic-service.exe",
+#endif
                                      this->testPath);
+#ifndef Q_OS_WIN
             QFile downloaded(this->testPath + "/cacic-service");
+#else
+            QFile downloaded(this->testPath + "/cacic-service.exe");
+#endif
             QVERIFY( downloaded.open(QIODevice::ReadOnly) &&
                      downloaded.exists()                  &&
                      (downloaded.size() > 0) );
@@ -335,24 +347,32 @@ void CTestCacic::testServiceController()
 #ifdef Q_OS_WIN
     wchar_t serviceName[] = L"cacicdaemon";
     wchar_t *servicePath;
-    QString aux = testPath + "/cacic-service.exe";
+    QString aux = this->testPath + "/cacic-service.exe";
     servicePath = (wchar_t*) malloc(sizeof(wchar_t)*aux.size());
     aux.toWCharArray(servicePath);
     ServiceController service(serviceName);
     if (!service.isInstalled()){
         QStringList arg;
         arg << "-i";
-        if (QProcess::execute(QString::fromWCharArray(servicePath), arg) != 0){
-            qDebug() << "Falha ao instalar serviço.";
-            QVERIFY(false);
+        if (QFile::exists(aux)){
+            QVERIFY2(service.install(servicePath),
+                     "Falha ao instalar serviço.");
+            qDebug() << QString::fromStdString(service.getLastError());
+        } else {
+            QVERIFY2(false, "Binário do serviço não encontrado");
         }
     }
+    //garantir a instalação
+    QThread::sleep(5);
     if (!service.isRunning()){
         if (!service.start()){
             qDebug() << "Falha ao startar o serviço: " << QString::fromStdString(service.getLastError());
             QVERIFY(false);
         }
+        //garantir a inicialização
+        QThread::sleep(3);
     }
+
     if (service.uninstall()){
         QVERIFY(true);
     } else {
@@ -373,10 +393,10 @@ void CTestCacic::testStopCheckCacicService()
     if (service->isRunning())
         ok =service->stop();
     QThread::sleep(3);
-    qDebug() << "PASSOU";
     QVERIFY(ok);
-#endif
+#else
     QSKIP("Teste desnecessário nessa plataforma");
+#endif
 }
 
 void CTestCacic::testEnviaColeta()
