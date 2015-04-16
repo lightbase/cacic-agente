@@ -1,13 +1,17 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-04-01T12:50:22
+# Project Cacic Agente, module cacic-service, created by Lightbase
+#
+# Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+#             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
 #
 #-------------------------------------------------
+
 ##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
 VERSION_MINOR = 1
-VERSION_BUILD = 9
+VERSION_BUILD = 13
 DEFINES += VERSION_MAJOR=$$VERSION_MAJOR \
            VERSION_MINOR=$$VERSION_MINOR \
            VERSION_BUILD=$$VERSION_BUILD
