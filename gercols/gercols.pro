@@ -18,7 +18,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 QT       += core
 QT       += network
 QT       -= gui
-@CONFIG += debug_and_release@
+CONFIG += debug_and_release
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET    = gercols
