@@ -25,6 +25,8 @@ QT       -= widgets
 QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
+CONFIG += debug_and_release
+
 TARGET       = chksys
 
 CONFIG      += console
@@ -35,7 +37,7 @@ CONFIG      += c++11
 TEMPLATE     = app
 INCLUDEPATH += ../src \
 #               ../../src/crypto++/include/
-@CONFIG += debug_and_release@
+
 SOURCES     += main.cpp \
                chksys.cpp \
                ../src/ccacic.cpp \

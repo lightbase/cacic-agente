@@ -17,7 +17,7 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
            "VERSION_BUILD=$$VERSION_BUILD"
 VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
-@CONFIG += debug_and_release@
+CONFIG += debug_and_release
 QT -= core
 QT += network
 QT -= gui
