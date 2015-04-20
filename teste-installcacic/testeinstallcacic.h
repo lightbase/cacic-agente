@@ -6,12 +6,16 @@
 #include <iostream>
 #include <ccacic.h>
 #include <../installcacic-standalone/installcacicsa.h>
+#include <http-daemon.h>
 
 class testeInstallcacic : public QObject
 {
     Q_OBJECT
-public:
+public:   
     explicit testeInstallcacic(QObject *parent = 0);
+
+private:
+   HttpDaemon *daemon;
 
 signals:
 

@@ -5,6 +5,9 @@ QTEST_MAIN(testeInstallcacic)
 testeInstallcacic::testeInstallcacic(QObject *parent) :
     QObject(parent)
 {
+
+    quint16 port = 8080;
+    daemon = new HttpDaemon(port);
 }
 
 void testeInstallcacic::initTestCase()
@@ -28,5 +31,8 @@ void testeInstallcacic::cacicNaoInstalado()
 
 void testeInstallcacic::cleanupTestCase()
 {
+    // Para servidor fake
+    daemon->resume();
+
     CCacic::removeRegistry("TesteInstallCacic", "teste");
 }

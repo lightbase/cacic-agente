@@ -31,12 +31,14 @@ SOURCES += testeinstallcacic.cpp \
     ../installcacic-standalone/installcacicsa.cpp \
     ../src/ccacic.cpp \
     ../src/identificadores.cpp \
-    ../src/servicecontroller.cpp
+    ../src/servicecontroller.cpp \
+    http-daemon.cpp
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
     ../src/ccacic.h \
     ../src/identificadores.h \
-    ../src/servicecontroller.h
+    ../src/servicecontroller.h \
+    http-daemon.h
 
 INCLUDEPATH += ../src
