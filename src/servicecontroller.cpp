@@ -13,10 +13,9 @@ bool ServiceController::open(DWORD accessManager, DWORD accessService)
     }
     // Abre o serviço
 
-    schService = OpenServiceW(
-                schSCManager,         // SCM database
-                serviceName.c_str(),         // name of service
-                accessService);  // full access
+    schService = OpenServiceW(schSCManager,         // SCM database
+                              serviceName.c_str(),  // name of service
+                              accessService);       // access
 
     if (schService == NULL)
     {
@@ -437,7 +436,7 @@ int ServiceController::trataErro(DWORD error, std::string detailError)
         this->iLastError = 16;
     } else {
 //        this->lastError = detailError + ": Desconhecido - " + std::to_string(error);
-        this->lastError = detailError + ": Desconhecido - ";
+        this->lastError = detailError + ": Desconhecido";
         this->iLastError = -1;
     }
 
