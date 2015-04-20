@@ -7,8 +7,8 @@
  *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
  *
  *-----------------------------------------------------------------------------------------*/
-#ifndef TESTINSTALLCACIC_H
-#define TESTINSTALLCACIC_H
+#ifndef TESTEINSTALLCACIC_H
+#define TESTEINSTALLCACIC_H
 
 #include <cacic_comm.h>
 #include <ccacic.h>
@@ -91,4 +91,4 @@ private slots:
     void cleanupTestCase();
 };
 
-#endif // TESTINSTALLCACIC_H
+#endif // TESTEINSTALLCACIC_H

@@ -248,7 +248,7 @@ void CacicTimer::iniciarThread(){
             }
         }
         //Deve ser enviado tendo ou não módulos.
-//        enviarLogs();
+        enviarLogs();
     }
 }
 

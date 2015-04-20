@@ -20,7 +20,7 @@
 #define ROTA_CONFIRMA "/ws/neo/confirma"
 #define ROTA_COLETA "/ws/neo/coleta"
 #define ROTA_COLETA_DIFF "/ws/neo/modifications"
-#define ROTA_LOG "/ws/neo/logs"
+#define ROTA_LOG "/ws/neo/log"
 #define ROTA_MAPA "/ws/neo/mapa"
 #define LOG_DAEMON "Cacic Daemon"
 #define CHKSYS "Check Cacic"
