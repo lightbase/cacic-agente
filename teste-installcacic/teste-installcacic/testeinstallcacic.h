@@ -17,6 +17,7 @@ public slots:
 
 private slots:
     void initTestCase();
+    void verificaInstalacaoMsi();
     void cacicNaoInstalado();
     void cleanupTestCase();
 };

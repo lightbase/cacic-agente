@@ -16,6 +16,9 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += testeinstallcacic.cpp
-HEADERS += testeinstallcacic.h
+SOURCES += testeinstallcacic.cpp \
+    ../../installcacic-standalone/main.cpp \
+    ../../installcacic-standalone/installcacicsa.cpp
+HEADERS += testeinstallcacic.h \
+    ../../installcacic-standalone/installcacicsa.h
 
