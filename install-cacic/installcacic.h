@@ -1,15 +1,25 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
 #ifndef INSTALLCACIC_H
 #define INSTALLCACIC_H
 
 #include <QObject>
 #include <QtCore>
+#include <QLocalSocket>
 #include <cacic_comm.h>
 #include <cacic_computer.h>
 #include <ccacic.h>
 #include <stdlib.h>
 #include <servicecontroller.h>
 #include "iostream"
-#include "QLogger.h"
+#include "logcacic.h"
 
 class InstallCacic : public QObject
 {
@@ -25,17 +35,18 @@ public:
     void registro();
 
 private:
+    LogCacic *logcacic;
     void uninstall();
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
-    CCacic oCacic;
-    QLogger::QLoggerManager *logManager;
     QString applicationDirPath;
+    QString cacicMainFolder;
     void parametrosIncorretos();
     void updateService();
     void configurar(const QMap<QString, QString> &param);
     void install();
+    void forcaColeta();
 
 signals:
     void finished();

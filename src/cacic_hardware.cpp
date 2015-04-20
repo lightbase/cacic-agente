@@ -1,18 +1,13 @@
 #include "cacic_hardware.h"
 cacic_hardware::cacic_hardware()
 {
-    QDir dir;
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
-                               "/Logs/cacic.log","Gercols (hardware)",QLogger::InfoLevel);
-    logManager->addDestination(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() +
-                               "/Logs/cacic.log","Gercols (hardware)",QLogger::ErrorLevel);
+    logcacic = new LogCacic(LOG_GERCOLS_HARDWARE, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
 }
 
 cacic_hardware::~cacic_hardware()
 {
-    logManager->closeLogger();
-    delete logManager;
+    logcacic->~LogCacic();
+    delete logcacic;
 }
 
 void cacic_hardware::iniciaColeta()
@@ -28,7 +23,7 @@ void cacic_hardware::iniciaColeta()
 
     // se o shell retorna erro ao tentar utilizar o lshw ou o dmidecode, instala o mesmo
     if( console("lshw").contains("/bin/sh:") ){
-        QLogger::QLog_Info("Gercols (hardware)", "lshw nao estava instalado.");
+        logcacic->escrever(LogCacic::InfoLevel, "lshw nao estava instalado.");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm lshw");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
@@ -37,7 +32,7 @@ void cacic_hardware::iniciaColeta()
     }
 
     if( console("dmidecode").contains("/bin/sh:") ){
-        QLogger::QLog_Info("Gercols (hardware)", "dmidecode nao estava instalado");
+        logcacic->escrever(LogCacic::InfoLevel, "dmidecode nao estava instalado");
         if(operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH)
             console("pacman -S --needed --noconfirm dmidecode");
         else if(operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
@@ -84,7 +79,7 @@ QJsonObject cacic_hardware::coletaWin()
     if (!wmiResult.isNull()){
         QJsonObject tmp = wmiResult.toObject();
         tmp["Version"] = QJsonValue::fromVariant(QVariant(wmiResult.toObject()["SMBIOSBIOSVersion"].toString()));
-        tmp["ReleaseDate"] = QJsonValue::fromVariant(QVariant(oCacic.padronizarData(wmiResult.toObject()["ReleaseDate"].toString())));
+        tmp["ReleaseDate"] = QJsonValue::fromVariant(QVariant(CCacic::padronizarData(wmiResult.toObject()["ReleaseDate"].toString())));
         hardware["Win32_BIOS"] = tmp;
     }
     //Win32_BaseBoard
@@ -230,7 +225,9 @@ QJsonObject cacic_hardware::coletaWin()
     wmiResult = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!wmiResult.isNull()){
         QJsonObject osJson = wmiResult.toObject();
-        osJson["InstallDate"] = QJsonValue::fromVariant(QVariant(oCacic.padronizarData(wmiResult.toObject()["InstallDate"].toString())));
+        QJsonValue osArchitecture = wmi::wmiSearch("Win32_OperatingSystem", QStringList("OSArchitecture"));
+        if (!osArchitecture.isNull()) osJson["OSArchitecture"] = osArchitecture.toObject()["OSArchitecture"];
+        osJson["InstallDate"] = QJsonValue::fromVariant(QVariant(CCacic::padronizarData(wmiResult.toObject()["InstallDate"].toString())));
         hardware["OperatingSystem"] = osJson;
     }
     //Win32_SystemSlot
@@ -300,7 +297,7 @@ QJsonObject cacic_hardware::coletaLinux()
     console("lshw -json >> lshwJson.json");
 
 
-    QJsonObject lshwJson = oCacic.getJsonFromFile("lshwJson.json")["children"].toArray().first().toObject();
+    QJsonObject lshwJson = CCacic::getJsonFromFile("lshwJson.json")["children"].toArray().first().toObject();
 
     if( lshwJson.contains("id") && lshwJson["id"] == QJsonValue::fromVariant(QString("core")) ) {
         if ( lshwJson["children"].isArray() ){
@@ -353,11 +350,16 @@ QJsonObject cacic_hardware::coletaLinux()
 
     }
 
-    if ( getuid() != 0 ) qDebug() << "Coleta de Bios e Motherboard requer root.";
+    if ( getuid() != 0 ) logcacic->escrever(LogCacic::InfoLevel, "Coleta de Bios e Motherboard requer root.");
+//    qDebug() << "OS";
     coletaLinuxOperatingSystem(hardware);
+//    qDebug() << "BIOS";
     coletaLinuxBios(hardware);
+//    qDebug() << "Motherboard";
     coletaLinuxMotherboard(hardware);
+//    qDebug() << "Notebook";
     coletaLinuxIsNotebook(hardware);
+//    qDebug() << "Printers";
     coletaLinuxPrinters(hardware);
 
     if(lshwFile.exists()) {
@@ -386,7 +388,7 @@ void cacic_hardware::coletaLinuxOperatingSystem(QJsonObject &hardware){
         QStringList auxList = data.split("\n");
         if (auxList.size() > 0)
             data = auxList.first();
-        so["InstallDate"] = oCacic.padronizarData(data);
+        so["InstallDate"] = CCacic::padronizarData(data);
     } else
         so["InstallDate"] = QString("00/00/0000");
     hardware["OperatingSystem"] = so;
@@ -398,7 +400,7 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 
     memory["Caption"] = component["description"];
     memory["DeviceLocator"] = component["physid"];
-    memory["Capacity"] = QJsonValue::fromVariant(oCacic.convertDouble(component["size"].toDouble(),0));
+    memory["Capacity"] = QJsonValue::fromVariant(CCacic::convertDouble(component["size"].toDouble(),0));
 
     QStringList consoleOutput;
     consoleOutput = console("dmidecode --type 17").split("\n", QString::SkipEmptyParts);
@@ -518,7 +520,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         pciMember["logicalname"] = pciJson["logicalname"];
         pciMember["serial"] = pciJson["serial"];
         pciMember["capacity"] = QJsonValue::fromVariant(
-                    oCacic.convertDouble(pciJson["capacity"].toDouble(), 0));
+                    CCacic::convertDouble(pciJson["capacity"].toDouble(), 0));
 
         //        hardware["ethernet_card"] = pciMember;
         pciNetwork.append(pciMember);
@@ -526,8 +528,8 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
         pciMember["Description"] = pciJson["description"];
         pciMember["Product"] = pciJson["product"];
         pciMember["Vendor"] = pciJson["vendor"];
-        pciMember["Width"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["width"].toDouble(),0) );
-        pciMember["Clock"] = QJsonValue::fromVariant(oCacic.convertDouble(pciJson["clock"].toDouble(),0) );
+        pciMember["Width"] = QJsonValue::fromVariant(CCacic::convertDouble(pciJson["width"].toDouble(),0) );
+        pciMember["Clock"] = QJsonValue::fromVariant(CCacic::convertDouble(pciJson["clock"].toDouble(),0) );
 
 
         hardware["Win32_PCMCIAController"] = pciMember;
@@ -552,7 +554,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
         dispositivo["Model"] = ioJson["product"];
         dispositivo["Name"] = ioJson["logicalname"];
         //        dispositivo["serial"] = ioJson["serial"];
-        dispositivo["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(ioJson["size"].toDouble(),0));
+        dispositivo["Size"] = QJsonValue::fromVariant(CCacic::convertDouble(ioJson["size"].toDouble(),0));
 
         foreach(QJsonValue partitionValue, ioJson["children"].toArray() ) {
             QJsonObject partitionObject = partitionValue.toObject();
@@ -613,9 +615,9 @@ void cacic_hardware::coletaGenericPartitionInfo(QJsonObject &newPartition, const
     newPartition["Description"] = partitionObject["description"];
 
     if( !partitionObject["size"].isNull() )
-        newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["size"].toDouble(),0));
+        newPartition["Size"] = QJsonValue::fromVariant(CCacic::convertDouble(partitionObject["size"].toDouble(),0));
     else
-        newPartition["Size"] = QJsonValue::fromVariant(oCacic.convertDouble(partitionObject["capacity"].toDouble(),0)
+        newPartition["Size"] = QJsonValue::fromVariant(CCacic::convertDouble(partitionObject["capacity"].toDouble(),0)
                 + " " + partitionObject["units"].toString());
 
     //    if ( !partitionObject["capabilities"].toObject()["primary"].isNull() )
@@ -713,7 +715,10 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
     QJsonObject notebook;
     consoleOutput= console("dmidecode -t 3").split("\n");
     foreach(QString line, consoleOutput){
-        if(line.contains("Type:") && (line.contains("Notebook") || line.contains("Portable")) ){
+        if(line.contains("Type:") && (line.contains("Notebook") ||
+                                      line.contains("Portable") ||
+                                      line.contains("Laptop")   ||
+                                      line.contains("Sub Notebook")) ) {
             notebook["Value"] = QJsonValue::fromVariant(true);
             hardware["IsNotebook"] = notebook;
             break;
@@ -729,6 +734,7 @@ void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
     QStringList consoleOutput;
 
     if( console("lpstat").contains("/bin/sh:") ) { // Cups não instalado
+        logcacic->escrever(LogCacic::ErrorLevel, "lpstat não instalado para verificação de impressoras.");
         return;
     } else {
 

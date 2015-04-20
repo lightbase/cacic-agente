@@ -57,8 +57,7 @@ QJsonObject CACIC_Computer::toJsonObject()
     json["networkDevices"] = network;
     json["nmComputador"] = QJsonValue::fromVariant(QString::fromStdString(this->computerName));
     json["versaoAgente"] = QJsonValue::fromVariant(Identificadores::AGENTE_VERSAO);
-    CCacic ccacic;
-    json["versaoGercols"] = QJsonValue::fromVariant(ccacic.getValueFromRegistry("Lightbase", "Cacic", "versao_gercols"));
+    json["versaoGercols"] = QJsonValue::fromVariant(CCacic::getValueFromRegistry("Lightbase", "Cacic", "versao_gercols"));
     return json;
 }
 
@@ -78,8 +77,8 @@ std::string CACIC_Computer::pegarUsu(){
     user = console("who").split(" ")[0];
 #endif
     if (user.isEmpty() || user.isNull()) {
-        CCacic oCacic;
-        QJsonObject oldColeta = oCacic.getJsonFromFile(oCacic.getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() + "/coleta.json");
+
+        QJsonObject oldColeta = CCacic::getJsonFromFile(CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString() + "/coleta.json");
         QString oldUser = oldColeta["computador"].toObject()["usuario"].toString();
 
         if (!oldUser.isEmpty() && !oldUser.isNull()) {

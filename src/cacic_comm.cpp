@@ -1,10 +1,8 @@
 #include "cacic_comm.h"
 
-CacicComm::CacicComm ()
+CacicComm::CacicComm (QString modulo, QString path)
 {
-    QDir dir;
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination( dir.currentPath() + "/Logs/cacic.log", Identificadores::LOG_CACIC_COMM, QLogger::InfoLevel);
+    logcacic = new LogCacic(modulo, path+"/Logs");
 }
 
 CacicComm::CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
@@ -129,7 +127,7 @@ QJsonObject CacicComm::login(bool *ok) {
     login["user"] = this->usuario;
     login["password"] = this->password;
     // Cria conexão e retorna Json da sessão
-    QJsonObject retorno = this->comm(Identificadores::ROTA_GETLOGIN, ok, QJsonObject::fromVariantMap(login), true);
+    QJsonObject retorno = this->comm(ROTA_GETLOGIN, ok, QJsonObject::fromVariantMap(login), true);
     if (*ok)
         this->session = retorno["reply"].toObject()["session"].toString();
     return retorno;
@@ -154,7 +152,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
 
     fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
-        QLogger::QLog_Error("Cacic Comm","fileDownload: fileHandler nâo pode abrir arquivo.");
+        logcacic->escrever(LogCacic::InfoLevel, "fileDownload: Não foi possível abrir o arquivo para escrita.");
         return false;
     }
 
@@ -171,6 +169,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     reply = manager.get(request);
 
     eventLoop.exec();
+    fileHandler->close();
 
     delete fileHandler;
     delete reply;
@@ -182,12 +181,13 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
 bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload)
 {
     QStringList splitPath = path.split("/");
-
-    fileHandler = new QFile((!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1]);
-
+    QString fileName = (!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1];
+    fileHandler = new QFile(fileName);
+    fileHandler->isReadable();
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
-        QLogger::QLog_Error("Cacic Comm","fileDownload: fileHandler nâo pode abrir arquivo.");
-        QLogger::QLog_Error("Cacic Comm",fileHandler->errorString());
+        logcacic->escrever(LogCacic::InfoLevel, "fileDownload: fileHandler nâo pode abrir arquivo.");
+        logcacic->escrever(LogCacic::ErrorLevel,"Erro ao abrir " + fileName + ": " +
+                                                 fileHandler->errorString());
         return false;
     }
 
@@ -203,14 +203,6 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
     if (!this->ftpPass.isEmpty())
         url.setPassword(ftpPass);
 
-    startRequest(url);
-
-    return true;
-}
-
-void CacicComm::startRequest(QUrl url)
-{
-
     QEventLoop eventLoop;
     QNetworkAccessManager qnam;
 
@@ -221,30 +213,39 @@ void CacicComm::startRequest(QUrl url)
             this, SLOT(fileDownloadReadyRead()));
     connect(this, SIGNAL(quitLoop()),
             &eventLoop, SLOT(quit()) );
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(setError(QNetworkReply::NetworkError)));
 
     eventLoop.exec();
+
+    if (reply->error() == QNetworkReply::NoError){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void CacicComm::fileDownloadFinished()
 {
     fileHandler->flush();
-
-    if (fileHandler->exists() && fileHandler->size() > 0){
-        fileHandler->setPermissions( fileHandler->permissions() |
-                                    QFileDevice::ExeUser |
-                                    QFileDevice::ExeOther);
-    } else {
+    reply->close();
+    if (reply->error() == QNetworkReply::NoError) {
+        if (fileHandler->exists() && fileHandler->size() > 0){
+            fileHandler->setPermissions( fileHandler->permissions() |
+                                        QFileDevice::ExeUser |
+                                        QFileDevice::ExeOther);
+            fileHandler->close();
+        } else {
+            fileHandler->remove();
+        }
+    } else if(fileHandler->exists()){
         fileHandler->remove();
     }
-    fileHandler->close();
-
-    reply->close();
 
     delete reply;
-    reply = 0;
 
     delete fileHandler;
-    fileHandler = 0;
+
     emit quitLoop();
 }
 
@@ -262,6 +263,20 @@ QString CacicComm::getFtpPass() const
 void CacicComm::setFtpPass(const QString &value)
 {
     ftpPass = value;
+}
+
+QNetworkReply::NetworkError *CacicComm::getError()
+{
+    QNetworkReply::NetworkError *retorno = this->lastError;
+    this->lastError = NULL;
+    return retorno;
+}
+
+void CacicComm::setError(QNetworkReply::NetworkError error)
+{
+    logcacic->escrever(LogCacic::ErrorLevel, "Ocorreu um erro ao tentar comunicação com " + this->urlGerente +
+                                             ": " + reply->errorString());
+    *this->lastError = error;
 }
 
 QString CacicComm::getFtpUser() const

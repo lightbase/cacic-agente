@@ -1,8 +1,5 @@
 #include "ccacic.h"
 
-CCacic::CCacic()
-{
-}
 /* getValueFromFile
  * Pega valor específico dentro de um arquivo
  * @parameter QString sectionName: nome da seção onde estará a key)
@@ -12,45 +9,45 @@ CCacic::CCacic()
  * @return QString: "" (vazio) Caso não encontre,
  *                  "0" caso não seja possível abrir o arquivo;
  */
-QString CCacic::getValueFromFile(QString sectionName, QString keyName, QString filePath)
-{
-    QFile file(filePath);
-    QString line = "";
-    sectionName = "[" + sectionName + "]";
-    keyName     = keyName + "=";
-    int sizeKeyName = keyName.size();
+//QString CCacic::getValueFromFile(QString sectionName, QString keyName, QString filePath)
+//{
+//    QFile file(filePath);
+//    QString line = "";
+//    sectionName = "[" + sectionName + "]";
+//    keyName     = keyName + "=";
+//    int sizeKeyName = keyName.size();
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return "0";
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//        return "0";
 
-    while (!file.atEnd()){
-        line = file.readLine();
-        if (line.contains(sectionName, Qt::CaseInsensitive)) {
-            do {
-                line = file.readLine();
-                if (line.contains(keyName, Qt::CaseInsensitive)) {
-                    file.close();
-                    return line.mid(sizeKeyName).trimmed();
-                }
-            } while (!file.atEnd());
-        }
-    }
-    file.close();
-    return "";
-}
+//    while (!file.atEnd()){
+//        line = file.readLine();
+//        if (line.contains(sectionName, Qt::CaseInsensitive)) {
+//            do {
+//                line = file.readLine();
+//                if (line.contains(keyName, Qt::CaseInsensitive)) {
+//                    file.close();
+//                    return line.mid(sizeKeyName).trimmed();
+//                }
+//            } while (!file.atEnd());
+//        }
+//    }
+//    file.close();
+//    return "";
+//}
 /*getValueFromTags
  * @parameter QString sectionName: Grupo onde está a chave;
  * @parameter QString keyName: chave que queremos para colocar o valor;
  * @parameter QString value: valor para colocar dentro da chave;
  * @parameter QString filePath: Local do arquivo;
  */
-void CCacic::setValueToFile(QString sectionName, QString keyName, QString value, QString filePath)
-{
-    QSettings settings(filePath, QSettings::IniFormat);
-    settings.beginGroup(sectionName);
-    settings.setValue(keyName, value);
-    settings.endGroup();
-}
+//void CCacic::setValueToFile(QString sectionName, QString keyName, QString value, QString filePath)
+//{
+//    QSettings settings(filePath, QSettings::IniFormat);
+//    settings.beginGroup(sectionName);
+//    settings.setValue(keyName, value);
+//    settings.endGroup();
+//}
 
 /*getValueFromTags
  * @parameter QString fullString: string onde será pesquisado o valor desejado;
@@ -59,15 +56,15 @@ void CCacic::setValueToFile(QString sectionName, QString keyName, QString value,
  *
  * @return: QString: valor entre as tags.
  */
-QString CCacic::getValueFromTags(QString fullString, QString tag, QString tagType) {
-    QString tagFim = tagType.mid(0,1) + "/" + tag + tagType.mid(1);
-    int tagSize;
-    tag = tagType.mid(0,1) + tag + tagType.mid(1);
-    tagSize = tag.size();
-    return fullString.mid(fullString.indexOf(tag) + tagSize,
-                          fullString.indexOf(tagFim) -
-                          (fullString.indexOf(tag) + tagSize)).trimmed();
-}
+//QString CCacic::getValueFromTags(QString fullString, QString tag, QString tagType) {
+//    QString tagFim = tagType.mid(0,1) + "/" + tag + tagType.mid(1);
+//    int tagSize;
+//    tag = tagType.mid(0,1) + tag + tagType.mid(1);
+//    tagSize = tag.size();
+//    return fullString.mid(fullString.indexOf(tag) + tagSize,
+//                          fullString.indexOf(tagFim) -
+//                          (fullString.indexOf(tag) + tagSize)).trimmed();
+//}
 /*createFolder
  * @parameter QString path: caminho onde será criado o diretório, sendo criado toda a árvore se necessário.
  * @return bool: true se conseguir ou já existir, false se não.
@@ -322,7 +319,7 @@ bool CCacic::verificarRoot(){
  ***********************************************************/
 bool CCacic::verificarCacicInstalado() {    
 #ifdef Q_OS_WIN
-    ServiceController service(Identificadores::CACIC_SERVICE_NAME.toStdWString());
+    ServiceController service(QString(CACIC_SERVICE_NAME).toStdWString());
     if(service.isInstalled() || service.isRunning()){
         return true;
     }else{
@@ -354,12 +351,15 @@ QString CCacic::padronizarData(QString data){
 #elif defined (Q_OS_LINUX)
     if (!data.isEmpty() && !data.isNull()){
         QString dia, mes, ano;
-        if (data.split(" ").at(10).isEmpty())
-            dia = data.split(" ").at(11);
-        else
-            dia = data.split(" ").at(10);
-        mes = getMesFromString(data.split(" ").at(9));
-        ano = data.split(" ").takeLast();
+        QStringList aux = data.split(" ");
+        if (aux.size() >= 10){
+            if (aux.at(10).isEmpty() && aux.size() >= 11)
+                dia = aux.at(11);
+            else
+                dia = aux.at(10);
+            mes = getMesFromString(aux.at(9));
+            ano = aux.takeLast();
+        }
         return QString(dia+"/" + mes + "/" + ano);
     }
 #endif
@@ -388,63 +388,42 @@ void CCacic::salvarVersao(QString modulo){
     setValueToRegistry("Lightbase", "Cacic", ver);
 }
 
-/*Getters/Setters
- * Begin:
- */
-QString CCacic::getCacicMainFolder() const
+bool CCacic::findProc(const char *name)
 {
-    return cacicMainFolder;
-}
+    QDir dir;
+    char buf[512];
 
-void CCacic::setCacicMainFolder(const QString &value)
-{
-    cacicMainFolder = value;
-}
-QString CCacic::getMainModuleName() const
-{
-    return mainModuleName;
-}
+    long  pid;
+    char pname[100] = {0,};
+    char state;
+    FILE *fp=NULL;
 
-void CCacic::setMainModuleName(const QString &value)
-{
-    mainModuleName = value;
-}
-QString CCacic::getUrlGerente() const
-{
-    return urlGerente;
-}
+    dir.setPath("/proc");
+    if (!dir.isReadable()) {
+        return false;
+    }
 
-void CCacic::setUrlGerente(const QString &value)
-{
-    urlGerente = value;
-}
-QString CCacic::getGerColsInfFilePath() const
-{
-    return gerColsInfFilePath;
-}
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs);
+    for (int i = 0; i<list.size(); i++){
+        long lpid = atol(list.at(i).baseName().toStdString().c_str());
+        if(lpid < 0)
+            continue;
+        snprintf(buf, sizeof(buf), "/proc/%ld/stat", lpid);
+        fp = fopen(buf, "r");
 
-void CCacic::setGerColsInfFilePath(const QString &value)
-{
-    gerColsInfFilePath = value;
-}
-QString CCacic::getChksisInfFilePath() const
-{
-    return chksisInfFilePath;
-}
+        if (fp) {
+            if ( (fscanf(fp, "%ld (%[^)]) %c", &pid, pname, &state)) != 3 ){
+                fclose(fp);
+                return false;
+            }
+            if (!strcmp(pname, name)) {
+                fclose(fp);
+                return true;
+            }
+            fclose(fp);
+        }
+    }
 
-void CCacic::setChksisInfFilePath(const QString &value)
-{
-    chksisInfFilePath = value;
-}
-QString CCacic::getChaveCrypt() const
-{
-    return chaveCrypt;
-}
 
-void CCacic::setChaveCrypt(const QString &value)
-{
-    chaveCrypt = value;
+    return false;
 }
-/*Getters/Setters
- * End.
- */

@@ -1,5 +1,14 @@
-#ifndef TESTINSTALLCACIC_H
-#define TESTINSTALLCACIC_H
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
+#ifndef TESTEINSTALLCACIC_H
+#define TESTEINSTALLCACIC_H
 
 #include <cacic_comm.h>
 #include <ccacic.h>
@@ -17,7 +26,7 @@
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
 #include <ccoleta.h>
-#include <QLogger.h>
+#include <logcacic.h>
 #include <checkmodules.h>
 #include <servicecontroller.h>
 
@@ -29,7 +38,6 @@ public:
 
 private:
     CacicComm *OCacicComm;
-    CCacic OCacic;
     CACIC_Computer OCacicComp;
     cacic_software OCacicSoftware;
     cacic_hardware OCacicHardware;
@@ -48,11 +56,12 @@ public slots:
 private slots:
     void initTestCase();
     void testCommStatus();
-    void testGetAndSetValueFromFile();
-    void testGetValueFromTags();
+//    void testGetAndSetValueFromFile();
+//    void testGetValueFromTags();
     void testCreateFolder();
     void testDeleteFolder();
     void testDeleteFile();
+    void testProcFind();
     void testInterfaceDeRede();
     void testConsole();
     void testPegarUsu();
@@ -72,14 +81,14 @@ private slots:
     void testConvertDouble();
     void testGetTest();
     void testGetConfig();
-    void testColetaSoftware();
-    void testColetaHardware();
+    void testDownload();
+    void testGetModulesValues();
+    void testColeta();
     void testLogger();
     void testEnviaColeta();
-    void testDownload();
     void testServiceController();
-    void testGetModulesValues();
+    void testStopCheckCacicService();
     void cleanupTestCase();
 };
 
-#endif // TESTINSTALLCACIC_H
+#endif // TESTEINSTALLCACIC_H

@@ -1,3 +1,13 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
+
 #ifndef CCOLETA_H
 #define CCOLETA_H
 #include <QtCore>
@@ -8,19 +18,20 @@
 #include <cacic_computer.h>
 #include <cacic_software.h>
 #include <cacic_hardware.h>
-
+#include "logcacic.h"
 
 class CColeta : public QObject
 {
     Q_OBJECT
 
 private:
-    CCacic oCacic;
+
     CACIC_Computer oComputer;
     cacic_software oSoftware;
     cacic_hardware oHardware;
     bool hardwareIsFinish;
     bool softwareIsFinish;
+    LogCacic *logcacic;
 
 public:
     explicit CColeta(QObject *parent = 0);

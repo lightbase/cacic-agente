@@ -2,23 +2,18 @@
 
 CheckModules::CheckModules(const QString &workingPath, const QString &workingModule)
 {
-
-    logManager = QLogger::QLoggerManager::getInstance();
-    logManager->addDestination(workingPath + "/Logs/cacic.log", "CheckModules",QLogger::InfoLevel);
-    logManager->addDestination(workingPath + "/Logs/cacic.log", "CheckModules",QLogger::ErrorLevel);
-    oCacic.setCacicMainFolder(workingPath);
-
-    QDir tempPath(oCacic.getCacicMainFolder() + "/temp");
+    logcacic = new LogCacic(LOG_CHECKMODULES, workingPath+"/Logs");
+    cacicMainFolder = workingPath;
+    QDir tempPath(cacicMainFolder + "/temp");
     if (!tempPath.exists()){
-        tempPath.mkdir(oCacic.getCacicMainFolder() + "/temp");
+        tempPath.mkdir(cacicMainFolder + "/temp");
     }
 }
 
 CheckModules::~CheckModules()
 {
-    logManager->closeLogger();
-    logManager->wait();
-    delete logManager;
+    logcacic->~LogCacic();
+    delete logcacic;
 }
 
 QVariantMap CheckModules::getModules() const {
@@ -32,7 +27,7 @@ QVariantMap CheckModules::getModules() const {
 bool CheckModules::start(){
     bool ok = true;
     QJsonObject configFile;
-    configFile = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json");
+    configFile = CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json");
     if (!configFile.isEmpty()) {
         //pega url do gerente.
         this->applicationUrl = configFile["agentcomputer"].toObject()["metodoDownload"].toObject()["url"].toString();
@@ -45,17 +40,17 @@ bool CheckModules::start(){
             modules[modulo.toObject()["nome"].toString()] = modulo.toObject()["hash"].toString();
         }
     } else {
-        QLogger::QLog_Info("CheckModules", QString("Erro ao pegar informações do arquivo " + oCacic.getCacicMainFolder() + "/getConfig.json"));
+        logcacic->escrever(LogCacic::ErrorLevel, QString("Erro ao pegar informações do arquivo " + cacicMainFolder + "/getConfig.json"));
     }
     if (!modules.isEmpty()){
         QVariantMap::const_iterator i = modules.constBegin();
         do {
-//            qDebug() << "Módulo: " << i.key() << " | Hash: " << i.value().toString();
+            //            qDebug() << "Módulo: " << i.key() << " | Hash: " << i.value().toString();
             ok = (this->verificaModulo(i.key(), i.value().toString()) && ok);
             i++;
         } while (i != modules.constEnd());
     } else {
-        QLogger::QLog_Info("CheckModules", QString("Não há modulo a ser verificado."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Não há modulo a ser verificado."));
     }
 
     return ok;
@@ -66,42 +61,58 @@ bool CheckModules::start(){
  *******************************************************/
 bool CheckModules::verificaModulo(const QString &moduloName, const QString &moduloHash)
 {
-
     QFile *modulo, *moduloTemp;
     bool downloadOk = false;
     //pega o arquivo do módulo selecionado
-    modulo = new QFile(oCacic.getCacicMainFolder() + "/" + moduloName);
-    modulo->open(QFile::ReadOnly);
-    moduloTemp = new QFile(oCacic.getCacicMainFolder() + "/temp/" + moduloName);
-    moduloTemp->open(QFile::ReadOnly);
+#ifdef Q_OS_WIN
+    if (moduloName == "install-cacic.exe")
+        modulo = new QFile(cacicMainFolder + "/bin/" + moduloName);
+    else
+        modulo = new QFile(cacicMainFolder + "/" + moduloName);
+#else
+    modulo = new QFile(cacicMainFolder + "/" + moduloName);
+#endif
+    moduloTemp = new QFile(cacicMainFolder + "/temp/" + moduloName);
+    if (modulo->exists()) {
+        if (!modulo->open(QFile::ReadOnly)) {
+            logcacic->escrever(LogCacic::ErrorLevel, "#2 Falha ao tentar recuperar hash do módulo atual");
+            return false;
+        }
+    }
+    QString filePath = modulo->exists() ? cacicMainFolder + "/temp/":
+                                          cacicMainFolder + "/";
     //verifica se o módulo não existe e se o tamaho não é maior que 1 byte ou se o hash é diferente ao informado pelo json
-    if ((!(modulo->exists() && modulo->size() > 1) ||
-         !oCacic.Md5IsEqual(modulo->readAll(), moduloHash))){
-
-        QString filePath;
-        filePath = modulo->exists() ? oCacic.getCacicMainFolder() + "/temp/":
-                                      oCacic.getCacicMainFolder() + "/";
+    if ((!modulo->exists() || !CCacic::Md5IsEqual(modulo->readAll(), moduloHash))) {
         modulo->close();
-
-        QLogger::QLog_Info("CheckModules", QString("Atualização de " + moduloName + " necessária."));
+        logcacic->escrever(LogCacic::InfoLevel, QString("Atualização de " + moduloName + " necessária."));
+        logcacic->escrever(LogCacic::InfoLevel, "Baixando em: " + filePath);
         QFile *novoModulo;
         QJsonObject metodoDownload;
         //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
-        metodoDownload = oCacic.getJsonFromFile(oCacic.getCacicMainFolder() + "/getConfig.json")
-                            ["agentcomputer"].toObject()
-                            ["metodoDownload"].toObject();
+        metodoDownload = CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json")
+                ["agentcomputer"].toObject()
+                ["metodoDownload"].toObject();
         if (!metodoDownload.isEmpty()){
             //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
-            if ((!(moduloTemp->exists() && moduloTemp->size()>1) || !oCacic.Md5IsEqual(moduloTemp->readAll(), moduloHash))){
+            if (moduloTemp->exists()) {
+                if (!moduloTemp->open(QFile::ReadOnly)){
+                    logcacic->escrever(LogCacic::ErrorLevel, "#3 Falha ao tentar recuperar hash do módulo da pasta temporária.");
+                    return false;
+                }
+            }
+            if ((!moduloTemp->exists() || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
                 moduloTemp->close();
-                oCacicComm.setFtpUser(metodoDownload["usuario"].toString());
-                oCacicComm.setFtpPass(metodoDownload["senha"].toString());
+                CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
+                if (!metodoDownload["usuario"].isNull())
+                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                if (!metodoDownload["senha"].isNull())
+                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
 
-                downloadOk = oCacicComm.fileDownload(metodoDownload["tipo"].toString(),
-                                                    this->applicationUrl,
-                                                    metodoDownload["path"].toString() +
-                                                    (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
-                                                    filePath);
+                downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
+                        this->applicationUrl,
+                        metodoDownload["path"].toString() +
+                        (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
+                        filePath);
             } else {
                 moduloTemp->close();
                 return true;
@@ -110,25 +121,25 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             if (downloadOk){
                 //faz uma verificação do novo módulo.
                 if (!(novoModulo->exists() && novoModulo->size()>1)){
-                    QLogger::QLog_Info("CheckModules",
-                                        QString("Falha ao baixar " + moduloName +
-                                                "("+metodoDownload["tipo"].toString()+ "://" +
-                                                this->applicationUrl + metodoDownload["path"].toString() +
-                                                (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
+                    logcacic->escrever(LogCacic::ErrorLevel,
+                                       QString("#4 Falha ao baixar " + moduloName +
+                                               "("+metodoDownload["tipo"].toString()+ "://" +
+                                       this->applicationUrl + metodoDownload["path"].toString() +
+                            (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
                     novoModulo->remove();
                     return false;
                 } else {
-                    QLogger::QLog_Info("CheckModules", QString(moduloName + " baixado com sucesso!"));
+                    logcacic->escrever(LogCacic::InfoLevel, QString(moduloName + " baixado com sucesso!"));
                     return true;
                 }
             } else {
-                QLogger::QLog_Info("CheckModules", QString("Problemas durante o download de " + moduloName));
+                logcacic->escrever(LogCacic::ErrorLevel, QString("#5 Problemas durante o download de " + moduloName));
                 return false;
             }
         } else {
-            QLogger::QLog_Info("CheckModules", QString("Não foi possível recuperar json de " +
-                                                        oCacic.getCacicMainFolder() + "/getConfig.json ao tentar baixar " +
-                                                        moduloName));
+            logcacic->escrever(LogCacic::ErrorLevel, QString("#6 Não foi possível recuperar json de " +
+                                                             cacicMainFolder + "/getConfig.json ao tentar baixar " +
+                                                             moduloName));
             return false;
         }
     } else {

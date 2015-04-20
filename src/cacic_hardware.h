@@ -1,3 +1,13 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
+
 #ifndef CACIC_HARDWARE_H
 #define CACIC_HARDWARE_H
 #include <ccacic.h>
@@ -6,7 +16,7 @@
 #include <cmath>
 #include <console.h>
 #include <operatingsystem.h>
-#include "QLogger.h"
+#include "logcacic.h"
 #ifdef Q_OS_WIN
     #include <wmi.h>
 #elif defined(Q_OS_LINUX)
@@ -41,9 +51,8 @@ private:
     void coletaLinuxPrinters(QJsonObject &hardware);
 #endif
 
-    CCacic oCacic;
     QJsonObject coletaHardware;
-    QLogger::QLoggerManager *logManager;
+    LogCacic *logcacic;
 };
 
 #endif // CACIC_HARDWARE_H

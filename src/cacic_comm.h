@@ -1,3 +1,12 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
 #ifndef CACIC_COMM_H
 #define CACIC_COMM_H
 
@@ -15,6 +24,7 @@
 #include <QJsonDocument>
 #include "QLogger.h"
 #include "identificadores.h"
+#include <logcacic.h>
 
 class CacicComm : public QObject{
 
@@ -22,7 +32,7 @@ class CacicComm : public QObject{
 
 public:
 
-    CacicComm ();
+    CacicComm (QString modulo, QString path);
     CacicComm (const QString &urlGerente,          const QString &operatingSystem,     const QString &computerSystem,  const QString &csCipher,
                const QString &csDebug,             const QString &csCompress,          const QString &httpUserAgent,   const QString &moduleFolderName,
                const QString &moduleProgramName,   const QString &networkConfiguration,const QString &phpAuthPw,       const QString &phpAuthUser,
@@ -49,13 +59,16 @@ public:
     void setFtpUser(const QString &value);
     QString getFtpPass() const;
     void setFtpPass(const QString &value);
+    QNetworkReply::NetworkError* getError();
+
+public slots:
+    void setError(QNetworkReply::NetworkError error);
 
 signals:
     void quitLoop();
 //    void fileDownloadFinished();
 
 private slots:
-    void startRequest(QUrl url);
     void fileDownloadFinished();
     void fileDownloadReadyRead();
 private:
@@ -71,8 +84,8 @@ private:
 
     QFile *fileHandler;
     QNetworkReply *reply;
-
-    QLogger::QLoggerManager *logManager;
+    QNetworkReply::NetworkError *lastError;
+    LogCacic *logcacic;
 
 };
 #endif // CACIC_COMM_H

@@ -1,19 +1,25 @@
-#-------------------------------------------------
+#-----------------------------------------------------------------------------------------
 #
-# Project created by QtCreator 2014-08-13T13:28:50
+# Project Cacic Agente, module gercols, created by Lightbase
 #
-#-------------------------------------------------
+# Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+#             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+#
+#-----------------------------------------------------------------------------------------
 
-##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o quarto número) AO REALIZAR QUALQUER BUILD.#
-VERSION   = 3.1.8
-DEFINES  += AGENTE_VERSION=\"$$VERSION\"
-##############################################################################
+VERSION_MAJOR = 3
+VERSION_MINOR = 1
+VERSION_BUILD = 13
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+           "VERSION_MINOR=$$VERSION_MINOR"\
+           "VERSION_BUILD=$$VERSION_BUILD"
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 QT       += core
 QT       += network
 QT       -= gui
-
+CONFIG += debug_and_release
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET    = gercols
@@ -34,7 +40,8 @@ SOURCES += \
     ../src/wmi.cpp \
     ../src/QLogger.cpp \
     ../src/identificadores.cpp \
-    ../src/servicecontroller.cpp
+    ../src/servicecontroller.cpp \
+    ../src/logcacic.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -50,7 +57,8 @@ HEADERS += \
     ../src/wmi.h \
     ../src/QLogger.h \
     ../src/identificadores.h \
-    ../src/servicecontroller.h
+    ../src/servicecontroller.h \
+    ../src/logcacic.h
 
 CONFIG   += console
 CONFIG   -= app_bundle

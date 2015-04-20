@@ -1,10 +1,19 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
 #ifndef SOCKETLISTENER_H
 #define SOCKETLISTENER_H
 
 #include <QObject>
-#include <QTcpServer>
-#include <QTcpSocket>
-#include "QLogger.h"
+#include <QLocalServer>
+#include <QLocalSocket>
+#include "logcacic.h"
 #include "identificadores.h"
 #include "cacicthread.h"
 #include "ccacic.h"
@@ -16,7 +25,6 @@ class SocketListener : public QObject
 public:
     explicit SocketListener(QString DirPath, QObject *parent = 0);
     ~SocketListener();
-    void setPort_no(int value);
 
 signals:
     void forcaColeta();
@@ -24,15 +32,12 @@ public slots:
     void newConnection();
 
 private:
-    QTcpServer *server;
-    QLogger::QLoggerManager *logManager;
+    QLocalServer *server;
+    LogCacic *logcacic;
     QString applicationDirPath;
     CacicThread *cacicthread;
-    CCacic *ccacic;
     CacicComm *oCacicComm;
     QMutex *cMutex;
-    int port_no = 1500; //porta padrão
-    void iniciarInstancias();
     void iniciarColetaForcada();
 };
 

@@ -1,3 +1,13 @@
+/*-----------------------------------------------------------------------------------------
+ *
+ * Project Cacic Agente
+ *    File created by Lightbase
+ *
+ * Developers: Eric Menezes Noronha (eric.m.noronha@lightbase.com.br); GitHub: ericmenezes
+ *             Thiago Rocha         (thiago.rocha@lightbase.com.br)  ;
+ *
+ *-----------------------------------------------------------------------------------------*/
+
 #ifndef CCACIC_H
 #define CCACIC_H
 
@@ -18,22 +28,20 @@
 //#include "../src/crypto++/include/modes.h"
 #include <QCryptographicHash>
 #include <console.h>
-#include "servicecontroller.h"
-#include "identificadores.h"
+#include <servicecontroller.h>
+#include <identificadores.h>
 
-class CCacic
-{
-public:
-    CCacic();
-    QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
-    void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
-    QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
-    //    QString enCrypt(std::string str_in, std::string iv);
-    //    QString deCrypt(std::string str_in, std::string iv);
+namespace CCacic {
+
+//    QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
+//    void setValueToFile(QString sectionName, QString keyName, QString value, QString filePath);
+//    QString getValueFromTags(QString fullString, QString tag, QString tagType = "[]");
+//    QString enCrypt(std::string str_in, std::string iv);
+//    QString deCrypt(std::string str_in, std::string iv);
     bool createFolder(QString path);
     bool deleteFolder(QString path);
     bool deleteFile(QString path);
-    //    QJsonValue jsonValueFromJsonString(QString json, QString key);
+//    QJsonValue jsonValueFromJsonString(QString json, QString key);
     bool setJsonToFile(QJsonObject json, QString filepath);
     QJsonObject getJsonFromFile(QString filepath);
     QString startProcess(QString pathprogram, bool wait, bool *ok, QStringList arguments = QStringList());
@@ -48,36 +56,9 @@ public:
     bool verificarRoot();
     bool verificarCacicInstalado();
     QString padronizarData(QString data);
-    QString getMesFromString(QString mes);   
+    QString getMesFromString(QString mes);
     void salvarVersao(QString modulo);
-
-    //Geters/seters:
-
-    QString getCacicMainFolder() const;
-    void setCacicMainFolder(const QString &value);
-
-    QString getMainModuleName() const;
-    void setMainModuleName(const QString &value);
-
-    QString getUrlGerente() const;
-    void setUrlGerente(const QString &value);
-
-    QString getGerColsInfFilePath() const;
-    void setGerColsInfFilePath(const QString &value);
-
-    QString getChksisInfFilePath() const;
-    void setChksisInfFilePath(const QString &value);
-
-    QString getChaveCrypt() const;
-    void setChaveCrypt(const QString &value);
-
-private:
-    QString cacicMainFolder;
-    QString mainModuleName;
-    QString urlGerente;
-    QString gerColsInfFilePath;
-    QString chksisInfFilePath;
-    QString chaveCrypt;
+    bool findProc(const char *name);
 
 };
 
