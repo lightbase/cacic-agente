@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NoRoot</class>
+ <widget class="QMainWindow" name="NoRoot">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>440</width>
+    <height>114</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>440</width>
+    <height>114</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>440</width>
+    <height>114</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Instalação do Cacic</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>451</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>O Cacic deve ser executado com permissões de administrador.</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::PlainText</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btFechar">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>60</y>
+      <width>80</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Fechar</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <tabstops>
+  <tabstop>btFechar</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
