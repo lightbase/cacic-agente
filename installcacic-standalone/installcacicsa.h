@@ -14,16 +14,19 @@ public:
     bool downloadService(const std::string &rota, const std::string &path);
     bool installService();
     bool getConfig();
-    bool comparaHash(const std::string &hashLocal, const std::string &hashGerente);
+    bool comparaHash();
     bool verificaServico();
     bool installCacic();
     bool deleteCacic26();
     bool deleteCacic28();
+    bool setHashLocal(const std::string &hash);
+    bool setHashRemoto(const std::string &hash);
 private:
     std::string url;
     std::string user;
     std::string pass;
-
+    std::string hashLocal;
+    std::string hashRemoto;
 };
 
 #endif // INSTALLCACICSA_H

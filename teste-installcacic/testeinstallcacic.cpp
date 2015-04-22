@@ -14,6 +14,8 @@ void testeInstallcacic::initTestCase()
 {
     icsa = new InstallCacicSA("localhost","cacic","cacic123");
     sc   = new ServiceController(L"FakeServiceCacic");
+
+    hash = new std::string("CERTO");
 }
 
 void testeInstallcacic::testNaoInstalado()
@@ -27,6 +29,29 @@ void testeInstallcacic::testNaoInstalado()
     } else {
         QVERIFY(true);
     }
+}
+
+void testeInstallcacic::testConfig()
+{
+    std::string hash;
+    hash = "24212151";
+
+    // Testa primeiro com o hash errado. Deve retornar a operação de atualização
+    this->icsa->setHashLocal(hash);
+
+    // Busca configuração de hash no servidor
+    this->icsa->getConfig();
+
+    // Compara os dois. Devem ser diferentes
+    QVERIFY(!this->icsa->comparaHash());
+
+    // Agora testa com o hash certo. Deve retornar que está atualiza
+    this->icsa->setHashLocal(*this->hash);
+    this->icsa->getConfig();
+
+    // Compara os dois. Devem ser iguais
+    QVERIFY(this->icsa->comparaHash());
+
 }
 
 void testeInstallcacic::testMsiInstalado()

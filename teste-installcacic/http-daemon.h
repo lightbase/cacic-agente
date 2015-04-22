@@ -28,8 +28,10 @@
 
  private slots:
      void readClient();
-
      void discardClient();
+     QString processRoutes(const QString &rota);
+     QString getInstalaHash();
+     QString getDefaultRoute();
 
  private:
      bool disabled;

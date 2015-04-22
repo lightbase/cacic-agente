@@ -44,7 +44,19 @@ bool InstallCacicSA::installService()
 
 bool InstallCacicSA::getConfig()
 {
-    return false;
+    // FIXME: Adicionar classe de comunicação para enviar uma requisição real
+    this->setHashRemoto("CERTO");
+
+    return true;
+}
+
+bool InstallCacicSA::comparaHash()
+{
+    if(this->hashLocal != this->hashRemoto) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 bool InstallCacicSA::verificaServico()
@@ -74,5 +86,21 @@ bool InstallCacicSA::deleteCacic28()
     //verifica se há algum processo do cacic rodando e os mata.
     //Deleta arquivos da versão 2.8 da pasta do cacic.
     return false;
+}
+
+bool InstallCacicSA::setHashLocal(const std::string &hash)
+{
+    // Ajusta na classe o parâmetro hash para o módulo installcacic
+    this->hashLocal = hash;
+
+    return true;
+}
+
+bool InstallCacicSA::setHashRemoto(const std::string &hash)
+{
+    // Ajusta hash do servidor remoto
+    this->hashRemoto = hash;
+
+    return true;
 }
 

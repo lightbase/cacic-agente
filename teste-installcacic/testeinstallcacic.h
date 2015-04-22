@@ -19,6 +19,7 @@ private:
     InstallCacicSA *icsa;
     ServiceController *sc;
     HttpDaemon *daemon;
+    std::string *hash;
 
 signals:
 
@@ -27,6 +28,7 @@ public slots:
 private slots:
     void initTestCase();
     void testNaoInstalado();
+    void testConfig();
     void testMsiInstalado();
     void testServico();
     void testAtualizacao();

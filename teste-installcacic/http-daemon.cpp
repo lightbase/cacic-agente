@@ -38,11 +38,18 @@ void HttpDaemon::readClient()
         if (tokens[0] == "GET") {
             QTextStream os(socket);
             os.setAutoDetectUnicode(true);
-            os << "HTTP/1.0 200 Ok\r\n"
-                "Content-Type: text/html; charset=\"utf-8\"\r\n"
-                "\r\n"
-                "<h1>Nothing to see here</h1>\n"
-                << QDateTime::currentDateTime().toString() << "\n";
+
+            // Retorna dados de acordo com a rota solicitada processamento de acordo com a rota
+            QString rota;
+            rota = tokens[1];
+
+            os << this->processRoutes(rota);
+
+//            os << "HTTP/1.0 200 Ok\r\n"
+//                "Content-Type: text/html; charset=\"utf-8\"\r\n"
+//                "\r\n"
+//                "<h1>Nothing to see here</h1>\n"
+//                << QDateTime::currentDateTime().toString() << "\n";
             socket->close();
 
             //QtServiceBase::instance()->logMessage("Wrote to client");
@@ -61,4 +68,39 @@ void HttpDaemon::discardClient()
     socket->deleteLater();
 
     //QtServiceBase::instance()->logMessage("Connection closed");
+}
+
+QString HttpDaemon::getInstalaHash()
+{
+    QString retorno;
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: text/plain; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "CERTO\n";
+
+    return retorno;
+}
+
+QString HttpDaemon::getDefaultRoute()
+{
+    QString retorno;
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: text/plain; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "OK\n";
+
+    retorno += QDateTime::currentDateTime().toString();
+    retorno += "\n";
+
+    return retorno;
+}
+
+QString HttpDaemon::processRoutes(const QString &rota)
+{
+    // Processa a rota definida na variável executando um método para cada rota
+    if (rota == "/ws/neo/instala/hash") {
+        return this->getInstalaHash();
+    } else {
+        return this->getDefaultRoute();
+    }
 }
