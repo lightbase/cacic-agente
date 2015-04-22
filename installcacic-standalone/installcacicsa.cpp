@@ -44,7 +44,15 @@ bool InstallCacicSA::installService()
 
 bool InstallCacicSA::getConfig()
 {
-    return false;
+    bool check;
+    CommSA comm;
+    const char *route = "/ws/neo/config";
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    char* buffer;
+    check = comm.sendReq(buffer);
+    return check;
 }
 
 bool InstallCacicSA::verificaServico()

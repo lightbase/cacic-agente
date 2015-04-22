@@ -1,11 +1,11 @@
 #ifndef TESTEINSTALLCACIC_H
 #define TESTEINSTALLCACIC_H
 
+#include <../installcacic-standalone/installcacicsa.h>
 #include <QtTest>
 #include <QDebug>
 #include <iostream>
 #include <ccacic.h>
-#include <../installcacic-standalone/installcacicsa.h>
 #include <servicecontroller.h>
 #include <http-daemon.h>
 
@@ -26,6 +26,7 @@ public slots:
 
 private slots:
     void initTestCase();
+    void testGetConfig();
     void testNaoInstalado();
     void testMsiInstalado();
     void testServico();
