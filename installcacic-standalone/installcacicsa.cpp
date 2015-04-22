@@ -44,16 +44,18 @@ bool InstallCacicSA::installService()
 
 bool InstallCacicSA::getConfig()
 {
-
-    bool check;
-    CommSA comm;
-    const char *route = "/ws/neo/config";
+    std::string check;
+    const char *route = ROUTE_HASH;
     comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    char* buffer;
+    char *buffer;
     check = comm.sendReq(buffer);
-    return check;
+
+    // Ajusta hash remoto recebido do servidor
+    this->setHashRemoto(check);
+
+    return true;
 }
 
 bool InstallCacicSA::comparaHash()
@@ -106,6 +108,13 @@ bool InstallCacicSA::setHashRemoto(const std::string &hash)
 {
     // Ajusta hash do servidor remoto
     this->hashRemoto = hash;
+
+    return true;
+}
+
+bool InstallCacicSA::setPort(int port)
+{
+    this->comm.setPort(port);
 
     return true;
 }

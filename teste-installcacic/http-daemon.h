@@ -7,6 +7,7 @@
 #include <QTcpSocket>
 #include <qtservice/src/QtServiceBase>
 #include <QDateTime>
+#include "../installcacic-standalone/commsa.h"
 
 // HttpDaemon is the the class that implements the simple HTTP server.
 // Source: http://doc.qt.digia.com/solutions/4/qtservice/qtservice-example-server.html
@@ -32,6 +33,7 @@
      QString processRoutes(const QString &rota);
      QString getInstalaHash();
      QString getDefaultRoute();
+     QString getErro();
 
  private:
      bool disabled;

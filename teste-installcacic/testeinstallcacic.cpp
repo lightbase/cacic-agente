@@ -14,13 +14,9 @@ void testeInstallcacic::initTestCase()
 {
     icsa = new InstallCacicSA("localhost","cacic","cacic123");
     sc   = new ServiceController(L"FakeServiceCacic");
+    this->icsa->setPort(8080);
 
     hash = new std::string("CERTO");
-}
-
-void testeInstallcacic::testGetConfig()
-{
-    QVERIFY(icsa->getConfig());
 }
 
 void testeInstallcacic::testNaoInstalado()

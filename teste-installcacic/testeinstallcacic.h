@@ -27,7 +27,6 @@ public slots:
 
 private slots:
     void initTestCase();
-    void testGetConfig();
     void testNaoInstalado();
     void testConfig();
     void testMsiInstalado();

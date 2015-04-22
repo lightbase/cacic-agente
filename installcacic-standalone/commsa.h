@@ -5,12 +5,15 @@
 #include <iostream>
 #include <stdlib.h>
 
+#define ROUTE_HASH "/ws/instala/hash"
+#define ROUTE_ERRO "/ws/instala/erro"
+
 class CommSA
 {
 public:
     CommSA();
     ~CommSA();
-    bool sendReq(char *buffer, const char* parameters = "");
+    std::string sendReq(char *buffer, const char* parameters = "");
 
     const char *getHost() const;
     void setHost(const char *value);
@@ -37,7 +40,7 @@ private:
     const char* parameters;
     int port;
 
-    bool sendReq(char *buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
+    std::string sendReq(char *buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
 };
 
 #endif // COMMSA_H

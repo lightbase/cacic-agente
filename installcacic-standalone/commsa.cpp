@@ -12,12 +12,12 @@ CommSA::~CommSA()
 
 }
 
-bool CommSA::sendReq(char* buffer, const char* parameters)
+std::string CommSA::sendReq(char* buffer, const char* parameters)
 {
     return this->sendReq(buffer, this->host, this->route, this->method, this->type, this->port, parameters);
 }
 
-bool CommSA::sendReq(char* buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
+std::string CommSA::sendReq(char* buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
@@ -32,6 +32,11 @@ bool CommSA::sendReq(char* buffer, const char* host, const char* route, const ch
     SockAddr.sin_port = htons(port);
     SockAddr.sin_family = AF_INET;
     SockAddr.sin_addr.s_addr = *((unsigned long*)shost->h_addr);
+
+    // Ajusta o timeout para a conexão
+    int timeoutBuffer = 1000;
+    setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeoutBuffer, sizeof(timeoutBuffer));
+    setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeoutBuffer, sizeof(timeoutBuffer));
 
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
 //        cout << "Could not connect";
@@ -64,7 +69,7 @@ bool CommSA::sendReq(char* buffer, const char* host, const char* route, const ch
     buffer = buff;
     closesocket(Socket);
     WSACleanup();
-    return true;
+    return buff;
 }
 const char *CommSA::getHost() const
 {

@@ -35,6 +35,9 @@ void HttpDaemon::readClient()
     QTcpSocket* socket = (QTcpSocket*)sender();
     if (socket->canReadLine()) {
         QStringList tokens = QString(socket->readLine()).split(QRegExp("[ \r\n][ \r\n]*"));
+
+        qDebug() << tokens;
+
         if (tokens[0] == "GET") {
             QTextStream os(socket);
             os.setAutoDetectUnicode(true);
@@ -95,11 +98,29 @@ QString HttpDaemon::getDefaultRoute()
     return retorno;
 }
 
+QString HttpDaemon::getErro()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: text/plain; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "OK\n";
+
+    retorno += QDateTime::currentDateTime().toString();
+    retorno += "\n";
+
+    return retorno;
+}
+
 QString HttpDaemon::processRoutes(const QString &rota)
 {
     // Processa a rota definida na variável executando um método para cada rota
-    if (rota == "/ws/neo/instala/hash") {
+    qDebug() << rota;
+    if (rota == ROUTE_HASH) {
         return this->getInstalaHash();
+    } else if (rota == ROUTE_ERRO) {
+        return this->getErro();
     } else {
         return this->getDefaultRoute();
     }

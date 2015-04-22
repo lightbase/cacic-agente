@@ -22,12 +22,14 @@ public:
     bool deleteCacic28();
     bool setHashLocal(const std::string &hash);
     bool setHashRemoto(const std::string &hash);
+    bool setPort(int port);
 private:
     std::string url;
     std::string user;
     std::string pass;
     std::string hashLocal;
     std::string hashRemoto;
+    CommSA comm;
 };
 
 #endif // INSTALLCACICSA_H
