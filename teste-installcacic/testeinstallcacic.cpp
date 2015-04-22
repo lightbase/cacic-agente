@@ -18,6 +18,11 @@ void testeInstallcacic::initTestCase()
     hash = new std::string("CERTO");
 }
 
+void testeInstallcacic::testGetConfig()
+{
+    QVERIFY(icsa->getConfig());
+}
+
 void testeInstallcacic::testNaoInstalado()
 {
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){

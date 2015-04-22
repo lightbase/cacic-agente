@@ -44,10 +44,16 @@ bool InstallCacicSA::installService()
 
 bool InstallCacicSA::getConfig()
 {
-    // FIXME: Adicionar classe de comunicação para enviar uma requisição real
-    this->setHashRemoto("CERTO");
 
-    return true;
+    bool check;
+    CommSA comm;
+    const char *route = "/ws/neo/config";
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    char* buffer;
+    check = comm.sendReq(buffer);
+    return check;
 }
 
 bool InstallCacicSA::comparaHash()
