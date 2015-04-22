@@ -12,14 +12,14 @@ testeInstallcacic::testeInstallcacic(QObject *parent) :
 
 void testeInstallcacic::initTestCase()
 {
-    icsa = new InstallCacicSA("teste.cacic.cc","cacic","cacic123");
-    sc   = new ServiceController("FakeServiceCacic");
+    icsa = new InstallCacicSA("localhost","cacic","cacic123");
+    sc   = new ServiceController(L"FakeServiceCacic");
 }
 
 void testeInstallcacic::testNaoInstalado()
 {
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadServico("rota","./cacic-service")){
+        if (this->icsa->downloadService("rota","./cacic-service")){
             QVERIFY(this->icsa->installService());
         } else {
             QVERIFY2(false, "Não conseguiu baixar o servico.");
@@ -36,7 +36,7 @@ void testeInstallcacic::testMsiInstalado()
     registry["teste"] = true;
     CCacic::setValueToRegistry("FakeMsi", "msi", registry);
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        QVERIFY2(false, "Registro não encontrado");
+        QVERIFY2(false, "Registro de instalação não encontrado");
     } else {
         //Pega informações do gerente
         if(this->icsa->getConfig()){
@@ -54,7 +54,7 @@ void testeInstallcacic::testServico()
         //verifica se existe o binário install-cacic na pasta bin, se não executa MSI.
         QVERIFY(icsa->installCacic());
     }
-    QVERIFY(false);
+    QVERIFY2(false, "Servico instalado ou rodando");
 }
 
 void testeInstallcacic::testAtualizacao()

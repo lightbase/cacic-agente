@@ -16,12 +16,9 @@ public:
     explicit testeInstallcacic(QObject *parent = 0);
 
 private:
-<<<<<<< HEAD
     InstallCacicSA *icsa;
     ServiceController *sc;
-=======
-   HttpDaemon *daemon;
->>>>>>> 15b11990e3c36ac10f5b6da9c109009e4b16f14b
+    HttpDaemon *daemon;
 
 signals:
 

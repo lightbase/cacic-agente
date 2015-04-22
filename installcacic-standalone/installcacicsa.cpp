@@ -57,6 +57,11 @@ bool InstallCacicSA::verificaServico()
     return false;
 }
 
+bool InstallCacicSA::installCacic()
+{
+    return false;
+}
+
 bool InstallCacicSA::deleteCacic26()
 {
     //verifica se há algum processo do cacic rodando e os mata.
