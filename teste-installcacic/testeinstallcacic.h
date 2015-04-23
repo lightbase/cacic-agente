@@ -7,7 +7,7 @@
 #include <iostream>
 #include <ccacic.h>
 #include <servicecontroller.h>
-#include <http-daemon.h>
+#include <QCoreApplication>
 
 class testeInstallcacic : public QObject
 {
@@ -18,7 +18,6 @@ public:
 private:
     InstallCacicSA *icsa;
     ServiceController *sc;
-    HttpDaemon *daemon;
     std::string *hash;
 
 signals:
@@ -27,6 +26,7 @@ public slots:
 
 private slots:
     void initTestCase();
+    void testHttpCommunication();
     void testNaoInstalado();
     void testConfig();
     void testMsiInstalado();

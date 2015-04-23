@@ -5,18 +5,22 @@ QTEST_MAIN(testeInstallcacic)
 testeInstallcacic::testeInstallcacic(QObject *parent) :
     QObject(parent)
 {
-
-    quint16 port = 8080;
-    daemon = new HttpDaemon(port);
 }
 
 void testeInstallcacic::initTestCase()
 {
+    // Verifica se o serviço de teste está no ar
+
     icsa = new InstallCacicSA("localhost","cacic","cacic123");
     sc   = new ServiceController(L"FakeServiceCacic");
     this->icsa->setPort(8080);
 
     hash = new std::string("CERTO");
+}
+
+void testeInstallcacic::testHttpCommunication()
+{
+    QVERIFY2(this->icsa->ping(), "Falha na comunicação com o serviço");
 }
 
 void testeInstallcacic::testNaoInstalado()
@@ -44,14 +48,16 @@ void testeInstallcacic::testConfig()
     this->icsa->getConfig();
 
     // Compara os dois. Devem ser diferentes
-    QVERIFY(!this->icsa->comparaHash());
+    QVERIFY2(!(this->icsa->comparaHash()), "Hash deveria ser diferente mas é igual.");
 
-    // Agora testa com o hash certo. Deve retornar que está atualiza
+    // Agora testa com o hash certo. Deve retornar que está atualizado
     this->icsa->setHashLocal(*this->hash);
     this->icsa->getConfig();
 
     // Compara os dois. Devem ser iguais
-    QVERIFY(this->icsa->comparaHash());
+    std::cout << "Hash local: " << this->icsa->getHashLocal() << "\n";
+    std::cout << "Hash remoto: " << this->icsa->getHashRemoto() << "\n";
+    QVERIFY2(this->icsa->comparaHash(), ("Hash deveria ser igual mas é diferente"));
 
 }
 
@@ -106,7 +112,5 @@ void testeInstallcacic::verificaRegistro()
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");
-    // Para servidor fake
-    daemon->resume();
 
 }

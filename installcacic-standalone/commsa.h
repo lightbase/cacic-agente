@@ -5,6 +5,9 @@
 #include <iostream>
 #include <stdlib.h>
 
+#define MAX_HEADERS 10
+#define MAX_ELEMENT_SIZE 500
+
 #define ROUTE_HASH "/ws/instala/hash"
 #define ROUTE_ERRO "/ws/instala/erro"
 
@@ -41,6 +44,7 @@ private:
     int port;
 
     std::string sendReq(char *buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
+
 };
 
 #endif // COMMSA_H

@@ -34,15 +34,13 @@ SOURCES += testeinstallcacic.cpp \
     ../installcacic-standalone/commsa.cpp \
     ../src/ccacic.cpp \
     ../src/identificadores.cpp \
-    ../src/servicecontroller.cpp \
-    http-daemon.cpp
+    ../src/servicecontroller.cpp
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
     ../installcacic-standalone/commsa.h \
     ../src/ccacic.h \
     ../src/identificadores.h \
-    ../src/servicecontroller.h \
-    http-daemon.h
+    ../src/servicecontroller.h
 
 INCLUDEPATH += ../src

@@ -40,23 +40,24 @@ std::string CommSA::sendReq(char* buffer, const char* host, const char* route, c
 
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
 //        cout << "Could not connect";
-        return false;
+        // Throw exception if it was not possible to connect
+        return "CONNECTION_ERROR";
     }
 
-    std::string request;
-    request.append(method);
-    request.append(" ");
-    request.append(route);
-    request.append(" HTTP/1.1\n");
-    request.append("Host: ");
-    request.append(host);
-    request.append(" \nConnection: close\n");
-    request.append("Content-Type: ");
-    request.append(type);
-    request.append("; charset=utf-8\n\n\n");
-    request.append(parameters);
+    std::string req;
+    req.append("GET");
+    req.append(" ");
+    req.append(route);
+    req.append(" HTTP/1.0\n");
+    req.append("Host: ");
+    req.append(host);
+    req.append(" \nConnection: close\n");
+    req.append("Content-Type: ");
+    req.append(type);
+    req.append("; charset=utf-8\n\n\n");
+    req.append(parameters);
 
-    send(Socket, request.c_str(), strlen(request.c_str()),0);
+    send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
     int nDataLength;
     while ((nDataLength = recv(Socket,buff,10000,0)) > 0){
@@ -116,9 +117,3 @@ void CommSA::setRoute(const char *value)
 {
     route = value;
 }
-
-
-
-
-
-
