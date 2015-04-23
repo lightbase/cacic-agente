@@ -5,6 +5,9 @@
 #include <winsock2.h>
 #include <stdlib.h>
 
+#define MAX_HEADERS 10
+#define MAX_ELEMENT_SIZE 500
+
 #define ROUTE_HASH "/ws/instala/hash"
 #define ROUTE_ERRO "/ws/instala/erro"
 

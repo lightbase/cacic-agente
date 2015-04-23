@@ -5,8 +5,6 @@ InstallCacicSA::InstallCacicSA(const std::string &url, const std::string &user, 
     this->pass = pass;
     this->url  = url;
     this->user = user;
-
-
 }
 
 InstallCacicSA::~InstallCacicSA()
@@ -40,6 +38,22 @@ bool InstallCacicSA::downloadService(const std::string &rota, const std::string 
 bool InstallCacicSA::installService()
 {
     return false;
+}
+
+bool InstallCacicSA::ping()
+{
+    // Envia requisição para testar se o servidor está no ar
+    std::string check;
+    const char *route = "/";
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    char *buffer;
+    check = comm.sendReq(buffer);
+    if (check == "CONNECTION_ERROR") {
+        return false;
+    }
+    return true;
 }
 
 bool InstallCacicSA::getConfig()
@@ -146,5 +160,14 @@ std::string InstallCacicSA::getHashFromFile(const std::string &filePath)
 
     fclose (inFile);
     return retorno;
+}
+std::string InstallCacicSA::getHashLocal()
+{
+    return this->hashLocal;
+}
+
+std::string InstallCacicSA::getHashRemoto()
+{
+    return this->hashRemoto;
 }
 

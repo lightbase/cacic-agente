@@ -44,6 +44,7 @@ QList<QVariantMap> CACIC_Computer::networkInterfacesRunning(){
  *********************************************/
 QJsonObject CACIC_Computer::toJsonObject()
 {
+    this->coletaDados();
     QJsonObject json;
     QJsonArray network;
     int count = 1;

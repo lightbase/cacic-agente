@@ -16,6 +16,7 @@ public:
     bool registryExists(HKEY RootKey, LPCTSTR SubKey);
     bool downloadService(const std::string &rota, const std::string &path);
     bool installService();
+    bool ping();
     bool getConfig();
     bool comparaHash();
     bool verificaServico();
@@ -26,6 +27,8 @@ public:
     bool setHashRemoto(const std::string &hash);
     bool setPort(int port);
     std::string getHashFromFile(const std::string &filePath);
+    std::string getHashLocal();
+    std::string getHashRemoto();
 private:
     std::string url;
     std::string user;

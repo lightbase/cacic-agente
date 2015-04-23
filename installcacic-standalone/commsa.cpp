@@ -39,25 +39,25 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
 
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
-        printf("Could not connect");
-        return "";
+//        cout << "Could not connect";
+        // Throw exception if it was not possible to connect
+        return "CONNECTION_ERROR";
     }
 
-    std::string request;
-    request.append(method);
-    request.append(" ");
-    request.append(route);
-    request.append(" HTTP/1.0\n");
-    request.append("Host: ");
-    request.append(host);
-    request.append("\nContent-Type: ");
-    request.append(type);
-    request.append("; charset=utf-8\n\n\n");
-    request.append(parameters);
+    std::string req;
+    req.append("GET");
+    req.append(" ");
+    req.append(route);
+    req.append(" HTTP/1.0\n");
+    req.append("Host: ");
+    req.append(host);
+    req.append(" \nConnection: close\n");
+    req.append("Content-Type: ");
+    req.append(type);
+    req.append("; charset=utf-8\n\n\n");
+    req.append(parameters);
 
-//    std::cout << request.c_str() << std::endl;
-
-    send(Socket, request.c_str(), strlen(request.c_str()),0);
+    send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
     int nDataLength;
     while ((nDataLength = recv(Socket,buff,10000,0)) > 0){
