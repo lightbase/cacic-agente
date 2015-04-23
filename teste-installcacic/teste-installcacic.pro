@@ -26,6 +26,8 @@ TARGET = teste-installcacic
 CONFIG -= app_bundle
 
 LIBS += -lws2_32
+LIBS += -L"C:/OpenSSL-Win32/lib" -llibeay32
+
 
 TEMPLATE = app
 
@@ -46,3 +48,4 @@ HEADERS += testeinstallcacic.h \
     http-daemon.h
 
 INCLUDEPATH += ../src
+INCLUDEPATH += C:/OpenSSL-Win32/include

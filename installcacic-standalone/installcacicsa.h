@@ -4,6 +4,8 @@
 #include "commsa.h"
 #include <windows.h>
 #include <iostream>
+#include <openssl/md5.h>
+
 
 class InstallCacicSA
 {
@@ -23,6 +25,7 @@ public:
     bool setHashLocal(const std::string &hash);
     bool setHashRemoto(const std::string &hash);
     bool setPort(int port);
+    std::string getHashFromFile(const std::string &filePath);
 private:
     std::string url;
     std::string user;

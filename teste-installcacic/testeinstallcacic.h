@@ -28,6 +28,7 @@ public slots:
 private slots:
     void initTestCase();
     void testNaoInstalado();
+    void testGetHashFromFile();
     void testConfig();
     void testMsiInstalado();
     void testServico();

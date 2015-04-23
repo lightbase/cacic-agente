@@ -1,8 +1,8 @@
 #ifndef COMMSA_H
 #define COMMSA_H
 
-#include <winsock2.h>
 #include <iostream>
+#include <winsock2.h>
 #include <stdlib.h>
 
 #define ROUTE_HASH "/ws/instala/hash"
@@ -13,7 +13,7 @@ class CommSA
 public:
     CommSA();
     ~CommSA();
-    std::string sendReq(char *buffer, const char* parameters = "");
+    std::string sendReq(const char* parameters = "");
 
     const char *getHost() const;
     void setHost(const char *value);
@@ -30,6 +30,9 @@ public:
     const char *getRoute() const;
     void setRoute(const char *value);
 
+    int getTimeOut() const;
+    void setTimeOut(int value);
+
 private:
     const char* host;
     const char* user;
@@ -39,8 +42,9 @@ private:
     const char* type;
     const char* parameters;
     int port;
+    int timeOut;
 
-    std::string sendReq(char *buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
+    std::string sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
 };
 
 #endif // COMMSA_H

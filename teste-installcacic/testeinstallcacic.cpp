@@ -8,13 +8,14 @@ testeInstallcacic::testeInstallcacic(QObject *parent) :
 
     quint16 port = 8080;
     daemon = new HttpDaemon(port);
+    daemon->resume();
 }
 
 void testeInstallcacic::initTestCase()
 {
-    icsa = new InstallCacicSA("localhost","cacic","cacic123");
+    icsa = new InstallCacicSA("google.com","cacic","cacic123");
     sc   = new ServiceController(L"FakeServiceCacic");
-    this->icsa->setPort(8080);
+    this->icsa->setPort(80);
 
     hash = new std::string("CERTO");
 }
@@ -30,6 +31,13 @@ void testeInstallcacic::testNaoInstalado()
     } else {
         QVERIFY(true);
     }
+}
+
+void testeInstallcacic::testGetHashFromFile()
+{
+    std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
+
+    QVERIFY (hash!="");
 }
 
 void testeInstallcacic::testConfig()

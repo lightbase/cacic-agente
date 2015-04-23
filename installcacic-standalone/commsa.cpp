@@ -5,6 +5,7 @@ CommSA::CommSA()
     this->type = "text/plain";
     this->port = 80;
     this->method = "GET";
+    this->timeOut = 1000;
 }
 
 CommSA::~CommSA()
@@ -12,17 +13,17 @@ CommSA::~CommSA()
 
 }
 
-std::string CommSA::sendReq(char* buffer, const char* parameters)
+std::string CommSA::sendReq(const char* parameters)
 {
-    return this->sendReq(buffer, this->host, this->route, this->method, this->type, this->port, parameters);
+    return this->sendReq(this->host, this->route, this->method, this->type, this->port, parameters);
 }
 
-std::string CommSA::sendReq(char* buffer, const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
+std::string CommSA::sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
 //        cout << "WSAStartup failed.\n";
-        return false;
+        return "";
     }
     SOCKET Socket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 
@@ -34,27 +35,27 @@ std::string CommSA::sendReq(char* buffer, const char* host, const char* route, c
     SockAddr.sin_addr.s_addr = *((unsigned long*)shost->h_addr);
 
     // Ajusta o timeout para a conexão
-    int timeoutBuffer = 1000;
-    setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeoutBuffer, sizeof(timeoutBuffer));
-    setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeoutBuffer, sizeof(timeoutBuffer));
+    setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
+    setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
 
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
-//        cout << "Could not connect";
-        return false;
+        printf("Could not connect");
+        return "";
     }
 
     std::string request;
     request.append(method);
     request.append(" ");
     request.append(route);
-    request.append(" HTTP/1.1\n");
+    request.append(" HTTP/1.0\n");
     request.append("Host: ");
     request.append(host);
-    request.append(" \nConnection: close\n");
-    request.append("Content-Type: ");
+    request.append("\nContent-Type: ");
     request.append(type);
     request.append("; charset=utf-8\n\n\n");
     request.append(parameters);
+
+//    std::cout << request.c_str() << std::endl;
 
     send(Socket, request.c_str(), strlen(request.c_str()),0);
     char buff[10000];
@@ -62,11 +63,11 @@ std::string CommSA::sendReq(char* buffer, const char* host, const char* route, c
     while ((nDataLength = recv(Socket,buff,10000,0)) > 0){
         int i = 0;
         while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
-//            cout << buff[i];
+//            std::cout << buff[i];
             i += 1;
         }
     }
-    buffer = buff;
+
     closesocket(Socket);
     WSACleanup();
     return buff;
@@ -116,6 +117,16 @@ void CommSA::setRoute(const char *value)
 {
     route = value;
 }
+int CommSA::getTimeOut() const
+{
+    return timeOut;
+}
+
+void CommSA::setTimeOut(int value)
+{
+    timeOut = value;
+}
+
 
 
 
