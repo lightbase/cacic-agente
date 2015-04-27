@@ -1,7 +1,6 @@
 #ifndef HTTPSERVER
 #define HTTPSERVER
 
-#endif // HTTPSERVER
 #include <../src/qtservice/src/QtServiceBase>
 #include <QCoreApplication>
 #include "http-daemon.h"
@@ -39,3 +38,5 @@ private:
    HttpDaemon *daemon;
 
 };
+
+#endif // HTTPSERVER

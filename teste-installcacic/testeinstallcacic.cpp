@@ -14,7 +14,7 @@ void testeInstallcacic::initTestCase()
 
     icsa = new InstallCacicSA("localhost","cacic","cacic123");
     sc   = new ServiceController(L"FakeServiceCacic");
-    this->icsa->setPort(80);
+    this->icsa->setPort(8080);
 
     hash = new std::string("CERTO");
 }
@@ -63,8 +63,8 @@ void testeInstallcacic::testConfig()
     this->icsa->getConfig();
 
     // Compara os dois. Devem ser iguais
-    std::cout << "Hash local: " << this->icsa->getHashLocal() << "\n";
-    std::cout << "Hash remoto: " << this->icsa->getHashRemoto() << "\n";
+    std::cout << "!Hash local: " << this->icsa->getHashLocal() << "!\n";
+    std::cout << "!Hash remoto: " << this->icsa->getHashRemoto() << "!\n";
     QVERIFY2(this->icsa->comparaHash(), ("Hash deveria ser igual mas é diferente"));
 
 }

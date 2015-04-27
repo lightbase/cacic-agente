@@ -36,6 +36,8 @@ public:
     int getTimeOut() const;
     void setTimeOut(int value);
 
+    std::string getBody(std::string &request) const;
+
 private:
     const char* host;
     const char* user;
