@@ -112,26 +112,24 @@ bool ServiceController::start(){
 
 bool ServiceController::stop()
 {
-    SERVICE_STATUS_PROCESS ssStatus;
-    LPSERVICE_STATUS lpsStatus;
+    SERVICE_STATUS_PROCESS ssStatus, lpsStatus;
     DWORD dwBytesNeeded;
 
     if(!this->open(SC_MANAGER_ALL_ACCESS, SERVICE_STOP | SERVICE_QUERY_STATUS)){
         return false;
     }
     //lpsStatus deve ser inicializada antes.
-    lpsStatus = (LPSERVICE_STATUS) malloc(sizeof(LPSERVICE_STATUS));
 
     ControlService(
       schService,
       SERVICE_CONTROL_STOP,
-      lpsStatus
+      (LPSERVICE_STATUS) &lpsStatus
     );
     // Verifica o status em caso de não estar parado.
-    if (lpsStatus->dwCurrentState == SERVICE_STOPPED){
+    if (lpsStatus.dwCurrentState == SERVICE_STOPPED){
         this->close();
         return true;
-    } else if (lpsStatus->dwCurrentState != SERVICE_STOP_PENDING){
+    } else if (lpsStatus.dwCurrentState != SERVICE_STOP_PENDING){
         this->trataErro(GetLastError(), "Stop Service");
         this->close();
         return false;
