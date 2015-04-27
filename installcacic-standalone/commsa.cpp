@@ -152,14 +152,15 @@ std::string CommSA::getBody(std::string &request) const
      * Método que encontra o body da requisição
      *
      */
-    regex::match_results results;
-    regex::rpattern pat("\n({.*})\n");
+//    regex::match_results results;
+//    regex::rpattern pat("\n({.*})\n");
 
-    regex::match_results::backref_type br = pat.match(request, results);
+//    regex::match_results::backref_type br = pat.match(request, results);
 
-    if (br.matched) {
-        return br.str();
-    } else {
-        return "";
-    }
+//    if (br.matched) {
+//        return br.str();
+//    } else {
+//        return "";
+//    }
+    return "";
 }
