@@ -60,18 +60,27 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
     int nDataLength;
-    while ((nDataLength = recv(Socket,buff,10000,0)) > 0){
-        int i = 0;
-        while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
-//            std::cout << buff[i];
-            i += 1;
-        }
-    }
 
-    closesocket(Socket);
-    WSACleanup();
-    return buff;
+    //Recebe dados
+    nDataLength = recv(Socket,buff,10000,0);
+    if (nDataLength != SOCKET_ERROR) {
+        while (nDataLength > 0){
+            int i = 0;
+            while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
+    //            std::cout << buff[i];
+                i += 1;
+            }
+        }
+        closesocket(Socket);
+        WSACleanup();
+        return buff;
+    } else {
+        closesocket(Socket);
+        WSACleanup();
+        return "CONNECTION_ERROR";
+    }
 }
+
 const char *CommSA::getHost() const
 {
     return host;
