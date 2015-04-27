@@ -26,7 +26,6 @@ TARGET = teste-installcacic
 CONFIG -= app_bundle
 
 LIBS += -lws2_32
-LIBS += -L"C:/OpenSSL-Win32/lib" -llibeay32
 
 
 TEMPLATE = app
@@ -36,14 +35,19 @@ SOURCES += testeinstallcacic.cpp \
     ../installcacic-standalone/commsa.cpp \
     ../src/ccacic.cpp \
     ../src/identificadores.cpp \
-    ../src/servicecontroller.cpp
+    ../src/servicecontroller.cpp \
+    ../src/greta/regexpr2.cpp \
+    ../src/greta/syntax2.cpp
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
     ../installcacic-standalone/commsa.h \
     ../src/ccacic.h \
     ../src/identificadores.h \
-    ../src/servicecontroller.h
+    ../src/servicecontroller.h \
+    ../src/greta/regexpr2.h \
+    ../src/greta/syntax2.h \
+    ../src/greta/restack.h \
+    ../src/greta/reimpl2.h
 
 INCLUDEPATH += ../src
-INCLUDEPATH += C:/OpenSSL-Win32/include

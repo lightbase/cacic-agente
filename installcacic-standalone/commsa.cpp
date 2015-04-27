@@ -68,9 +68,13 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
         }
     }
 
+    // Recupera body da requisição
+    std::string buffer = std::string(buff);
+    std::string body = this->getBody(buffer);
+
     closesocket(Socket);
     WSACleanup();
-    return buff;
+    return body;
 }
 const char *CommSA::getHost() const
 {
@@ -127,9 +131,22 @@ void CommSA::setTimeOut(int value)
     timeOut = value;
 }
 
+std::string CommSA::getBody(std::string &request) const
+{
+    /*!
+     * \brief results
+     *
+     * Método que encontra o body da requisição
+     *
+     */
+    regex::match_results results;
+    regex::rpattern pat("\n({.*})\n");
 
+    regex::match_results::backref_type br = pat.match(request, results);
 
-
-
-
-
+    if (br.matched) {
+        return br.str();
+    } else {
+        return "";
+    }
+}

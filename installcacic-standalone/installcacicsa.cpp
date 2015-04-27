@@ -136,30 +136,31 @@ bool InstallCacicSA::setPort(int port)
 
 std::string InstallCacicSA::getHashFromFile(const std::string &filePath)
 {
-    unsigned char c[MD5_DIGEST_LENGTH];
-    int i;
-    FILE *inFile = fopen (filePath.c_str(), "rb");
-    MD5_CTX mdContext;
-    int bytes;
-    unsigned char data[1024];
-    std::string retorno;
+//    unsigned char c[MD5_DIGEST_LENGTH];
+//    int i;
+//    FILE *inFile = fopen (filePath.c_str(), "rb");
+//    MD5_CTX mdContext;
+//    int bytes;
+//    unsigned char data[1024];
+//    std::string retorno;
 
-    if (inFile == NULL) {
-        return "";
-    }
+//    if (inFile == NULL) {
+//        return "";
+//    }
 
-    MD5_Init (&mdContext);
-    while ((bytes = fread (data, 1, 1024, inFile)) != 0)
-        MD5_Update (&mdContext, data, bytes);
-    MD5_Final (c,&mdContext);
-    char buf[32];
-    for(i = 0; i < MD5_DIGEST_LENGTH; i++) {
-        sprintf(buf, "%02x", c[i]);
-        retorno.append( buf );
-    }
+//    MD5_Init (&mdContext);
+//    while ((bytes = fread (data, 1, 1024, inFile)) != 0)
+//        MD5_Update (&mdContext, data, bytes);
+//    MD5_Final (c,&mdContext);
+//    char buf[32];
+//    for(i = 0; i < MD5_DIGEST_LENGTH; i++) {
+//        sprintf(buf, "%02x", c[i]);
+//        retorno.append( buf );
+//    }
 
-    fclose (inFile);
-    return retorno;
+//    fclose (inFile);
+//    return retorno;
+    return "";
 }
 std::string InstallCacicSA::getHashLocal()
 {

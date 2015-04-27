@@ -4,7 +4,7 @@
 #include "commsa.h"
 #include <windows.h>
 #include <iostream>
-#include <openssl/md5.h>
+//#include <openssl/md5.h>
 
 
 class InstallCacicSA
