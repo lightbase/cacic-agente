@@ -22,7 +22,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
-//        cout << "WSAStartup failed.\n";
+        std::cout << "WSAStartup failed.\n";
         return "";
     }
     SOCKET Socket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -33,17 +33,14 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     SockAddr.sin_port = htons(port);
     SockAddr.sin_family = AF_INET;
     SockAddr.sin_addr.s_addr = *((unsigned long*)shost->h_addr);
-
     // Ajusta o timeout para a conexão
     setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
     setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
-
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
-//        cout << "Could not connect";
+        std::cout << "Could not connect";
         // Throw exception if it was not possible to connect
         return "CONNECTION_ERROR";
     }
-
     std::string req;
     req.append("GET");
     req.append(" ");
@@ -55,38 +52,32 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     req.append("Content-Type: ");
     req.append(type);
     req.append("; charset=utf-8\n\n\n");
-    req.append(parameters);
+//    req.append(parameters);
 
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
     int nDataLength;
 
     //Recebe dados
-    nDataLength = recv(Socket,buff,10000,0);
-    if (nDataLength != SOCKET_ERROR) {
-        while (nDataLength > 0){
-            int i = 0;
-            while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
-    //            std::cout << buff[i];
-                i += 1;
-            }
+    while (nDataLength = recv(Socket,buff,10000,0) > 0){
+        int i = 0;
+        while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
+//            std::cout << buff[i];
+            i += 1;
         }
-        closesocket(Socket);
-        WSACleanup();
+    }
+    closesocket(Socket);
+    WSACleanup();
+
+    if (nDataLength != SOCKET_ERROR) {
         return buff;
     } else {
-        closesocket(Socket);
-        WSACleanup();
         return "CONNECTION_ERROR";
     }
 
     // Recupera body da requisição
-    std::string buffer = std::string(buff);
-    std::string body = this->getBody(buffer);
-
-    closesocket(Socket);
-    WSACleanup();
-    return body;
+//    std::string buffer = std::string(buff);
+//    std::string body = this->getBody(buffer);
 }
 
 const char *CommSA::getHost() const
