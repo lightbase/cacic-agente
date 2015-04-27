@@ -3,8 +3,11 @@
 
 #include "commsa.h"
 #include <windows.h>
+#include <wincrypt.h>
 #include <iostream>
-#include <openssl/md5.h>
+
+#define BUFSIZE 1024
+#define MD5LEN  16
 
 
 class InstallCacicSA

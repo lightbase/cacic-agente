@@ -40,7 +40,7 @@ void testeInstallcacic::testNaoInstalado()
 void testeInstallcacic::testGetHashFromFile()
 {
     std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
-
+//    qDebug() << QString::fromStdString(hash);
     QVERIFY (hash!="");
 }
 

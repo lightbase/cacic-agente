@@ -26,8 +26,6 @@ TARGET = teste-installcacic
 CONFIG -= app_bundle
 
 LIBS += -lws2_32
-LIBS += -L"C:/OpenSSL-Win32/lib" -llibeay32
-
 
 TEMPLATE = app
 

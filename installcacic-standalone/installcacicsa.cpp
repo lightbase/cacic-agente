@@ -136,29 +136,117 @@ bool InstallCacicSA::setPort(int port)
 
 std::string InstallCacicSA::getHashFromFile(const std::string &filePath)
 {
-    unsigned char c[MD5_DIGEST_LENGTH];
-    int i;
-    FILE *inFile = fopen (filePath.c_str(), "rb");
-    MD5_CTX mdContext;
-    int bytes;
-    unsigned char data[1024];
+    DWORD dwStatus = 0;
+    BOOL bResult = FALSE;
+    HCRYPTPROV hProv = 0;
+    HCRYPTHASH hHash = 0;
+    HANDLE hFile = NULL;
+    BYTE rgbFile[BUFSIZE];
+    DWORD cbRead = 0;
+    BYTE rgbHash[MD5LEN];
+    DWORD cbHash = 0;
+    CHAR rgbDigits[] = "0123456789abcdef";
     std::string retorno;
 
-    if (inFile == NULL) {
-        return "";
+    //
+    std::wstring wc( filePath.size(), L'#' );
+    mbstowcs( &wc[0], filePath.c_str(), filePath.size() );
+
+    LPCWSTR filename = wc.c_str();
+    // Logic to check usage goes here.
+
+    hFile = CreateFile(filename,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_SEQUENTIAL_SCAN,
+        NULL);
+
+    if (INVALID_HANDLE_VALUE == hFile)
+    {
+        dwStatus = GetLastError();
+//        printf("Error opening file %s\nError: %d\n", filename,
+//            dwStatus);
+        return "ERROR";
     }
 
-    MD5_Init (&mdContext);
-    while ((bytes = fread (data, 1, 1024, inFile)) != 0)
-        MD5_Update (&mdContext, data, bytes);
-    MD5_Final (c,&mdContext);
+    // Get handle to the crypto provider
+    if (!CryptAcquireContext(&hProv,
+        NULL,
+        NULL,
+        PROV_RSA_FULL,
+        CRYPT_VERIFYCONTEXT))
+    {
+        dwStatus = GetLastError();
+//        printf("CryptAcquireContext failed: %d\n", dwStatus);
+        CloseHandle(hFile);
+        return "ERROR";
+    }
+
+    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
+    {
+        dwStatus = GetLastError();
+//        printf("CryptAcquireContext failed: %d\n", dwStatus);
+        CloseHandle(hFile);
+        CryptReleaseContext(hProv, 0);
+        return "ERROR";
+    }
+
+    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE,
+        &cbRead, NULL))
+    {
+        if (0 == cbRead)
+        {
+            break;
+        }
+
+        if (!CryptHashData(hHash, rgbFile, cbRead, 0))
+        {
+            dwStatus = GetLastError();
+//            printf("CryptHashData failed: %d\n", dwStatus);
+            CryptReleaseContext(hProv, 0);
+            CryptDestroyHash(hHash);
+            CloseHandle(hFile);
+            return "ERROR";
+        }
+    }
+
+    if (!bResult)
+    {
+        dwStatus = GetLastError();
+//        printf("ReadFile failed: %d\n", dwStatus);
+        CryptReleaseContext(hProv, 0);
+        CryptDestroyHash(hHash);
+        CloseHandle(hFile);
+        return "ERROR";
+    }
+
+    cbHash = MD5LEN;
     char buf[32];
-    for(i = 0; i < MD5_DIGEST_LENGTH; i++) {
-        sprintf(buf, "%02x", c[i]);
-        retorno.append( buf );
+    if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
+    {
+//        printf("MD5 hash of file %s is: ", filename);
+        for (DWORD i = 0; i < cbHash; i++)
+        {
+//            printf("%c%c", rgbDigits[rgbHash[i] >> 4],
+//                rgbDigits[rgbHash[i] & 0xf]);
+            sprintf(buf, "%c%c", rgbDigits[rgbHash[i] >> 4],
+                    rgbDigits[rgbHash[i] & 0xf]);
+            retorno.append( buf );
+        }
+//        printf("\n");
+    }
+    else
+    {
+        dwStatus = GetLastError();
+//        printf("CryptGetHashParam failed: %d\n", dwStatus);
     }
 
-    fclose (inFile);
+    CryptDestroyHash(hHash);
+    CryptReleaseContext(hProv, 0);
+    CloseHandle(hFile);
+
     return retorno;
 }
 std::string InstallCacicSA::getHashLocal()
