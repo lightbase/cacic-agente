@@ -1,5 +1,6 @@
 #include "mapa.h"
 
+
 Mapa::Mapa(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
@@ -22,15 +23,7 @@ Mapa::Mapa(QWidget *parent) :
 
     ui->setupUi(this);
 
-    QJsonObject computerJson = computer.toJsonObject();
-
-    ui->lineIdUsuario->setText(computerJson["usuario"].toString());
-    ui->lineNomeComputador->setText(computerJson["nmComputador"].toString());
-    ui->lineEnderecoIp->setText(computerJson["networkDevices"].toArray().last().toObject()["ipv4"].toString());
-
-    ui->lineIdUsuario->setDisabled(true);
-    ui->lineNomeComputador->setDisabled(true);
-    ui->lineEnderecoIp->setDisabled(true);
+    preencheCampos();
 }
 
 Mapa::~Mapa()
@@ -106,6 +99,71 @@ void Mapa::on_okButton_clicked()
     }
 }
 
+void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapUrl)
+{
+    QJsonObject computerJson = computer.toJsonObject();
+
+    ui->lineIdUsuario->setText(computerJson["usuario"].toString());
+    ui->lineNomeComputador->setText(computerJson["nmComputador"].toString());
+    ui->lineEnderecoIp->setText(computerJson["networkDevices"].toArray().last().toObject()["ipv4"].toString());
+
+    ui->lineIdUsuario->setDisabled(true);
+    ui->lineNomeComputador->setDisabled(true);
+    ui->lineEnderecoIp->setDisabled(true);
+
+    if( preencherUsuario )
+        preencheNomeUsuario(ldapUrl);
+}
+
+bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
+{
+
+    return true;
+    //LDAP *ldp;
+
+    //ldap_initialize(ldp, ldapUrl.toStdString);
+    //ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, 3);
+    //ldap_sasl_bind(ldp,
+    //ldap_search_ext_s
+
+//#define LDAP_SERVER "ldap://nafiux.com:389"
+
+//LDAP        *ld;
+//int        rc;
+//char        bind_dn[100];
+
+///* Get username and password */
+//if( argc != 3 )
+//{
+//perror( "invalid args, required: username password" );
+//return( 1 );
+//}
+//sprintf( bind_dn, "cn=%s,ou=People,dc=nafiux,dc=com", argv[1] );
+//printf( "Connecting as %s...\n", bind_dn );
+
+///* Open LDAP Connection */
+//if( ldap_initialize( &ld, LDAP_SERVER ) )
+//{
+//perror( "ldap_initialize" );
+//return( 1 );
+//}
+
+///* User authentication (bind) */
+//rc = ldap_simple_bind_s( ld, bind_dn, argv[2] );
+//if( rc != LDAP_SUCCESS )
+//{
+//fprintf(stderr, "ldap_simple_bind_s: %s\n", ldap_err2string(rc) );
+//return( 1 );
+//}
+//printf( "Successful authentication\n" );
+//ldap_unbind( ld );
+
+}
+
+bool Mapa::setArgs(int argc, char *argv[])
+{
+
+}
 
 bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
 {

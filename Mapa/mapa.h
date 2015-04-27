@@ -16,6 +16,7 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <ldap.h>
 #include "cacic_comm.h"
 #include "ccacic.h"
 #include "cacic_computer.h"
@@ -34,6 +35,7 @@ class Mapa : public QMainWindow
 public:
     explicit Mapa(QWidget *parent = 0);
     ~Mapa();
+    bool setArgs(int argc, char *argv[]);
 
 private slots:
     void on_okButton_clicked();
@@ -42,6 +44,8 @@ private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
     bool enviarInfo(const QJsonObject &jsonMapa);
+    void preencheCampos(bool preencherUsuario, const QString &ldapUrl);
+    bool preencheNomeUsuario(const QString &ldapUrl);
     bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;
