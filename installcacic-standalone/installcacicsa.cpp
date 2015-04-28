@@ -75,20 +75,56 @@ bool InstallCacicSA::getConfig()
 
 bool InstallCacicSA::comparaHash()
 {
-    if(this->hashLocal != this->hashRemoto) {
-        return false;
-    } else {
-        return true;
-    }
+    return this->hashLocal == this->hashRemoto;
 }
 
 bool InstallCacicSA::verificaServico()
 {
+    ServiceController sc(L"CacicDaemon");
     //Verifica se o serviço está rodando;
+    if (!this->comparaHash()){
+        //baixa novo serviço
+        if (sc.isInstalled()){
+            if (sc.isRunning()){
+                sc.stop();
+                //move da pasta temporária para a do cacic
+            }
+            if (!sc.start()){
+                //envia falha pro gerente
+            }
+        } else {
+            //move da pasta temporária para a do cacic
+            if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
+                //envia falha pro gerente
+                return false;
+            } else {
+                if (!sc.start()){
+                    if (/*verifica se a pasta /bin existe e tem arquivos*/ true) {
+                    //envia falha pro gerente
+                    } else {
+                        //instala o MSI do cacic de novo
+                    }
+                }
+            }
+        }
+    } else {
+        if (sc.isInstalled()) {
+            if (!sc.isRunning()){
+                if (!sc.start()){
+                    if (/*verifica se a pasta /bin existe e tem arquivos*/ true) {
+                    //envia falha pro gerente
+                    } else {
+                        //instala o MSI do cacic de novo
+                    }
+                }
+            }
+        } else if (/*cacic-service existir*/ true) {
+            if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
+                //envia falha ao gerente
+            }
+        }
+    }
 
-    //Verifica se o serviço está atualizado, senão baixa um novo;
-
-    //Confere se a pasta bin existe, senão executa msi novamente.
     return false;
 }
 

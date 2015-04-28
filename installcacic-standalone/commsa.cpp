@@ -59,13 +59,14 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     int nDataLength;
 
     //Recebe dados
-    while (nDataLength = recv(Socket,buff,10000,0) > 0){
-        int i = 0;
-        while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
-//            std::cout << buff[i];
-            i += 1;
-        }
-    }
+    nDataLength = recv(Socket,buff,10000,0) > 0;
+//    while (nDataLength = recv(Socket,buff,10000,0) > 0){
+//        int i = 0;
+//        while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
+////            std::cout << buff[i];
+//            i += 1;
+//        }
+//    }
     closesocket(Socket);
     WSACleanup();
 
