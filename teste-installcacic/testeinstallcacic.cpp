@@ -27,7 +27,7 @@ void testeInstallcacic::testHttpCommunication()
 void testeInstallcacic::testNaoInstalado()
 {
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadService("rota","./cacic-service")){
+        if (this->icsa->downloadService("/rota","./cacic-service")){
             QVERIFY(this->icsa->installService());
         } else {
             QVERIFY2(false, "Não conseguiu baixar o servico.");
@@ -67,6 +67,11 @@ void testeInstallcacic::testConfig()
     std::cout << "!Hash remoto: " << this->icsa->getHashRemoto() << "!\n";
     QVERIFY2(this->icsa->comparaHash(), ("Hash deveria ser igual mas é diferente"));
 
+}
+
+void testeInstallcacic::testDownloadFile()
+{
+    QVERIFY(this->icsa->downloadService("/download/cacic-service.exe", "c:\\cacic\\temp\\cacic-service.exe"));
 }
 
 void testeInstallcacic::testMsiInstalado()

@@ -30,6 +30,7 @@ private slots:
     void testNaoInstalado();
     void testGetHashFromFile();
     void testConfig();
+    void testDownloadFile();
     void testMsiInstalado();
     void testServico();
     void testAtualizacao();

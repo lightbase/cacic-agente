@@ -6,6 +6,7 @@
 #include <wincrypt.h>
 #include <iostream>
 #include <servicecontroller.h>
+#include <shlwapi.h>
 
 #define BUFSIZE 1024
 #define MD5LEN  16
@@ -30,6 +31,7 @@ public:
     bool setHashLocal(const std::string &hash);
     bool setHashRemoto(const std::string &hash);
     bool setPort(int port);
+    bool fileExists(const std::string &filePath);
     std::string getHashFromFile(const std::string &filePath);
     std::string getHashLocal();
     std::string getHashRemoto();
@@ -39,6 +41,7 @@ private:
     std::string pass;
     std::string hashLocal;
     std::string hashRemoto;
+    std::string cacicPath;
     CommSA comm;
 };
 

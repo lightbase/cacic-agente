@@ -7,6 +7,7 @@
 
 #define MAX_HEADERS 10
 #define MAX_ELEMENT_SIZE 500
+#define BUFFERSIZE 4096
 
 #define ROUTE_HASH "/ws/instala/hash"
 #define ROUTE_ERRO "/ws/instala/erro"
@@ -17,6 +18,7 @@ public:
     CommSA();
     ~CommSA();
     std::string sendReq(const char* parameters = "");
+    bool downloadFile(const char* url, const char* filePath);
 
     const char *getHost() const;
     void setHost(const char *value);
