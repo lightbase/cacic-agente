@@ -23,7 +23,7 @@ Mapa::Mapa(QWidget *parent) :
 
     ui->setupUi(this);
 
-    preencheCampos();
+    preencheCampos(true, "ldap://lightbase.com.br:389");
 }
 
 Mapa::~Mapa()
@@ -118,51 +118,35 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapUrl)
 bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
 {
 
-    return true;
-    //LDAP *ldp;
+    LDAP *ldp;
+    LDAPMessage **res;
+    int rc;
 
-    //ldap_initialize(ldp, ldapUrl.toStdString);
-    //ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, 3);
-    //ldap_sasl_bind(ldp,
+    rc = ldap_initialize( &ldp, ldapUrl.toStdString().c_str());
+    if ( rc != LDAP_SUCCESS){
+        return false;
+    }
+
+//    ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)3);
+
+//    char **attrs = (char**)LDAP_ALL_USER_ATTRIBUTES;
+//    rc = ldap_search_ext_s(ldp,"ou=usuarios,dc=lightbase,dc=com,dc=br",LDAP_SCOPE_BASE,NULL,attrs,0,NULL,NULL,NULL,0,res);
+//    if ( rc != LDAP_SUCCESS){
+//        QMessageBox box(QMessageBox::Warning, "LDAP Search error.", "Function ldap_search_ext_s behaved badly.", QMessageBox::Ok);
+//        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+//        if( box.exec() == QMessageBox::Ok )
+//            return false;
+//    }
+
+//    ldap_sasl_bind(ldp,"ou=usuarios,dc=lightbase,dc=com,dc=br",);
     //ldap_search_ext_s
 
-//#define LDAP_SERVER "ldap://nafiux.com:389"
-
-//LDAP        *ld;
-//int        rc;
-//char        bind_dn[100];
-
-///* Get username and password */
-//if( argc != 3 )
-//{
-//perror( "invalid args, required: username password" );
-//return( 1 );
-//}
-//sprintf( bind_dn, "cn=%s,ou=People,dc=nafiux,dc=com", argv[1] );
-//printf( "Connecting as %s...\n", bind_dn );
-
-///* Open LDAP Connection */
-//if( ldap_initialize( &ld, LDAP_SERVER ) )
-//{
-//perror( "ldap_initialize" );
-//return( 1 );
-//}
-
-///* User authentication (bind) */
-//rc = ldap_simple_bind_s( ld, bind_dn, argv[2] );
-//if( rc != LDAP_SUCCESS )
-//{
-//fprintf(stderr, "ldap_simple_bind_s: %s\n", ldap_err2string(rc) );
-//return( 1 );
-//}
-//printf( "Successful authentication\n" );
-//ldap_unbind( ld );
-
+    return true;
 }
 
 bool Mapa::setArgs(int argc, char *argv[])
 {
-
+    return true;
 }
 
 bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
@@ -174,7 +158,7 @@ bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
     QString patrimonioMonitor1 = ui->linePatrimonioMonitor1->text();
     QString patrimonioMonitor2 = ui->linePatrimonioMonitor2->text();
 
-    QRegExp regAlfa("^([\'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+((\s[\'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+)?$");
+    QRegExp regAlfa("^([\ \'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+((\s[\'\.\^\~\´\`\\áÁ\\àÀ\\ãÃ\\âÂ\\éÉ\\èÈ\\êÊ\\íÍ\\ìÌ\\óÓ\\òÒ\\õÕ\\ôÔ\\úÚ\\ùÙ\\çÇaA-zZ]+)+)?$");
     QRegExp regNum("^[0-9]$");
 
     if( nomeUsuario.size() <= 2 ) {

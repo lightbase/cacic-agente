@@ -26,6 +26,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Mapa
 TEMPLATE = app
 
+LIBS += -lldap
+
 win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     QT      += axcontainer
