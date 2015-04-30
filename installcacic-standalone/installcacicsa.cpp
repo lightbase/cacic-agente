@@ -144,7 +144,7 @@ bool InstallCacicSA::verificaServico()
             if (!sc.isRunning()){
                 if (!sc.start()){
                     if (PathIsDirectoryEmptyA(dirBin.c_str())) {
-                    //envia falha pro gerente
+                        //envia falha pro gerente
                     } else {
                         //instala o MSI do cacic de novo
                     }

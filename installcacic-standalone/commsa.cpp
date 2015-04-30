@@ -252,3 +252,4 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
 
     return true;
 }
+

@@ -27,7 +27,7 @@ void testeInstallcacic::testHttpCommunication()
 void testeInstallcacic::testNaoInstalado()
 {
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadService("/rota","./cacic-service")){
+        if (this->icsa->downloadService("/rota","./cacic-service.exe")){
             QVERIFY(this->icsa->installService());
         } else {
             QVERIFY2(false, "Não conseguiu baixar o servico.");
