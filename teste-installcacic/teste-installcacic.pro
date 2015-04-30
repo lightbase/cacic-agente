@@ -36,10 +36,8 @@ SOURCES += testeinstallcacic.cpp \
     ../src/ccacic.cpp \
     ../src/identificadores.cpp \
     ../src/servicecontroller.cpp \
-#    ../src/greta/regexpr2.cpp \
-#    ../src/greta/syntax2.cpp \
-#    ../src/greta/restack.cpp \
-#    ../src/greta/reimpl2.cpp
+    ../src/simplejson/src/JSON.cpp \
+    ../src/simplejson/src/JSONValue.cpp
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
@@ -47,9 +45,7 @@ HEADERS += testeinstallcacic.h \
     ../src/ccacic.h \
     ../src/identificadores.h \
     ../src/servicecontroller.h \
-#    ../src/greta/regexpr2.h \
-#    ../src/greta/syntax2.h \
-#    ../src/greta/restack.h \
-#    ../src/greta/reimpl2.h
+    ../src/simplejson/src/JSON.h \
+    ../src/simplejson/src/JSONValue.h
 
 INCLUDEPATH += ../src
