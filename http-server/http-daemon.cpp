@@ -113,6 +113,20 @@ QString HttpDaemon::getErro()
     return retorno;
 }
 
+QString HttpDaemon::getDownload()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"valor\": \"localhost:8080/downloads/cacic.msi\"}\n";
+
+    retorno += "\n";
+
+    return retorno;
+}
+
 QString HttpDaemon::processRoutes(const QString &rota)
 {
     // Processa a rota definida na variável executando um método para cada rota
@@ -121,6 +135,8 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getInstalaHash();
     } else if (rota == ROUTE_ERRO) {
         return this->getErro();
+    } else if (rota.contains(ROUTE_DOWNLOAD)) {
+        return this->getDownload();
     } else {
         return this->getDefaultRoute();
     }
