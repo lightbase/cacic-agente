@@ -60,25 +60,17 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     //Recebe dados
     nDataLength = recv(Socket,buff,10000,0) > 0;
-//    while (nDataLength = recv(Socket,buff,10000,0) > 0){
-//        int i = 0;
-//        while (buff[i] >= 32 || buff[i] == '\n' || buff[i] == '\r') {
-////            std::cout << buff[i];
-//            i += 1;
-//        }
-//    }
     closesocket(Socket);
     WSACleanup();
 
     if (nDataLength != SOCKET_ERROR) {
-        return buff;
+        // Recupera body da requisição
+        std::string body = this->getBody(std::string(buff));
+
+        return body;
     } else {
         return "CONNECTION_ERROR";
     }
-
-    // Recupera body da requisição
-//    std::string buffer = std::string(buff);
-//    std::string body = this->getBody(buffer);
 }
 
 const char *CommSA::getHost() const
@@ -136,7 +128,7 @@ void CommSA::setTimeOut(int value)
     timeOut = value;
 }
 
-std::string CommSA::getBody(std::string &request) const
+std::string CommSA::getBody(std::string request) const
 {
     /*!
      * \brief results
@@ -144,17 +136,40 @@ std::string CommSA::getBody(std::string &request) const
      * Método que encontra o body da requisição
      *
      */
-//    regex::match_results results;
-//    regex::rpattern pat("\n({.*})\n");
 
-//    regex::match_results::backref_type br = pat.match(request, results);
+    std::string start ("{");
+    std::string end ("}");
 
-//    if (br.matched) {
-//        return br.str();
-//    } else {
-//        return "";
-//    }
-    return "";
+    std::size_t found_s = request.find(start);
+    //std::cout << "Índice do começo: " << found_s << std::endl;
+    std::size_t found_e = request.find(end);
+    //std::cout << "Índice do fim: " << found_e << std::endl;
+    std::size_t size = (found_e - found_s);
+
+    if (size <= 1) {
+        // String vazia. Retorna
+        std::cout << "String vazia" << std::endl;
+        return "";
+    }
+
+
+    // Agora retorna a substring
+    std::string body_char = request.substr(found_s, (size+1));
+    //std::cout << "Valor encontrado: " << body_char << std::endl;
+    std::wstring body_str (body_char.begin(), body_char.end());
+
+    // Tenta associar o a string ao struct do map
+    JSONValue *value = JSON::Parse(body_str.c_str());
+    if (value == NULL) {
+        std::cout << "Valor nulo" << std::endl;
+        return "";
+    } else {
+        JSONObject root = value->AsObject();
+        std::wstring ws = root[L"valor"]->AsString();
+        //std::wcout << "Valor encontrado: " << ws << std::endl;
+        std::string s(ws.begin(), ws.end());
+        return s;
+    }
 }
 
 bool CommSA::downloadFile(const char *url, const char *filePath)
