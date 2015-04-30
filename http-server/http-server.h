@@ -12,9 +12,9 @@ class HttpService : public QtService<QCoreApplication>
  {
  public:
      HttpService(int &argc, char **argv)
-         : QtService<QCoreApplication>(argc, argv, "Qt HTTP Daemon")
+         : QtService<QCoreApplication>(argc, argv, "cacichttptester")
      {
-         setServiceDescription("A dummy HTTP service implemented with Qt");
+         setServiceDescription("Servidor HTTP de testes para o Cacic");
          setServiceFlags(QtServiceBase::CanBeSuspended);
 
          // Cria arquivo de configuração

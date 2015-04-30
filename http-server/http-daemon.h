@@ -34,6 +34,7 @@
      QString getInstalaHash();
      QString getDefaultRoute();
      QString getErro();
+     QString getDownload();
 
  private:
      bool disabled;

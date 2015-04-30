@@ -12,6 +12,7 @@
 #define BUFFERSIZE 4096
 
 #define ROUTE_HASH "/ws/instala/hash"
+#define ROUTE_DOWNLOAD "/ws/instala/download"
 #define ROUTE_ERRO "/ws/instala/erro"
 
 class CommSA
