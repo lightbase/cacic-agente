@@ -24,6 +24,7 @@ Mapa::Mapa(QWidget *parent) :
     ui->setupUi(this);
 
     preencheCampos(true, "ldap://lightbase.com.br:389");
+    //Opção que recebe argumento a ser feito
 }
 
 Mapa::~Mapa()
@@ -118,8 +119,9 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapUrl)
 bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
 {
 
+// Método em teste
+// Estou verificando as funções chamadas pelo valor de rc e prints nos campos do formulário.
     LDAP *ldp;
-    LDAPMessage **res;
     int rc;
 
     rc = ldap_initialize( &ldp, ldapUrl.toStdString().c_str());
@@ -127,10 +129,40 @@ bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
         return false;
     }
 
-//    ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)3);
+    ulong version = LDAP_VERSION3;
+    rc = ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)&version);
+    if ( rc != LDAP_OPT_SUCCESS){
+        return false;
+    }
 
-//    char **attrs = (char**)LDAP_ALL_USER_ATTRIBUTES;
-//    rc = ldap_search_ext_s(ldp,"ou=usuarios,dc=lightbase,dc=com,dc=br",LDAP_SCOPE_BASE,NULL,attrs,0,NULL,NULL,NULL,0,res);
+    char *base = "ou=usuarios,dc=lightbase,dc=com,dc=br";
+    char *filter = "(uuid='thiagop')";
+    char *attrs = LDAP_ALL_USER_ATTRIBUTES;
+    LDAPControl *pServerControls = NULL;
+    pServerControls = (LDAPControl*) malloc(sizeof(LDAPControl));
+    LDAPControl *pClientControls = NULL;
+    pClientControls = (LDAPControl*) malloc(sizeof(LDAPControl));
+    struct timeval *lpsTimeout = NULL;
+    lpsTimeout = (struct timeval *) malloc(sizeof(struct timeval));
+    lpsTimeout->tv_sec = 1;
+    lpsTimeout->tv_usec = 500000;
+    LDAPMessage *res = NULL;
+    rc = ldap_search_ext_s(ldp,
+                           base,
+                           LDAP_SCOPE_BASE,
+                           filter,
+                           (char**)&attrs,
+                           0,
+                           &pServerControls,
+                           &pClientControls,
+                           lpsTimeout,
+                           0,
+                           &res);
+    if ( rc != LDAP_SUCCESS ){
+        ui->lineNomeUsuario->setText(QString::number(rc) );
+    }
+
+
 //    if ( rc != LDAP_SUCCESS){
 //        QMessageBox box(QMessageBox::Warning, "LDAP Search error.", "Function ldap_search_ext_s behaved badly.", QMessageBox::Ok);
 //        box.setWindowFlags(Qt::WindowStaysOnTopHint);
@@ -138,7 +170,7 @@ bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
 //            return false;
 //    }
 
-//    ldap_sasl_bind(ldp,"ou=usuarios,dc=lightbase,dc=com,dc=br",);
+
     //ldap_search_ext_s
 
     return true;

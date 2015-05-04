@@ -22,6 +22,8 @@
 #include "cacic_computer.h"
 #include "logcacic.h"
 #include "identificadores.h"
+#include "sys/time.h"
+#include "string"
 #include "ui_mapa_default.h"
 
 namespace Ui {
