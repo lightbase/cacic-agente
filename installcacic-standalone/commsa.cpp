@@ -73,61 +73,6 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     }
 }
 
-const char *CommSA::getHost() const
-{
-    return host;
-}
-
-void CommSA::setHost(const char *value)
-{
-    host = value;
-}
-int CommSA::getPort() const
-{
-    return port;
-}
-
-void CommSA::setPort(int value)
-{
-    port = value;
-}
-const char *CommSA::getMethod() const
-{
-    return method;
-}
-
-void CommSA::setMethod(const char *value)
-{
-    method = value;
-}
-const char *CommSA::getType() const
-{
-    return type;
-}
-
-void CommSA::setType(const char *value)
-{
-    type = value;
-}
-const char *CommSA::getRoute() const
-{
-    return route;
-}
-
-void CommSA::setRoute(const char *value)
-{
-    route = value;
-}
-int CommSA::getTimeOut() const
-{
-    return timeOut;
-}
-
-void CommSA::setTimeOut(int value)
-{
-    timeOut = value;
-}
-
 std::string CommSA::getBody(std::string request) const
 {
     /*!
@@ -148,7 +93,7 @@ std::string CommSA::getBody(std::string request) const
 
     if (size <= 1) {
         // String vazia. Retorna
-        std::cout << "String vazia" << std::endl;
+//        std::cout << "String vazia" << std::endl;
         return "";
     }
 
@@ -161,7 +106,7 @@ std::string CommSA::getBody(std::string request) const
     // Tenta associar o a string ao struct do map
     JSONValue *value = JSON::Parse(body_str.c_str());
     if (value == NULL) {
-        std::cout << "Valor nulo" << std::endl;
+//        std::cout << "Valor nulo" << std::endl;
         return "";
     } else {
         JSONObject root = value->AsObject();
@@ -268,3 +213,57 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     return true;
 }
 
+const char *CommSA::getHost() const
+{
+    return host;
+}
+
+void CommSA::setHost(const char *value)
+{
+    host = value;
+}
+int CommSA::getPort() const
+{
+    return port;
+}
+
+void CommSA::setPort(int value)
+{
+    port = value;
+}
+const char *CommSA::getMethod() const
+{
+    return method;
+}
+
+void CommSA::setMethod(const char *value)
+{
+    method = value;
+}
+const char *CommSA::getType() const
+{
+    return type;
+}
+
+void CommSA::setType(const char *value)
+{
+    type = value;
+}
+const char *CommSA::getRoute() const
+{
+    return route;
+}
+
+void CommSA::setRoute(const char *value)
+{
+    route = value;
+}
+int CommSA::getTimeOut() const
+{
+    return timeOut;
+}
+
+void CommSA::setTimeOut(int value)
+{
+    timeOut = value;
+}

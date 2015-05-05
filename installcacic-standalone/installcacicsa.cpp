@@ -38,7 +38,7 @@ bool InstallCacicSA::downloadService(const std::string &rota, const std::string 
         url = this->url + rota;
     else
         url = this->url + "/" + rota;
-    return this->comm.downloadFile(url.c_str(), path.c_str());
+    return this->comm.downloadFile(url.c_str(), path.c_str()) && this->fileExists(path);
 }
 
 bool InstallCacicSA::installService()
@@ -70,7 +70,7 @@ bool InstallCacicSA::getConfig()
     comm.setRoute(route);
 
     check = comm.sendReq("teste");
-    if (check == "") {
+    if (check == "" || check == "CONNECTION_ERROR") {
         return false;
     } else {
     // Ajusta hash remoto recebido do servidor
@@ -92,7 +92,13 @@ bool InstallCacicSA::verificaServico()
     std::string dirBin = this->cacicPath + "\\bin\\";
     //Verifica se o serviço está rodando;
     if (!this->comparaHash()){
-        //baixa novo serviço
+        if (!this->getConfig()){
+            return false;
+        }
+        if (!this->downloadService(this->hashRemoto, fileService)){
+            this->informaGerente("Falha ao baixar serviço.");
+            return false;
+        }
         if (sc.isInstalled()){
             if (sc.isRunning()){
                 sc.stop();
@@ -103,7 +109,7 @@ bool InstallCacicSA::verificaServico()
                         Sleep(3000);
                         ok = DeleteFileA(fileService.c_str());
                         if (ok != ERROR_FILE_NOT_FOUND){
-                            //informaGerente
+                            this->informaGerente("Falha ao tentar excluir serviço antigo.");
                         }
                     }
                 }
@@ -111,28 +117,28 @@ bool InstallCacicSA::verificaServico()
                                 fileService.c_str(),
                                 MOVEFILE_REPLACE_EXISTING) != 0) {
 
-                    //informa gerente
+                    this->informaGerente("Falha ao mover serviço da pasta temporária.");
                     return false;
                 }
             }
             if (!sc.start()){
-                //envia falha pro gerente
+                this->informaGerente("Falha ao iniciar serviço.");
             }
         } else {
             if (MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) != 0) {
 
-                //informa gerente
+                this->informaGerente("Falha ao mover serviço da pasta temporária.");
                 return false;
             }
             if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
-                //envia falha pro gerente
+                this->informaGerente("Falha ao instalar serviço.");
                 return false;
             } else {
                 if (!sc.start()){
                     if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
-                    //envia falha pro gerente
+                        this->informaGerente("Não foi possível iniciar o serviço.");
                     } else {
                         //instala o MSI do cacic de novo
                     }
@@ -143,8 +149,8 @@ bool InstallCacicSA::verificaServico()
         if (sc.isInstalled()) {
             if (!sc.isRunning()){
                 if (!sc.start()){
-                    if (PathIsDirectoryEmptyA(dirBin.c_str())) {
-                        //envia falha pro gerente
+                    if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
+                        this->informaGerente("Não foi possível iniciar o serviço.");
                     } else {
                         //instala o MSI do cacic de novo
                     }
@@ -152,7 +158,7 @@ bool InstallCacicSA::verificaServico()
             }
         } else if (/*cacic-service existir*/ true) {
             if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
-                //envia falha ao gerente
+                this->informaGerente("Não foi possível instalar o serviço.");
             }
         }
     }
@@ -170,6 +176,20 @@ bool InstallCacicSA::fileExists(const std::string &filePath)
     }
 }
 
+void InstallCacicSA::informaGerente(const std::string &error)
+{
+    const char *route = ROUTE_ERRO;
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    check = comm.sendReq(error.c_str());
+    if (check == "" || check == "CONNECTION_ERROR") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 bool InstallCacicSA::installCacic()
 {
     return false;
@@ -177,8 +197,7 @@ bool InstallCacicSA::installCacic()
 
 bool InstallCacicSA::deleteCacic26()
 {
-    //verifica se há algum processo do cacic rodando e os mata.
-    //Deleta arquivos da versão 2.6 da pasta do cacic.
+
     return false;
 }
 
@@ -336,4 +355,14 @@ std::string InstallCacicSA::getHashRemoto()
 {
     return this->hashRemoto;
 }
+std::string InstallCacicSA::getUrl() const
+{
+    return url;
+}
+
+void InstallCacicSA::setUrl(const std::string &value)
+{
+    url = value;
+}
+
 

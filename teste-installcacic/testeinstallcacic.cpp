@@ -63,15 +63,17 @@ void testeInstallcacic::testConfig()
     this->icsa->getConfig();
 
     // Compara os dois. Devem ser iguais
-    std::cout << "!Hash local: " << this->icsa->getHashLocal() << "!\n";
-    std::cout << "!Hash remoto: " << this->icsa->getHashRemoto() << "!\n";
+//    std::cout << "!Hash local: " << this->icsa->getHashLocal() << "!\n";
+//    std::cout << "!Hash remoto: " << this->icsa->getHashRemoto() << "!\n";
     QVERIFY2(this->icsa->comparaHash(), ("Hash deveria ser igual mas é diferente"));
 
 }
 
 void testeInstallcacic::testDownloadFile()
 {
-    QVERIFY(this->icsa->downloadService("/download/cacic-service.exe", "c:\\cacic\\temp\\cacic-service.exe"));
+    this->icsa->setUrl("http://www.dicas-l.com.br");
+    QVERIFY(this->icsa->downloadService("/cursos/search/websearch.pdf", ".\\websearch.pdf"));
+    this->icsa->setUrl("localhost");
 }
 
 void testeInstallcacic::testMsiInstalado()
@@ -80,17 +82,9 @@ void testeInstallcacic::testMsiInstalado()
     QVariantMap registry;
     registry["teste"] = true;
     CCacic::setValueToRegistry("FakeMsi", "msi", registry);
-    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        QVERIFY2(false, "Registro de instalação não encontrado");
-    } else {
-        //Pega informações do gerente
-        if(this->icsa->getConfig()){
-            //corrige possíveis erros que impeça o serviço de subir
-            QVERIFY(this->icsa->verificaServico());
-        } else {
-            QVERIFY2(false, "Nao foi possivel pegar as informações necessárias");
-        }
-    }
+
+    QVERIFY2(this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi"),
+             "Não foi possível encontrar o registro.");
 }
 
 void testeInstallcacic::testServico()
@@ -104,7 +98,7 @@ void testeInstallcacic::testServico()
 
 void testeInstallcacic::testAtualizacao()
 {
-    QVERIFY(false);
+    QVERIFY(this->icsa->verificaServico());
 }
 
 void testeInstallcacic::testCacic26()
@@ -125,5 +119,5 @@ void testeInstallcacic::verificaRegistro()
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");
-
+    CCacic::deleteFile("./websearch.pdf");
 }
