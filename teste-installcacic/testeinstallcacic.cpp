@@ -18,6 +18,7 @@ void testeInstallcacic::initTestCase()
 
     hash = new std::string("CERTO");
     service_download = std::string("http://teste.cacic.cc/downloads/cacic/current/windows/cacic-service.exe");
+    msi_download = std::string("http://teste.cacic.cc/downloads/cacic/current/windows/Cacic.msi");
     QString tmp_dir = QDir::tempPath();
     path = tmp_dir.toStdString();
 }

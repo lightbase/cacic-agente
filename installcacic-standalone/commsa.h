@@ -12,7 +12,8 @@
 #define BUFFERSIZE 4096
 
 #define ROUTE_HASH "/ws/instala/hash"
-#define ROUTE_DOWNLOAD "/ws/instala/download"
+#define ROUTE_DOWNLOAD "/ws/instala/download/service"
+#define ROUTE_DOWNLOAD_MSI "/ws/instala/download/msi"
 #define ROUTE_ERRO "/ws/instala/erro"
 #define CACIC_SERVICE_BIN "cacic-service.exe"
 
