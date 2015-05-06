@@ -19,6 +19,8 @@ private:
     InstallCacicSA *icsa;
     ServiceController *sc;
     std::string *hash;
+    std::string service_download;
+    std::string path;
 
 signals:
 

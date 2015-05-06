@@ -14,6 +14,7 @@
 #define ROUTE_HASH "/ws/instala/hash"
 #define ROUTE_DOWNLOAD "/ws/instala/download"
 #define ROUTE_ERRO "/ws/instala/erro"
+#define CACIC_SERVICE_BIN "cacic-service.exe"
 
 class CommSA
 {

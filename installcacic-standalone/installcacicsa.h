@@ -32,7 +32,7 @@ public:
     bool setHashRemoto(const std::string &hash);
     bool setPort(int port);
     bool fileExists(const std::string &filePath);
-    void informaGerente(const std::string &error);
+    bool informaGerente(const std::string &error);
     std::string getHashFromFile(const std::string &filePath);
     std::string getHashLocal();
     std::string getHashRemoto();

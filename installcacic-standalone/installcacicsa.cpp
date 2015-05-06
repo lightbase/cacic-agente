@@ -33,12 +33,20 @@ bool InstallCacicSA::registryExists(HKEY RootKey,LPCTSTR SubKey)
 
 bool InstallCacicSA::downloadService(const std::string &rota, const std::string &path)
 {
-    std::string url;
-    if (rota.at(0) == '/')
-        url = this->url + rota;
-    else
-        url = this->url + "/" + rota;
-    return this->comm.downloadFile(url.c_str(), path.c_str()) && this->fileExists(path);
+    // Força path no binário
+    std::string full_path = path + std::string("/") + std::string(CACIC_SERVICE_BIN);
+
+    std::cout << "Baixando arquivo da URL: " << rota << std::endl;
+    std::cout << "Path para procurar o arquivo: " << full_path << std::endl;
+
+    // Resultados
+    bool downloaded = this->comm.downloadFile(rota.c_str(), path.c_str());
+    std::cout << "Resultado do Download: " << downloaded << std::endl;
+
+    bool exists = this->fileExists(full_path);
+    std::cout << "Resultado do exists: " << exists << std::endl;
+
+    return downloaded && exists;
 }
 
 bool InstallCacicSA::installService()
@@ -87,8 +95,8 @@ bool InstallCacicSA::comparaHash()
 bool InstallCacicSA::verificaServico()
 {
     ServiceController sc(L"CacicDaemon");
-    std::string fileService = this->cacicPath + "\\cacic-service.exe";
-    std::string fileServiceTemp =this->cacicPath + "\\temp\\cacic-service.exe";
+    std::string fileService = this->cacicPath + "\\" + std::string(CACIC_SERVICE_BIN);
+    std::string fileServiceTemp =this->cacicPath + "\\temp\\" + std::string(CACIC_SERVICE_BIN);
     std::string dirBin = this->cacicPath + "\\bin\\";
     //Verifica se o serviço está rodando;
     if (!this->comparaHash()){
@@ -176,13 +184,13 @@ bool InstallCacicSA::fileExists(const std::string &filePath)
     }
 }
 
-void InstallCacicSA::informaGerente(const std::string &error)
+bool InstallCacicSA::informaGerente(const std::string &error)
 {
     const char *route = ROUTE_ERRO;
     comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    check = comm.sendReq(error.c_str());
+    std::string check = comm.sendReq(error.c_str());
     if (check == "" || check == "CONNECTION_ERROR") {
         return false;
     } else {
