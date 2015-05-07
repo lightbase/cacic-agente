@@ -18,9 +18,12 @@ MapaControl::~MapaControl()
  *
  * Esta função mapeia as opções de linha de comando que o Mapa aceita.
  * Opções:
- * -ldap=server             Define o endereço de servidor do LDAP.
- * -custom                  Consulta o arquivo de configuração criar
- *                          um formulário customizado.
+ * -ldap=server                   Habilita consulta ao LDAP e seta qual
+ *                                o servidor onde estarão informações
+ *                                para consulta.
+ * -custom=server                 Habilita opção de formulário customizado
+ *                                e seta o servidor onde estarão descritos
+ *                                os campos.
  * @return
  */
 bool MapaControl::args2Map(int argc, char *argv[], QMap<QString, QString> &map)
@@ -43,7 +46,7 @@ bool MapaControl::args2Map(int argc, char *argv[], QMap<QString, QString> &map)
     if ( map.isEmpty() ) {
         hasArgument = false;
     } else if( map.contains("ldap") && !map["ldap"].isEmpty() ||
-               map.contains("default") && map["default"] == "custom" ) {
+               map.contains("custom") && !map["custom"].isEmpty() ) {
         hasArgument = true;
     }
     return hasArgument;
@@ -57,8 +60,8 @@ int MapaControl::run(int argc, char *argv[])
         // TODO: opções com argumento;
         emit finished();
     } else {
-        Mapa *mapa = new Mapa();
-        mapa->show();
+        interface = new Mapa();
+        interface->show();
     }
 
 }

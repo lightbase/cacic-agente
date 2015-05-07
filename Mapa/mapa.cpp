@@ -1,7 +1,6 @@
 #include "mapa.h"
 
-
-Mapa::Mapa(QWidget *parent) :
+Mapa::Mapa(const QString &ldapInfoUrl, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
 {
@@ -23,8 +22,11 @@ Mapa::Mapa(QWidget *parent) :
 
     ui->setupUi(this);
 
-    preencheCampos(true, "ldap://lightbase.com.br:389");
-    //Opção que recebe argumento a ser feito
+    if( ldapInfoUrl.isNull() || ldapInfoUrl.isEmpty() )
+        preencheCampos(false, "");
+    else
+        preencheCampos(true,ldapInfoUrl);
+
 }
 
 Mapa::~Mapa()
@@ -100,7 +102,7 @@ void Mapa::on_okButton_clicked()
     }
 }
 
-void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapUrl)
+void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl)
 {
     QJsonObject computerJson = computer.toJsonObject();
 
@@ -113,54 +115,43 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapUrl)
     ui->lineEnderecoIp->setDisabled(true);
 
     if( preencherUsuario )
-        preencheNomeUsuario(ldapUrl);
+        preencheNomeUsuario(ldapInfoUrl);
 }
 
-bool Mapa::preencheNomeUsuario(const QString &ldapUrl)
+bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
 {
 
 // Método em teste
 // Estou verificando as funções chamadas pelo valor de rc e prints nos campos do formulário.
-    LDAP *ldp;
-    int rc;
+//    LDAP *ldp;
+//    int rc;
 
-    rc = ldap_initialize( &ldp, ldapUrl.toStdString().c_str());
-    if ( rc != LDAP_SUCCESS){
-        return false;
-    }
+//    rc = ldap_initialize( &ldp, ldapInfoUrl.toStdString().c_str());
+//    if ( rc != LDAP_SUCCESS){
+//        return false;
+//    }
 
-    ulong version = LDAP_VERSION3;
-    rc = ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)&version);
-    if ( rc != LDAP_OPT_SUCCESS){
-        return false;
-    }
+//    ulong version = LDAP_VERSION2;
+//    rc = ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)&version);
+//    if ( rc != LDAP_OPT_SUCCESS){
+//        return false;
+//    }
 
-    char *base = "ou=usuarios,dc=lightbase,dc=com,dc=br";
-    char *filter = "(uuid='thiagop')";
-    char *attrs = LDAP_ALL_USER_ATTRIBUTES;
-    LDAPControl *pServerControls = NULL;
-    pServerControls = (LDAPControl*) malloc(sizeof(LDAPControl));
-    LDAPControl *pClientControls = NULL;
-    pClientControls = (LDAPControl*) malloc(sizeof(LDAPControl));
-    struct timeval *lpsTimeout = NULL;
-    lpsTimeout = (struct timeval *) malloc(sizeof(struct timeval));
-    lpsTimeout->tv_sec = 1;
-    lpsTimeout->tv_usec = 500000;
-    LDAPMessage *res = NULL;
-    rc = ldap_search_ext_s(ldp,
-                           base,
-                           LDAP_SCOPE_BASE,
-                           filter,
-                           (char**)&attrs,
-                           0,
-                           &pServerControls,
-                           &pClientControls,
-                           lpsTimeout,
-                           0,
-                           &res);
-    if ( rc != LDAP_SUCCESS ){
-        ui->lineNomeUsuario->setText(QString::number(rc) );
-    }
+//    char *login = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
+//    char *passwd = "brlight2012";
+//    rc = ldap_simple_bind_s(ldp,login,passwd);
+//    if ( rc != LDAP_SUCCESS ){
+//        ui->lineNomeUsuario->setText(QString::number(rc) );
+//    }
+
+//    char *base = "ou=usuarios,dc=lightbase,dc=com,dc=br";
+//    char *filter = "(uid='thiagop')";
+//    char *attrs = NULL;
+//    LDAPMessage *res = NULL;
+//    rc = ldap_search_s(ldp, base, LDAP_SCOPE_BASE,filter,(char**)&attrs,0,&res);
+//    if ( rc != LDAP_SUCCESS ){
+//        ui->lineNomeUsuario->setText(QString::number(rc, 16).toUpper() );
+//    }
 
 
 //    if ( rc != LDAP_SUCCESS){
