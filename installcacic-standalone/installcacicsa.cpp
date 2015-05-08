@@ -33,12 +33,18 @@ bool InstallCacicSA::registryExists(HKEY RootKey,LPCTSTR SubKey)
 
 bool InstallCacicSA::downloadService(const std::string &rota, const std::string &path)
 {
-    std::string url;
-    if (rota.at(0) == '/')
-        url = this->url + rota;
-    else
-        url = this->url + "/" + rota;
-    return this->comm.downloadFile(url.c_str(), path.c_str()) && this->fileExists(path);
+    // Força path no binário
+    std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
+
+    return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
+}
+
+bool InstallCacicSA::downloadMsi(const std::string &rota, const std::string &path)
+{
+    // Força path no binário
+    std::string full_path = path + std::string("\\") + std::string(CACIC_MSI);
+
+    return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 
 bool InstallCacicSA::installService()
@@ -87,18 +93,19 @@ bool InstallCacicSA::comparaHash()
 bool InstallCacicSA::verificaServico()
 {
     ServiceController sc(L"CacicDaemon");
-    std::string fileService = this->cacicPath + "\\cacic-service.exe";
-    std::string fileServiceTemp =this->cacicPath + "\\temp\\cacic-service.exe";
+    std::string fileService = this->cacicPath + "\\" + std::string(CACIC_SERVICE_BIN);
+    std::string fileServiceTemp =this->cacicPath + "\\temp\\" + std::string(CACIC_SERVICE_BIN);
     std::string dirBin = this->cacicPath + "\\bin\\";
-    //Verifica se o serviço está rodando;
+
+    if (!this->getConfig()){
+        return false;
+    }
     if (!this->comparaHash()){
-        if (!this->getConfig()){
-            return false;
-        }
         if (!this->downloadService(this->hashRemoto, fileService)){
             this->informaGerente("Falha ao baixar serviço.");
             return false;
         }
+        //Verifica se o serviço está rodando;
         if (sc.isInstalled()){
             if (sc.isRunning()){
                 sc.stop();

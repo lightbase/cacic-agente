@@ -17,6 +17,10 @@ void testeInstallcacic::initTestCase()
     this->icsa->setPort(8080);
 
     hash = new std::string("CERTO");
+    service_download = std::string("http://teste.cacic.cc/downloads/cacic/current/windows/cacic-service.exe");
+    msi_download = std::string("http://teste.cacic.cc/downloads/cacic/current/windows/Cacic.msi");
+    QString tmp_dir = QDir::tempPath().replace("/","\\");
+    path = tmp_dir.toStdString();
 }
 
 void testeInstallcacic::testHttpCommunication()
@@ -27,7 +31,7 @@ void testeInstallcacic::testHttpCommunication()
 void testeInstallcacic::testNaoInstalado()
 {
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadService("/rota","./cacic-service.exe")){
+        if (this->icsa->downloadMsi(this->msi_download, this->path)){
             QVERIFY(this->icsa->installService());
         } else {
             QVERIFY2(false, "Não conseguiu baixar o servico.");
@@ -71,8 +75,9 @@ void testeInstallcacic::testConfig()
 
 void testeInstallcacic::testDownloadFile()
 {
-    this->icsa->setUrl("http://www.dicas-l.com.br");
-    QVERIFY(this->icsa->downloadService("/cursos/search/websearch.pdf", ".\\websearch.pdf"));
+    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
+
+    QVERIFY(this->icsa->downloadService(this->service_download, this->path));
     this->icsa->setUrl("localhost");
 }
 

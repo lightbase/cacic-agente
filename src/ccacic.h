@@ -30,7 +30,10 @@
 #include <console.h>
 #include <servicecontroller.h>
 #include <identificadores.h>
-
+#ifdef Q_OS_WIN
+    #include <vqtconvert.h>
+    #include <vregistry.h>
+#endif
 namespace CCacic {
 
 //    QString getValueFromFile(QString sectionName, QString keyName, QString filePath);
@@ -59,6 +62,7 @@ namespace CCacic {
     QString getMesFromString(QString mes);
     void salvarVersao(QString modulo);
     bool findProc(const char *name);
+    void changeCacicVersion();
 
 };
 

@@ -37,7 +37,9 @@ SOURCES += testeinstallcacic.cpp \
     ../src/identificadores.cpp \
     ../src/servicecontroller.cpp \
     ../src/simplejson/src/JSON.cpp \
-    ../src/simplejson/src/JSONValue.cpp
+    ../src/simplejson/src/JSONValue.cpp \
+    ../src/vregistry.cpp \
+    ../src/vqtconvert.cpp \
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
@@ -46,6 +48,8 @@ HEADERS += testeinstallcacic.h \
     ../src/identificadores.h \
     ../src/servicecontroller.h \
     ../src/simplejson/src/JSON.h \
-    ../src/simplejson/src/JSONValue.h
+    ../src/simplejson/src/JSONValue.h \
+    ../src/vregistry.h \
+    ../src/vqtconvert.h \
 
 INCLUDEPATH += ../src

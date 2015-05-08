@@ -35,6 +35,7 @@
      QString getDefaultRoute();
      QString getErro();
      QString getDownload();
+     QString getDownloadMsi();
 
  private:
      bool disabled;

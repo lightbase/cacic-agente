@@ -120,7 +120,21 @@ QString HttpDaemon::getDownload()
     retorno = "HTTP/1.0 200 Ok\r\n"
         "Content-Type: application/json; charset=\"utf-8\"\r\n"
         "\r\n"
-        "{\"valor\": \"localhost:8080/downloads/cacic.msi\"}\n";
+        "{\"valor\": \"http://teste.cacic.cc/downloads/cacic/current/windows/cacic-service.exe\"}\n";
+
+    retorno += "\n";
+
+    return retorno;
+}
+
+QString HttpDaemon::getDownloadMsi()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"valor\": \"http://teste.cacic.cc/downloads/cacic/current/windows/Cacic.msi\"}\n";
 
     retorno += "\n";
 
@@ -135,8 +149,10 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getInstalaHash();
     } else if (rota == ROUTE_ERRO) {
         return this->getErro();
-    } else if (rota.contains(ROUTE_DOWNLOAD)) {
+    } else if (rota == ROUTE_DOWNLOAD) {
         return this->getDownload();
+    } else if (rota == ROUTE_DOWNLOAD_MSI) {
+        return this->getDownloadMsi();
     } else {
         return this->getDefaultRoute();
     }
