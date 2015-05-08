@@ -48,7 +48,7 @@ SOURCES += main.cpp\
         ../src/identificadores.cpp\
         ../src/wmi.cpp \
         ../src/servicecontroller.cpp \
-    mapacontrol.cpp
+        mapacontrol.cpp
 
 HEADERS  += mapa.h\
         ../src/cacic_comm.h\
@@ -60,7 +60,7 @@ HEADERS  += mapa.h\
         ../src/identificadores.h\
         ../src/wmi.h \
         ../src/servicecontroller.h \
-    mapacontrol.h
+        mapacontrol.h
 
 FORMS    += \
     mapa_default.ui
