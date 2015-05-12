@@ -24,9 +24,7 @@
 #include "sys/time.h"
 #include "string"
 #include "ui_mapa_default.h"
-
-#define LDAP_DEPRECATED 1
-#include <ldap.h>
+#include "ldaphandler.h"
 
 namespace Ui {
 class Mapa;
@@ -49,10 +47,11 @@ private:
     void closeEvent(QCloseEvent *event);
     bool enviarInfo(const QJsonObject &jsonMapa);
     void preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl);
-    bool preencheNomeUsuario(const QString &ldapUrl);
+    bool preencheNomeUsuario(const QString &ldapInfoUrl);
     bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;
+    CacicComm *oCacicComm;
     LogCacic *logcacic;
     QString mainFolder;
     Ui::Mapa *ui;

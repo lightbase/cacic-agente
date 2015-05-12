@@ -36,6 +36,7 @@
      QString getErro();
      QString getDownload();
      QString getDownloadMsi();
+     QString getLdapInfo();
 
  private:
      bool disabled;
