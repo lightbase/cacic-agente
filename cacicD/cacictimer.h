@@ -25,6 +25,10 @@
 #include "checkmodules.h"
 #include "identificadores.h"
 #include <servicecontroller.h>
+#ifdef Q_OS_WIN
+    #include "vqtconvert.h"
+    #include "vregistry.h"
+#endif
 
 class CacicTimer : public QObject
 {
@@ -68,6 +72,9 @@ private:
     bool enviarLogs();
     void registrarDataEnvioDeColeta();
     QString getDirProgram() const;
+#ifdef Q_OS_WIN
+    void changeCacicVersion();
+#endif
 
     CacicThread *cacicthread;
     QString cacicMainFolder;

@@ -692,6 +692,32 @@ bool CacicTimer::removeCacicAnterior(){
     return retorno;
 }
 
+#ifdef Q_OS_WIN
+void CacicTimer::changeCacicVersion()
+{
+    using namespace voidrealms::win32;
+    QStringList regedit;
+    //No windows, ele armazena os dados em 2 locais diferentes se for x64. Um para programas x86 e outro pra x64.
+    regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+    regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+    foreach(QString registry, regedit){
+        bool found = false;
+        VRegistry reg;
+        reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
+        QStringList keys = reg.enum_Keys();
+        foreach(QString key, keys){
+            VRegistry subReg;
+            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
+            if (subReg.get_REG_SZ("DisplayName") == "Cacic"){
+                subReg.set_REG_SZ("DisplayVersion", Identificadores::AGENTE_VERSAO);
+                found = true;
+            }
+        }
+        if (found) break;
+    }
+}
+#endif
+
 void CacicTimer::definirDirModulo(QString appDirPath, QString nome){
     setDirProgram(appDirPath + (appDirPath.endsWith("/") ? nome : "/" + nome));
 }
