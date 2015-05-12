@@ -36,9 +36,7 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
 #if defined(Q_OS_UNIX)
         rc = ldap_simple_bind_s(ldp,login,passwd);
 #elif defined(Q_OS_WIN)
-
-//        LDAP_TIMEVAL *timeout = NULL;
-//        rc = ldap_connect(ldp,(struct l_timeval*)timeout);
+        rc = ldap_connect(ldp,(struct l_timeval*)NULL);
         rc = ldap_simple_bind_sA(ldp,login,passwd);
 #endif
         if ( rc != LDAP_SUCCESS ){

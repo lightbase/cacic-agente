@@ -141,6 +141,27 @@ QString HttpDaemon::getDownloadMsi()
     return retorno;
 }
 
+QString HttpDaemon::getLdapInfo()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"objectClass\": \"LDAP_info\",\n"
+        "\"info\": {\n"
+            "\"base\": \"dc=lightbase,dc=com,dc=br\",\n"
+            "\"filter\": \"'(uid=nome)' cn\",\n"
+            "\"login\": \"cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br\",\n"
+            "\"pass\": \"brlight2012\",\n"
+            "\"server\": \"ldap://ldap.server\"}\n"
+        "}\n";
+
+    retorno += "\n";
+
+    return retorno;
+}
+
 QString HttpDaemon::processRoutes(const QString &rota)
 {
     // Processa a rota definida na variável executando um método para cada rota
@@ -153,6 +174,8 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getDownload();
     } else if (rota == ROUTE_DOWNLOAD_MSI) {
         return this->getDownloadMsi();
+    } else if(rota == ROUTE_MAPA_LDAP) {
+        return this->getLdapInfo();
     } else {
         return this->getDefaultRoute();
     }
