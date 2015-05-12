@@ -9,6 +9,16 @@ Mapa::Mapa(const QString &ldapInfoUrl, QWidget *parent) :
     mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
     logcacic = new LogCacic(LOG_MAPA, mainFolder + "/Logs");
 
+    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
+
+    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
+        oCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    } else {
+        oCacicComm->setUrlGerente("http://teste.cacic.cc");
+    }
+
     this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
     this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
@@ -31,8 +41,10 @@ Mapa::Mapa(const QString &ldapInfoUrl, QWidget *parent) :
 
 Mapa::~Mapa()
 {
-    delete logcacic;
     delete ui;
+    delete oCacicComm;
+    delete logcacic;
+
 }
 
 bool Mapa::checarPreenchimento() const
@@ -65,15 +77,11 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
 {
     bool ok = false;
     if (!jsonMapa.isEmpty()){
-        CacicComm *OCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
-        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando dados do Mapa ao gerente."));
-        retornoEnvio = OCacicComm->comm(ROTA_MAPA, &ok, jsonMapa , true);
+        retornoEnvio = oCacicComm->comm(ROTA_MAPA_FORM, &ok, jsonMapa , true);
         if(retornoEnvio.contains("error")) {
-            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar a dados do Mapa: " + retornoEnvio["error"].toString()));
+            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar dados do Mapa: " + retornoEnvio["error"].toString()));
         }
     }
 
@@ -81,6 +89,8 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
     box.setWindowFlags(Qt::WindowStaysOnTopHint);
     if( box.exec() == QMessageBox::Ok )
         qApp->quit();
+
+    return ok;
 }
 
 void Mapa::on_okButton_clicked()
@@ -120,49 +130,41 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl)
 
 bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
 {
+    bool ok = false;
+    QJsonObject sentJson;
+    QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
 
-// Método em teste
-// Estou verificando as funções chamadas pelo valor de rc e prints nos campos do formulário.
-//    LDAP *ldp;
-//    int rc;
+    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
+    if (!sentJson.isEmpty()){
+        QJsonObject retornoEnvio;
+        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
 
-//    rc = ldap_initialize( &ldp, ldapInfoUrl.toStdString().c_str());
-//    if ( rc != LDAP_SUCCESS){
-//        return false;
-//    }
+        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
+        QString urlGerente = oCacicComm->getUrlGerente();
+        oCacicComm->setUrlGerente(ldapInfoUrl);
+        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
+        oCacicComm->setUrlGerente(urlGerente);
 
-//    ulong version = LDAP_VERSION2;
-//    rc = ldap_set_option(ldp, LDAP_OPT_PROTOCOL_VERSION, (void*)&version);
-//    if ( rc != LDAP_OPT_SUCCESS){
-//        return false;
-//    }
+        if(retornoEnvio.contains("error")) {
+            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
+        } else if(!retornoEnvio["objectClass"].isUndefined() &&
+                  !retornoEnvio["objectClass"].isNull() &&
+                  retornoEnvio["objectClass"] == "LDAP_info" ) {
+            QJsonObject ldapJson = retornoEnvio["info"].toObject();
 
-//    char *login = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
-//    char *passwd = "brlight2012";
-//    rc = ldap_simple_bind_s(ldp,login,passwd);
-//    if ( rc != LDAP_SUCCESS ){
-//        ui->lineNomeUsuario->setText(QString::number(rc) );
-//    }
+            ldapBase = ldapJson["base"].toString();
+            ldapFilter = ldapJson["filter"].toString();
+            ldapLogin = ldapJson["login"].toString();
+            ldapPass = ldapJson["pass"].toString();
+            ldapServer = ldapJson["server"].toString();
+        }
+    }
 
-//    char *base = "ou=usuarios,dc=lightbase,dc=com,dc=br";
-//    char *filter = "(uid='thiagop')";
-//    char *attrs = NULL;
-//    LDAPMessage *res = NULL;
-//    rc = ldap_search_s(ldp, base, LDAP_SCOPE_BASE,filter,(char**)&attrs,0,&res);
-//    if ( rc != LDAP_SUCCESS ){
-//        ui->lineNomeUsuario->setText(QString::number(rc, 16).toUpper() );
-//    }
+    LdapHandler ldapHandler;
 
-
-//    if ( rc != LDAP_SUCCESS){
-//        QMessageBox box(QMessageBox::Warning, "LDAP Search error.", "Function ldap_search_ext_s behaved badly.", QMessageBox::Ok);
-//        box.setWindowFlags(Qt::WindowStaysOnTopHint);
-//        if( box.exec() == QMessageBox::Ok )
-//            return false;
-//    }
-
-
-    //ldap_search_ext_s
+    ui->lineNomeUsuario->setText(
+                ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
+                );
 
     return true;
 }
