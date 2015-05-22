@@ -32,7 +32,7 @@
      void discardClient();
      QString processRoutes(const QString &rota);
      QString getInstalaHash();
-     QString getDefaultRoute();
+     QString getDefaultRoute(const QString &rota);
      QString getErro();
      QString getDownload();
      QString getDownloadMsi();

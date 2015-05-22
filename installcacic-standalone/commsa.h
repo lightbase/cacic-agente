@@ -2,9 +2,7 @@
 #define COMMSA_H
 
 #include <iostream>
-#ifdef Q_OS_WIN
-    #include <winsock2.h>
-#endif
+#include <winsock2.h>
 #include <stdlib.h>
 #include <string>
 #include <../src/simplejson/src/JSON.h>

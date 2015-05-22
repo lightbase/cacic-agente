@@ -66,7 +66,6 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     if (nDataLength != SOCKET_ERROR) {
         // Recupera body da requisição
         std::string body = this->getBody(std::string(buff));
-
         return body;
     } else {
         return "CONNECTION_ERROR";
@@ -97,7 +96,6 @@ std::string CommSA::getBody(std::string request) const
         return "";
     }
 
-
     // Agora retorna a substring
     std::string body_char = request.substr(found_s, (size+1));
     //std::cout << "Valor encontrado: " << body_char << std::endl;
@@ -110,7 +108,12 @@ std::string CommSA::getBody(std::string request) const
         return "";
     } else {
         JSONObject root = value->AsObject();
-        std::wstring ws = root[L"valor"]->AsString();
+        std::wstring ws;
+        if (root.find(L"valor") != root.end() && root[L"valor"]->IsString()){
+            ws = root[L"valor"]->AsString();
+        } else {
+            return "";
+        }
         //std::wcout << "Valor encontrado: " << ws << std::endl;
         std::string s(ws.begin(), ws.end());
         return s;
