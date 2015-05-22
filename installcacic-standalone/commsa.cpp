@@ -145,6 +145,11 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     request += "Host: " + shost + "\r\n";
     request += "\r\n";
 
+    //Verifica se é possível conexão com a url repassada
+    if (!gethostbyaddr(shost.c_str(), shost.size(),AF_INET)){
+        return false;
+    }
+
     if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
         return false;
 
@@ -171,9 +176,9 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
 
     int nRecv, npos;
     nRecv = recv(sock, (char*)&buffer, BUFFERSIZE, 0);
-
     // getting end of header //
     std::string str_buff = buffer;
+
     npos = str_buff.find("\r\n\r\n");
 
     // open the file in the beginning //

@@ -47,9 +47,22 @@ bool InstallCacicSA::downloadMsi(const std::string &rota, const std::string &pat
     return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 
-bool InstallCacicSA::installService()
+bool InstallCacicSA::installService(const std::string &serviceName, const std::string &serviceBinPath)
 {
-    return false;
+    std::wstring wServiceName(serviceName.begin(), serviceName.end());
+    std::wstring wServiceBinPath(serviceBinPath.begin(), serviceBinPath.end());
+    ServiceController service(wServiceName);
+    if (!service.install(wServiceBinPath)){
+        this->informaGerente("Falha ao instalar serviço");
+        return false;
+    } else {
+        if (!service.start()){
+            this->informaGerente("Falha ao iniciar serviço.");
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 bool InstallCacicSA::ping()
@@ -224,6 +237,7 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
                         &pi )           // Pointer to PROCESS_INFORMATION structure
        )
     {
+        printf("Falha ao criar processo... %i \n", GetLastError());
         this->informaGerente("Falha ao criar processo utilizando: " + applicationPath + " " + parameters);
         return false;
     }
@@ -236,9 +250,9 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     CloseHandle( pi.hThread );
 }
 
-bool InstallCacicSA::installCacic()
+bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
-    return false;
+    return this->runProgram(msiPath, "-host=" + this->url + " -user=cacic -pass=cacic123");
 }
 
 bool InstallCacicSA::deleteCacic26()

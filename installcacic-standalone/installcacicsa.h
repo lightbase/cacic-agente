@@ -21,12 +21,12 @@ public:
     bool registryExists(HKEY RootKey, LPCTSTR SubKey);
     bool downloadService(const std::string &rota, const std::string &path);
     bool downloadMsi(const std::string &rota, const std::string &path);
-    bool installService();
+    bool installService(const std::string &serviceName, const std::string &serviceBinPath);
     bool ping();
     bool getConfig();
     bool comparaHash();
     bool verificaServico();
-    bool installCacic();
+    bool installCacic(const std::string &msiPath);
     bool deleteCacic26();
     bool deleteCacic28();
     bool setHashLocal(const std::string &hash);

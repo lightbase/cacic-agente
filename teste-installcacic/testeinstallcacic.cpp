@@ -28,26 +28,6 @@ void testeInstallcacic::testHttpCommunication()
     QVERIFY2(this->icsa->ping(), "Falha na comunicação com o serviço");
 }
 
-void testeInstallcacic::testNaoInstalado()
-{
-    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadMsi(this->msi_download, this->path)){
-            QVERIFY(this->icsa->installService());
-        } else {
-            QVERIFY2(false, "Não conseguiu baixar o servico.");
-        }
-    } else {
-        QVERIFY(true);
-    }
-}
-
-void testeInstallcacic::testGetHashFromFile()
-{
-    std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
-//    qDebug() << QString::fromStdString(hash);
-    QVERIFY (hash!="");
-}
-
 void testeInstallcacic::testConfig()
 {
     std::string hash;
@@ -73,6 +53,28 @@ void testeInstallcacic::testConfig()
 
 }
 
+void testeInstallcacic::testNaoInstalado()
+{
+    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
+        if (this->icsa->downloadMsi(this->msi_download, this->path)){
+            QVERIFY(this->icsa->installCacic(this->path+"\\Cacic.msi"));
+        } else {
+            QVERIFY2(false, "Não conseguiu baixar o servico.");
+        }
+    } else {
+        QVERIFY(true);
+    }
+}
+
+void testeInstallcacic::testGetHashFromFile()
+{
+    std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
+//    qDebug() << QString::fromStdString(hash);
+    QVERIFY (hash!="");
+}
+
+
+
 void testeInstallcacic::testDownloadFile()
 {
     std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
@@ -96,14 +98,14 @@ void testeInstallcacic::testServico()
 {
     if (!sc->isInstalled() || !sc->isRunning()){
         //verifica se existe o binário install-cacic na pasta bin, se não executa MSI.
-        QVERIFY(icsa->installCacic());
+        QVERIFY(icsa->verificaServico());
     }
     QVERIFY2(false, "Servico instalado ou rodando");
 }
 
 void testeInstallcacic::testAtualizacao()
 {
-    QVERIFY(this->icsa->verificaServico());
+    QVERIFY(false);
 }
 
 void testeInstallcacic::testCacic26()

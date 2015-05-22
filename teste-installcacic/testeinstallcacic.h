@@ -30,9 +30,9 @@ public slots:
 private slots:
     void initTestCase();
     void testHttpCommunication();
+    void testConfig();
     void testNaoInstalado();
     void testGetHashFromFile();
-    void testConfig();
     void testDownloadFile();
     void testMsiInstalado();
     void testServico();
