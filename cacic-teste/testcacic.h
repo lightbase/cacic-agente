@@ -55,6 +55,7 @@ public slots:
 
 private slots:
     void initTestCase();
+    void testClassDestructors();
     void testCommStatus();
 //    void testGetAndSetValueFromFile();
 //    void testGetValueFromTags();
