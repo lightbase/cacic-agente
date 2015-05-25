@@ -131,6 +131,8 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     WSADATA wsaData;
     int port = 80;
 
+    std::cout << "Baixando arquivo: " << url << " para o caminho: " << filePath << std::endl;
+
     std::string urlAux(url);
     // Remove's http:// part //,
 
@@ -191,6 +193,13 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     nRecv = recv(sock, (char*)&buffer, BUFFERSIZE, 0);
     // getting end of header //
     std::string str_buff = buffer;
+
+    // Checa se existe a possibildiade do arquivo não estar lá
+    npos = str_buff.find("404 Not Found");
+    if (npos != std::string::npos) {
+        std::cout << "Arquivo não existe no servidor!!!" << std::endl;
+        return false;
+    }
 
     npos = str_buff.find("\r\n\r\n");
 

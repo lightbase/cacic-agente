@@ -36,10 +36,6 @@ bool InstallCacicSA::downloadService(const std::string &rota, const std::string 
     // Força path no binário
     std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
 
-    std::cout << "Baixando arquivo para diretorio: " << full_path << std::endl;
-
-    std::cout << "Baixando da URL: " << rota << std::endl;
-
     return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 
@@ -228,6 +224,8 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     si.cb = sizeof(si);
     ZeroMemory( &pi, sizeof(pi) );
 
+    std::cout << "Executando comando: " << commandLine << std::endl;
+
     // Start the child process.
     if( !CreateProcessW(NULL,   // No module name (use command line)
                         wcAux,        // Command line
@@ -256,7 +254,13 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
 
 bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
-    return this->runProgram(msiPath, "-host=" + this->url + " -user=cacic -pass=cacic123");
+    std::cout << "Executando módulo no caminho: " << msiPath << std::endl;
+    return this->runProgram("msiexec /i \"" + msiPath + "\"", " /qb host=" + this->url);
+}
+
+bool InstallCacicSA::removeCacic(const std::string &msiPath)
+{
+    return this->runProgram("msiexec /x \"" + msiPath + "\"", " /qb");
 }
 
 bool InstallCacicSA::deleteCacic26()
