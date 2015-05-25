@@ -36,6 +36,10 @@ bool InstallCacicSA::downloadService(const std::string &rota, const std::string 
     // Força path no binário
     std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
 
+    std::cout << "Baixando arquivo para diretorio: " << full_path << std::endl;
+
+    std::cout << "Baixando da URL: " << rota << std::endl;
+
     return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 

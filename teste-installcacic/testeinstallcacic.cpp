@@ -55,15 +55,19 @@ void testeInstallcacic::testConfig()
 
 void testeInstallcacic::testNaoInstalado()
 {
+    std::string msi_path = this->path+"\\Cacic.msi";
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
         if (this->icsa->downloadMsi(this->msi_download, this->path)){
-            QVERIFY(this->icsa->installCacic(this->path+"\\Cacic.msi"));
+            QVERIFY(this->icsa->installCacic(msi_path));
         } else {
             QVERIFY2(false, "Não conseguiu baixar o servico.");
         }
     } else {
         QVERIFY(true);
     }
+
+    // Apaga arquivo
+    QFile::remove(QString::fromStdString(msi_path));
 }
 
 void testeInstallcacic::testGetHashFromFile()
@@ -81,6 +85,9 @@ void testeInstallcacic::testDownloadFile()
 
     QVERIFY(this->icsa->downloadService(this->service_download, this->path));
     this->icsa->setUrl("localhost");
+
+    // Apaga arquivo
+    QFile::remove(QString::fromStdString(this->path));
 }
 
 void testeInstallcacic::testMsiInstalado()
