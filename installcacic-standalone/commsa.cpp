@@ -131,6 +131,8 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     WSADATA wsaData;
     int port = 80;
 
+    std::cout << "Baixando arquivo: " << url << " para o caminho: " << filePath << std::endl;
+
     std::string urlAux(url);
     // Remove's http:// part //,
 
@@ -148,11 +150,20 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     request += "Host: " + shost + "\r\n";
     request += "\r\n";
 
-    if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
+    if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {
         return false;
+    }
 
-    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    //Verifica se é possível conexão com a url repassada
+    if (!gethostbyaddr(shost.c_str(), shost.size(),AF_INET)){
+        // Eduardo: 2015-05-25
+        // Não precisa falhar por causa disso. Se for DNS essa função não passa.
+        //return false;
+    }
+
+    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
         return false;
+    }
 
     memset(&serveraddr, 0, sizeof(serveraddr));
 
@@ -172,16 +183,27 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     serveraddr.sin_addr.s_addr = inet_addr(ipaddr);
     serveraddr.sin_port = htons(port);
 
-    if (connect(sock, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
+    if (connect(sock, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
+        std::cout << "Erro na conexão!!!" << std::endl;
         return false;
+    }
 
-    if (send(sock, request.c_str(), request.length(), 0) != request.length())
+    if (send(sock, request.c_str(), request.length(), 0) != request.length()) {
+        std::cout << "Erro na conexão!!!" << std::endl;
         return false;
+    }
 
     int nRecv, npos;
     nRecv = recv(sock, (char*)&buffer, BUFFERSIZE, 0);
     // getting end of header //
     std::string str_buff = buffer;
+
+    // Checa se existe a possibildiade do arquivo não estar lá
+    npos = str_buff.find("404 Not Found");
+    if (npos != std::string::npos) {
+        std::cout << "Arquivo não existe no servidor!!!" << std::endl;
+        return false;
+    }
 
     npos = str_buff.find("\r\n\r\n");
 
@@ -196,15 +218,16 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
 
     // Download file //
     DWORD ss;
+    bool result;
     while((nRecv > 0) && (nRecv != INVALID_SOCKET)){
         if(npos > 0){
             char bf[BUFFERSIZE];
             // copy from end position of header //
             memcpy(bf, buffer + (npos + 4), nRecv - (npos + 4));
-            WriteFile(hFile, bf,nRecv - (npos + 4), &ss, NULL);
+            result = WriteFile(hFile, bf,nRecv - (npos + 4), &ss, NULL);
         }else{
             // write normally if end not found //
-            WriteFile(hFile, buffer, nRecv, &ss, NULL);
+            result = WriteFile(hFile, buffer, nRecv, &ss, NULL);
         }
 
         // buffer cleanup  //

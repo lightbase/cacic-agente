@@ -55,15 +55,20 @@ void testeInstallcacic::testConfig()
 
 void testeInstallcacic::testNaoInstalado()
 {
+    std::string msi_path = this->path+"\\Cacic.msi";
     if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadMsi(this->msi_download, this->path)){
-            QVERIFY(this->icsa->installCacic(this->path+"\\Cacic.msi"));
-        } else {
-            QVERIFY2(false, "Não conseguiu baixar o MSI.");
-        }
+        QVERIFY2(this->icsa->downloadMsi(this->msi_download, this->path), "Não consegui baixar o serviço");
+        QVERIFY2(this->icsa->fileExists(msi_path), "Arquivo Inexistente");
+        QVERIFY(this->icsa->installCacic(msi_path));
     } else {
         QVERIFY(true);
     }
+
+    // Apaga arquivo
+    QFile::remove(QString::fromStdString(msi_path));
+
+    // Remove MSI
+    QVERIFY(this->icsa->removeCacic(msi_path));
 }
 
 void testeInstallcacic::testGetHashFromFile()
@@ -80,6 +85,10 @@ void testeInstallcacic::testDownloadFile()
 //    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
 
     QVERIFY(this->icsa->downloadService(this->service_download, this->path));
+
+    // Apaga arquivo
+    std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
+    QFile::remove(QString::fromStdString(full_path));
 }
 
 void testeInstallcacic::testMsiInstalado()

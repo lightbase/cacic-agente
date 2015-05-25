@@ -27,6 +27,7 @@ public:
     bool comparaHash();
     bool verificaServico();
     bool installCacic(const std::string &msiPath);
+    bool removeCacic(const std::string &msiPath);
     bool deleteCacic26();
     bool deleteCacic28();
     bool setHashLocal(const std::string &hash);

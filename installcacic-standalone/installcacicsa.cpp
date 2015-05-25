@@ -224,6 +224,8 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     si.cb = sizeof(si);
     ZeroMemory( &pi, sizeof(pi) );
 
+    std::cout << "Executando comando: " << commandLine << std::endl;
+
     // Start the child process.
     if( !CreateProcessW(NULL,   // No module name (use command line)
                         wcAux,        // Command line
@@ -252,7 +254,13 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
 
 bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
-    return this->runProgram("msiexec", "/a " + msiPath + " HOST=" + this->url + " USER=cacic PASS=cacic123 /q");
+    std::cout << "Executando módulo no caminho: " << msiPath << std::endl;
+    return this->runProgram("msiexec /i \"" + msiPath + "\"", " /qb host=" + this->url);
+}
+
+bool InstallCacicSA::removeCacic(const std::string &msiPath)
+{
+    return this->runProgram("msiexec /x \"" + msiPath + "\"", " /qb");
 }
 
 bool InstallCacicSA::deleteCacic26()
