@@ -154,13 +154,6 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
         return false;
     }
 
-    //Verifica se é possível conexão com a url repassada
-    if (!gethostbyaddr(shost.c_str(), shost.size(),AF_INET)){
-        // Eduardo: 2015-05-25
-        // Não precisa falhar por causa disso. Se for DNS essa função não passa.
-        //return false;
-    }
-
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
         return false;
     }
@@ -169,7 +162,8 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
 
     //Verifica se é possível conexão com a url repassada
     if (!gethostbyaddr(url, strlen(url),AF_INET)){
-        std::cout << "Fail gethostbyaddr: " << url << std::endl;
+        //Com a url completa funciona
+//        std::cout << "Fail gethostbyaddr: " << url << std::endl;
         return false;
     }
 
