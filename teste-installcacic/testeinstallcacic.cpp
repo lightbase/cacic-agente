@@ -59,7 +59,7 @@ void testeInstallcacic::testNaoInstalado()
         if (this->icsa->downloadMsi(this->msi_download, this->path)){
             QVERIFY(this->icsa->installCacic(this->path+"\\Cacic.msi"));
         } else {
-            QVERIFY2(false, "Não conseguiu baixar o servico.");
+            QVERIFY2(false, "Não conseguiu baixar o MSI.");
         }
     } else {
         QVERIFY(true);
@@ -77,10 +77,9 @@ void testeInstallcacic::testGetHashFromFile()
 
 void testeInstallcacic::testDownloadFile()
 {
-    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
+//    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
 
     QVERIFY(this->icsa->downloadService(this->service_download, this->path));
-    this->icsa->setUrl("localhost");
 }
 
 void testeInstallcacic::testMsiInstalado()

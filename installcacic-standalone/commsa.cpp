@@ -148,11 +148,6 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     request += "Host: " + shost + "\r\n";
     request += "\r\n";
 
-    //Verifica se é possível conexão com a url repassada
-    if (!gethostbyaddr(shost.c_str(), shost.size(),AF_INET)){
-        return false;
-    }
-
     if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
         return false;
 
@@ -160,6 +155,12 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
         return false;
 
     memset(&serveraddr, 0, sizeof(serveraddr));
+
+    //Verifica se é possível conexão com a url repassada
+    if (!gethostbyaddr(url, strlen(url),AF_INET)){
+        std::cout << "Fail gethostbyaddr: " << url << std::endl;
+        return false;
+    }
 
     // ip address of link //
     hostent *record = gethostbyname(shost.c_str());

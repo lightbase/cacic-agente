@@ -252,7 +252,7 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
 
 bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
-    return this->runProgram(msiPath, "-host=" + this->url + " -user=cacic -pass=cacic123");
+    return this->runProgram("msiexec", "/a " + msiPath + " HOST=" + this->url + " USER=cacic PASS=cacic123 /q");
 }
 
 bool InstallCacicSA::deleteCacic26()
