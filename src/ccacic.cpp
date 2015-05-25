@@ -35,12 +35,6 @@
 //    file.close();
 //    return "";
 //}
-/*getValueFromTags
- * @parameter QString sectionName: Grupo onde está a chave;
- * @parameter QString keyName: chave que queremos para colocar o valor;
- * @parameter QString value: valor para colocar dentro da chave;
- * @parameter QString filePath: Local do arquivo;
- */
 //void CCacic::setValueToFile(QString sectionName, QString keyName, QString value, QString filePath)
 //{
 //    QSettings settings(filePath, QSettings::IniFormat);

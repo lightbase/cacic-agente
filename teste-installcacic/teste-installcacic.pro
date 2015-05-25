@@ -51,5 +51,6 @@ HEADERS += testeinstallcacic.h \
     ../src/simplejson/src/JSONValue.h \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
+    ../src/tinydir.h \
 
 INCLUDEPATH += ../src

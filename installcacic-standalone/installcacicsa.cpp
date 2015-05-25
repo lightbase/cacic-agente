@@ -255,17 +255,37 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
 bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
     std::cout << "Executando módulo no caminho: " << msiPath << std::endl;
-    return this->runProgram("msiexec /i \"" + msiPath + "\"", " /qb host=" + this->url);
+    return this->runProgram("msiexec /i \"" + msiPath + "\"", " /quiet HOST=" + this->url +" USER=cacic PASS=cacic123");
 }
 
 bool InstallCacicSA::removeCacic(const std::string &msiPath)
 {
-    return this->runProgram("msiexec /x \"" + msiPath + "\"", " /qb");
+    return this->runProgram("msiexec /x \"" + msiPath + "\"", " /quiet");
 }
 
 bool InstallCacicSA::deleteCacic26()
 {
+    ServiceController sc(L"cacicsustainservice");
 
+
+    //TODO: PARAR O SERVIÇO, DESINSTALAR E VARRER A PASTA
+
+
+    tinydir_dir dir;
+    tinydir_open(&dir, "C:\\cacic\\");
+    while (dir.has_next){
+        tinydir_file file;
+        tinydir_readfile(&dir, &file);
+
+        printf("%s", file.name);
+        if (file.is_dir)
+        {
+            printf("/");
+        }
+        printf("\n");
+
+        tinydir_next(&dir);
+    }
     return false;
 }
 

@@ -64,11 +64,11 @@ void testeInstallcacic::testNaoInstalado()
         QVERIFY(true);
     }
 
-    // Apaga arquivo
-    QFile::remove(QString::fromStdString(msi_path));
-
     // Remove MSI
     QVERIFY(this->icsa->removeCacic(msi_path));
+
+    //Exclui arquivo, depois da desinstalação pra não dar problema.
+    QFile::remove(QString::fromStdString(this->path+"\\Cacic.msi"));
 }
 
 void testeInstallcacic::testGetHashFromFile()
@@ -134,5 +134,4 @@ void testeInstallcacic::verificaRegistro()
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");
-    CCacic::deleteFile("./websearch.pdf");
 }

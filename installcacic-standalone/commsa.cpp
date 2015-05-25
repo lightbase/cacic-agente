@@ -131,7 +131,7 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     WSADATA wsaData;
     int port = 80;
 
-    std::cout << "Baixando arquivo: " << url << " para o caminho: " << filePath << std::endl;
+//    std::cout << "Baixando arquivo: " << url << " para o caminho: " << filePath << std::endl;
 
     std::string urlAux(url);
     // Remove's http:// part //,

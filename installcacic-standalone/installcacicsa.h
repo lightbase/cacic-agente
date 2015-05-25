@@ -7,6 +7,7 @@
 #include <iostream>
 #include <servicecontroller.h>
 #include <shlwapi.h>
+#include <../src/tinydir.h>
 
 #define BUFSIZE 1024
 #define MD5LEN  16
