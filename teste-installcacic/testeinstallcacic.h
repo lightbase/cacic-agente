@@ -29,6 +29,7 @@ public slots:
 
 private slots:
     void initTestCase();
+    void initTestDeleteFolder();
     void testHttpCommunication();
     void testConfig();
     void testNaoInstalado();

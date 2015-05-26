@@ -42,6 +42,7 @@ public:
     std::string getHashRemoto();
     std::string getUrl() const;
     void setUrl(const std::string &value);
+    bool delFolder(const std::string &path, const std::string fileException[], const int &numException, bool *exceptionFound = NULL);
 
 private:
     std::string url;
