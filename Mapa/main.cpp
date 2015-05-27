@@ -9,5 +9,6 @@ int main(int argc, char *argv[])
     controller->connect(controller, SIGNAL(finished()), &a, SLOT(quit()));
 
     controller->run(argc, argv);
+
     return a.exec();
 }

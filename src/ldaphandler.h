@@ -2,6 +2,7 @@
 #define LDAPHANDLER_H
 
 #include <QtCore>
+#include <QDebug>
 
 #define LDAP_DEPRECATED 1
 //#undef UNICODE
