@@ -20,6 +20,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
 
 QT       += core gui network
+CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

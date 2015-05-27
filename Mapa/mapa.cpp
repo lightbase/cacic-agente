@@ -1,42 +1,19 @@
 #include "mapa.h"
 
+Mapa::Mapa(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::Mapa)
+{
+    inicializarAtributos();
+    preencheCampos(false, "");
+}
+
 Mapa::Mapa(const QString &ldapInfoUrl, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
 {
-
-    QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
-    mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
-    logcacic = new LogCacic(LOG_MAPA, mainFolder + "/Logs");
-
-    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
-
-    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
-        oCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-    } else {
-        oCacicComm->setUrlGerente("http://teste.cacic.cc");
-    }
-
-    this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
-    this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
-    this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
-
-#if defined(Q_OS_WIN)
-    QDesktopWidget desktopWidget;
-    QRect screenSize = desktopWidget.frameGeometry();
-
-    this->setMinimumSize(screenSize.size());
-#endif
-
-    ui->setupUi(this);
-
-    if( ldapInfoUrl.isNull() || ldapInfoUrl.isEmpty() )
-        preencheCampos(false, "");
-    else
-        preencheCampos(true,ldapInfoUrl);
-
+    inicializarAtributos();
+    preencheCampos(true,ldapInfoUrl);
 }
 
 Mapa::~Mapa()
@@ -93,6 +70,38 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
     return ok;
 }
 
+void Mapa::inicializarAtributos()
+{
+    QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+    mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
+    logcacic = new LogCacic(LOG_MAPA, mainFolder + "/Logs");
+
+    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
+
+    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
+        oCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    } else {
+        oCacicComm->setUrlGerente("http://teste.cacic.cc");
+        oCacicComm->setUsuario("admin");
+        oCacicComm->setPassword("brlight12");
+    }
+
+    this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
+    this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
+
+#if defined(Q_OS_WIN)
+    QDesktopWidget desktopWidget;
+    QRect screenSize = desktopWidget.frameGeometry();
+
+    this->setMinimumSize(screenSize.size());
+#endif
+
+    ui->setupUi(this);
+}
+
 void Mapa::on_okButton_clicked()
 {
 
@@ -130,41 +139,51 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl)
 
 bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
 {
+
     bool ok = false;
     QJsonObject sentJson;
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
 
-    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
-    if (!sentJson.isEmpty()){
-        QJsonObject retornoEnvio;
-        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
+//    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
+//    if (!sentJson.isEmpty()){
+//        QJsonObject retornoEnvio;
+//        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
 
-        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
-        QString urlGerente = oCacicComm->getUrlGerente();
-        oCacicComm->setUrlGerente(ldapInfoUrl);
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
-        oCacicComm->setUrlGerente(urlGerente);
+//        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
+//        QString urlGerente = oCacicComm->getUrlGerente();
+//        oCacicComm->setUrlGerente(ldapInfoUrl);
+//        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
+//        oCacicComm->setUrlGerente(urlGerente);
+//        if(retornoEnvio.contains("error")) {
+//            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
 
-        if(retornoEnvio.contains("error")) {
-            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
-        } else if(!retornoEnvio["objectClass"].isUndefined() &&
-                  !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"] == "LDAP_info" ) {
-            QJsonObject ldapJson = retornoEnvio["info"].toObject();
+//            return false;
+//        } else if(!retornoEnvio["objectClass"].isUndefined() &&
+//                  !retornoEnvio["objectClass"].isNull() &&
+//                  retornoEnvio["objectClass"] == "LDAP_info" ) {
+//            QJsonObject ldapJson = retornoEnvio["info"].toObject();
 
-            ldapBase = ldapJson["base"].toString();
-            ldapFilter = ldapJson["filter"].toString();
-            ldapLogin = ldapJson["login"].toString();
-            ldapPass = ldapJson["pass"].toString();
-            ldapServer = ldapJson["server"].toString();
-        }
+//            ldapBase = ldapJson["base"].toString();
+//            ldapFilter = ldapJson["filter"].toString();
+//            ldapLogin = ldapJson["login"].toString();
+//            ldapPass = ldapJson["pass"].toString();
+//            ldapServer = ldapJson["server"].toString();
+//        }
+//    }
+
+    ldapBase = "ou=usuarios,dc=lightbase,dc=com,dc=br";
+    ldapFilter = "(&(objectClass=*)(uid=thiagop))";
+    ldapLogin = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
+    ldapPass = "brlight2012";
+    ldapServer = "ldap.lightbase";
+
+    LdapHandler ldapHandler(ldapServer);
+
+    if ( ldapHandler.inicializar() ) {
+        ui->lineNomeUsuario->setText(
+                    ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
+                    );
     }
-
-    LdapHandler ldapHandler;
-
-    ui->lineNomeUsuario->setText(
-                ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
-                );
 
     return true;
 }

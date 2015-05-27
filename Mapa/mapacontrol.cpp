@@ -45,9 +45,10 @@ bool MapaControl::args2Map(int argc, char *argv[], QMap<QString, QString> &map)
 
     if ( map.isEmpty() ) {
         hasArgument = false;
-    } else if( map.contains("ldap") && !map["ldap"].isEmpty() ||
-               map.contains("custom") && !map["custom"].isEmpty() ) {
+    } else if( (map.contains("ldap") && !map["ldap"].isEmpty()) ||
+               (map.contains("custom") && !map["custom"].isEmpty()) ) {
         hasArgument = true;
+
     }
     return hasArgument;
 }
@@ -57,8 +58,15 @@ int MapaControl::run(int argc, char *argv[])
     QMap<QString, QString> param;
 
     if ( args2Map(argc, argv, param) ) {
-        // TODO: opções com argumento;
-        emit finished();
+        if ( !param["ldap"].isEmpty() && !param["ldap"].isNull() &&
+             !param["custom"].isEmpty() && !param["custom"].isNull() ) {
+            // TODO
+        } else if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) {
+            interface = new Mapa(param["ldap"]);
+            interface->show();
+        } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
+            // TODO
+        }
     } else {
         interface = new Mapa();
         interface->show();
