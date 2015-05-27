@@ -144,38 +144,46 @@ bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
     QJsonObject sentJson;
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
 
-    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
-    if (!sentJson.isEmpty()){
-        QJsonObject retornoEnvio;
-        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
+//    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
+//    if (!sentJson.isEmpty()){
+//        QJsonObject retornoEnvio;
+//        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
 
-        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
-        QString urlGerente = oCacicComm->getUrlGerente();
-        oCacicComm->setUrlGerente(ldapInfoUrl);
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
-        oCacicComm->setUrlGerente(urlGerente);
-        if(retornoEnvio.contains("error")) {
-            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
+//        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
+//        QString urlGerente = oCacicComm->getUrlGerente();
+//        oCacicComm->setUrlGerente(ldapInfoUrl);
+//        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
+//        oCacicComm->setUrlGerente(urlGerente);
+//        if(retornoEnvio.contains("error")) {
+//            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
 
-            return false;
-        } else if(!retornoEnvio["objectClass"].isUndefined() &&
-                  !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"] == "LDAP_info" ) {
-            QJsonObject ldapJson = retornoEnvio["info"].toObject();
+//            return false;
+//        } else if(!retornoEnvio["objectClass"].isUndefined() &&
+//                  !retornoEnvio["objectClass"].isNull() &&
+//                  retornoEnvio["objectClass"] == "LDAP_info" ) {
+//            QJsonObject ldapJson = retornoEnvio["info"].toObject();
 
-            ldapBase = ldapJson["base"].toString();
-            ldapFilter = ldapJson["filter"].toString();
-            ldapLogin = ldapJson["login"].toString();
-            ldapPass = ldapJson["pass"].toString();
-            ldapServer = ldapJson["server"].toString();
-        }
-    }
+//            ldapBase = ldapJson["base"].toString();
+//            ldapFilter = ldapJson["filter"].toString();
+//            ldapLogin = ldapJson["login"].toString();
+//            ldapPass = ldapJson["pass"].toString();
+//            ldapServer = ldapJson["server"].toString();
+//        }
+//    }
+
+    ldapBase = "ou=usuarios,dc=lightbase,dc=com,dc=br";
+    ldapFilter = "(&(objectClass=*)(uid=thiagop))";
+    ldapLogin = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
+    ldapPass = "brlight2012";
+    ldapServer = "ldap.lightbase";
 
     LdapHandler ldapHandler(ldapServer);
 
-    ui->lineNomeUsuario->setText(
-                ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
-                );
+    if ( ldapHandler.inicializar() ) {
+        ui->lineNomeUsuario->setText(
+                    ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
+                    );
+    }
 
     return true;
 }
