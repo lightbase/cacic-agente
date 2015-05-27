@@ -61,6 +61,8 @@ void HttpDaemon::readClient()
                 delete socket;
                 //QtServiceBase::instance()->logMessage("Connection closed");
             }
+        } else if (tokens[0] == "POST") {
+            qDebug() << "POST request received.";
         }
     }
 }
@@ -150,11 +152,11 @@ QString HttpDaemon::getLdapInfo()
         "\r\n"
         "{\"objectClass\": \"LDAP_info\",\n"
         "\"info\": {\n"
-            "\"base\": \"dc=lightbase,dc=com,dc=br\",\n"
-            "\"filter\": \"'(uid=nome)' cn\",\n"
+            "\"base\": \"ou=usuarios,dc=lightbase,dc=com,dc=br\",\n"
+            "\"filter\": \"(&(objectClass=*)(uid=thiagop))\",\n"
             "\"login\": \"cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br\",\n"
             "\"pass\": \"brlight2012\",\n"
-            "\"server\": \"ldap://ldap.server\"}\n"
+            "\"server\": \"ldap.lightbase\"}\n"
         "}\n";
 
     retorno += "\n";
