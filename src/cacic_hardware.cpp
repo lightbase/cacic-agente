@@ -6,7 +6,6 @@ cacic_hardware::cacic_hardware()
 
 cacic_hardware::~cacic_hardware()
 {
-    logcacic->~LogCacic();
     delete logcacic;
 }
 

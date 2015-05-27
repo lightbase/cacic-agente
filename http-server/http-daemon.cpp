@@ -33,6 +33,7 @@ void HttpDaemon::readClient()
     // server looks if it was a get request and sends a very simple HTML
     // document back.
     QTcpSocket* socket = (QTcpSocket*)sender();
+
     if (socket->canReadLine()) {
         QStringList tokens = QString(socket->readLine()).split(QRegExp("[ \r\n][ \r\n]*"));
 
@@ -86,13 +87,13 @@ QString HttpDaemon::getInstalaHash()
     return retorno;
 }
 
-QString HttpDaemon::getDefaultRoute()
+QString HttpDaemon::getDefaultRoute(const QString &rota)
 {
     QString retorno;
     retorno = "HTTP/1.0 200 Ok\r\n"
         "Content-Type: application/json; charset=\"utf-8\"\r\n"
         "\r\n"
-        "{}\n";
+        "{\"valor\":\"route "+rota+" not found\"}\n";
 
     retorno += QDateTime::currentDateTime().toString();
     retorno += "\n";
@@ -179,6 +180,6 @@ QString HttpDaemon::processRoutes(const QString &rota)
     } else if(rota == ROUTE_MAPA_LDAP) {
         return this->getLdapInfo();
     } else {
-        return this->getDefaultRoute();
+        return this->getDefaultRoute(rota);
     }
 }

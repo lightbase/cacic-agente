@@ -47,9 +47,22 @@ bool InstallCacicSA::downloadMsi(const std::string &rota, const std::string &pat
     return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 
-bool InstallCacicSA::installService()
+bool InstallCacicSA::installService(const std::string &serviceName, const std::string &serviceBinPath)
 {
-    return false;
+    std::wstring wServiceName(serviceName.begin(), serviceName.end());
+    std::wstring wServiceBinPath(serviceBinPath.begin(), serviceBinPath.end());
+    ServiceController service(wServiceName);
+    if (!service.install(wServiceBinPath)){
+        this->informaGerente("Falha ao instalar serviço");
+        return false;
+    } else {
+        if (!service.start()){
+            this->informaGerente("Falha ao iniciar serviço.");
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 bool InstallCacicSA::ping()
@@ -211,6 +224,8 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     si.cb = sizeof(si);
     ZeroMemory( &pi, sizeof(pi) );
 
+    std::cout << "Executando comando: " << commandLine << std::endl;
+
     // Start the child process.
     if( !CreateProcessW(NULL,   // No module name (use command line)
                         wcAux,        // Command line
@@ -224,6 +239,7 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
                         &pi )           // Pointer to PROCESS_INFORMATION structure
        )
     {
+        printf("Falha ao criar processo... %i \n", GetLastError());
         this->informaGerente("Falha ao criar processo utilizando: " + applicationPath + " " + parameters);
         return false;
     }
@@ -236,15 +252,98 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     CloseHandle( pi.hThread );
 }
 
-bool InstallCacicSA::installCacic()
+bool InstallCacicSA::installCacic(const std::string &msiPath)
 {
-    return false;
+    std::cout << "Executando módulo no caminho: " << msiPath << std::endl;
+    return this->runProgram("msiexec /i \"" + msiPath + "\"", " /quiet HOST=" + this->url +" USER=cacic PASS=cacic123");
+}
+
+bool InstallCacicSA::removeCacic(const std::string &msiPath)
+{
+    return this->runProgram("msiexec /x \"" + msiPath + "\"", " /quiet");
 }
 
 bool InstallCacicSA::deleteCacic26()
 {
+    ServiceController sc(L"cacic");
+    if (sc.isInstalled()){
+        if (sc.isRunning())
+            sc.stop();
+        if (!sc.uninstall()){
+            //enviar erro(?)
+        }
+    }
 
+    tinydir_dir dir;
+    tinydir_open(&dir, "C:\\cacic\\");
+    while (dir.has_next){
+        tinydir_file file;
+        tinydir_readfile(&dir, &file);
+        std::string nameFile(file.name);
+        if (!(nameFile == ".." || nameFile == ".")){
+            printf("%s", nameFile.c_str());
+            if (file.is_dir)
+            {
+                printf("/");
+            }
+            printf("\n");
+        }
+
+        tinydir_next(&dir);
+    }
     return false;
+}
+
+bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileException, const int &numException, bool *exceptionFound){
+    if (exceptionFound == NULL){
+        exceptionFound = (bool *) malloc(sizeof(bool));
+    }
+    *exceptionFound = false;
+    bool ok = true;
+    tinydir_dir dir;
+    tinydir_open(&dir, path.c_str());
+    std::cout << path << std::endl;
+    while (dir.has_next){
+        tinydir_file file;
+        tinydir_readfile(&dir, &file);
+        std::string nameFile(file.name);
+        if (!(nameFile == ".." || nameFile == ".")){
+            //Se for diretório, entra na função novamente para deletar os arquivos
+            if (file.is_dir){
+                printf("|--%s\\ ", nameFile.c_str());
+                if (this->delFolder(file.path, fileException, numException, exceptionFound) && !*exceptionFound){
+                    //Apenas se não houver um arquivo nas exceções, o diretório é excluído
+                    if (!*exceptionFound){
+                        ok = ok && RemoveDirectoryA(file.path);
+                        if (ok){
+                            printf("(diretorio excluido)");
+                        }
+                    }
+                } else {
+                    printf("(falha ao entrar an recursividade)");
+                }
+                printf("\n   ");
+            } else {
+                printf("    |---%s", nameFile.c_str());
+                //verifica se o arquivo está nas exceções
+                for(int i = 0; i<numException; i++){
+                    if (nameFile == fileException[i]){
+                        *exceptionFound = true;
+                        printf (" (excecao)");
+                        break;
+                    }
+                }
+                if (!*exceptionFound){
+                    ok = (remove(file.path) == 0) && ok;
+                    if (ok)
+                        printf(" (excluido)");
+                }
+                printf("\n");
+            }
+        }
+        tinydir_next(&dir);
+    }
+    return ok;
 }
 
 bool InstallCacicSA::deleteCacic28()
