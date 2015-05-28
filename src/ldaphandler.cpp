@@ -60,8 +60,7 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
     if(numberOfEntries == -1){
         qDebug() << "Retrieving number of entries failed.";
         return QString();
-    } else
-        qDebug() << "Number of entries: " << QString::number(numberOfEntries);
+    }
 
     // Adquire o ponteiro para entrada
     entry = ldap_first_entry(ldp,res);
@@ -80,11 +79,8 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
         return QString();
     }
 
-    qDebug() << "retorno attr: " << QString::fromLatin1(attr);
-
     // // Adquire o ponteiro para valor do atributo requerido
     attrValue = ldap_get_values(ldp,res,attr);
-    qDebug() << "retorno attrValue: " << QString::fromLatin1(*attrValue);
     if (attrValue == NULL) return QString();
     else return QString::fromLatin1(*attrValue);
 
@@ -187,15 +183,6 @@ bool LdapHandler::inicializar()
     std::string host = ldapServer.toStdString();
     qDebug() << host.c_str() << ": " << ldap_err2string(ldap_initialize(&ldp,host.c_str()));
 #if defined(Q_OS_UNIX)
-//        int rc;
-//        QString uri = "ldap://" + ldapServer + ":389";
-//        char *uriArg = (char*)uri.toStdString().c_str();
-//        rc = ldap_initialize( &ldp, uriArg);
-//        if ( rc != LDAP_SUCCESS){
-//            qDebug() << "ldap_initialize error.";
-//            return false;
-//        }
-//        ldp = ldap0_init(host.c_str(),389);
         if (ldap_initialize(&ldp,host.c_str()) != LDAP_SUCCESS){
             qDebug() << "ldap_init error";
             return false;
