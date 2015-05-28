@@ -598,7 +598,7 @@ bool InstallCacicSA::removeInstallDir()
  *
  * Retorna tempo atual como string formatado
  *
- * @return Tempo no formato %d-%m-%Y %I:%M:%S
+ * @return Tempo no formato %d-%m-%Y %H:%M:%S
  */
 std::string InstallCacicSA::getStrTime()
 {
@@ -609,7 +609,7 @@ std::string InstallCacicSA::getStrTime()
     time (&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer,80,"%d-%m-%Y %I:%M:%S",timeinfo);
+    strftime(buffer,80,"%d-%m-%Y %H:%M:%S",timeinfo);
     std::string str(buffer);
 
     return str;
