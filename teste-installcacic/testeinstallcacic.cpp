@@ -171,6 +171,50 @@ void testeInstallcacic::testErro()
     QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message), "Erro no envio do JSON completo");
 }
 
+/**
+ * @brief testeInstallcacic::testInstallDir
+ *
+ * Testa criação do diretório de instalação
+ *
+ */
+void testeInstallcacic::testInstallDir()
+{
+    std::string result = this->icsa->createInstallDir();
+    bool found;
+    if (result == this->icsa->getInstallDir()) {
+        found = true;
+    } else {
+        found = false;
+    }
+    QVERIFY2(found, "Erro ao criar o diretório de instalação");
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
+}
+
+/**
+ * @brief testeInstallcacic::testLogErro
+ *
+ * Testa criação do Log de Erros local
+ */
+void testeInstallcacic::testLogErro()
+{
+    std::string result = this->icsa->createLogFile();
+    QVERIFY2(this->icsa->fileExists(result), "Não foi possível criar o arquivo");
+
+    // VErifica conteúdo
+    std::ifstream outfile (result.c_str());
+    QVERIFY2(outfile.is_open(), "Não foi possível abrir o arquivo");
+
+    // Escreve o conteúdo só pra testar
+    std::string line;
+    while (std::getline(outfile, line)) {
+        std::cout << line << std::endl;
+    }
+    outfile.close();
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");

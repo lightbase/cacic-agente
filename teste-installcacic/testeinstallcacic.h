@@ -5,6 +5,7 @@
 #include <QtTest>
 #include <QDebug>
 #include <iostream>
+#include <fstream>
 #include <ccacic.h>
 #include <servicecontroller.h>
 #include <QCoreApplication>
@@ -45,6 +46,8 @@ private slots:
     void testCacic28();
     void verificaRegistro();
     void testErro();
+    void testInstallDir();
+    void testLogErro();
     void cleanupTestCase();
 };
 
