@@ -21,6 +21,9 @@ void testeInstallcacic::initTestCase()
     msi_download = std::string("http://teste.cacic.cc/downloads/cacic/current/windows/Cacic.msi");
     QString tmp_dir = QDir::tempPath().replace("/","\\");
     path = tmp_dir.toStdString();
+    user = "João da Silva";
+    so = "Windows 7";
+    codigo_erro = 90;
 }
 
 void testeInstallcacic::initTestDeleteFolder()
@@ -83,20 +86,20 @@ void testeInstallcacic::testConfig()
 
 void testeInstallcacic::testNaoInstalado()
 {
-//    std::string msi_path = this->path+"\\Cacic.msi";
-//    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-//        QVERIFY2(this->icsa->downloadMsi(this->msi_download, this->path), "Não consegui baixar o serviço");
-//        QVERIFY2(this->icsa->fileExists(msi_path), "Arquivo Inexistente");
-//        QVERIFY(this->icsa->installCacic(msi_path));
-//    } else {
-//        QVERIFY(true);
-//    }
+    std::string msi_path = this->path+"\\" + CACIC_MSI;
+    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
+        QVERIFY2(this->icsa->downloadMsi(this->msi_download, this->path), "Não consegui baixar o serviço");
+        QVERIFY2(this->icsa->fileExists(msi_path), "Arquivo Inexistente");
+        QVERIFY(this->icsa->installCacic(msi_path));
+    } else {
+        QVERIFY(true);
+    }
 
-//    // Remove MSI
-//    QVERIFY(this->icsa->removeCacic(msi_path));
+    // Remove MSI
+    QVERIFY(this->icsa->removeCacic(msi_path));
 
-//    //Exclui arquivo, depois da desinstalação pra não dar problema.
-//    QFile::remove(QString::fromStdString(this->path+"\\Cacic.msi"));
+    //Exclui arquivo depois da desinstalação pra não dar problema.
+    QFile::remove(QString::fromStdString(msi_path));
 }
 
 void testeInstallcacic::testGetHashFromFile()
@@ -157,6 +160,66 @@ void testeInstallcacic::testCacic28()
 void testeInstallcacic::verificaRegistro()
 {
     QVERIFY(icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi"));
+}
+
+/**
+ * @brief testeInstallcacic::testInstallDir
+ *
+ * Testa criação do diretório de instalação
+ *
+ */
+void testeInstallcacic::testInstallDir()
+{
+    std::string result = this->icsa->createInstallDir();
+    bool found;
+    if (result == this->icsa->getInstallDir()) {
+        found = true;
+    } else {
+        found = false;
+    }
+    QVERIFY2(found, "Erro ao criar o diretório de instalação");
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
+}
+
+/**
+ * @brief testeInstallcacic::testLogErro
+ *
+ * Testa criação do Log de Erros local
+ */
+void testeInstallcacic::testLogErro()
+{
+    std::string result = this->icsa->createLogFile();
+    QVERIFY2(this->icsa->fileExists(result), "Não foi possível criar o arquivo");
+
+    // VErifica conteúdo
+    std::ifstream outfile (result.c_str());
+    QVERIFY2(outfile.is_open(), "Não foi possível abrir o arquivo");
+
+    // Escreve o conteúdo só pra testar
+    std::string line;
+    while (std::getline(outfile, line)) {
+        std::cout << line << std::endl;
+    }
+    outfile.close();
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
+}
+
+/**
+ * @brief testeInstallcacic::testErro
+ *
+ * Testa criação do arquivo de erro
+ */
+void testeInstallcacic::testErro()
+{
+    const char *message = "Erro de teste!!!";
+    QVERIFY2(this->icsa->log(message), "Erro no envio de JSON sem usuário e SO");
+
+    // Agora testa erro de envio registrando todas as informações
+    QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message), "Erro no envio do JSON completo");
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
 }
 
 void testeInstallcacic::cleanupTestCase()
