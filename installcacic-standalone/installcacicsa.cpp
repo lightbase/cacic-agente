@@ -274,23 +274,6 @@ bool InstallCacicSA::deleteCacic26()
         }
     }
 
-    tinydir_dir dir;
-    tinydir_open(&dir, "C:\\cacic\\");
-    while (dir.has_next){
-        tinydir_file file;
-        tinydir_readfile(&dir, &file);
-        std::string nameFile(file.name);
-        if (!(nameFile == ".." || nameFile == ".")){
-            printf("%s", nameFile.c_str());
-            if (file.is_dir)
-            {
-                printf("/");
-            }
-            printf("\n");
-        }
-
-        tinydir_next(&dir);
-    }
     return false;
 }
 
@@ -302,7 +285,7 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
     bool ok = true;
     tinydir_dir dir;
     tinydir_open(&dir, path.c_str());
-    std::cout << path << std::endl;
+//    printf("%s/\n", path.c_str());
     while (dir.has_next){
         tinydir_file file;
         tinydir_readfile(&dir, &file);
@@ -310,41 +293,38 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
         if (!(nameFile == ".." || nameFile == ".")){
             //Se for diretório, entra na função novamente para deletar os arquivos
             if (file.is_dir){
-                printf("|--%s\\ ", nameFile.c_str());
-                if (this->delFolder(file.path, fileException, numException, exceptionFound) && !*exceptionFound){
+                printf("%s/\n", file.path);
+                if (this->delFolder(file.path, fileException, numException, exceptionFound)){
                     //Apenas se não houver um arquivo nas exceções, o diretório é excluído
                     if (!*exceptionFound){
                         ok = ok && RemoveDirectoryA(file.path);
-                        if (ok){
-                            printf("(diretorio excluido)");
-                        }
                     }
                 } else {
-                    printf("(falha ao entrar an recursividade)");
+                    printf("------%s(falha ao entrar an recursividade)\n", file.path);
                 }
-                printf("\n   ");
             } else {
-                printf("    |---%s", nameFile.c_str());
                 //verifica se o arquivo está nas exceções
-                for(int i = 0; i<numException; i++){
-                    if (nameFile == fileException[i]){
-                        *exceptionFound = true;
-                        printf (" (excecao)");
-                        break;
+                if (fileException != NULL){
+                    for(int i = 0; i<numException; i++){
+                        *exceptionFound = nameFile == fileException[i];
+                        if (*exceptionFound) break;
                     }
                 }
-                if (!*exceptionFound){
-                    ok = (remove(file.path) == 0) && ok;
-                    if (ok)
-                        printf(" (excluido)");
+                if (*exceptionFound){
+                    remove(file.path);
                 }
-                printf("\n");
             }
         }
         tinydir_next(&dir);
     }
+    if (ok){
+        printf("\nRETURN TRUE\n\n");
+    } else {
+        printf("\nRETURN FALSE\n\n");
+    }
     return ok;
 }
+
 
 bool InstallCacicSA::deleteCacic28()
 {
