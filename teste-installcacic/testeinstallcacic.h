@@ -5,6 +5,7 @@
 #include <QtTest>
 #include <QDebug>
 #include <iostream>
+#include <fstream>
 #include <ccacic.h>
 #include <servicecontroller.h>
 #include <QCoreApplication>
@@ -22,6 +23,9 @@ private:
     std::string service_download;
     std::string msi_download;
     std::string path;
+    const char *so;
+    const char *user;
+    double codigo_erro;
 
 signals:
 
@@ -41,6 +45,9 @@ private slots:
     void testCacic26();
     void testCacic28();
     void verificaRegistro();
+    void testInstallDir();
+    void testLogErro();
+    void testErro();
     void cleanupTestCase();
 };
 

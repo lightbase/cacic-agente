@@ -12,12 +12,12 @@ LdapHandler::LdapHandler(const QString &ldapServer)
 #if defined(Q_OS_UNIX)
 QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap)
 {
-    char *login = (char*)loginLdap.toStdString().c_str();
-    char *passwd = (char*)passLdap.toStdString().c_str();
-    char *base = (char*)baseLdap.toStdString().c_str();
-    char *filter = (char*)filterLdap.toStdString().c_str();
+    std::string login = loginLdap.toStdString();
+    std::string passwd = passLdap.toStdString();
+    std::string base = baseLdap.toStdString();
+    std::string filter = filterLdap.toStdString();
 
-    ulong rc; // Variável a ser usada para retorno
+    int rc; // Variável a ser usada para retorno
     ulong version = LDAP_VERSION3; // Versão do LDAP
     char* attrs[2]; // Define atributos a serem requeridos
     LDAPMessage *res = NULL; // Mensagem retornada na pesquisa
@@ -42,14 +42,14 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
     }
 
     // Faz o bind com o servidor
-    rc = ldap_simple_bind_s(ldp,login,passwd);
+    rc = ldap_simple_bind_s(ldp,login.c_str(),passwd.c_str());
     if ( rc != LDAP_SUCCESS ){
-        qDebug() << "ldap_simple_bind_s error: " << QString::number(rc,16);
+        qDebug() << "ldap_simple_bind_s error: " << ldap_err2string(rc);
         return QString();
     }
 
     // Realiza a pesquisa
-    rc = ldap_search_s(ldp, base, LDAP_SCOPE_SUBTREE,filter,attrs,0,&res);
+    rc = ldap_search_s(ldp, base.c_str(), LDAP_SCOPE_SUBTREE,filter.c_str(),attrs,0,&res);
     if ( rc != LDAP_SUCCESS ){
         qDebug() << "ldap_search_s error: " << QString::number(rc,16);
         return QString();
@@ -183,9 +183,9 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
 
 bool LdapHandler::inicializar()
 {
-
-    char *host = (char*)ldapServer.toStdString().c_str();
-
+    ldapServer = "ldap://" + ldapServer + ":389";
+    std::string host = ldapServer.toStdString();
+    qDebug() << host.c_str() << ": " << ldap_err2string(ldap_initialize(&ldp,host.c_str()));
 #if defined(Q_OS_UNIX)
 //        int rc;
 //        QString uri = "ldap://" + ldapServer + ":389";
@@ -195,13 +195,13 @@ bool LdapHandler::inicializar()
 //            qDebug() << "ldap_initialize error.";
 //            return false;
 //        }
-        ldp = ldap_open(host,389);
-        if (ldp == NULL){
+//        ldp = ldap0_init(host.c_str(),389);
+        if (ldap_initialize(&ldp,host.c_str()) != LDAP_SUCCESS){
             qDebug() << "ldap_init error";
             return false;
         }
 #elif defined(Q_OS_WIN)
-        ldp = ldap_initA(host,389);
+        ldp = ldap_initA(host.c_str(),389);
         if (ldp == NULL){
             qDebug() << "ldap_initA error";
             return false;

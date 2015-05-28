@@ -3,12 +3,14 @@
 
 #include <QtCore>
 #include <QDebug>
+#include <iostream>
 
 #define LDAP_DEPRECATED 1
 //#undef UNICODE
 //#undef LDAP_UNICODE
 //#define LDAP_UNICODE 0
 #if defined(Q_OS_UNIX)
+//instalar pacote libldap2-dev
     #include <ldap.h>
 #elif defined(Q_OS_WIN)
     #include <windows.h>

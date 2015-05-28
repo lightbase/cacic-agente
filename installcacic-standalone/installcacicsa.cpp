@@ -6,6 +6,11 @@ InstallCacicSA::InstallCacicSA(const std::string &url, const std::string &user, 
     this->url  = url;
     this->user = user;
     this->cacicPath = "c:\\cacic";
+    this->installDir = this->cacicPath + "\\icsa";
+    this->logFile = this->installDir + "\\install.log";
+
+    // Adjust Comm parameters
+    this->comm.setHost(this->url.c_str());
 }
 
 InstallCacicSA::~InstallCacicSA()
@@ -70,10 +75,9 @@ bool InstallCacicSA::ping()
     // Envia requisição para testar se o servidor está no ar
     std::string check;
     const char *route = "/";
-    comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    char *buffer;
+    const char *buffer = "";
     check = comm.sendReq(buffer);
     if (check == "CONNECTION_ERROR") {
         return false;
@@ -485,9 +489,131 @@ std::string InstallCacicSA::getUrl() const
     return url;
 }
 
+std::string InstallCacicSA::getInstallDir()
+{
+    return this->installDir;
+}
+
 void InstallCacicSA::setUrl(const std::string &value)
 {
     url = value;
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
+ * Registro de erros de instalação no log
+ *
+ * @param message Mensagem a ser enviada
+ * @return
+ */
+bool InstallCacicSA::log(const char *message)
+{
+    return this->comm.log(message);
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
+ * Registro de erros de instalação no log
+ *
+ * @param codigo Código de erro (padrão 99)
+ * @param user Usuário da máquina
+ * @param so SO onde aconteceu o erro
+ * @param message Mensagem a ser registrada
+ * @return
+ */
+bool InstallCacicSA::log(double codigo, const char *user, const char *so, const char *message)
+{
+    // Verifica se arquivo de erros existe
+    this->createLogFile();
+
+    // Agora cria arquivo de log
+    std::ofstream outfile (this->logFile.c_str());
+    outfile << "[" << this->getStrTime() << "] InstallCacicSA (" << codigo << "): " << message << std::endl;
+    outfile.close();
+
+    return this->comm.log(codigo, user, so, message);
+}
+
+/**
+ * @brief InstallCacicSA::createInstallDir
+ *
+ * Verifica se o diretório já existe e cria se não existir
+ *
+ * @return Caminho completo para o diretório
+ */
+std::string InstallCacicSA::createInstallDir()
+{
+    tinydir_dir dir;
+    int result;
+
+    // Check if dir Exists
+    result = tinydir_open(&dir, this->cacicPath.c_str());
+    if (result == -1) {
+        CreateDirectory(this->comm.GetWC(this->cacicPath.c_str()), NULL);
+    }
+    tinydir_close(&dir);
+
+    result = tinydir_open(&dir, this->installDir.c_str());
+    if (result == -1) {
+        CreateDirectory(this->comm.GetWC(this->installDir.c_str()), NULL);
+    }
+    tinydir_close(&dir);
+
+    return this->installDir;
+}
+
+bool InstallCacicSA::removeInstallDir()
+{
+    const std::string fileException[0];
+    return this->delFolder(this->cacicPath, fileException, 0);
+}
+
+/**
+ * @brief InstallCacicSA::getStrTime
+ *
+ * Retorna tempo atual como string formatado
+ *
+ * @return Tempo no formato %d-%m-%Y %I:%M:%S
+ */
+std::string InstallCacicSA::getStrTime()
+{
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[80];
+
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer,80,"%d-%m-%Y %I:%M:%S",timeinfo);
+    std::string str(buffer);
+
+    return str;
+}
+
+/**
+ * @brief InstallCacicSA::createLogFile
+ *
+ * Cria log de instalação. Caso já exista, pega o caminho completo para o Log
+ *
+ * @return String com o caminho completo para o log
+ */
+std::string InstallCacicSA::createLogFile()
+{
+    if (this->fileExists(this->logFile)) {
+        return this->logFile;
+    } else {
+        // Primeiro cria diretório se não existir
+        this->createInstallDir();
+
+        // Agora cria arquivo de log
+        std::ofstream outfile (this->logFile.c_str());
+        outfile << "[" << this->getStrTime() << "] InstallCacicSA: Início do log" << std::endl;
+        outfile.close();
+
+        return this->logFile;
+    }
 }
 
 

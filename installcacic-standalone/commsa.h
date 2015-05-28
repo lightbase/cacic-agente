@@ -26,6 +26,8 @@ public:
     ~CommSA();
     std::string sendReq(const char* parameters = "");
     bool downloadFile(const char *url, const char *filePath);
+    bool log(const char *message);
+    bool log(double codigo, const char *user, const char *so, const char *message);
 
     const char *getHost() const;
     void setHost(const char *value);
@@ -46,6 +48,8 @@ public:
     void setTimeOut(int value);
 
     std::string getBody(std::string request) const;
+    
+    const wchar_t *GetWC(const char *c);
 
 private:
     const char* host;
@@ -58,7 +62,7 @@ private:
     int port;
     int timeOut;
 
-    std::string sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameter);
+    std::string sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters);
 };
 
 #endif // COMMSA_H

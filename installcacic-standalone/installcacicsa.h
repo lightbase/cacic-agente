@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <wincrypt.h>
 #include <iostream>
+#include <fstream>
+#include <ctime>
 #include <servicecontroller.h>
 #include <shlwapi.h>
 #include <../src/tinydir.h>
@@ -41,8 +43,15 @@ public:
     std::string getHashLocal();
     std::string getHashRemoto();
     std::string getUrl() const;
+    std::string getInstallDir();
     void setUrl(const std::string &value);
     bool delFolder(const std::string &path, const std::string fileException[], const int &numException, bool *exceptionFound = NULL);
+    bool log(const char *message);
+    bool log(double codigo, const char *user, const char *so, const char *message);
+    std::string createInstallDir();
+    bool removeInstallDir();
+    std::string getStrTime();
+    std::string createLogFile();
 
 private:
     std::string url;
@@ -51,6 +60,8 @@ private:
     std::string hashLocal;
     std::string hashRemoto;
     std::string cacicPath;
+    std::string installDir;
+    std::string logFile;
     CommSA comm;
 };
 

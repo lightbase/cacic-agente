@@ -41,18 +41,32 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
         // Throw exception if it was not possible to connect
         return "CONNECTION_ERROR";
     }
+
     std::string req;
-    req.append("GET");
+    // Check for define method
+    if (method) {
+        req.append(method);
+    } else {
+        req.append("GET");
+    }
+
     req.append(" ");
     req.append(route);
     req.append(" HTTP/1.0\n");
     req.append("Host: ");
     req.append(host);
-    req.append(" \nConnection: close\n");
+    req.append(" \n");
+    //req.append("Connection: close\n");
     req.append("Content-Type: ");
     req.append(type);
     req.append("; charset=utf-8\n\n\n");
-//    req.append(parameters);
+
+    // Check for sent parameters
+    if (parameters && parameters != "") {
+        req.append(parameters);
+    }
+
+    std::cout << "REQUEST: "  << std::endl << req << std::endl;
 
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
@@ -118,6 +132,15 @@ std::string CommSA::getBody(std::string request) const
         std::string s(ws.begin(), ws.end());
         return s;
     }
+}
+
+const wchar_t *CommSA::GetWC(const char *c)
+{
+    const size_t cSize = strlen(c)+1;
+    wchar_t* wc = new wchar_t[cSize];
+    mbstowcs (wc, c, cSize);
+
+    return wc;
 }
 
 bool CommSA::downloadFile(const char *url, const char *filePath)
@@ -237,6 +260,53 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     WSACleanup();
 
     return true;
+}
+
+bool CommSA::log(const char *message)
+{
+    return this->log(99, "", "", message);
+}
+
+bool CommSA::log(double codigo, const char *user, const char *so, const char *message)
+{
+    JSONObject root;
+
+    // Add JSON values
+    if (user != "") {
+        const wchar_t *u = this->GetWC(user);
+        root[L"user"] = new JSONValue(u);
+    }
+    if (so != "") {
+        const wchar_t *s = this->GetWC(so);
+        root[L"so"] = new JSONValue(s);
+    }
+    root[L"codigo"] = new JSONValue(codigo);
+
+    // Convert
+    const wchar_t *m = this->GetWC(message);
+    root[L"message"] = new JSONValue(m);
+
+    // Convert JSON to text
+    JSONValue *value = new JSONValue(root);
+
+    // Convert JSON Values
+    this->setRoute("/ws/instala/erro");
+    this->setMethod("POST");
+    this->setType("application/json");
+    std::wstring params = value->Stringify();
+    std::string par (params.begin(), params.end());
+
+    std::cout << "Arquivo JSON Enviado: " << std::endl;
+    std::wcout << par.c_str() << std::endl;
+
+    // Send JSON request to Server
+    std::string response =  this->sendReq(this->host, this->route, this->method, this->type, this->port, par.c_str());
+
+    if (response == "CONNECTION_ERROR") {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 const char *CommSA::getHost() const
