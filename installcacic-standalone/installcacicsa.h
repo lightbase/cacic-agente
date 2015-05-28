@@ -43,6 +43,8 @@ public:
     std::string getUrl() const;
     void setUrl(const std::string &value);
     bool delFolder(const std::string &path, const std::string fileException[], const int &numException, bool *exceptionFound = NULL);
+    bool log(const char *message);
+    bool log(double codigo, const char *user, const char *so, const char *message);
 
 private:
     std::string url;

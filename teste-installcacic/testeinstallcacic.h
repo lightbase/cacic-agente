@@ -22,6 +22,9 @@ private:
     std::string service_download;
     std::string msi_download;
     std::string path;
+    const char *so;
+    const char *user;
+    double codigo_erro;
 
 signals:
 
@@ -41,6 +44,7 @@ private slots:
     void testCacic26();
     void testCacic28();
     void verificaRegistro();
+    void testErro();
     void cleanupTestCase();
 };
 

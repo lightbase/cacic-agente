@@ -6,6 +6,9 @@ InstallCacicSA::InstallCacicSA(const std::string &url, const std::string &user, 
     this->url  = url;
     this->user = user;
     this->cacicPath = "c:\\cacic";
+
+    // Adjust Comm parameters
+    this->comm.setHost(this->url.c_str());
 }
 
 InstallCacicSA::~InstallCacicSA()
@@ -70,10 +73,9 @@ bool InstallCacicSA::ping()
     // Envia requisição para testar se o servidor está no ar
     std::string check;
     const char *route = "/";
-    comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    char *buffer;
+    const char *buffer = "";
     check = comm.sendReq(buffer);
     if (check == "CONNECTION_ERROR") {
         return false;
@@ -508,6 +510,35 @@ std::string InstallCacicSA::getUrl() const
 void InstallCacicSA::setUrl(const std::string &value)
 {
     url = value;
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
+ * Registro de erros de instalação no log
+ *
+ * @param message Mensagem a ser enviada
+ * @return
+ */
+bool InstallCacicSA::log(const char *message)
+{
+    return this->comm.log(message);
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
+ * Registro de erros de instalação no log
+ *
+ * @param codigo Código de erro (padrão 99)
+ * @param user Usuário da máquina
+ * @param so SO onde aconteceu o erro
+ * @param message Mensagem a ser registrada
+ * @return
+ */
+bool InstallCacicSA::log(double codigo, const char *user, const char *so, const char *message)
+{
+    return this->comm.log(codigo, user, so, message);
 }
 
 
