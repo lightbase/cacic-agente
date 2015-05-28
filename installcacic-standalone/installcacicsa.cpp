@@ -522,11 +522,41 @@ bool InstallCacicSA::log(double codigo, const char *user, const char *so, const 
     this->createLogFile();
 
     // Agora cria arquivo de log
-    std::ofstream outfile (this->logFile.c_str());
-    outfile << "[" << this->getStrTime() << "] InstallCacicSA (" << codigo << "): " << message << std::endl;
+    std::ofstream outfile (this->logFile.c_str(), std::ios::in | std::ios::ate);
+    outfile << "[" << this->getStrTime() << "] ERROR: InstallCacicSA (" << codigo << ") - " << message << std::endl;
     outfile.close();
 
     return this->comm.log(codigo, user, so, message);
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
+ * Registro de erros de instalação no log. Só envia para o Gerente se o nível for ERROR
+ *
+ * @param codigo Código de erro (padrão 99)
+ * @param user Usuário da máquina
+ * @param so SO onde aconteceu o erro
+ * @param message Mensagem a ser registrada
+ * @param level Nível de erro
+ * @return
+ */
+bool InstallCacicSA::log(double codigo, const char *user, const char *so, const char *message, const char *level)
+{
+    // Verifica se arquivo de erros existe
+    this->createLogFile();
+
+    // Agora cria arquivo de log
+    std::ofstream outfile (this->logFile.c_str(), std::ios::in | std::ios::ate);
+    outfile << "[" << this->getStrTime() << "] " << level << ": InstallCacicSA (" << codigo << ") - " << message << std::endl;
+    outfile.close();
+
+    if (level == "ERROR") {
+        return this->comm.log(codigo, user, so, message);
+    } else {
+        return true;
+    }
+
 }
 
 /**
@@ -608,5 +638,3 @@ std::string InstallCacicSA::createLogFile()
         return this->logFile;
     }
 }
-
-

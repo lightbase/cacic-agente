@@ -194,7 +194,13 @@ void testeInstallcacic::testInstallDir()
 void testeInstallcacic::testLogErro()
 {
     std::string result = this->icsa->createLogFile();
+    const char *message = "Erro de teste!!!";
+
     QVERIFY2(this->icsa->fileExists(result), "Não foi possível criar o arquivo");
+
+    QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message, "ERROR"), "Erro no envio do JSON de erros");
+
+    QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message, "INFO"), "Erro no envio do JSON de info");
 
     // VErifica conteúdo
     std::ifstream outfile (result.c_str());
