@@ -55,7 +55,8 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     req.append(" HTTP/1.0\n");
     req.append("Host: ");
     req.append(host);
-    //req.append(" \nConnection: close\n");
+    req.append(" \n");
+    //req.append("Connection: close\n");
     req.append("Content-Type: ");
     req.append(type);
     req.append("; charset=utf-8\n\n\n");

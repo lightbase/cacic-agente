@@ -45,9 +45,9 @@ private slots:
     void testCacic26();
     void testCacic28();
     void verificaRegistro();
-    void testErro();
     void testInstallDir();
     void testLogErro();
+    void testErro();
     void cleanupTestCase();
 };
 

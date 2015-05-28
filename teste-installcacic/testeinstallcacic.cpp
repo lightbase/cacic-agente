@@ -162,15 +162,6 @@ void testeInstallcacic::verificaRegistro()
     QVERIFY(icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi"));
 }
 
-void testeInstallcacic::testErro()
-{
-    const char *message = "Erro de teste!!!";
-    QVERIFY2(this->icsa->log(message), "Erro no envio de JSON sem usuário e SO");
-
-    // Agora testa erro de envio registrando todas as informações
-    QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message), "Erro no envio do JSON completo");
-}
-
 /**
  * @brief testeInstallcacic::testInstallDir
  *
@@ -211,6 +202,22 @@ void testeInstallcacic::testLogErro()
         std::cout << line << std::endl;
     }
     outfile.close();
+
+    QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
+}
+
+/**
+ * @brief testeInstallcacic::testErro
+ *
+ * Testa criação do arquivo de erro
+ */
+void testeInstallcacic::testErro()
+{
+    const char *message = "Erro de teste!!!";
+    QVERIFY2(this->icsa->log(message), "Erro no envio de JSON sem usuário e SO");
+
+    // Agora testa erro de envio registrando todas as informações
+    QVERIFY2(this->icsa->log(this->codigo_erro, this->user, this->so, message), "Erro no envio do JSON completo");
 
     QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
 }

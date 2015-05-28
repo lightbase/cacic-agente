@@ -545,6 +545,14 @@ bool InstallCacicSA::log(const char *message)
  */
 bool InstallCacicSA::log(double codigo, const char *user, const char *so, const char *message)
 {
+    // Verifica se arquivo de erros existe
+    this->createLogFile();
+
+    // Agora cria arquivo de log
+    std::ofstream outfile (this->logFile.c_str());
+    outfile << "[" << this->getStrTime() << "] InstallCacicSA (" << codigo << "): " << message << std::endl;
+    outfile.close();
+
     return this->comm.log(codigo, user, so, message);
 }
 
