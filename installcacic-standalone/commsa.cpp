@@ -29,19 +29,33 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     struct hostent *shost;
     shost = gethostbyname(host);
+    if (shost == NULL){
+        return "CONNECTION_ERROR";
+    }
     SOCKADDR_IN SockAddr;
     SockAddr.sin_port = htons(port);
     SockAddr.sin_family = AF_INET;
     SockAddr.sin_addr.s_addr = *((unsigned long*)shost->h_addr);
+
     // Ajusta o timeout para a conexão
     setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
     setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
-        std::cout << "Could not connect";
+//        std::cout << "Could not connect";
         // Throw exception if it was not possible to connect
         return "CONNECTION_ERROR";
     }
-
+    //Ponteiro da struct está dando erro de permissão, ainda não descobri o motivo.
+//    networkInfo *netInfo;
+//    for(int i = 0; i< this->getNetworkInfo(netInfo); i++){
+//        printf("----------NETWORK----------\n");
+//        printf("Ip:         ");
+//        std::string aux = netInfo[i].ip;
+//        printf("\t%s\n", aux.c_str());
+//        printf("SubnetMask: ");
+//        aux = netInfo[i].subnetMask;
+//        printf("\t%s\n", aux.c_str());
+//    }
     std::string req;
     // Check for define method
     if (method) {
@@ -66,7 +80,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
         req.append(parameters);
     }
 
-    std::cout << "REQUEST: "  << std::endl << req << std::endl;
+//    std::cout << "REQUEST: "  << std::endl << req << std::endl;
 
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
@@ -201,12 +215,12 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     serveraddr.sin_port = htons(port);
 
     if (connect(sock, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
-        std::cout << "Erro na conexão!!!" << std::endl;
+//        std::cout << "Erro na conexão!!!" << std::endl;
         return false;
     }
 
     if (send(sock, request.c_str(), request.length(), 0) != request.length()) {
-        std::cout << "Erro na conexão!!!" << std::endl;
+//        std::cout << "Erro na conexão!!!" << std::endl;
         return false;
     }
 
@@ -218,7 +232,7 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     // Checa se existe a possibildiade do arquivo não estar lá
     npos = str_buff.find("404 Not Found");
     if (npos != std::string::npos) {
-        std::cout << "Arquivo não existe no servidor!!!" << std::endl;
+//        std::cout << "Arquivo não existe no servidor!!!" << std::endl;
         return false;
     }
 
@@ -296,8 +310,8 @@ bool CommSA::log(double codigo, const char *user, const char *so, const char *me
     std::wstring params = value->Stringify();
     std::string par (params.begin(), params.end());
 
-    std::cout << "Arquivo JSON Enviado: " << std::endl;
-    std::wcout << par.c_str() << std::endl;
+//    std::cout << "Arquivo JSON Enviado: " << std::endl;
+//    std::wcout << par.c_str() << std::endl;
 
     // Send JSON request to Server
     std::string response =  this->sendReq(this->host, this->route, this->method, this->type, this->port, par.c_str());
@@ -307,6 +321,73 @@ bool CommSA::log(double codigo, const char *user, const char *so, const char *me
     } else {
         return true;
     }
+}
+
+int CommSA::getNetworkInfo(networkInfo *arrayNetInfo)
+{
+    int i;
+
+    /* Variables used by GetIpAddrTable */
+    PMIB_IPADDRTABLE pIPAddrTable;
+    DWORD dwSize = 0;
+    DWORD dwRetVal = 0;
+    IN_ADDR IPAddr;
+
+    /* Variables used to return error message */
+    LPVOID lpMsgBuf;
+
+    // Before calling AddIPAddress we use GetIpAddrTable to get
+    // an adapter to which we can add the IP.
+    pIPAddrTable = (MIB_IPADDRTABLE *) MALLOC(sizeof (MIB_IPADDRTABLE));
+
+    if (pIPAddrTable) {
+        // Make an initial call to GetIpAddrTable to get the
+        // necessary size into the dwSize variable
+        if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) ==
+            ERROR_INSUFFICIENT_BUFFER) {
+            FREE(pIPAddrTable);
+            pIPAddrTable = (MIB_IPADDRTABLE *) MALLOC(dwSize);
+
+        }
+        if (pIPAddrTable == NULL) {
+            printf("Memory allocation failed for GetIpAddrTable\n");
+            return -1;
+        }
+    }
+    // Make a second call to GetIpAddrTable to get the
+    // actual data we want
+    if ( (dwRetVal = GetIpAddrTable( pIPAddrTable, &dwSize, 0 )) != NO_ERROR ) {
+        printf("GetIpAddrTable failed with error %d\n", dwRetVal);
+        if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),       // Default language
+                          (LPTSTR) & lpMsgBuf, 0, NULL)) {
+            printf("\tError: %s", lpMsgBuf);
+            LocalFree(lpMsgBuf);
+        }
+        return -1;
+    }
+    int numEntries = (int) pIPAddrTable->dwNumEntries;
+    arrayNetInfo = (struct networkInfo *) malloc(sizeof(struct networkInfo *) * numEntries);
+    for (i=0; i < numEntries; i++) {
+        if (!(pIPAddrTable->table[i].wType & MIB_IPADDR_DISCONNECTED)){
+            struct networkInfo netInfo;
+            IPAddr.S_un.S_addr = (u_long) pIPAddrTable->table[i].dwAddr;
+            std::string aux = inet_ntoa(IPAddr);
+            netInfo.ip = aux.c_str();
+//            printf("\tIP Address[%d]:     \t%s\n", i, netInfo.ip);
+            IPAddr.S_un.S_addr = (u_long) pIPAddrTable->table[i].dwMask;
+            aux = inet_ntoa(IPAddr);
+            netInfo.subnetMask = aux.c_str();
+//            printf("\tSubnet Mask[%d]:    \t%s\n", i,  netInfo.subnetMask);
+
+            arrayNetInfo[i] = netInfo;
+        }
+    }
+
+    if (pIPAddrTable) {
+        FREE(pIPAddrTable);
+        pIPAddrTable = NULL;
+    }
+    return numEntries;
 }
 
 const char *CommSA::getHost() const

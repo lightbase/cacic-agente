@@ -75,6 +75,7 @@ bool InstallCacicSA::ping()
     // Envia requisição para testar se o servidor está no ar
     std::string check;
     const char *route = "/";
+    comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
     const char *buffer = "";
@@ -289,7 +290,7 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
     bool ok = true;
     tinydir_dir dir;
     tinydir_open(&dir, path.c_str());
-//    printf("%s/\n", path.c_str());
+
     while (dir.has_next){
         tinydir_file file;
         tinydir_readfile(&dir, &file);
@@ -297,15 +298,7 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
         if (!(nameFile == ".." || nameFile == ".")){
             //Se for diretório, entra na função novamente para deletar os arquivos
             if (file.is_dir){
-                printf("%s/\n", file.path);
-                if (this->delFolder(file.path, fileException, numException, exceptionFound)){
-                    //Apenas se não houver um arquivo nas exceções, o diretório é excluído
-                    if (!*exceptionFound){
-                        ok = ok && RemoveDirectoryA(file.path);
-                    }
-                } else {
-                    printf("------%s(falha ao entrar an recursividade)\n", file.path);
-                }
+                ok = ok && this->delFolder(file.path, fileException, numException, exceptionFound);
             } else {
                 //verifica se o arquivo está nas exceções
                 if (fileException != NULL){
@@ -314,17 +307,17 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
                         if (*exceptionFound) break;
                     }
                 }
-                if (*exceptionFound){
+                if (!*exceptionFound){
                     remove(file.path);
                 }
             }
         }
         tinydir_next(&dir);
     }
-    if (ok){
-        printf("\nRETURN TRUE\n\n");
-    } else {
-        printf("\nRETURN FALSE\n\n");
+    tinydir_close(&dir);
+    if (!*exceptionFound){
+        //Se não houver arquivo nas exceções, deleta o path.
+        ok = ok && RemoveDirectoryA(path.c_str());
     }
     return ok;
 }

@@ -26,7 +26,7 @@ void testeInstallcacic::initTestCase()
     codigo_erro = 90;
 }
 
-void testeInstallcacic::initTestDeleteFolder()
+void testeInstallcacic::testDeleteFolder()
 {
     QString testPath = QString::fromStdString(this->path);
     testPath.append("\\testDel");
@@ -37,14 +37,12 @@ void testeInstallcacic::initTestDeleteFolder()
     lDir.append(testPath + "\\teste2\\teste1");
     lDir.append(testPath + "\\teste3");
     lDir.append(testPath + "\\teste");
-    qDebug() << lDir;
     foreach(QString dir, lDir){
         dir.replace("/","\\");
         QDir qdir(dir);
         qdir.mkpath(dir);
         for(int i = 0; i<4;i++){
-            QFile teste(dir + "\\teste" + QString::number(i));
-            qDebug() << teste.fileName();
+            QFile teste(dir + "\\teste" + QString::number(i+1));
             teste.open(QIODevice::ReadWrite);
             teste.write("teste");
             teste.close();
@@ -52,10 +50,12 @@ void testeInstallcacic::initTestDeleteFolder()
     }
     testExceptionFiles[0] = "teste1";
     testExceptionFiles[1] = "teste3";
-    //CRIAR PASTA COM ALGUNS ARQUIVOS
+
     testPath.replace("/", "\\");
-    qDebug() << testPath;
-    QVERIFY(this->icsa->delFolder(testPath.toStdString(), NULL, 0));
+    QVERIFY(this->icsa->delFolder(testPath.toStdString(), testExceptionFiles, numExceptFiles));
+
+    QDir dir(testPath);
+    dir.removeRecursively();
 }
 
 void testeInstallcacic::testHttpCommunication()
