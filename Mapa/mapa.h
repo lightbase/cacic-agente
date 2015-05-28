@@ -35,10 +35,12 @@ class Mapa : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Mapa(const QString &ldapInfoUrl = "", QWidget *parent = 0);
+    explicit Mapa(QWidget *parent = 0);
+    explicit Mapa(const QString &ldapInfoUrl, QWidget *parent = 0);
     ~Mapa();
     bool setArgs(int argc, char *argv[]);
 
+    void inicializarAtributos();
 private slots:
     void on_okButton_clicked();
 

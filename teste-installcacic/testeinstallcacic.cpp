@@ -23,29 +23,37 @@ void testeInstallcacic::initTestCase()
     path = tmp_dir.toStdString();
 }
 
+void testeInstallcacic::initTestDeleteFolder()
+{
+    QString testPath = QString::fromStdString(this->path);
+    testPath.append("\\testDel\\");
+    int numExceptFiles = 2;
+    std::string testExceptionFiles[numExceptFiles];
+    QStringList lDir;
+    lDir.append(testPath + "teste\\teste1\\");
+    lDir.append(testPath + "teste2\\teste1\\");
+    lDir.append(testPath + "teste3\\");
+    lDir.append(testPath + "teste\\");
+    foreach(QString dir, lDir){
+        QDir qdir(dir);
+        qdir.mkpath(dir);
+        for(int i = 0; i<4;i++){
+            QFile teste(dir + "teste" + QString::number(i));
+            qDebug() << teste.fileName();
+            teste.open(QIODevice::ReadWrite);
+            teste.write("teste");
+            teste.close();
+        }
+    }
+    testExceptionFiles[0] = "teste1";
+    testExceptionFiles[1] = "teste3";
+    //CRIAR PASTA COM ALGUNS ARQUIVOS
+    QVERIFY(this->icsa->delFolder(testPath.toStdString(), testExceptionFiles, numExceptFiles));
+}
+
 void testeInstallcacic::testHttpCommunication()
 {
     QVERIFY2(this->icsa->ping(), "Falha na comunicação com o serviço");
-}
-
-void testeInstallcacic::testNaoInstalado()
-{
-    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
-        if (this->icsa->downloadMsi(this->msi_download, this->path)){
-            QVERIFY(this->icsa->installService());
-        } else {
-            QVERIFY2(false, "Não conseguiu baixar o servico.");
-        }
-    } else {
-        QVERIFY(true);
-    }
-}
-
-void testeInstallcacic::testGetHashFromFile()
-{
-    std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
-//    qDebug() << QString::fromStdString(hash);
-    QVERIFY (hash!="");
 }
 
 void testeInstallcacic::testConfig()
@@ -73,12 +81,42 @@ void testeInstallcacic::testConfig()
 
 }
 
+void testeInstallcacic::testNaoInstalado()
+{
+//    std::string msi_path = this->path+"\\Cacic.msi";
+//    if (!this->icsa->registryExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\FakeMsi\\msi")){
+//        QVERIFY2(this->icsa->downloadMsi(this->msi_download, this->path), "Não consegui baixar o serviço");
+//        QVERIFY2(this->icsa->fileExists(msi_path), "Arquivo Inexistente");
+//        QVERIFY(this->icsa->installCacic(msi_path));
+//    } else {
+//        QVERIFY(true);
+//    }
+
+//    // Remove MSI
+//    QVERIFY(this->icsa->removeCacic(msi_path));
+
+//    //Exclui arquivo, depois da desinstalação pra não dar problema.
+//    QFile::remove(QString::fromStdString(this->path+"\\Cacic.msi"));
+}
+
+void testeInstallcacic::testGetHashFromFile()
+{
+    std::string hash = this->icsa->getHashFromFile("teste-installcacic.exe");
+//    qDebug() << QString::fromStdString(hash);
+    QVERIFY (hash!="");
+}
+
+
+
 void testeInstallcacic::testDownloadFile()
 {
-    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
+//    std::cout << "Baixando para diretório de arquivos temporários: " << this->path << std::endl;
 
     QVERIFY(this->icsa->downloadService(this->service_download, this->path));
-    this->icsa->setUrl("localhost");
+
+    // Apaga arquivo
+    std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
+    QFile::remove(QString::fromStdString(full_path));
 }
 
 void testeInstallcacic::testMsiInstalado()
@@ -96,14 +134,14 @@ void testeInstallcacic::testServico()
 {
     if (!sc->isInstalled() || !sc->isRunning()){
         //verifica se existe o binário install-cacic na pasta bin, se não executa MSI.
-        QVERIFY(icsa->installCacic());
+        QVERIFY(icsa->verificaServico());
     }
     QVERIFY2(false, "Servico instalado ou rodando");
 }
 
 void testeInstallcacic::testAtualizacao()
 {
-    QVERIFY(this->icsa->verificaServico());
+    QVERIFY(false);
 }
 
 void testeInstallcacic::testCacic26()
@@ -124,5 +162,4 @@ void testeInstallcacic::verificaRegistro()
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");
-    CCacic::deleteFile("./websearch.pdf");
 }

@@ -33,6 +33,7 @@ void HttpDaemon::readClient()
     // server looks if it was a get request and sends a very simple HTML
     // document back.
     QTcpSocket* socket = (QTcpSocket*)sender();
+
     if (socket->canReadLine()) {
         QStringList tokens = QString(socket->readLine()).split(QRegExp("[ \r\n][ \r\n]*"));
 
@@ -61,6 +62,8 @@ void HttpDaemon::readClient()
                 delete socket;
                 //QtServiceBase::instance()->logMessage("Connection closed");
             }
+        } else if (tokens[0] == "POST") {
+            qDebug() << "POST request received.";
         }
     }
 }
@@ -84,13 +87,13 @@ QString HttpDaemon::getInstalaHash()
     return retorno;
 }
 
-QString HttpDaemon::getDefaultRoute()
+QString HttpDaemon::getDefaultRoute(const QString &rota)
 {
     QString retorno;
     retorno = "HTTP/1.0 200 Ok\r\n"
         "Content-Type: application/json; charset=\"utf-8\"\r\n"
         "\r\n"
-        "{}\n";
+        "{\"valor\":\"route "+rota+" not found\"}\n";
 
     retorno += QDateTime::currentDateTime().toString();
     retorno += "\n";
@@ -150,11 +153,11 @@ QString HttpDaemon::getLdapInfo()
         "\r\n"
         "{\"objectClass\": \"LDAP_info\",\n"
         "\"info\": {\n"
-            "\"base\": \"dc=lightbase,dc=com,dc=br\",\n"
-            "\"filter\": \"'(uid=nome)' cn\",\n"
+            "\"base\": \"ou=usuarios,dc=lightbase,dc=com,dc=br\",\n"
+            "\"filter\": \"(&(objectClass=*)(uid=thiagop))\",\n"
             "\"login\": \"cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br\",\n"
             "\"pass\": \"brlight2012\",\n"
-            "\"server\": \"ldap://ldap.server\"}\n"
+            "\"server\": \"ldap.lightbase\"}\n"
         "}\n";
 
     retorno += "\n";
@@ -177,6 +180,6 @@ QString HttpDaemon::processRoutes(const QString &rota)
     } else if(rota == ROUTE_MAPA_LDAP) {
         return this->getLdapInfo();
     } else {
-        return this->getDefaultRoute();
+        return this->getDefaultRoute(rota);
     }
 }

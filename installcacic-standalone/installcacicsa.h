@@ -7,6 +7,7 @@
 #include <iostream>
 #include <servicecontroller.h>
 #include <shlwapi.h>
+#include <../src/tinydir.h>
 
 #define BUFSIZE 1024
 #define MD5LEN  16
@@ -21,12 +22,13 @@ public:
     bool registryExists(HKEY RootKey, LPCTSTR SubKey);
     bool downloadService(const std::string &rota, const std::string &path);
     bool downloadMsi(const std::string &rota, const std::string &path);
-    bool installService();
+    bool installService(const std::string &serviceName, const std::string &serviceBinPath);
     bool ping();
     bool getConfig();
     bool comparaHash();
     bool verificaServico();
-    bool installCacic();
+    bool installCacic(const std::string &msiPath);
+    bool removeCacic(const std::string &msiPath);
     bool deleteCacic26();
     bool deleteCacic28();
     bool setHashLocal(const std::string &hash);
@@ -40,6 +42,7 @@ public:
     std::string getHashRemoto();
     std::string getUrl() const;
     void setUrl(const std::string &value);
+    bool delFolder(const std::string &path, const std::string fileException[], const int &numException, bool *exceptionFound = NULL);
 
 private:
     std::string url;

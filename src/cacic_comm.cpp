@@ -83,6 +83,7 @@ QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &js
         strReply = reply->errorString();
         jsonObj.insert("error", QJsonValue::fromVariant(strReply));
     }
+
     delete reply;
     return jsonObj;
 }

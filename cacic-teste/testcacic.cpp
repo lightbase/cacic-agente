@@ -22,6 +22,34 @@ void CTestCacic::initTestCase()
     this->session = QJsonObject::fromVariantMap(jsonMap);
 }
 
+void CTestCacic::testClassDestructors()
+{
+    //Caso o constructor de alguma classe dê pau, o teste vai dar crash aqui.
+    for (int i=0;i<=7;i++){
+        if (i==0){
+            CacicComm *OCacicCommT;
+            OCacicCommT = new CacicComm("teste", this->testPath);
+        } else if (i==1){
+            CACIC_Computer OCacicCompT;
+        } else if (i==2){
+            cacic_software OCacicSoftwareT;
+        } else if (i==3){
+            ConsoleObject console;
+        } else if (i==4){
+            cacic_hardware OCacicHardwareT;
+        } else if (i==5){
+            CColeta oColetaT;
+        } else if (i==6){
+            CheckModules *oCheckModulesT;
+            oCheckModulesT = new CheckModules(this->testPath,"teste");
+        } else if (i==7) {
+            LogCacic *logcacic;
+            logcacic = new LogCacic("qqq", this->testPath);
+        }
+    }
+    QVERIFY(true);
+}
+
 void CTestCacic::testCreateFolder()
 {
     QVERIFY(CCacic::createFolder(testPath));
