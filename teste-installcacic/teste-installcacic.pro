@@ -41,6 +41,7 @@ SOURCES += testeinstallcacic.cpp \
     ../src/simplejson/src/JSONValue.cpp \
     ../src/vregistry.cpp \
     ../src/vqtconvert.cpp \
+    ../computer/wcomputer.cpp
 
 HEADERS += testeinstallcacic.h \
     ../installcacic-standalone/installcacicsa.h \
@@ -53,5 +54,6 @@ HEADERS += testeinstallcacic.h \
     ../src/vregistry.h \
     ../src/vqtconvert.h \
     ../src/tinydir.h \
+    ../computer/wcomputer.cpp
 
 INCLUDEPATH += ../src

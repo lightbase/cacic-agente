@@ -1,14 +1,14 @@
 #ifndef TESTEINSTALLCACIC_H
 #define TESTEINSTALLCACIC_H
 
-#include <../installcacic-standalone/installcacicsa.h>
 #include <QtTest>
 #include <QDebug>
 #include <iostream>
 #include <fstream>
-#include <ccacic.h>
 #include <servicecontroller.h>
 #include <QCoreApplication>
+#include <ccacic.h>
+#include <../installcacic-standalone/installcacicsa.h>
 
 class testeInstallcacic : public QObject
 {
@@ -48,6 +48,7 @@ private slots:
     void testInstallDir();
     void testLogErro();
     void testErro();
+    void testGetSo();
     void cleanupTestCase();
 };
 

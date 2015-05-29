@@ -223,7 +223,8 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     std::wstring wAux(commandLine.begin(), commandLine.end());
 
     wchar_t *wcAux = new wchar_t[wAux.length() + 1];
-    wcscpy(wcAux, wAux.c_str());
+    //wcscpy(wcAux, wAux.c_str());
+    StringCchCopyW(wcAux, BUFSIZE, wAux.c_str());
 
     ZeroMemory( &si, sizeof(si) );
     si.cb = sizeof(si);
@@ -450,7 +451,9 @@ std::string InstallCacicSA::getHashFromFile(const std::string &filePath)
         {
 //            printf("%c%c", rgbDigits[rgbHash[i] >> 4],
 //                rgbDigits[rgbHash[i] & 0xf]);
-            sprintf(buf, "%c%c", rgbDigits[rgbHash[i] >> 4],
+            //sprintf(buf, "%c%c", rgbDigits[rgbHash[i] >> 4],
+            //        rgbDigits[rgbHash[i] & 0xf]);
+            StringCchPrintfA(buf, BUFSIZE, "%c%c", rgbDigits[rgbHash[i] >> 4],
                     rgbDigits[rgbHash[i] & 0xf]);
             retorno.append( buf );
         }
@@ -637,4 +640,14 @@ std::string InstallCacicSA::createLogFile()
 
         return this->logFile;
     }
+}
+
+std::string InstallCacicSA::getSo()
+{
+    return this->comp.getSo();
+}
+
+std::string InstallCacicSA::getUsuarioSo()
+{
+    return this->comp.getUsuarioSo();
 }

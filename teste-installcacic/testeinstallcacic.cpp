@@ -232,6 +232,23 @@ void testeInstallcacic::testErro()
     QVERIFY2(this->icsa->removeInstallDir(), "Erro ao remover o diretório de instalação");
 }
 
+/**
+ * @brief testeInstallcacic::testGetSo
+ *
+ * Testa identificação do SO na máquina
+ */
+void testeInstallcacic::testGetSo()
+{
+    std::string so = this->icsa->getSo();
+    std::string vazio = std::string("");
+    std::string nso = std::string("Windows Não Identificado");
+
+    std::cout << "SO Encontrado: " << so << std::endl;
+
+    QVERIFY2((so != vazio), "SO Vazio");
+    QVERIFY2((so != nso), "Erro na Identificação do SO");
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");

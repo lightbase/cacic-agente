@@ -10,6 +10,7 @@
 #include <servicecontroller.h>
 #include <shlwapi.h>
 #include <../src/tinydir.h>
+#include <../computer/wcomputer.h>
 
 #define BUFSIZE 1024
 #define MD5LEN  16
@@ -54,6 +55,10 @@ public:
     std::string getStrTime();
     std::string createLogFile();
 
+    // Informações do SO
+    std::string getSo();
+    std::string getUsuarioSo();
+
 private:
     std::string url;
     std::string user;
@@ -64,6 +69,7 @@ private:
     std::string installDir;
     std::string logFile;
     CommSA comm;
+    Computer comp;
 };
 
 #endif // INSTALLCACICSA_H
