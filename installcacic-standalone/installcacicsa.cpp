@@ -505,7 +505,12 @@ void InstallCacicSA::setUrl(const std::string &value)
  */
 bool InstallCacicSA::log(const char *message)
 {
-    return this->comm.log(message);
+    double codigo = 99;
+    const char *user = "";
+    const char *so = "";
+
+    // Executa método com todos os valores vazios
+    return this->log(codigo, user, so, message, "ERROR");
 }
 
 /**
@@ -524,12 +529,8 @@ bool InstallCacicSA::log(double codigo, const char *user, const char *so, const 
     // Verifica se arquivo de erros existe
     this->createLogFile();
 
-    // Agora cria arquivo de log
-    std::ofstream outfile (this->logFile.c_str(), std::ios::in | std::ios::ate);
-    outfile << "[" << this->getStrTime() << "] ERROR: InstallCacicSA (" << codigo << ") - " << message << std::endl;
-    outfile.close();
-
-    return this->comm.log(codigo, user, so, message);
+    // Chama o método de envio com o nível de Erro
+    return this->log(codigo, user, so, message, "ERROR");
 }
 
 /**
@@ -553,6 +554,17 @@ bool InstallCacicSA::log(double codigo, const char *user, const char *so, const 
     std::ofstream outfile (this->logFile.c_str(), std::ios::in | std::ios::ate);
     outfile << "[" << this->getStrTime() << "] " << level << ": InstallCacicSA (" << codigo << ") - " << message << std::endl;
     outfile.close();
+
+    if (!user || user == "\0" || user == "") {
+        // Pega usuário do SO
+        std::string u = this->getUsuarioSo();
+        user = u.c_str();
+    }
+
+    if (!so || so == "\0" || so == "") {
+        // Pega SO
+        so = this->getSo().c_str();
+    }
 
     if (level == "ERROR") {
         return this->comm.log(codigo, user, so, message);

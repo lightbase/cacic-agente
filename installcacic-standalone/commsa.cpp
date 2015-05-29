@@ -80,7 +80,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
         req.append(parameters);
     }
 
-//    std::cout << "REQUEST: "  << std::endl << req << std::endl;
+    std::cout << "REQUEST: "  << std::endl << req << std::endl;
 
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
