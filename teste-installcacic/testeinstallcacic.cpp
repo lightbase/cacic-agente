@@ -249,6 +249,18 @@ void testeInstallcacic::testGetSo()
     QVERIFY2((so != nso), "Erro na Identificação do SO");
 }
 
+void testeInstallcacic::testGetUsuarioSo()
+{
+    std::string user = this->icsa->getUsuarioSo();
+    std::string vazio = std::string("");
+    std::string nso = std::string("Usuário não identificado");
+
+    std::cout << "Usuário Encontrado: " << user << std::endl;
+
+    QVERIFY2((user != vazio), "Usuário Vazio");
+    QVERIFY2((user != nso), "Erro na Identificação do Usuário");
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");

@@ -35,6 +35,10 @@ std::string Computer::getSo()
  */
 std::string Computer::getUsuarioSo()
 {
+    if (this->usuarioSo.empty()) {
+        this->usuarioSo = this->setUsuarioSo();
+    }
+
     return this->usuarioSo;
 }
 
@@ -60,9 +64,27 @@ std::string Computer::setSo()
     }
 }
 
+/**
+ * @brief Computer::setUsuarioSo
+ *
+ * Utiliza a API nativa do Windows para identificar o usuário do Sistema Operacional
+ *
+ * @return String com o nome do usuário
+ */
 std::string Computer::setUsuarioSo()
 {
-
+    TCHAR username[BUFSIZE];
+    DWORD size = BUFSIZE;
+    BOOL result = GetUserName((TCHAR*)username, &size);
+    if (result) {
+        std::wstring wuser(username);
+        std::string user(wuser.begin(), wuser.end());
+        return user;
+    } else {
+        std::cout << "Usuário não identificado" << std::endl;
+        std::string user = "Não Identificado";
+        return user;
+    }
 }
 
 /**
