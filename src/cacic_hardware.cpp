@@ -750,7 +750,7 @@ void cacic_hardware::coletaLinuxPrinters(QJsonObject &hardware)
                 QString printerName = line.split(" ")[0];
                 QJsonObject printer;
                 printer["Name"] = QJsonValue::fromVariant(printerName);
-                printersList.append(QJsonValue::fromVariant(printer));
+                printersList.append(printer);
             }
         }
         hardware["Win32_Printer"] = printersList;

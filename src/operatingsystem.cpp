@@ -80,7 +80,13 @@ QString OperatingSystem::coletaVersaoOsEmString(){
         if(line.contains("VERSION=") && line.contains(",")) {
             return QString(line.split("=").takeLast().split('"').takeAt(1).split(",").takeFirst());
         }else if (line.contains("VERSION=")){
-            return line.split("=").takeLast().split('"').takeAt(1);
+            QString version = line.split("=").takeLast();
+
+            if(version.at(0) == QChar('"'))
+                return version.split('"').at(1);
+            else
+                return version;
+//            return line.split("=").takeLast().split('"').takeAt(1);
         }else if (line.contains("DISTRIB_RELEASE")){
             return line.split("=").takeLast();
         }
