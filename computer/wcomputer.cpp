@@ -286,7 +286,11 @@ BOOL Computer::GetOsDisplayString(LPTSTR pszOS)
           }
        }
 
-        // Include service pack (if any) and build number.
+       // Eduardo: 2015-05-29
+       // Remove essas informações que são desnecessárias
+       return TRUE;
+
+       // Include service pack (if any) and build number.
 
        //if( _tcslen(osvi.szCSDVersion) > 0 )
        if( size_t(wcslen(osvi.szCSDVersion)) > 0 )
@@ -308,8 +312,8 @@ BOOL Computer::GetOsDisplayString(LPTSTR pszOS)
              StringCchCat(pszOS, BUFSIZE, TEXT(", 32-bit"));
        }
 
-           _tprintf(_T("OS Version Information %s\n"), pszOS);
-           return TRUE;
+       _tprintf(_T("OS Version Information %s\n"), pszOS);
+       return TRUE;
     }
 
     else
