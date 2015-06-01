@@ -48,6 +48,7 @@ private slots:
     void testErro();
     void testGetSo();
     void testGetUsuarioSo();
+    void testExec();
     void cleanupTestCase();
 };
 

@@ -259,6 +259,18 @@ void testeInstallcacic::testGetUsuarioSo()
     QVERIFY2((user != nso), "Erro na Identificação do Usuário");
 }
 
+/**
+ * @brief testeInstallcacic::testExec
+ *
+ * Testa função de instalação e remoção completa
+ */
+void testeInstallcacic::testExec()
+{
+    QVERIFY2(this->icsa->exec(), "Instalação falhou!!!");
+
+    QVERIFY2(this->icsa->execRemove(), "Remoção falhou falhou!!!");
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");

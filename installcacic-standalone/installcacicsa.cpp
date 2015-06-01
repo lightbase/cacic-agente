@@ -137,23 +137,42 @@ bool InstallCacicSA::comparaHash()
 {
     return this->hashLocal == this->hashRemoto;
 }
-
+/**
+ * @brief InstallCacicSA::verificaServico
+ *
+ * Verificação do serviço observando a seguinte heurística
+ *
+ *   // 2 - Instalou o MSI mas deu pau
+ *   // 2.1 - Serviço não está rodando
+ *   // 2.2 - Verifica binário desatualizado
+ *   // 2.3 - Pasta de DLL's vazia/corrompida
+ *   // 3 - Tudo instalado e serviço fora
+ *   // 3.1 - Instala de novo (Baixa o serviço e executa)
+ *   // 3.2 - Se der erro no serviço, baixa o MSI
+ *   // 4 - Atualização forçada (serviço desatualizado)
+ *   // 4.1 - Instala de novo (Baixa o serviço e executa)
+ *
+ * @return
+ */
 bool InstallCacicSA::verificaServico()
 {
+
     ServiceController sc(L"CacicDaemon");
     std::string fileService = this->cacicPath + "\\" + std::string(CACIC_SERVICE_BIN);
     std::string fileServiceTemp =this->cacicPath + "\\temp\\" + std::string(CACIC_SERVICE_BIN);
     std::string dirBin = this->cacicPath + "\\bin\\";
 
+    // 2.2 - Verifica binário desatualizado
     if (!this->getConfig()){
         return false;
     }
     if (!this->comparaHash()){
+        // 4.1 - Instala de novo (Baixa o serviço e executa)
         if (!this->downloadService(fileService)){
             this->informaGerente("Falha ao baixar serviço.");
             return false;
         }
-        //Verifica se o serviço está rodando;
+        // 2.1 - Serviço não está rodando
         if (sc.isInstalled()){
             if (sc.isRunning()){
                 sc.stop();
@@ -187,6 +206,7 @@ bool InstallCacicSA::verificaServico()
                 this->informaGerente("Falha ao mover serviço da pasta temporária.");
                 return false;
             }
+            // 3.1 - Instala de novo (Baixa o serviço e executa)
             if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
                 this->informaGerente("Falha ao instalar serviço.");
                 return false;
@@ -195,7 +215,8 @@ bool InstallCacicSA::verificaServico()
                     if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
                         this->informaGerente("Não foi possível iniciar o serviço.");
                     } else {
-                        //instala o MSI do cacic de novo
+                        // 3.2 - Se der erro no serviço, baixa o MSI
+                        this->downloadMsi(this->installDir);
                     }
                 }
             }
@@ -207,7 +228,8 @@ bool InstallCacicSA::verificaServico()
                     if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
                         this->informaGerente("Não foi possível iniciar o serviço.");
                     } else {
-                        //instala o MSI do cacic de novo
+                        // 3.2 - Se der erro no serviço, baixa o MSI
+                        this->downloadMsi(this->installDir);
                     }
                 }
             }
@@ -231,18 +253,17 @@ bool InstallCacicSA::fileExists(const std::string &filePath)
     }
 }
 
+/**
+ * @brief InstallCacicSA::informaGerente
+ *
+ * Registra o erro e envia para o Gerente
+ *
+ * @param error Mensagem de erro
+ * @return Verdadeiro ou falso
+ */
 bool InstallCacicSA::informaGerente(const std::string &error)
 {
-    const char *route = ROUTE_ERRO;
-    comm.setHost(this->url.c_str());
-    comm.setRoute(route);
-
-    std::string check = comm.sendReq(error.c_str());
-    if (check == "" || check == "CONNECTION_ERROR") {
-        return false;
-    } else {
-        return true;
-    }
+    return this->log(error.c_str());
 }
 
 bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::string &parameters)
@@ -546,6 +567,25 @@ bool InstallCacicSA::log(const char *message)
 /**
  * @brief InstallCacicSA::log
  *
+ * Registra uma mensagem no Log
+ *
+ * @param message Mensagem a ser registrada
+ * @param level Nível de erro a inserir no log
+ * @return Verdadeiro ou falso
+ */
+bool InstallCacicSA::log(const char *message, const char *level)
+{
+    double codigo = 99;
+    const char *user = "";
+    const char *so = "";
+
+    // Registra o log
+    return this->log(codigo, user, so, message, level);
+}
+
+/**
+ * @brief InstallCacicSA::log
+ *
  * Registro de erros de instalação no log
  *
  * @param codigo Código de erro (padrão 99)
@@ -615,17 +655,24 @@ std::string InstallCacicSA::createInstallDir()
 {
     tinydir_dir dir;
     int result;
+    BOOL created;
 
     // Check if dir Exists
     result = tinydir_open(&dir, this->cacicPath.c_str());
     if (result == -1) {
-        CreateDirectory(this->comm.GetWC(this->cacicPath.c_str()), NULL);
+        created = CreateDirectory(this->comm.GetWC(this->cacicPath.c_str()), NULL);
+        if (!created) {
+            return "";
+        }
     }
     tinydir_close(&dir);
 
     result = tinydir_open(&dir, this->installDir.c_str());
     if (result == -1) {
-        CreateDirectory(this->comm.GetWC(this->installDir.c_str()), NULL);
+        created = CreateDirectory(this->comm.GetWC(this->installDir.c_str()), NULL);
+        if (!created) {
+            return "";
+        }
     }
     tinydir_close(&dir);
 
@@ -684,6 +731,38 @@ std::string InstallCacicSA::createLogFile()
     }
 }
 
+/**
+ * @brief InstallCacicSA::isAdmin
+ *
+ * Verifica se o Cacic está rodando com permissão de administrador
+ *
+ * @return
+ */
+bool InstallCacicSA::isAdmin()
+{
+    std::ofstream outfile;
+    outfile.open("C:\\Windows\\System32\\cacic.tmp", std::ios::in | std::ios::ate);
+    if (outfile.fail()) {
+        return false;
+    } else {
+        outfile.close();
+        remove("C:\\Windows\\System32\\cacic.tmp");
+        return true;
+    }
+}
+
+/**
+ * @brief InstallCacicSA::cacicInstalado
+ *
+ * Verifica se existe entrada de registro para o Cacic
+ *
+ * @return Verdadeiro ou falso
+ */
+bool InstallCacicSA::cacicInstalado()
+{
+    return this->registryExists(HKEY_LOCAL_MACHINE, CACIC_REGISTRY);
+}
+
 std::string InstallCacicSA::getSo()
 {
     return this->comp.getSo();
@@ -692,4 +771,91 @@ std::string InstallCacicSA::getSo()
 std::string InstallCacicSA::getUsuarioSo()
 {
     return this->comp.getUsuarioSo();
+}
+
+/**
+ * @brief InstallCacicSA::exec
+ *
+ * Procedimento completo de instalação do Cacic
+ *
+ * @return Verdadeiro ou falso se conseguir instalar
+ */
+bool InstallCacicSA::exec()
+{
+    // 0 - Verifica comunicação e cria estrutura básica
+    this->log("Iniciando instalação...", "INFO");
+    this->log("Cria estrutura de diretórios", "INFO");
+
+    if (this->createInstallDir() == "") {
+        this->log("Erro ao tentar criar o diretório do Cacic no caminho = %s"), this->installDir;
+
+        return false;
+    }
+
+    this->log("Testa comunicação...", "DEBUG");
+
+    if (this->ping()) {
+        this->log("Comunicação realizado com sucesso! Seguindo...", "INFO");
+    } else {
+        this->log("Não foi possível realizar comunicação com o Gerente na URL = %s"), this->url;
+
+        return false;
+    }
+
+    if (!this->isAdmin()) {
+        this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
+
+        return false;
+    }
+
+    // 1 - Verifica se está instalado
+    if (!this->cacicInstalado()) {
+        std::string msi_path = this->path+"\\" + CACIC_MSI;
+        // 1.1 - Baixa e executa o MSI
+        this->icsa->downloadMsi(this->installDir);
+        if (!this->icsa->fileExists(msi_path)) {
+            this->log("Arquivo MSI não encontrado no caminho %s"), msi_path;
+
+            return false;
+        } else {
+            if (!this->installCacic(msi_path)) {
+                this->log("Falha na instalação do MSI = %s"), msi_path;
+
+                return false;
+            }
+            this->log("MSI instalado com sucesso! Finalizando...", "INFO");
+
+            return true;
+        }
+    }
+
+    if (!this->verificaServico()) {
+        this->log("Não foi possível verificar o serviço!");
+
+        return false;
+    } else {
+
+        this->log("Serviço verificado e atualizado com sucesso!", "INFO");
+    }
+
+    // TODO: 5 - Remove Cacic 2.6 ainda instalado
+
+    // TODO: 6 - Remove Cacic 2.8 ainda instalado
+
+    return true;
+
+}
+
+
+/**
+ * @brief InstallCacicSA::execRemove
+ *
+ * Procedimento completo de remoção do Cacic
+ *
+ * @return Verdadeiro ou falso se conseguir remover
+ */
+bool InstallCacicSA::execRemove()
+{
+    std::string msi_path = this->path+"\\" + CACIC_MSI;
+    return this->removeCacic(msi_path);
 }

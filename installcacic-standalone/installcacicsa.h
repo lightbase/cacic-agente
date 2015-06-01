@@ -14,6 +14,7 @@
 
 #define BUFSIZE 1024
 #define MD5LEN  16
+#define CACIC_REGISTRY L"SOFTWARE\\Lightbase\\Cacic"
 
 
 class InstallCacicSA
@@ -48,16 +49,23 @@ public:
     void setUrl(const std::string &value);
     bool delFolder(const std::string &path, const std::string fileException[], const int &numException, bool *exceptionFound = NULL);
     bool log(const char *message);
+    bool log(const char *message, const char *level);
     bool log(double codigo, const char *user, const char *so, const char *message);
     bool log(double codigo, const char *user, const char *so, const char *message, const char *level);
     std::string createInstallDir();
     bool removeInstallDir();
     std::string getStrTime();
     std::string createLogFile();
+    bool isAdmin();
+    bool cacicInstalado();
 
     // Informações do SO
     std::string getSo();
     std::string getUsuarioSo();
+
+    // Instalação
+    bool exec();
+    bool execRemove();
 
 private:
     std::string url;
