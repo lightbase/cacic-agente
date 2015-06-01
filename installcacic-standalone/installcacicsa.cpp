@@ -863,3 +863,8 @@ bool InstallCacicSA::execRemove()
     std::string msi_path = this->installDir+"\\" + CACIC_MSI;
     return this->removeCacic(msi_path);
 }
+
+int InstallCacicSA::getNetworkInfo(networkInfo *ni)
+{
+    return this->comp.getNetworkInfo(ni);
+}

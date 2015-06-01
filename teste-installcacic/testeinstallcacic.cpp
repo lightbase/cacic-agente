@@ -271,6 +271,21 @@ void testeInstallcacic::testExec()
     QVERIFY2(this->icsa->execRemove(), "Remoção falhou falhou!!!");
 }
 
+void testeInstallcacic::testGetNetworkInfo()
+{
+    int n;
+    struct networkInfo net[MAX_NETINFO];
+    n = this->icsa->getNetworkInfo(net);
+    printf("---------------NET INFO-------------\n");
+    for (int i = 0; i<n ; i++){
+        printf("\tIP Address[%d]:     \t%s\n", i, net[i].ip);
+        printf("\tSubnet Mask[%d]:    \t%s\n", i,  net[i].subnetMask);
+    }
+    printf("TOTAL: %d\n", n);
+    printf("------------------------------------\n");
+    QVERIFY(n != -1);
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     CCacic::removeRegistry("FakeMsi", "msi");

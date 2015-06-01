@@ -10,7 +10,7 @@
 #include <servicecontroller.h>
 #include <shlwapi.h>
 #include <../src/tinydir.h>
-#include <../computer/wcomputer.h>
+#include <../src/wcomputer.h>
 
 #define BUFSIZE 1024
 #define MD5LEN  16
@@ -62,6 +62,7 @@ public:
     // Informações do SO
     std::string getSo();
     std::string getUsuarioSo();
+    int getNetworkInfo(struct networkInfo* ni);
 
     // Instalação
     bool exec();

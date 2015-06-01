@@ -42,6 +42,101 @@ std::string Computer::getUsuarioSo()
     return this->usuarioSo;
 }
 
+int Computer::getNetworkInfo(networkInfo *arrayNetInfo)
+{
+    int ret = this->setNetworkAdapters(arrayNetInfo);
+    for (int i = 0; i<ret; i++){
+        memcpy ( &this->arrayNetInfo[i], &arrayNetInfo[i], sizeof(arrayNetInfo[i]) );
+    }
+    return ret;
+}
+
+/**
+ * @brief Computer::setNetworkAdapters
+ *
+ * Salva o IP e SubnetMask de todos os adaptadores de rede ativos
+ * dentro de um array de struct networkInfo repassado por parâmetro.
+ *
+ * OBS: O Array deve ser inicializado antes desse método ser chamado.
+ *
+ * @return Caso o método seja executado com sucesso, a quantidade de
+ * adaptadores ativos encontrados é retornada. Caso dê erro, -1 é retornado.
+ */
+int Computer::setNetworkAdapters(networkInfo arrayNetInfo[])
+{
+    int i;
+
+    /* Variables used by GetIpAddrTable */
+    PMIB_IPADDRTABLE pIPAddrTable;
+    DWORD dwSize = 0;
+    DWORD dwRetVal = 0;
+    IN_ADDR IPAddr;
+
+    /* Variables used to return error message */
+    LPVOID lpMsgBuf;
+
+    // Before calling AddIPAddress we use GetIpAddrTable to get
+    // an adapter to which we can add the IP.
+    pIPAddrTable = (MIB_IPADDRTABLE *) MALLOC(sizeof (MIB_IPADDRTABLE));
+
+    if (pIPAddrTable) {
+        // Make an initial call to GetIpAddrTable to get the
+        // necessary size into the dwSize variable
+        if (GetIpAddrTable(pIPAddrTable, &dwSize, 0) ==
+            ERROR_INSUFFICIENT_BUFFER) {
+            FREE(pIPAddrTable);
+            pIPAddrTable = (MIB_IPADDRTABLE *) MALLOC(dwSize);
+
+        }
+        if (pIPAddrTable == NULL) {
+            printf("Memory allocation failed for GetIpAddrTable\n");
+            return -1;
+        }
+    }
+    // Make a second call to GetIpAddrTable to get the
+    // actual data we want
+    if ( (dwRetVal = GetIpAddrTable( pIPAddrTable, &dwSize, 0 )) != NO_ERROR ) {
+        printf("GetIpAddrTable failed with error %d\n", dwRetVal);
+        if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),       // Default language
+                          (LPTSTR) & lpMsgBuf, 0, NULL)) {
+            printf("\tError: %s", lpMsgBuf);
+            LocalFree(lpMsgBuf);
+        }
+        return -1;
+    }
+    int retorno;
+    int numEntries = retorno = (int) pIPAddrTable->dwNumEntries;
+    if (numEntries > MAX_NETINFO){
+        numEntries = MAX_NETINFO;
+    }
+//    arrayNetInfo = (struct networkInfo *) malloc(sizeof(struct networkInfo *) * numEntries);
+    for (i=0; i < numEntries; i++) {
+        if (!(pIPAddrTable->table[i].wType & MIB_IPADDR_DISCONNECTED)){
+            IPAddr.S_un.S_addr = (u_long) pIPAddrTable->table[i].dwAddr;
+            char* aux = inet_ntoa(IPAddr);
+            if (aux == "127.0.0.1"){
+                retorno--;
+                continue;
+            }
+            memcpy(arrayNetInfo[i].ip, aux, strlen(aux)+1);
+//            printf("\tIP Address[%d]:     \t%s\n", i, netInfo.ip);
+            IPAddr.S_un.S_addr = (u_long) pIPAddrTable->table[i].dwMask;
+            aux = inet_ntoa(IPAddr);
+            memcpy(arrayNetInfo[i].subnetMask, aux, strlen(aux)+1);
+//            printf("\tSubnet Mask[%d]:    \t%s\n", i,  netInfo.subnetMask);
+        }
+        else {
+            retorno--;
+        }
+    }
+
+    if (pIPAddrTable) {
+        FREE(pIPAddrTable);
+        pIPAddrTable = NULL;
+    }
+    return numEntries;
+}
+
 /**
  * @brief Computer::setSo
  *

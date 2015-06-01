@@ -35,7 +35,7 @@ SOURCES += main.cpp \
     ../src/servicecontroller.cpp \
     ../src/simplejson/src/JSON.cpp \
     ../src/simplejson/src/JSONValue.cpp \
-    ../computer/wcomputer.cpp
+    ../src/wcomputer.cpp
 
 HEADERS += testeinstallcacic.h \
     installcacicsa.h \
@@ -44,7 +44,7 @@ HEADERS += testeinstallcacic.h \
     ../src/simplejson/src/JSON.h \
     ../src/simplejson/src/JSONValue.h \
     ../src/tinydir.h \
-    ../computer/wcomputer.cpp
+    ../src/wcomputer.cpp
 
 INCLUDEPATH += ../src
 
