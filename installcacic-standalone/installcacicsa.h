@@ -23,8 +23,8 @@ public:
     ~InstallCacicSA();
 
     bool registryExists(HKEY RootKey, LPCTSTR SubKey);
-    bool downloadService(const std::string &rota, const std::string &path);
-    bool downloadMsi(const std::string &rota, const std::string &path);
+    bool downloadService(const std::string &path);
+    bool downloadMsi(const std::string &path);
     bool installService(const std::string &serviceName, const std::string &serviceBinPath);
     bool ping();
     bool getConfig();

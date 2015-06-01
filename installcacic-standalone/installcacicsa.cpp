@@ -36,20 +36,50 @@ bool InstallCacicSA::registryExists(HKEY RootKey,LPCTSTR SubKey)
     }
 }
 
-bool InstallCacicSA::downloadService(const std::string &rota, const std::string &path)
+bool InstallCacicSA::downloadService(const std::string &path)
 {
+    // Verifica se o hash remoto está ajustado
+    if (this->hashRemoto == "" || this->hashRemoto == "\0") {
+        this->getConfig();
+    }
+
     // Força path no binário
     std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
 
-    return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
+    // Busca URL para baixar o serviço
+    std::string check;
+    std::string str_route = std::string(ROUTE_DOWNLOAD) + std::string("/") + this->hashRemoto;
+    const char *route = str_route.c_str();
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    check = comm.sendReq("");
+    if (check == "" || check == "CONNECTION_ERROR") {
+        return false;
+    }
+
+    std::cout << "Baixando serviço na URL: " << check << std::endl;
+
+    return this->comm.downloadFile(check.c_str(), full_path.c_str()) && this->fileExists(full_path);
 }
 
-bool InstallCacicSA::downloadMsi(const std::string &rota, const std::string &path)
+bool InstallCacicSA::downloadMsi(const std::string &path)
 {
     // Força path no binário
     std::string full_path = path + std::string("\\") + std::string(CACIC_MSI);
 
-    return this->comm.downloadFile(rota.c_str(),full_path.c_str()) && this->fileExists(full_path);
+    // Busca URL para baixar o MSI
+    std::string check;
+    const char *route = ROUTE_DOWNLOAD_MSI;
+    comm.setHost(this->url.c_str());
+    comm.setRoute(route);
+
+    check = comm.sendReq("");
+    if (check == "" || check == "CONNECTION_ERROR") {
+        return false;
+    }
+
+    return this->comm.downloadFile(check.c_str(),full_path.c_str()) && this->fileExists(full_path);
 }
 
 bool InstallCacicSA::installService(const std::string &serviceName, const std::string &serviceBinPath)
@@ -119,7 +149,7 @@ bool InstallCacicSA::verificaServico()
         return false;
     }
     if (!this->comparaHash()){
-        if (!this->downloadService(this->hashRemoto, fileService)){
+        if (!this->downloadService(fileService)){
             this->informaGerente("Falha ao baixar serviço.");
             return false;
         }

@@ -13,11 +13,32 @@ CommSA::~CommSA()
 
 }
 
+/**
+ * @brief CommSA::sendReq
+ *
+ * Me´todo que envia a requisição com parâmetros padrão
+ *
+ * @param parameters Dado que vai no corpo da requisição
+ * @return String com o parsing do JSON da resposta
+ */
 std::string CommSA::sendReq(const char* parameters)
 {
     return this->sendReq(this->host, this->route, this->method, this->type, this->port, parameters);
 }
 
+/**
+ * @brief CommSA::sendReq
+ *
+ * Envia a requisição
+ *
+ * @param host
+ * @param route
+ * @param method
+ * @param type
+ * @param port
+ * @param parameters
+ * @return
+ */
 std::string CommSA::sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
 {
     WSADATA wsaData;

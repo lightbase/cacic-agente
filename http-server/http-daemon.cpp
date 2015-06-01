@@ -173,7 +173,7 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getInstalaHash();
     } else if (rota == ROUTE_ERRO) {
         return this->getErro();
-    } else if (rota == ROUTE_DOWNLOAD) {
+    } else if (rota.contains(ROUTE_DOWNLOAD)) {
         return this->getDownload();
     } else if (rota == ROUTE_DOWNLOAD_MSI) {
         return this->getDownloadMsi();
