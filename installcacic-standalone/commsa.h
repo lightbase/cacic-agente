@@ -3,19 +3,13 @@
 
 #include <iostream>
 #include <winsock2.h>
-#include <ws2tcpip.h>
-#include <iphlpapi.h>
 #include <stdlib.h>
 #include <string>
 #include <../src/simplejson/src/JSON.h>
 
-#pragma comment(lib, "iphlpapi.lib")
-
 #define MAX_HEADERS 10
 #define MAX_ELEMENT_SIZE 500
 #define BUFFERSIZE 4096
-#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
-#define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
 #define ROUTE_HASH "/ws/instala/hash"
 #define ROUTE_DOWNLOAD "/ws/instala/download/service"
@@ -59,10 +53,6 @@ public:
     const wchar_t *GetWC(const char *c);
 
 private:
-    typedef struct networkInfo{
-        const char* ip;
-        const char* subnetMask;
-    } networkInfo;
 
     const char* host;
     const char* user;
@@ -74,7 +64,6 @@ private:
     int port;
     int timeOut;
 
-    int getNetworkInfo(networkInfo *arrayNetInfo);
     std::string sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters);
 };
 

@@ -663,3 +663,8 @@ std::string InstallCacicSA::getUsuarioSo()
 {
     return this->comp.getUsuarioSo();
 }
+
+int InstallCacicSA::getNetworkInfo(networkInfo *ni)
+{
+    return this->comp.getNetworkInfo(ni);
+}

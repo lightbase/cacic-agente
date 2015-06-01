@@ -50,6 +50,7 @@ private slots:
     void testErro();
     void testGetSo();
     void testGetUsuarioSo();
+    void testGetNetworkInfo();
     void cleanupTestCase();
 };
 
