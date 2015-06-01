@@ -17,13 +17,11 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
            "VERSION_BUILD=$$VERSION_BUILD"
 VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
+TARGET = install-cacic-sa
 
-QT += testlib
-QT += network
-QT -= gui
-TARGET = teste-installcacic
-
+CONFIG += console
 CONFIG -= app_bundle
+CONFIG -= qt
 
 LIBS += -lws2_32
 LIBS += -lshlwapi
@@ -31,29 +29,25 @@ LIBS += -liphlpapi
 
 TEMPLATE = app
 
-SOURCES += testeinstallcacic.cpp \
-    ../installcacic-standalone/installcacicsa.cpp \
-    ../installcacic-standalone/commsa.cpp \
-    ../src/ccacic.cpp \
-    ../src/identificadores.cpp \
+SOURCES += main.cpp \
+    installcacicsa.cpp \
+    commsa.cpp \
     ../src/servicecontroller.cpp \
     ../src/simplejson/src/JSON.cpp \
     ../src/simplejson/src/JSONValue.cpp \
-    ../src/vregistry.cpp \
-    ../src/vqtconvert.cpp \
     ../computer/wcomputer.cpp
 
 HEADERS += testeinstallcacic.h \
-    ../installcacic-standalone/installcacicsa.h \
-    ../installcacic-standalone/commsa.h \
-    ../src/ccacic.h \
-    ../src/identificadores.h \
+    installcacicsa.h \
+    commsa.h \
     ../src/servicecontroller.h \
     ../src/simplejson/src/JSON.h \
     ../src/simplejson/src/JSONValue.h \
-    ../src/vregistry.h \
-    ../src/vqtconvert.h \
     ../src/tinydir.h \
     ../computer/wcomputer.cpp
 
 INCLUDEPATH += ../src
+
+#include(deployment.pri)
+#qtcAddDeployment()
+

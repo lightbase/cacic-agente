@@ -787,7 +787,8 @@ bool InstallCacicSA::exec()
     this->log("Cria estrutura de diretórios", "INFO");
 
     if (this->createInstallDir() == "") {
-        this->log("Erro ao tentar criar o diretório do Cacic no caminho = %s"), this->installDir;
+        std::string saida = "Erro ao tentar criar o diretório do Cacic no caminho = " + this->installDir;
+        this->log(saida.c_str());
 
         return false;
     }
@@ -797,7 +798,8 @@ bool InstallCacicSA::exec()
     if (this->ping()) {
         this->log("Comunicação realizado com sucesso! Seguindo...", "INFO");
     } else {
-        this->log("Não foi possível realizar comunicação com o Gerente na URL = %s"), this->url;
+        std::string saida = "Não foi possível realizar comunicação com o Gerente na URL = " + this->url;
+        this->log(saida.c_str());
 
         return false;
     }
@@ -810,16 +812,18 @@ bool InstallCacicSA::exec()
 
     // 1 - Verifica se está instalado
     if (!this->cacicInstalado()) {
-        std::string msi_path = this->path+"\\" + CACIC_MSI;
+        std::string msi_path = this->installDir+"\\" + CACIC_MSI;
         // 1.1 - Baixa e executa o MSI
-        this->icsa->downloadMsi(this->installDir);
-        if (!this->icsa->fileExists(msi_path)) {
-            this->log("Arquivo MSI não encontrado no caminho %s"), msi_path;
+        this->downloadMsi(this->installDir);
+        if (!this->fileExists(msi_path)) {
+            std::string saida = "Arquivo MSI não encontrado no caminho = " + msi_path;
+            this->log(saida.c_str());
 
             return false;
         } else {
             if (!this->installCacic(msi_path)) {
-                this->log("Falha na instalação do MSI = %s"), msi_path;
+                std::string saida = "Falha na instalação do MSI = " + msi_path;
+                this->log(saida.c_str());
 
                 return false;
             }
@@ -856,6 +860,6 @@ bool InstallCacicSA::exec()
  */
 bool InstallCacicSA::execRemove()
 {
-    std::string msi_path = this->path+"\\" + CACIC_MSI;
+    std::string msi_path = this->installDir+"\\" + CACIC_MSI;
     return this->removeCacic(msi_path);
 }
