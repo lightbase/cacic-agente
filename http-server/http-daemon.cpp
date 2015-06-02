@@ -39,7 +39,7 @@ void HttpDaemon::readClient()
 
         qDebug() << tokens;
 
-        if (tokens[0] == "GET") {
+        if (tokens[0] == "GET" || tokens[0] == "POST") {
             QTextStream os(socket);
             os.setAutoDetectUnicode(true);
 

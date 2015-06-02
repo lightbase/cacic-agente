@@ -87,6 +87,12 @@ void testeInstallcacic::testConfig()
 //    std::cout << "!Hash remoto: " << this->icsa->getHashRemoto() << "!\n";
     QVERIFY2(this->icsa->comparaHash(), ("Hash deveria ser igual mas é diferente"));
 
+    // Esse teste deve falhar
+    this->icsa->setPort(8123);
+    this->icsa->getConfig();
+    QVERIFY2(!this->icsa->comparaHash(), "Esse teste deveria falhar porque envia para um servidor que não existe");
+
+    this->icsa->setPort(8080);
 }
 
 void testeInstallcacic::testNaoInstalado()

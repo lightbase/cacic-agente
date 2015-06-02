@@ -51,6 +51,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     struct hostent *shost;
     shost = gethostbyname(host);
     if (shost == NULL){
+        std::cout << "Erro no gethostbyname" << std::endl;
         return "CONNECTION_ERROR";
     }
     SOCKADDR_IN SockAddr;
@@ -62,7 +63,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
     setsockopt(Socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&this->timeOut, sizeof(this->timeOut));
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
-//        std::cout << "Could not connect";
+        std::cout << "Could not connect" << std::endl;
         // Throw exception if it was not possible to connect
         return "CONNECTION_ERROR";
     }
@@ -176,6 +177,26 @@ const wchar_t *CommSA::GetWC(const char *c)
     mbstowcs (wc, c, cSize);
 
     return wc;
+}
+
+/**
+ * @brief CommSA::setNetworkInfo
+ *
+ * Ajusta valores referentes às interfaces de rede
+ *
+ * @param ip
+ * @param subnetMask
+ * @return
+ */
+bool CommSA::setNetworkInfo(const char *ip, const char *subnetMask)
+{
+    std::cout << "IP: " << ip << " Mask: " << subnetMask << std::endl;
+    //memcpy ( this->ip, &ip, sizeof(ip) );
+    //memcpy ( this->subnetMask, &subnetMask, sizeof(subnetMask) );
+    this->ip = ip;
+    this->subnetMask = subnetMask;
+
+    return true;
 }
 
 bool CommSA::downloadFile(const char *url, const char *filePath)
@@ -342,6 +363,36 @@ bool CommSA::log(double codigo, const char *user, const char *so, const char *me
     } else {
         return true;
     }
+}
+
+std::string CommSA::getConfig()
+{
+    JSONObject root;
+
+    // Convert
+    const wchar_t *m = this->GetWC(this->ip);
+    root[L"ip_address"] = new JSONValue(m);
+
+    const wchar_t *s = this->GetWC(this->subnetMask);
+    root[L"netmask"] = new JSONValue(s);
+
+    // Convert JSON to text
+    JSONValue *value = new JSONValue(root);
+
+    // Convert JSON Values
+    this->setRoute(ROUTE_HASH);
+    this->setMethod("POST");
+    this->setType("application/json");
+    std::wstring params = value->Stringify();
+    std::string par (params.begin(), params.end());
+
+    // std::cout << "Arquivo JSON Enviado: " << std::endl;
+    // std::wcout << par.c_str() << std::endl;
+
+    // Send JSON request to Server
+    std::string response =  this->sendReq(this->host, this->route, this->method, this->type, this->port, par.c_str());
+
+    return response;
 }
 
 

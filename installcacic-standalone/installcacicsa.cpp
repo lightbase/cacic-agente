@@ -127,11 +127,28 @@ bool InstallCacicSA::getConfig()
     comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    check = comm.sendReq("teste");
+    // Pega interfaces de rede válidas
+    struct networkInfo net[MAX_NETINFO];
+    this->getNetworkInfo(net);
+    int n = this->getValidNetwork(net);
+    if (n <= 0) {
+        this->log(11, "", "", "Erro no getConfig: Nenhuma interface de rede válida!", "ERROR");
+        this->setHashRemoto(std::string(""));
+
+        return false;
+    }
+    // Ajusta IP para enviar ao Gerente
+    comm.setNetworkInfo(net[n].ip, net[n].subnetMask);
+
+    check = comm.getConfig();
     if (check == "" || check == "CONNECTION_ERROR") {
+        std::string message = "Erro de conexão no getConfig!!! URL: " + this->url;
+        this->log(message.c_str());
+        this->setHashRemoto(std::string(""));
+
         return false;
     } else {
-    // Ajusta hash remoto recebido do servidor
+        // Ajusta hash remoto recebido do servidor
         this->setHashRemoto(check);
         return true;
     }

@@ -29,6 +29,7 @@ public:
     bool downloadFile(const char *url, const char *filePath);
     bool log(const char *message);
     bool log(double codigo, const char *user, const char *so, const char *message);
+    std::string getConfig();
 
     const char *getHost() const;
     void setHost(const char *value);
@@ -52,6 +53,8 @@ public:
     
     const wchar_t *GetWC(const char *c);
 
+    bool setNetworkInfo(const char *ip, const char *subnetMask);
+
 private:
 
     const char* host;
@@ -63,6 +66,8 @@ private:
     const char* parameters;
     int port;
     int timeOut;
+    const char* ip;
+    const char* subnetMask;
 
     std::string sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters);
 };
