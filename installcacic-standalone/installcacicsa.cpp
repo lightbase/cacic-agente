@@ -8,6 +8,7 @@ InstallCacicSA::InstallCacicSA(const std::string &url, const std::string &user, 
     this->cacicPath = "c:\\cacic";
     this->installDir = this->cacicPath + "\\icsa";
     this->logFile = this->installDir + "\\install.log";
+    this->debug = false;
 
     // Adjust Comm parameters
     this->comm.setHost(this->url.c_str());
@@ -15,7 +16,10 @@ InstallCacicSA::InstallCacicSA(const std::string &url, const std::string &user, 
 
 InstallCacicSA::~InstallCacicSA()
 {
+    std::string testExceptionFiles[0];
 
+    // Remove diretório
+    this->delFolder(this->installDir, testExceptionFiles, 0);
 }
 
 bool InstallCacicSA::registryExists(HKEY RootKey,LPCTSTR SubKey)
@@ -625,6 +629,11 @@ bool InstallCacicSA::log(double codigo, const char *user, const char *so, const 
     outfile << "[" << this->getStrTime() << "] " << level << ": InstallCacicSA (" << codigo << ") - " << message << std::endl;
     outfile.close();
 
+    // Em modo debug escreve para a saída padrão
+    if (this->debug) {
+        std::cout << "[" << this->getStrTime() << "] " << level << ": InstallCacicSA (" << codigo << ") - " << message << std::endl;
+    }
+
     if (!user || user == "\0" || user == "") {
         // Pega usuário do SO
         std::string u = this->getUsuarioSo();
@@ -727,7 +736,21 @@ std::string InstallCacicSA::createLogFile()
         outfile << "[" << this->getStrTime() << "] InstallCacicSA: Início do log" << std::endl;
         outfile.close();
 
+        // Em modo debug escreve para a saída padrão
+        if (this->debug) {
+            std::cout << "[" << this->getStrTime() << "] InstallCacicSA: Início do log" << std::endl;
+        }
+
         return this->logFile;
+    }
+}
+
+bool InstallCacicSA::removeLogFile()
+{
+    if (!this->fileExists(this->logFile)) {
+        return true;
+    } else {
+        remove(this->logFile.c_str());
     }
 }
 
@@ -867,4 +890,45 @@ bool InstallCacicSA::execRemove()
 int InstallCacicSA::getNetworkInfo(networkInfo *ni)
 {
     return this->comp.getNetworkInfo(ni);
+}
+
+/**
+ * @brief InstallCacicSA::getValidNetwork
+ *
+ * Retorna somente a estrutrura de rede que for válida
+ *
+ * @param ni Array com todas as interfaces de rede identificadas
+ * @return
+ */
+int InstallCacicSA::getValidNetwork(struct networkInfo *net)
+{
+    int n;
+    n = this->getNetworkInfo(net);
+    this->log("---------------NET INFO-------------\n", "DEBUG");
+    for (int i = 0; i<n ; i++){
+        std::string message;
+        message = std::string("\tIP Address:     \t");
+        message += net[i].ip;
+        message += "\n";
+        this->log(message.c_str(), "DEBUG");
+        message = std::string("\tSubnet Mask:     \t");
+        message += net[i].subnetMask;
+        message += "\n";
+        this->log(message.c_str(), "DEBUG");
+
+        // TODO: Melhoras essa regra de validação de IP
+        if (std::string(net[i].ip) != std::string("127.0.0.1") &&
+                std::string(net[i].ip) != std::string("0.0.0.0")) {
+            // Considera esse IP
+            message = std::string("Ip Válido Encontrado:    \t");
+            message += net[i].ip;
+            message += "\n";
+            this->log(message.c_str(), "INFO");
+            return i;
+        }
+    }
+
+    // Se chegamos aqui nenhuma interface de rede foi identificada
+    this->log("Não foi possível encontrar uma interface de rede válida", "ERROR");
+    return -1;
 }

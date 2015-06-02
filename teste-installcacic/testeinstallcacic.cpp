@@ -22,6 +22,9 @@ void testeInstallcacic::initTestCase()
     user = "João da Silva";
     so = "Windows 7";
     codigo_erro = 90;
+
+    // Modo debug
+    icsa->debug = true;
 }
 
 void testeInstallcacic::testDeleteFolder()
@@ -284,9 +287,30 @@ void testeInstallcacic::testGetNetworkInfo()
     printf("TOTAL: %d\n", n);
     printf("------------------------------------\n");
     QVERIFY(n != -1);
+
+    // Agora verifica interface de rede válida
+    int result = this->icsa->getValidNetwork(net);
+    QVERIFY2((result > 0), "Nenhuma interface de rede válida");
+
+    QVERIFY2((result == 1), "Encontrou o índice certo da interface");
+
+    QVERIFY2((std::string(net[result].ip) != "127.0.0.01"), "Encontrou o localhost. Erro!");
+
+    std::cout << "Interface encontrada: " << net[result].ip << std::endl;
 }
 
 void testeInstallcacic::cleanupTestCase()
 {
+    // Imprime o conteúdo do arquivo
+    QFile f(QString::fromStdString(this->icsa->createLogFile()));
+    QTextStream in(&f);
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        std::cout << line.toStdString() << std::endl;
+    }
+
+    // Destrói objeto
+    delete this->icsa;
+
     CCacic::removeRegistry("FakeMsi", "msi");
 }

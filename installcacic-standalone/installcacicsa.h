@@ -56,17 +56,22 @@ public:
     bool removeInstallDir();
     std::string getStrTime();
     std::string createLogFile();
+    bool removeLogFile();
     bool isAdmin();
     bool cacicInstalado();
 
     // Informações do SO
     std::string getSo();
     std::string getUsuarioSo();
-    int getNetworkInfo(struct networkInfo* ni);
+    int getNetworkInfo(struct networkInfo *ni);
+    int getValidNetwork(struct networkInfo *net);
 
     // Instalação
     bool exec();
     bool execRemove();
+
+    // Debug
+    bool debug;
 
 private:
     std::string url;
