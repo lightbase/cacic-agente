@@ -4,6 +4,7 @@
 #include "commsa.h"
 #include <windows.h>
 #include <wincrypt.h>
+#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -57,7 +58,7 @@ public:
     std::string getStrTime();
     std::string createLogFile();
     bool removeLogFile();
-    bool isAdmin();
+    BOOL isAdmin();
     bool cacicInstalado();
 
     // Informações do SO

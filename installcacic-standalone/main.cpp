@@ -18,14 +18,26 @@ int main(int argc, char* argv[])
     }
 
     for (int i = 1; i<argc; i++) {
-        if (i + 1 != argc) {
+        if (i + 1 != argc || argv[i] == std::string("-remove")) {
             if (argv[i] == std::string("-url")) {
                 url = argv[i + 1];
             } else if (argv[i] == std::string("-remove")) {
+
+                std::cout << "Removendo Cacic. Tem certeza? (Ctrl+C para cancelar)" << std::endl;
+                std::cin.get();
                 InstallCacicSA *icsa = new InstallCacicSA("localhost", "cacic", "cacic123");
                 if (icsa->execRemove()) {
-                    std::cout << "Remocao realizada com sucesso!" << std::endl <<
-                                 "Se desejar verifique o log no arquivo = " << icsa->createLogFile() << std::endl;
+                    std::cout << "Remocao realizada com sucesso!" << std::endl << std::endl;
+
+                    // Escreve log para a tela antes de remover
+                    FILE* pFile;
+                    char buffer[BUFSIZE];
+                    pFile = fopen(icsa->createLogFile().c_str(), "r");
+                    fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+                    fclose (pFile);
+
+                    // Remove objeto
+                    delete icsa;
                     //std::cin.get();
                     exit(EXIT_SUCCESS);
                 } else {

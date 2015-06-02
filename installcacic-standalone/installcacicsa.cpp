@@ -62,7 +62,8 @@ bool InstallCacicSA::downloadService(const std::string &path)
         return false;
     }
 
-    std::cout << "Baixando serviço na URL: " << check << std::endl;
+    std::string message = "Baixando serviço na URL: " + check;
+    this->log(message.c_str(), "INFO");
 
     return this->comm.downloadFile(check.c_str(), full_path.c_str()) && this->fileExists(full_path);
 }
@@ -293,6 +294,7 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     PROCESS_INFORMATION pi;
     std::string commandLine = applicationPath + " " + parameters;
     std::wstring wAux(commandLine.begin(), commandLine.end());
+    std::string message;
 
     wchar_t *wcAux = new wchar_t[wAux.length() + 1];
     //wcscpy(wcAux, wAux.c_str());
@@ -302,7 +304,8 @@ bool InstallCacicSA::runProgram(const std::string &applicationPath, const std::s
     si.cb = sizeof(si);
     ZeroMemory( &pi, sizeof(pi) );
 
-    std::cout << "Executando comando: " << commandLine << std::endl;
+    message = "Executando comando: " + commandLine;
+    this->log(message.c_str(), "INFO");
 
     // Start the child process.
     if( !CreateProcessW(NULL,   // No module name (use command line)
@@ -776,19 +779,55 @@ bool InstallCacicSA::removeLogFile()
  *
  * Verifica se o Cacic está rodando com permissão de administrador
  *
+ * Fonte: https://msdn.microsoft.com/en-us/library/windows/desktop/aa376389%28v=vs.85%29.aspx
+ *
  * @return
  */
-bool InstallCacicSA::isAdmin()
+BOOL InstallCacicSA::isAdmin()
 {
-    std::ofstream outfile;
-    outfile.open("C:\\Windows\\System32\\cacic.tmp", std::ios::in | std::ios::ate);
-    if (outfile.fail()) {
-        return false;
-    } else {
-        outfile.close();
-        remove("C:\\Windows\\System32\\cacic.tmp");
-        return true;
+    HANDLE hAccessToken;
+    UCHAR InfoBuffer[4096];
+    PTOKEN_GROUPS ptgGroups = (PTOKEN_GROUPS)InfoBuffer;
+    DWORD dwInfoBufferSize;
+    PSID psidAdministrators;
+    SID_IDENTIFIER_AUTHORITY siaNtAuthority = SECURITY_NT_AUTHORITY;
+    UINT x;
+    BOOL bSuccess;
+
+    if(!OpenProcessToken(GetCurrentProcess(),TOKEN_READ,&hAccessToken))
+        //        return(FALSE);
+        return(TRUE);
+
+    bSuccess =GetTokenInformation(hAccessToken,TokenGroups,InfoBuffer,
+        sizeof(InfoBuffer), &dwInfoBufferSize);
+
+    CloseHandle(hAccessToken);
+
+    if( !bSuccess )
+        //        return FALSE;
+        return(TRUE);
+
+    if(!AllocateAndInitializeSid(&siaNtAuthority, 2,
+        SECURITY_BUILTIN_DOMAIN_RID,
+        DOMAIN_ALIAS_RID_ADMINS,
+        0, 0, 0, 0, 0, 0,
+        &psidAdministrators))
+        //    return FALSE;
+        return(TRUE);
+
+    // assume that we don't find the admin SID.
+    bSuccess = FALSE;
+
+    for(x=0;x<ptgGroups->GroupCount;x++)
+    {
+        if(EqualSid(psidAdministrators, ptgGroups->Groups[x].Sid) )
+        {
+            bSuccess = TRUE;
+            break;
+        }
     }
+    FreeSid(psidAdministrators);
+    return bSuccess;
 }
 
 /**
@@ -900,6 +939,7 @@ bool InstallCacicSA::exec()
  */
 bool InstallCacicSA::execRemove()
 {
+    this->log("Iniciando remoção do Cacic...", "INFO");
     std::string msi_path = this->installDir+"\\" + CACIC_MSI;
     return this->removeCacic(msi_path);
 }
