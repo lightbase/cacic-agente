@@ -5,7 +5,7 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include <string>
-#include <../src/simplejson/src/JSON.h>
+#include "../src/simplejson/src/JSON.h"
 
 #define MAX_HEADERS 10
 #define MAX_ELEMENT_SIZE 500

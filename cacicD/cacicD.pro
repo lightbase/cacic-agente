@@ -11,7 +11,7 @@
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
 VERSION_MINOR = 1
-VERSION_BUILD = 14
+VERSION_BUILD = 15
 DEFINES += VERSION_MAJOR=$$VERSION_MAJOR \
            VERSION_MINOR=$$VERSION_MINOR \
            VERSION_BUILD=$$VERSION_BUILD
@@ -57,7 +57,8 @@ SOURCES     += main.cpp \
                ../src/servicecontroller.cpp \
                socketlistener.cpp \
                ../src/logcacic.cpp \
-               ../src/vqtconvert.cpp \
+                ../src/vregistry.cpp \
+                ../src/vqtconvert.cpp \
 
 
 HEADERS     += cacicd.h \
@@ -74,7 +75,8 @@ HEADERS     += cacicd.h \
                ../src/servicecontroller.h \
                socketlistener.h \
                ../src/logcacic.h \
-               ../src/vqtconvert.h
+               ../src/vregistry.h \
+               ../src/vqtconvert.h \
 
 include(../src/qtservice/src/qtservice.pri)
 

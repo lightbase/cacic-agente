@@ -8,10 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include <servicecontroller.h>
+#include "../src/servicecontroller.h"
 #include <shlwapi.h>
-#include <../src/tinydir.h>
-#include <../src/wcomputer.h>
+#include "../src/tinydir.h"
+#include "../src/wcomputer.h"
 
 #define BUFSIZE 1024
 #define MD5LEN  16
