@@ -40,8 +40,7 @@ private slots:
     void testMsiInstalado();
     void testServico();
     void testAtualizacao();
-    void testCacic26();
-    void testCacic28();
+    void testCacicAntigo();
     void verificaRegistro();
     void testInstallDir();
     void testLogErro();

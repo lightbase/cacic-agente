@@ -56,6 +56,7 @@ void testeInstallcacic::testDeleteFolder()
     QVERIFY(this->icsa->delFolder(testPath.toStdString(), testExceptionFiles, numExceptFiles));
 
     QDir dir(testPath);
+
     dir.removeRecursively();
 }
 
@@ -158,14 +159,9 @@ void testeInstallcacic::testAtualizacao()
     QVERIFY(false);
 }
 
-void testeInstallcacic::testCacic26()
+void testeInstallcacic::testCacicAntigo()
 {
-    QVERIFY(icsa->deleteCacic26());
-}
-
-void testeInstallcacic::testCacic28()
-{
-    QVERIFY(icsa->deleteCacic28());
+    QVERIFY(icsa->deleteCacicAntigo());
 }
 
 void testeInstallcacic::verificaRegistro()

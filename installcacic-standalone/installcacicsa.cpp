@@ -344,20 +344,63 @@ bool InstallCacicSA::removeCacic(const std::string &msiPath)
     return this->runProgram("msiexec /x \"" + msiPath + "\"", " /quiet");
 }
 
-bool InstallCacicSA::deleteCacic26()
+bool InstallCacicSA::deleteCacicAntigo()
 {
+    bool ok = true;
     ServiceController sc(L"cacic");
     if (sc.isInstalled()){
         if (sc.isRunning())
             sc.stop();
         if (!sc.uninstall()){
-            //enviar erro(?)
+            this->log("Erro ao desinstalar cacic 2.6");
+            ok = false;
         }
     }
 
-    return false;
+    ServiceController sc28(L"CacicSustainService");
+    if (sc28.isInstalled()){
+        if (sc28.isRunning())
+            sc28.stop();
+        if (!sc28.uninstall()){
+            this->log("Erro ao desinstalar cacic 2.8");
+            ok = false;
+        }
+    }
+
+    remove("C:\\Windows\\chksis.exe");
+    remove("C:\\Windows\\cacicsvc.exe");
+    remove("C:\\Windows\\cacicservice.exe");
+    remove("C:\\Windows\\chksis.ini");
+
+    //Não gostei de ter feito dessa maneira, mas ainda não achei o ideal.
+    int numExcept = 11;
+    std::string exceptionFiles[numExcept];
+    exceptionFiles[0] = "deploy";
+    exceptionFiles[1] = "coletaDiff.json";
+    exceptionFiles[2] = "coleta.json";
+    exceptionFiles[3] = "getConfig.json";
+    exceptionFiles[4] = "getTest.json";
+    exceptionFiles[5] = "cacic-service.exe";
+    exceptionFiles[6] = "chksys.exe";
+    exceptionFiles[7] = "gercols.exe";
+    exceptionFiles[8] = "install-cacic.exe";
+    exceptionFiles[9] = "cacicdeploy.exe";
+    exceptionFiles[10] = "bin";
+
+    return delFolder("C:\\Cacic\\", exceptionFiles, numExcept) && ok;
 }
 
+/**
+ * @brief InstallCacicSA::delFolder
+ *
+ * Deleta o diretório recursivamente, salvando os arquivos de exceções repassados.
+ *
+ * @param path Diretório que será excluído
+ * @param fileException Array com nome de arquivos ou diretórios que não serão excluídos
+ * @param numException Quantidade de arquivos nas exceções
+ * @param exceptionFound Bool que informa se há exceção no diretório para checagem da própria função.
+ * @return Verdadeiro caso termine sem nenhum problema.
+ */
 bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileException, const int &numException, bool *exceptionFound){
     if (exceptionFound == NULL){
         exceptionFound = (bool *) malloc(sizeof(bool));
@@ -374,7 +417,18 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
         if (!(nameFile == ".." || nameFile == ".")){
             //Se for diretório, entra na função novamente para deletar os arquivos
             if (file.is_dir){
-                ok = ok && this->delFolder(file.path, fileException, numException, exceptionFound);
+                //Verifica se o diretório está nas exceções
+                if (fileException != NULL){
+                    for(int i = 0; i<numException; i++){
+                        *exceptionFound = nameFile == fileException[i];
+                        if (*exceptionFound) break;
+                    }
+                }
+                if (*exceptionFound){
+                    continue;
+                } else {
+                    ok = ok && this->delFolder(file.path, fileException, numException, exceptionFound);
+                }
             } else {
                 //verifica se o arquivo está nas exceções
                 if (fileException != NULL){
@@ -394,16 +448,16 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
     if (!*exceptionFound){
         //Se não houver arquivo nas exceções, deleta o path.
         ok = ok && RemoveDirectoryA(path.c_str());
+
+        //Verifica se realmente não foi excluído.
+        if (!ok){
+            DWORD dwAttrib = GetFileAttributesA(path.c_str());
+
+            ok = (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+                    (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+        }
     }
     return ok;
-}
-
-
-bool InstallCacicSA::deleteCacic28()
-{
-    //verifica se há algum processo do cacic rodando e os mata.
-    //Deleta arquivos da versão 2.8 da pasta do cacic.
-    return false;
 }
 
 bool InstallCacicSA::setHashLocal(const std::string &hash)
