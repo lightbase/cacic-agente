@@ -65,7 +65,33 @@ bool InstallCacicSA::downloadService(const std::string &path)
     std::string message = "Baixando serviço na URL: " + check;
     this->log(message.c_str(), "INFO");
 
-    return this->comm.downloadFile(check.c_str(), full_path.c_str()) && this->fileExists(full_path);
+    if (this->comm.downloadFile(check.c_str(), full_path.c_str())) {
+        // Verifica se o arquivo foi baixado com sucesso
+        if (this->fileExists(full_path)) {
+            this->setHashLocal(this->getHashFromFile(full_path));
+            if (!this->comparaHash()) {
+                // O arquivo baixado tem o hash diferente do esperado. Falhar!
+                std::string message = "Erro ao baixar o arquivo do serviço! Hash esperado: ";
+                message += this->hashRemoto;
+                message += " Hash do arquivo baixado: ";
+                message += this->hashLocal;
+                this->log(message.c_str());
+
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            this->log("Erro ao baixar arquivo do serviço! Download falhou!");
+
+            return false;
+        }
+    } else {
+        this->log("Erro ao baixar arquivo do serviço! Não foi possível comunicar com o Gerente!");
+
+        return false;
+    }
+
 }
 
 bool InstallCacicSA::downloadMsi(const std::string &path)
@@ -373,7 +399,7 @@ bool InstallCacicSA::deleteCacicAntigo()
     remove("C:\\Windows\\chksis.ini");
 
     //Não gostei de ter feito dessa maneira, mas ainda não achei o ideal.
-    int numExcept = 11;
+    int numExcept = 12;
     std::string exceptionFiles[numExcept];
     exceptionFiles[0] = "deploy";
     exceptionFiles[1] = "coletaDiff.json";
@@ -386,6 +412,9 @@ bool InstallCacicSA::deleteCacicAntigo()
     exceptionFiles[8] = "install-cacic.exe";
     exceptionFiles[9] = "cacicdeploy.exe";
     exceptionFiles[10] = "bin";
+
+    // Não remove também o diretório de instalação
+    exceptionFiles[11] = this->installDir;
 
     return delFolder("C:\\Cacic\\", exceptionFiles, numExcept) && ok;
 }
@@ -975,9 +1004,14 @@ bool InstallCacicSA::exec()
         this->log("Serviço verificado e atualizado com sucesso!", "INFO");
     }
 
-    // TODO: 5 - Remove Cacic 2.6 ainda instalado
+    // TODO: 5 - Remove Cacic 2.6 e 2.8 ainda instalado
+    if (!this->deleteCacicAntigo()) {
+        this->log("Erro no procedimento de remoção das versões antigas do Cacic");
 
-    // TODO: 6 - Remove Cacic 2.8 ainda instalado
+        return false;
+    } else {
+        this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
+    }
 
     return true;
 
