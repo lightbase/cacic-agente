@@ -108,7 +108,7 @@ QString OperatingSystem::coletaNomeOs()
     osName = wmi::wmiSearch("Win32_OperatingSystem", params);
     if (!osName.isNull()){
         QString retorno = osName.toObject()["Name"].toString();
-        retorno = retorno.left(retorno.indexOf("|")).trimmed();
+        retorno = retorno.left(retorno.indexOf("|"));
         return retorno.trimmed();
     }
 #elif defined(Q_OS_LINUX)
@@ -139,7 +139,9 @@ QJsonObject OperatingSystem::toJsonObject()
     //Verifica os dados novamente antes de gerar outro JSON.
     if (this->nomeOs.isEmpty() || this->nomeOs.isNull())
         this->nomeOs = this->coletaNomeOs();
-    if (this->idOs = -1)
+    if (this->nomeOs.isEmpty() || this->nomeOs.isNull())
+        return QJsonObject();
+    if (this->idOs == -1)
         this->idOs = this->coletaIdOs();
     QJsonObject json;
     json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));

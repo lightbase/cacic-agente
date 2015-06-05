@@ -948,6 +948,12 @@ bool InstallCacicSA::exec()
     this->log("Iniciando instalação...", "INFO");
     this->log("Cria estrutura de diretórios", "INFO");
 
+    if (!this->isAdmin()) {
+        this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
+
+        return false;
+    }
+
     if (this->createInstallDir() == "") {
         std::string saida = "Erro ao tentar criar o diretório do Cacic no caminho = " + this->installDir;
         this->log(saida.c_str());
@@ -962,12 +968,6 @@ bool InstallCacicSA::exec()
     } else {
         std::string saida = "Não foi possível realizar comunicação com o Gerente na URL = " + this->url;
         this->log(saida.c_str());
-
-        return false;
-    }
-
-    if (!this->isAdmin()) {
-        this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
 
         return false;
     }
@@ -1069,7 +1069,7 @@ int InstallCacicSA::getValidNetwork(struct networkInfo *net)
             message += net[i].ip;
             message += "\n";
             this->log(message.c_str(), "INFO");
-            return i;
+            return n;
         }
     }
 
