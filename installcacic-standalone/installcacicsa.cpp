@@ -158,6 +158,7 @@ bool InstallCacicSA::getConfig()
     struct networkInfo net[MAX_NETINFO];
     this->getNetworkInfo(net);
     int n = this->getValidNetwork(net);
+
     if (n <= 0) {
         this->log(11, "", "", "Erro no getConfig: Nenhuma interface de rede válida!", "ERROR");
         this->setHashRemoto(std::string(""));
@@ -1069,7 +1070,7 @@ int InstallCacicSA::getValidNetwork(struct networkInfo *net)
             message += net[i].ip;
             message += "\n";
             this->log(message.c_str(), "INFO");
-            return n;
+            return i;
         }
     }
 

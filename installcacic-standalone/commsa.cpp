@@ -95,14 +95,14 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     //req.append("Connection: close\n");
     req.append("Content-Type: ");
     req.append(type);
-    req.append("; charset=utf-8\n\n\n");
+    req.append("; charset=utf-8\n\n");
 
     // Check for sent parameters
     if (parameters && parameters != "") {
         req.append(parameters);
     }
-
-    //std::cout << "REQUEST: "  << std::endl << req << std::endl;
+    req.append("\x0D\x0A");
+    std::cout << "REQUEST: "  << std::endl << req << std::endl;
 
     send(Socket, req.c_str(), strlen(req.c_str()),0);
     char buff[10000];
@@ -190,7 +190,7 @@ const wchar_t *CommSA::GetWC(const char *c)
  */
 bool CommSA::setNetworkInfo(const char *ip, const char *subnetMask)
 {
-    std::cout << "IP: " << ip << " Mask: " << subnetMask << std::endl;
+    //std::cout << "IP: " << ip << " Mask: " << subnetMask << std::endl;
     //memcpy ( this->ip, &ip, sizeof(ip) );
     //memcpy ( this->subnetMask, &subnetMask, sizeof(subnetMask) );
     this->ip = ip;
