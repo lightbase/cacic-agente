@@ -191,7 +191,7 @@ function Exit-Script ([string]$Message = "")
         $Code = 1
     }
     if (-not $NoPause) {
-        pause
+        cmd /c "pause"
     }
     exit $Code
 }
