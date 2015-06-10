@@ -37,7 +37,7 @@ std::string CommSA::sendReq(const char* parameters)
  * @param type
  * @param port
  * @param parameters
- * @return
+ * @return Resposta da requisição
  */
 std::string CommSA::sendReq(const char* host, const char* route, const char* method, const char* type, int port, const char* parameters)
 {
@@ -78,33 +78,30 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 //        aux = netInfo[i].subnetMask;
 //        printf("\t%s\n", aux.c_str());
 //    }
-    std::string req;
-    // Check for define method
+
+    std::ostringstream FormBuffer;
+    // header
     if (method) {
-        req.append(method);
+        FormBuffer << method;
     } else {
-        req.append("GET");
+        FormBuffer << "GET";
+    }
+    FormBuffer << " " << route << " HTTP/1.1\n";
+    FormBuffer << "Content-Type: " << type << "\n";
+    FormBuffer << "Host: " << host << "\n";
+
+    // actual content
+    if (*parameters && parameters != "") {
+        FormBuffer << "Content-Length: " << strlen(parameters) << "\n\n";
+        FormBuffer << parameters;
     }
 
-    req.append(" ");
-    req.append(route);
-    req.append(" HTTP/1.0\n");
-    req.append("Host: ");
-    req.append(host);
-    req.append(" \n");
-    //req.append("Connection: close\n");
-    req.append("Content-Type: ");
-    req.append(type);
-    req.append("; charset=utf-8\n\n");
+    std::string str = FormBuffer.str();
 
-    // Check for sent parameters
-    if (parameters && parameters != "") {
-        req.append(parameters);
-    }
-    req.append("\x0D\x0A");
-    std::cout << "REQUEST: "  << std::endl << req << std::endl;
+//    std::cout << str << std::endl;
 
-    send(Socket, req.c_str(), strlen(req.c_str()),0);
+    send(Socket, str.data(), strlen(str.c_str()), NULL);
+
     char buff[10000];
     int nDataLength;
 
