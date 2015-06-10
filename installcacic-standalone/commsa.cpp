@@ -86,9 +86,10 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     } else {
         FormBuffer << "GET";
     }
-    FormBuffer << " " << route << " HTTP/1.1\n";
-    FormBuffer << "Content-Type: " << type << "\n";
-    FormBuffer << "Host: " << host << "\n";
+    FormBuffer << " " << route << " HTTP/1.1\r\n";
+    FormBuffer << "Content-Type: " << type << "\r\n";
+    FormBuffer << "Host: " << host << "\r\n";
+    FormBuffer << "User-Agent: " << "CACIC-Installer/" << CACIC_VERSION << "\r\n";
 
     // actual content
     if (*parameters && parameters != "") {
@@ -98,9 +99,10 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     std::string str = FormBuffer.str();
 
-//    std::cout << str << std::endl;
+    std::cout << str << std::endl;
 
     send(Socket, str.data(), strlen(str.c_str()), NULL);
+
 
     char buff[10000];
     int nDataLength;

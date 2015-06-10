@@ -19,16 +19,7 @@
 #define ROUTE_ERRO "/ws/instala/erro"
 #define CACIC_SERVICE_BIN "cacic-service.exe"
 #define CACIC_MSI "Cacic.msi"
-
-namespace patch
-{
-    template < typename T > std::string to_string( const T& n )
-    {
-        std::ostringstream stm ;
-        stm << n ;
-        return stm.str() ;
-    }
-}
+#define CACIC_VERSION "3.1.15"
 
 class CommSA
 {
