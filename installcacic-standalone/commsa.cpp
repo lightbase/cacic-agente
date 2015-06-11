@@ -100,6 +100,10 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     if (parameters && parameters != "") {
         FormBuffer << "Content-Length: " << strlen(parameters) << "\n\n";
         FormBuffer << parameters;
+    } else {
+        //Acrescentando um json vazio pra não dar bad request (400)
+        FormBuffer << "Content-Length: " << strlen("{}") << "\n\n";
+        FormBuffer << "{}";
     }
 
     std::string str = FormBuffer.str();
@@ -233,7 +237,7 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     // header
     FormBuffer << "GET " << file << " HTTP/1.1\r\n";
     FormBuffer << "Host: " << shost << "\r\n";
-    FormBuffer << "User-Agent: " << "CACIC-Installer/" << CACIC_VERSION << "\r\n";
+    FormBuffer << "User-Agent: " << "CACIC-Installer/" << CACIC_VERSION << "\r\n\r\n";
 
     std::string request = FormBuffer.str();
 
