@@ -60,6 +60,9 @@ bool InstallCacicSA::downloadService(const std::string &path)
     check = comm.sendReq(this->url.c_str(), route, "GET");
 
     if (check == "" || check == "CONNECTION_ERROR") {
+        std::string message = "Binário do serviço não encontrado! Hash: ";
+        message += this->hashRemoto;
+        this->log(message.c_str());
         return false;
     }
 
@@ -246,7 +249,9 @@ bool InstallCacicSA::verificaServico()
                 }
             }
             if (!sc.start()){
-                this->informaGerente("Falha ao iniciar serviço.");
+                std::string message("Falha ao iniciar serviço! Mensagem:\n");
+                message += sc.getLastError();
+                this->informaGerente(message);
             }
         } else {
             if (MoveFileExA(fileServiceTemp.c_str(),
