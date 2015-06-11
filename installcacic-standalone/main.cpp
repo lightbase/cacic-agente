@@ -1,7 +1,9 @@
 #include "installcacicsa.h"
+#include <locale.h>
 
 int main(int argc, char* argv[])
 {
+    setlocale(LC_ALL,"");
     const char *url;
     if (argc > 3) {
         std::cout << "Voce deve fornecer somente uma das seguintes opcoes:" << std::endl <<
@@ -47,7 +49,7 @@ int main(int argc, char* argv[])
                     exit(EXIT_FAILURE);
                 }
             } else {
-                std::cout << "Argumentos invalidos! Voce deve fornecer uma das seguintes opcoes:" << std::endl <<
+                std::cout << "Argumentos inválidos! Voce deve fornecer uma das seguintes opções:" << std::endl <<
                              "-url URL_GERENTE" << std::endl <<
                              "-remove" << std::endl;
                 //std::cin.get();

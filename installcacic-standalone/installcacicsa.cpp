@@ -57,7 +57,8 @@ bool InstallCacicSA::downloadService(const std::string &path)
     comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    check = comm.sendReq("");
+    check = comm.sendReq(this->url.c_str(), route, "GET");
+
     if (check == "" || check == "CONNECTION_ERROR") {
         return false;
     }

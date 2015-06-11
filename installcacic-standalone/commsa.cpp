@@ -26,6 +26,11 @@ std::string CommSA::sendReq(const char* parameters)
     return this->sendReq(this->host, this->route, this->method, this->type, this->port, parameters);
 }
 
+std::string CommSA::sendReq(const char* host, const char* route, const char* method)
+{
+    return this->sendReq(host, route, method, this->type, this->port, "");
+}
+
 /**
  * @brief CommSA::sendReq
  *
@@ -92,7 +97,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
     FormBuffer << "User-Agent: " << "CACIC-Installer/" << CACIC_VERSION << "\r\n";
 
     // actual content
-    if (*parameters && parameters != "") {
+    if (parameters && parameters != "") {
         FormBuffer << "Content-Length: " << strlen(parameters) << "\n\n";
         FormBuffer << parameters;
     }
@@ -200,7 +205,6 @@ bool CommSA::setNetworkInfo(const char *ip, const char *subnetMask)
 
 bool CommSA::downloadFile(const char *url, const char *filePath)
 {
-    std::string request; // HTTP Header //
     LPCSTR filename = filePath;
     char buffer[BUFFERSIZE];
     struct sockaddr_in serveraddr;
@@ -223,10 +227,14 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
     std::string file = urlAux.substr(dm);
     dm = urlAux.find("/");
     std::string shost = urlAux.substr(0, dm);
-    // Generate http header //
-    request += "GET " + file + " HTTP/1.0\r\n";
-    request += "Host: " + shost + "\r\n";
-    request += "\r\n";
+
+    std::ostringstream FormBuffer;
+    // header
+    FormBuffer << "GET " << file << " HTTP/1.1\r\n";
+    FormBuffer << "Host: " << shost << "\r\n";
+    FormBuffer << "User-Agent: " << "CACIC-Installer/" << CACIC_VERSION << "\r\n";
+
+    std::string request = FormBuffer.str();
 
     if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {
         return false;
@@ -260,7 +268,7 @@ bool CommSA::downloadFile(const char *url, const char *filePath)
         return false;
     }
 
-    if (send(sock, request.c_str(), request.length(), 0) != request.length()) {
+    if (send(sock, request.data(), request.length(), 0) != request.length()) {
 //        std::cout << "Erro na conexão!!!" << std::endl;
         return false;
     }

@@ -28,6 +28,7 @@ public:
     ~CommSA();
 
     std::string sendReq(const char* parameters = "");
+    std::string sendReq(const char* host, const char* route, const char* method);
     bool downloadFile(const char *url, const char *filePath);
     bool log(const char *message);
     bool log(double codigo, const char *user, const char *so, const char *message);
