@@ -48,7 +48,7 @@ bool InstallCacicSA::downloadService(const std::string &path)
     }
 
     // Força path no binário
-    std::string full_path = path + std::string("\\") + std::string(CACIC_SERVICE_BIN);
+    std::string full_path = path;
 
     // Busca URL para baixar o serviço
     std::string check;
@@ -209,7 +209,7 @@ bool InstallCacicSA::verificaServico()
 
     ServiceController sc(L"CacicDaemon");
     std::string fileService = this->cacicPath + "\\" + std::string(CACIC_SERVICE_BIN);
-    std::string fileServiceTemp =this->cacicPath + "\\temp\\" + std::string(CACIC_SERVICE_BIN);
+    std::string fileServiceTemp =this->installDir + "\\" + std::string(CACIC_SERVICE_BIN);
     std::string dirBin = this->cacicPath + "\\bin\\";
 
     // 2.2 - Verifica binário desatualizado
@@ -218,7 +218,7 @@ bool InstallCacicSA::verificaServico()
     }
     if (!this->comparaHash()){
         // 4.1 - Instala de novo (Baixa o serviço e executa)
-        if (!this->downloadService(fileService)){
+        if (!this->downloadService(fileServiceTemp)){
             this->informaGerente("Falha ao baixar serviço.");
             return false;
         }

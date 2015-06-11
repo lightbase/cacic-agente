@@ -22,6 +22,8 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 QT       += core
 QT       -= gui
 QT       -= widgets
+QT       += network
+
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
 TARGET       = cacicdeploy
