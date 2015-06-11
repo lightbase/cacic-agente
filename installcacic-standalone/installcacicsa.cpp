@@ -243,8 +243,11 @@ bool InstallCacicSA::verificaServico()
                 if (MoveFileExA(fileServiceTemp.c_str(),
                                 fileService.c_str(),
                                 MOVEFILE_REPLACE_EXISTING) != 0) {
-
-                    this->informaGerente("Falha ao mover serviço da pasta temporária.");
+                    std::string message("Falha ao mover serviço da pasta:");
+                    message += fileServiceTemp;
+                    message += " para a pasta: ";
+                    message += fileService;
+                    this->informaGerente(message);
                     return false;
                 }
             }
@@ -295,7 +298,7 @@ bool InstallCacicSA::verificaServico()
         }
     }
 
-    return false;
+    return true;
 }
 
 bool InstallCacicSA::fileExists(const std::string &filePath)
@@ -381,6 +384,8 @@ bool InstallCacicSA::deleteCacicAntigo()
 {
     bool ok = true;
     ServiceController sc(L"cacic");
+    this->log("Erro ao desinstalar cacic 2.6", "DEBUG");
+    std::cout << "Desinstalando cacic 2.6.\n";
     if (sc.isInstalled()){
         if (sc.isRunning())
             sc.stop();
@@ -389,7 +394,8 @@ bool InstallCacicSA::deleteCacicAntigo()
             ok = false;
         }
     }
-
+    std::cout << "Desinstalando cacic 2.8.\n";
+    this->log("Desinstalar cacic 2.8", "DEBUG");
     ServiceController sc28(L"CacicSustainService");
     if (sc28.isInstalled()){
         if (sc28.isRunning())
@@ -406,8 +412,8 @@ bool InstallCacicSA::deleteCacicAntigo()
     remove("C:\\Windows\\chksis.ini");
 
     //Não gostei de ter feito dessa maneira, mas ainda não achei o ideal.
-    int numExcept = 12;
-    std::string exceptionFiles[numExcept];
+    int numExcept = 13;
+    std::string exceptionFiles[numExcept-1];
     exceptionFiles[0] = "deploy";
     exceptionFiles[1] = "coletaDiff.json";
     exceptionFiles[2] = "coleta.json";
@@ -419,10 +425,12 @@ bool InstallCacicSA::deleteCacicAntigo()
     exceptionFiles[8] = "install-cacic.exe";
     exceptionFiles[9] = "cacicdeploy.exe";
     exceptionFiles[10] = "bin";
+    exceptionFiles[11] = "icsa";
 
     // Não remove também o diretório de instalação
-    exceptionFiles[11] = this->installDir;
+    exceptionFiles[12] = this->installDir;
 
+    this->log("Removendo arquivos de instalações anteriores.", "DEBUG");
     return delFolder("C:\\Cacic\\", exceptionFiles, numExcept) && ok;
 }
 
@@ -450,6 +458,7 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
         tinydir_file file;
         tinydir_readfile(&dir, &file);
         std::string nameFile(file.name);
+        std::cout << nameFile << std::endl;
         if (!(nameFile == ".." || nameFile == ".")){
             //Se for diretório, entra na função novamente para deletar os arquivos
             if (file.is_dir){
@@ -461,6 +470,7 @@ bool InstallCacicSA::delFolder(const std::string &path, const std::string *fileE
                     }
                 }
                 if (*exceptionFound){
+                    tinydir_next(&dir);
                     continue;
                 } else {
                     ok = ok && this->delFolder(file.path, fileException, numException, exceptionFound);
