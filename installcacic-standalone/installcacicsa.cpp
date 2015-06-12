@@ -32,9 +32,11 @@ bool InstallCacicSA::registryExists(HKEY RootKey,LPCTSTR SubKey)
     {
         case ERROR_SUCCESS: //ok
             RegCloseKey(mTempKey);
+            this->log("Instalacao encontrada.", "DEBUG");
             return true;
             break;
         default: //an error code from windows
+            this->log("Instalacao nao encontrada.", "DEBUG");
             return false;
             break;
     }
@@ -105,11 +107,12 @@ bool InstallCacicSA::downloadMsi(const std::string &path)
 
     // Busca URL para baixar o MSI
     std::string check;
-    const char *route = ROUTE_DOWNLOAD_MSI;
+    std::string str_route = ROUTE_DOWNLOAD_MSI;
+    const char *route = str_route.c_str();
     comm.setHost(this->url.c_str());
     comm.setRoute(route);
 
-    check = comm.sendReq("");
+    check = comm.sendReq(this->url.c_str(), route, "GET");
     if (check == "" || check == "CONNECTION_ERROR") {
         return false;
     }
@@ -163,7 +166,7 @@ bool InstallCacicSA::getConfig()
     this->getNetworkInfo(net);
     int n = this->getValidNetwork(net);
 
-    if (n <= 0) {
+    if (n < 0) {
         this->log(11, "", "", "Erro no getConfig: Nenhuma interface de rede válida!", "ERROR");
         this->setHashRemoto(std::string(""));
 
@@ -227,29 +230,33 @@ bool InstallCacicSA::verificaServico()
         }
         // 2.1 - Serviço não está rodando
         if (sc.isInstalled()){
+            this->log("Servico instalado.", "DEBUG");
             if (sc.isRunning()){
-                sc.stop();
-                if(!this->fileExists(fileService)){
-                    BOOL ok = DeleteFileA(fileService.c_str());
-                    if(ok != ERROR_FILE_NOT_FOUND){
-                        //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
-                        Sleep(3000);
-                        ok = DeleteFileA(fileService.c_str());
-                        if (ok != ERROR_FILE_NOT_FOUND){
-                            this->informaGerente("Falha ao tentar excluir serviço antigo.");
-                        }
+                this->log("Servico esta rodando. Parando servico...", "DEBUG");
+                if (!sc.stop()){
+                    this->log("Falha ao parar servico.");
+                }
+            }
+            if(!this->fileExists(fileService)){
+                BOOL ok = DeleteFileA(fileService.c_str());
+                if(ok != ERROR_FILE_NOT_FOUND){
+                    //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
+                    Sleep(3000);
+                    ok = DeleteFileA(fileService.c_str());
+                    if (ok != ERROR_FILE_NOT_FOUND){
+                        this->informaGerente("Falha ao tentar excluir serviço antigo.");
                     }
                 }
-                if (MoveFileExA(fileServiceTemp.c_str(),
-                                fileService.c_str(),
-                                MOVEFILE_REPLACE_EXISTING) != 0) {
-                    std::string message("Falha ao mover serviço da pasta:");
-                    message += fileServiceTemp;
-                    message += " para a pasta: ";
-                    message += fileService;
-                    this->informaGerente(message);
-                    return false;
-                }
+            }
+            std::string message("Movendo serviço da pasta:");
+            message += fileServiceTemp;
+            message += " para a pasta: ";
+            message += fileService;
+            this->log(message.c_str(), "DEBUG");
+            if (MoveFileExA(fileServiceTemp.c_str(),
+                            fileService.c_str(),
+                            MOVEFILE_REPLACE_EXISTING) != 0) {
+                return false;
             }
             if (!sc.start()){
                 std::string message("Falha ao iniciar serviço! Mensagem:\n");
@@ -257,6 +264,17 @@ bool InstallCacicSA::verificaServico()
                 this->informaGerente(message);
             }
         } else {
+            if(!this->fileExists(fileService)){
+                BOOL ok = DeleteFileA(fileService.c_str());
+                if(ok != ERROR_FILE_NOT_FOUND){
+                    //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
+                    Sleep(3000);
+                    ok = DeleteFileA(fileService.c_str());
+                    if (ok != ERROR_FILE_NOT_FOUND){
+                        this->informaGerente("Falha ao tentar excluir serviço antigo.");
+                    }
+                }
+            }
             if (MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) != 0) {
@@ -384,7 +402,7 @@ bool InstallCacicSA::deleteCacicAntigo()
 {
     bool ok = true;
     ServiceController sc(L"cacic");
-    this->log("Erro ao desinstalar cacic 2.6", "DEBUG");
+    this->log("Desinstalando cacic 2.6", "DEBUG");
     std::cout << "Desinstalando cacic 2.6.\n";
     if (sc.isInstalled()){
         if (sc.isRunning())
@@ -394,8 +412,9 @@ bool InstallCacicSA::deleteCacicAntigo()
             ok = false;
         }
     }
+
     std::cout << "Desinstalando cacic 2.8.\n";
-    this->log("Desinstalar cacic 2.8", "DEBUG");
+    this->log("Desinstalando cacic 2.8", "DEBUG");
     ServiceController sc28(L"CacicSustainService");
     if (sc28.isInstalled()){
         if (sc28.isRunning())
@@ -406,14 +425,16 @@ bool InstallCacicSA::deleteCacicAntigo()
         }
     }
 
+    //TODO: MATAR CHKSYS E CACIC280
+
     remove("C:\\Windows\\chksis.exe");
     remove("C:\\Windows\\cacicsvc.exe");
     remove("C:\\Windows\\cacicservice.exe");
     remove("C:\\Windows\\chksis.ini");
 
     //Não gostei de ter feito dessa maneira, mas ainda não achei o ideal.
-    int numExcept = 13;
-    std::string exceptionFiles[numExcept-1];
+    int numExcept = 12;
+    std::string exceptionFiles[numExcept];
     exceptionFiles[0] = "deploy";
     exceptionFiles[1] = "coletaDiff.json";
     exceptionFiles[2] = "coleta.json";
@@ -426,9 +447,6 @@ bool InstallCacicSA::deleteCacicAntigo()
     exceptionFiles[9] = "cacicdeploy.exe";
     exceptionFiles[10] = "bin";
     exceptionFiles[11] = "icsa";
-
-    // Não remove também o diretório de instalação
-    exceptionFiles[12] = this->installDir;
 
     this->log("Removendo arquivos de instalações anteriores.", "DEBUG");
     return delFolder("C:\\Cacic\\", exceptionFiles, numExcept) && ok;
@@ -991,9 +1009,12 @@ bool InstallCacicSA::exec()
 
     // 1 - Verifica se está instalado
     if (!this->cacicInstalado()) {
+        this->log("Realizando instalacao do Cacic pelo MSI.", "DEBUG");
         std::string msi_path = this->installDir+"\\" + CACIC_MSI;
         // 1.1 - Baixa e executa o MSI
-        this->downloadMsi(this->installDir);
+        if (!this->downloadMsi(this->installDir)){
+            this->log("Falha ao realizar o download do MSI.");
+        }
         if (!this->fileExists(msi_path)) {
             std::string saida = "Arquivo MSI não encontrado no caminho = " + msi_path;
             this->log(saida.c_str());
@@ -1030,6 +1051,7 @@ bool InstallCacicSA::exec()
         this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
     }
 
+    //TO DO: MODIFICAR URL DO REGISTRO DO CACIC
     return true;
 
 }
