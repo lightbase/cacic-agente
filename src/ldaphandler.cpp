@@ -179,22 +179,27 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
 
 bool LdapHandler::inicializar()
 {
+
+#if defined(Q_OS_UNIX)
     ldapServer = "ldap://" + ldapServer + ":389";
     std::string host = ldapServer.toStdString();
     qDebug() << host.c_str() << ": " << ldap_err2string(ldap_initialize(&ldp,host.c_str()));
-#if defined(Q_OS_UNIX)
-        if (ldap_initialize(&ldp,host.c_str()) != LDAP_SUCCESS){
-            qDebug() << "ldap_init error";
-            return false;
-        }
+
+    if (ldap_initialize(&ldp,host.c_str()) != LDAP_SUCCESS){
+        qDebug() << "ldap_init error";
+        return false;
+    }
 #elif defined(Q_OS_WIN)
-        ldp = ldap_initA(host.c_str(),389);
-        if (ldp == NULL){
-            qDebug() << "ldap_initA error";
-            return false;
-        }
+    std::string serverStdString = ldapServer.toStdString();
+    PCHAR host = (PCHAR)serverStdString.c_str();
+
+    ldp = ldap_initA(host,389);
+    if (ldp == NULL){
+        qDebug() << "ldap_initA error";
+        return false;
+    }
 #endif
-        return true;
+    return true;
 }
 
 void LdapHandler::setServer(const QString &ldapServer)
