@@ -152,7 +152,9 @@ bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
         // caso o servidor de informações do LDAP não seja o gerente do Cacic.
         QString urlGerente = oCacicComm->getUrlGerente();
         oCacicComm->setUrlGerente(ldapInfoUrl);
+qDebug() << "Antes do metodo comm.";
         retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
+qDebug() << "DEPOIS do metodo comm.";
         oCacicComm->setUrlGerente(urlGerente);
         if(retornoEnvio.contains("error")) {
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));

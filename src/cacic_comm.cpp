@@ -28,7 +28,7 @@ CacicComm::CacicComm (const QString &urlGerente,          const QString &operati
 
 }
 
-QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &json, bool isSsl)
+QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &json, bool isSsl, const int &timeout_sec)
 {
     *ok = false;
     QByteArray data;
@@ -61,8 +61,12 @@ QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &js
     }
     QEventLoop eventLoop;
     QNetworkAccessManager mgr;
-    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QTimer *timer = new QTimer(this);
 
+    QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    QObject::connect(timer, SIGNAL(timeout()), &eventLoop, SLOT(quit()));
+
+    timer->start(timeout_sec * 1000);
     QNetworkReply *reply = mgr.post(req, data);
     if (!reply->sslConfiguration().isNull()){
         reply->ignoreSslErrors();
