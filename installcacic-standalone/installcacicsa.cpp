@@ -426,6 +426,16 @@ bool InstallCacicSA::deleteCacicAntigo()
     }
 
     //TODO: MATAR CHKSYS E CACIC280
+    int numProc = 6;
+    std::string procs[] = {
+            "chksis.exe",
+            "cacicsvc.exe",
+            "cacic280.exe",
+            "gercols.exe",
+            "notepad.exe",
+            "mapacacic.exe"};
+
+    this->stopProc(procs, numProc);
 
     remove("C:\\Windows\\chksis.exe");
     remove("C:\\Windows\\cacicsvc.exe");
@@ -958,6 +968,72 @@ BOOL InstallCacicSA::isAdmin()
 bool InstallCacicSA::cacicInstalado()
 {
     return this->registryExists(HKEY_LOCAL_MACHINE, CACIC_REGISTRY);
+}
+
+void InstallCacicSA::stopProc(const std::string &procName)
+{
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry) == TRUE)
+    {
+        while (Process32Next(snapshot, &entry) == TRUE)
+        {
+            std::wstring wexeFile = entry.szExeFile;
+            std::string exeFile(wexeFile.begin(), wexeFile.end());
+            if (_stricmp(exeFile.c_str(), procName.c_str()) == 0)
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, entry.th32ProcessID);
+
+                TerminateProcess(hProcess, 0);
+
+                CloseHandle(hProcess);
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
+
+    return 0;
+}
+
+/**
+ * @brief InstallCacicSA::stopProc
+ *
+ * Para a execução de @numProc processos por nome.
+ * @param procName Array de nomes a serem parados.
+ * @param numProc Quantidade de nomes passados.
+ * @return Caso funciona sem falha, retorna verdadeiro.
+ */
+void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
+{
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry) == TRUE)
+    {
+        while (Process32Next(snapshot, &entry) == TRUE)
+        {
+            std::wstring wexeFile = entry.szExeFile;
+            std::string exeFile(wexeFile.begin(), wexeFile.end());
+            for (int i = 0; i<numProc; i++){
+                if (_stricmp(exeFile.c_str(), procName[i].c_str()) == 0)
+                {
+                    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, entry.th32ProcessID);
+
+                    TerminateProcess(hProcess, 0);
+
+                    CloseHandle(hProcess);
+                }
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
 }
 
 std::string InstallCacicSA::getSo()
