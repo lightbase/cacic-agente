@@ -36,9 +36,9 @@ class Mapa : public QMainWindow
 
 public:
     explicit Mapa(QWidget *parent = 0);
-    explicit Mapa(const QString &ldapInfoUrl, QWidget *parent = 0);
+    explicit Mapa(const bool &consultaLdap, QWidget *parent = 0);
     ~Mapa();
-    bool setArgs(int argc, char *argv[]);
+    void setComm(const QString &server);
 
     void inicializarAtributos();
 private slots:
@@ -48,8 +48,8 @@ private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
     bool enviarInfo(const QJsonObject &jsonMapa);
-    void preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl);
-    bool preencheNomeUsuario(const QString &ldapInfoUrl);
+    void preencheCampos(bool consultaLdap);
+    bool preencheNomeUsuario();
     bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;

@@ -165,13 +165,16 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
         return QString();
     }
 
-    qDebug() << "retorno attr: " << QString::fromLatin1(attr);
-
     // // Adquire o ponteiro para valor do atributo requerido
     attrValue = ldap_get_valuesA(ldp,res,attr);
     qDebug() << "retorno attrValue: " << QString::fromLatin1(*attrValue);
-    if (attrValue == NULL) return QString();
-    else return QString::fromLatin1(*attrValue);
+    if (attrValue == NULL) {
+        qDebug() << "attrValue == NULL";
+        return QString();
+    } else {
+        qDebug() << QString::fromLatin1(*attrValue);
+        return QString::fromLatin1(*attrValue);
+    }
 
     return QString();
 }
