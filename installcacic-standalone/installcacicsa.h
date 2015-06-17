@@ -62,6 +62,7 @@ public:
     bool cacicInstalado();
     void stopProc(const std::string &procName);
     void stopProc(const std::string *procName, int &numProc);
+    bool removeTPPrograms();
 
     // Informações do SO
     std::string getSo();

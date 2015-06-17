@@ -970,6 +970,14 @@ bool InstallCacicSA::cacicInstalado()
     return this->registryExists(HKEY_LOCAL_MACHINE, CACIC_REGISTRY);
 }
 
+/**
+ * @brief InstallCacicSA::stopProc
+ *
+ * Para a execução do processo pelo nome repassado.
+ *
+ * @param procName nome do processo
+ */
+
 void InstallCacicSA::stopProc(const std::string &procName)
 {
     PROCESSENTRY32 entry;
@@ -995,8 +1003,6 @@ void InstallCacicSA::stopProc(const std::string &procName)
     }
 
     CloseHandle(snapshot);
-
-    return 0;
 }
 
 /**
@@ -1005,7 +1011,6 @@ void InstallCacicSA::stopProc(const std::string &procName)
  * Para a execução de @numProc processos por nome.
  * @param procName Array de nomes a serem parados.
  * @param numProc Quantidade de nomes passados.
- * @return Caso funciona sem falha, retorna verdadeiro.
  */
 void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
 {
@@ -1036,6 +1041,12 @@ void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
     CloseHandle(snapshot);
 }
 
+bool InstallCacicSA::removeTPPrograms()
+{
+    return (this->runProgram("msiexec /x \"{B890C4FA-EDD9-4883-8AA5-F534EE0D3FF6}\"", " /quiet") &&
+           this->runProgram("msiexec /x \"{F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}\"", " /quiet"));
+}
+
 std::string InstallCacicSA::getSo()
 {
     return this->comp.getSo();
@@ -1063,6 +1074,11 @@ bool InstallCacicSA::exec()
         this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
 
         return false;
+    }
+
+    //Remove programa de terceiros.
+    if (!this->removeTPPrograms()){
+        this->log("Erro ao remover programas de terceiros.", "ERROR");
     }
 
     if (this->createInstallDir() == "") {
@@ -1126,6 +1142,7 @@ bool InstallCacicSA::exec()
     } else {
         this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
     }
+
 
     //TO DO: MODIFICAR URL DO REGISTRO DO CACIC
     return true;
