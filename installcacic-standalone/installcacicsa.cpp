@@ -237,7 +237,7 @@ bool InstallCacicSA::verificaServico()
                     this->log("Falha ao parar servico.");
                 }
             }
-            if(!this->fileExists(fileService)){
+            if(this->fileExists(fileService)){
                 BOOL ok = DeleteFileA(fileService.c_str());
                 if(ok != ERROR_FILE_NOT_FOUND){
                     //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
@@ -253,9 +253,10 @@ bool InstallCacicSA::verificaServico()
             message += " para a pasta: ";
             message += fileService;
             this->log(message.c_str(), "DEBUG");
-            if (MoveFileExA(fileServiceTemp.c_str(),
+            if (!MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) != 0) {
+                this->log("Falha ao mover servico.");
                 return false;
             }
             if (!sc.start()){
@@ -264,7 +265,7 @@ bool InstallCacicSA::verificaServico()
                 this->informaGerente(message);
             }
         } else {
-            if(!this->fileExists(fileService)){
+            if(this->fileExists(fileService)){
                 BOOL ok = DeleteFileA(fileService.c_str());
                 if(ok != ERROR_FILE_NOT_FOUND){
                     //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
@@ -275,7 +276,7 @@ bool InstallCacicSA::verificaServico()
                     }
                 }
             }
-            if (MoveFileExA(fileServiceTemp.c_str(),
+            if (!MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) != 0) {
 
@@ -408,7 +409,9 @@ bool InstallCacicSA::deleteCacicAntigo()
         if (sc.isRunning())
             sc.stop();
         if (!sc.uninstall()){
-            this->log("Erro ao desinstalar cacic 2.6");
+            std::string message = "Erro ao desinstalar cacic 2.6 : ";
+            message += sc.getLastError();
+            this->log(message.c_str());
             ok = false;
         }
     }
@@ -420,14 +423,17 @@ bool InstallCacicSA::deleteCacicAntigo()
         if (sc28.isRunning())
             sc28.stop();
         if (!sc28.uninstall()){
-            this->log("Erro ao desinstalar cacic 2.8");
+            std::string message = "Erro ao desinstalar cacic 2.8 : ";
+            message += sc28.getLastError();
+            this->log(message.c_str());
             ok = false;
         }
     }
 
     //TODO: MATAR CHKSYS E CACIC280
-    int numProc = 6;
+    int numProc = 7;
     std::string procs[] = {
+            "cacicservice.exe",
             "chksis.exe",
             "cacicsvc.exe",
             "cacic280.exe",
@@ -932,16 +938,16 @@ BOOL InstallCacicSA::isAdmin()
     CloseHandle(hAccessToken);
 
     if( !bSuccess )
-        //        return FALSE;
-        return(TRUE);
+        return FALSE;
+//        return(TRUE);
 
-    if(!AllocateAndInitializeSid(&siaNtAuthority, 2,
+    if((AllocateAndInitializeSid(&siaNtAuthority, 2,
         SECURITY_BUILTIN_DOMAIN_RID,
         DOMAIN_ALIAS_RID_ADMINS,
         0, 0, 0, 0, 0, 0,
-        &psidAdministrators))
-        //    return FALSE;
-        return(TRUE);
+        &psidAdministrators)) == 0)
+        return FALSE;
+//        return(TRUE);
 
     // assume that we don't find the admin SID.
     bSuccess = FALSE;
