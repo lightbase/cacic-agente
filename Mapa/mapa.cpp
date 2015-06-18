@@ -134,6 +134,7 @@ bool Mapa::preencheNomeUsuario()
     QJsonObject sentJson;
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
 
+    sentJson["computador"] = computer.toJsonObject();
     sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
     if (!sentJson.isEmpty()){
         QJsonObject retornoEnvio;
