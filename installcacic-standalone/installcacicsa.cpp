@@ -1043,8 +1043,8 @@ void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
 
 bool InstallCacicSA::removeTPPrograms()
 {
-    return (this->runProgram("msiexec /x \"{B890C4FA-EDD9-4883-8AA5-F534EE0D3FF6}\"", " /quiet") &&
-           this->runProgram("msiexec /x \"{F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}\"", " /quiet"));
+    return (this->runProgram("msiexec /x {B890C4FA-EDD9-4883-8AA5-F534EE0D3FF6}", " /quiet") &&
+           this->runProgram("msiexec /x {F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}", " /quiet"));
 }
 
 std::string InstallCacicSA::getSo()
