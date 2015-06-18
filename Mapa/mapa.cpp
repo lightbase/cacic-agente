@@ -5,15 +5,15 @@ Mapa::Mapa(QWidget *parent) :
     ui(new Ui::Mapa)
 {
     inicializarAtributos();
-    preencheCampos(false, "");
+    preencheCampos(false);
 }
 
-Mapa::Mapa(const QString &ldapInfoUrl, QWidget *parent) :
+Mapa::Mapa(const bool &consultaLdap, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
 {
     inicializarAtributos();
-    preencheCampos(true,ldapInfoUrl);
+    preencheCampos(consultaLdap);
 }
 
 Mapa::~Mapa()
@@ -78,16 +78,6 @@ void Mapa::inicializarAtributos()
 
     oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
 
-    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
-        oCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-    } else {
-        oCacicComm->setUrlGerente("http://teste.cacic.cc");
-        oCacicComm->setUsuario("admin");
-        oCacicComm->setPassword("brlight12");
-    }
-
     this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
     this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
@@ -121,7 +111,7 @@ void Mapa::on_okButton_clicked()
     }
 }
 
-void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl)
+void Mapa::preencheCampos(bool consultaLdap)
 {
     QJsonObject computerJson = computer.toJsonObject();
 
@@ -133,29 +123,25 @@ void Mapa::preencheCampos(bool preencherUsuario, const QString &ldapInfoUrl)
     ui->lineNomeComputador->setDisabled(true);
     ui->lineEnderecoIp->setDisabled(true);
 
-    if( preencherUsuario )
-        preencheNomeUsuario(ldapInfoUrl);
+    if( consultaLdap )
+        preencheNomeUsuario();
 }
 
-bool Mapa::preencheNomeUsuario(const QString &ldapInfoUrl)
+bool Mapa::preencheNomeUsuario()
 {
 
     bool ok = false;
     QJsonObject sentJson;
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
 
+    sentJson["computador"] = computer.toJsonObject();
     sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
     if (!sentJson.isEmpty()){
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
 
-        // caso o servidor de informações do LDAP não seja o gerente do Cacic.
-        QString urlGerente = oCacicComm->getUrlGerente();
-        oCacicComm->setUrlGerente(ldapInfoUrl);
-qDebug() << "Antes do metodo comm.";
         retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
-qDebug() << "DEPOIS do metodo comm.";
-        oCacicComm->setUrlGerente(urlGerente);
+
         if(retornoEnvio.contains("error")) {
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
 
@@ -173,20 +159,27 @@ qDebug() << "DEPOIS do metodo comm.";
         }
     }
 
+//    ldapBase = "ou=usuarios,dc=lightbase,dc=com,dc=br";
+//    ldapFilter = "(&(objectClass=*)(uid=thiagop))";
+//    ldapLogin = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
+//    ldapPass = "brlight2012";
+//    ldapServer = "ldap.lightbase";
     LdapHandler ldapHandler(ldapServer);
 
-    if ( ldapHandler.inicializar() ) {
-        ui->lineNomeUsuario->setText(
-                    ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter)
-                    );
-    }
+    if ( ldapHandler.inicializar() )
+        ui->lineNomeUsuario->setText(ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter));
 
     return true;
 }
 
-bool Mapa::setArgs(int argc, char *argv[])
+void Mapa::setComm(const QString &server)
 {
-    return true;
+    oCacicComm->setUrlGerente(server);
+
+    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
+        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+    }
 }
 
 bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
