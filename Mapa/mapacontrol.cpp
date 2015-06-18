@@ -2,12 +2,15 @@
 
 MapaControl::MapaControl(QObject *parent) : QObject(parent)
 {
+    QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
+    mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
 
+    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
 }
 
 MapaControl::~MapaControl()
 {
-
+    delete oCacicComm;
 }
 
 /**
@@ -16,7 +19,7 @@ MapaControl::~MapaControl()
  * @param argv
  * @param map
  *
- * Esta função mapeia as opções de linha de comando que o Mapa aceita.
+ * Este método mapeia as opções de linha de comando que o Mapa aceita.
  * Opções:
  * -server=server                 seta o servidor onde estarão informações
  *                                para consulta. Se não setada, a informação
@@ -50,28 +53,67 @@ bool MapaControl::args2Map(int argc, char *argv[], QMap<QString, QString> &map)
     return hasArgument;
 }
 
+/**
+ * @brief MapaControl::getMapa
+ * @param server
+ *
+ * Este método realiza a comunicação com o Gerente que permitirá ou não
+ * o Mapa ser executado.
+ *
+ * @return
+ */
+bool MapaControl::getMapa(const QString &server)
+{
+    bool ok = false;
+    CACIC_Computer computer;
+    QJsonObject sentJson;
+
+    sentJson["computador"] = computer.toJsonObject();
+    sentJson["request"] = QJsonValue::fromVariant(QString("getMapa"));
+    if (!sentJson.isEmpty()){
+        QJsonObject retornoEnvio;
+
+        oCacicComm->setUrlGerente(server);
+        if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
+            oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+            oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        }
+
+        retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , true);
+
+        if(retornoEnvio.contains("error")) {
+            return false;
+        } else if(!retornoEnvio["objectClass"].isUndefined() &&
+                  !retornoEnvio["objectClass"].isNull() &&
+                  retornoEnvio["objectClass"] == "getMapa" ) {
+            ok = retornoEnvio["col_patrimonio"].toBool();
+        }
+    }
+    return ok;
+}
+
 int MapaControl::run(int argc, char *argv[])
 {
     QMap<QString, QString> param;
 
     if ( args2Map(argc, argv, param) ) {
         if ( !param["server"].isEmpty() && !param["server"].isNull() ) { // -server
-
-            if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -server e -ldap
-                if(param["ldap"] == "true")
-                    interface = new Mapa(true);
-                else
+            if(getMapa(param["server"])){ // Mapa tem permissão do gerente?
+                if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -server e -ldap
+                    if(param["ldap"] == "true")
+                        interface = new Mapa(true);
+                    else
+                        interface = new Mapa(false);
+                    Mapa* mapa = static_cast<Mapa*>(interface);
+                    mapa->setComm(param["server"]);
+                    interface->show();
+                } else { // -server sem -ldap
                     interface = new Mapa(false);
-                Mapa* mapa = static_cast<Mapa*>(interface);
-                mapa->setComm(param["server"]);
-                interface->show();
-            } else {
-                interface = new Mapa(false);
-                Mapa* mapa = static_cast<Mapa*>(interface);
-                mapa->setComm(param["server"]);
-                interface->show();
+                    Mapa* mapa = static_cast<Mapa*>(interface);
+                    mapa->setComm(param["server"]);
+                    interface->show();
+                }
             }
-
         } else if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -ldap
             if(param["ldap"] == "true")
                 interface = new Mapa(true);
@@ -79,7 +121,7 @@ int MapaControl::run(int argc, char *argv[])
                 interface = new Mapa(false);
 
             QJsonObject getConfigJson = CCacic::getJsonFromFile("getConfig.json");
-            if ( !getConfigJson.isEmpty() ) {
+            if ( !getConfigJson.isEmpty() && getMapa(getConfigJson["applicationUrl"].toString()) ) {
                 Mapa* mapa = static_cast<Mapa*>(interface);
                 mapa->setComm(getConfigJson["applicationUrl"].toString());
                 interface->show();
@@ -93,7 +135,7 @@ int MapaControl::run(int argc, char *argv[])
         interface = new Mapa();
 
         QJsonObject getConfigJson = CCacic::getJsonFromFile("getConfig.json");
-        if ( !getConfigJson.isEmpty() ) {
+        if ( !getConfigJson.isEmpty()&& getMapa(getConfigJson["applicationUrl"].toString()) ) {
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());
             interface->show();

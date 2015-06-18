@@ -23,6 +23,7 @@
 #define ROTA_LOG "/ws/neo/log"
 #define ROTA_MAPA_FORM "/ws/neo/mapa/form"
 #define ROTA_MAPA_LDAP "/ws/neo/mapa/ldap"
+#define ROTA_MAPA_GETMAPA "/ws/neo/mapa/getMapa"
 #define LOG_DAEMON "Cacic Daemon"
 #define CHKSYS "Check Cacic"
 #define LOG_CACICDEPLOY "Cacic Deploy"

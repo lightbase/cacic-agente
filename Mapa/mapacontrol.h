@@ -21,8 +21,11 @@ public slots:
 
 private:
     bool args2Map(int argc, char *argv[], QMap<QString, QString> &map);
+    bool getMapa(const QString &server);
 
+    CacicComm *oCacicComm;
     QMainWindow *interface;
+    QString mainFolder;
 };
 
 #endif // MAPACONTROL_H
