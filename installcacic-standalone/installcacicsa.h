@@ -3,6 +3,7 @@
 
 #include "commsa.h"
 #include <windows.h>
+#include <tlhelp32.h>
 #include <wincrypt.h>
 #include <stdio.h>
 #include <iostream>
@@ -59,6 +60,9 @@ public:
     bool removeLogFile();
     BOOL isAdmin();
     bool cacicInstalado();
+    void stopProc(const std::string &procName);
+    void stopProc(const std::string *procName, int &numProc);
+    bool removeTPPrograms();
 
     // Informações do SO
     std::string getSo();

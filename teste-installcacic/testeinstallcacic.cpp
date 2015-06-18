@@ -301,6 +301,12 @@ void testeInstallcacic::testGetNetworkInfo()
     std::cout << "Interface encontrada: " << net[result].ip << std::endl;
 }
 
+void testeInstallcacic::testStopProc()
+{
+    this->icsa->stopProc("notepad.exe");
+    QVERIFY(false);
+}
+
 void testeInstallcacic::cleanupTestCase()
 {
     // Imprime o conteúdo do arquivo

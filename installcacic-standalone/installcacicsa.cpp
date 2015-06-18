@@ -426,6 +426,16 @@ bool InstallCacicSA::deleteCacicAntigo()
     }
 
     //TODO: MATAR CHKSYS E CACIC280
+    int numProc = 6;
+    std::string procs[] = {
+            "chksis.exe",
+            "cacicsvc.exe",
+            "cacic280.exe",
+            "gercols.exe",
+            "notepad.exe",
+            "mapacacic.exe"};
+
+    this->stopProc(procs, numProc);
 
     remove("C:\\Windows\\chksis.exe");
     remove("C:\\Windows\\cacicsvc.exe");
@@ -960,6 +970,83 @@ bool InstallCacicSA::cacicInstalado()
     return this->registryExists(HKEY_LOCAL_MACHINE, CACIC_REGISTRY);
 }
 
+/**
+ * @brief InstallCacicSA::stopProc
+ *
+ * Para a execução do processo pelo nome repassado.
+ *
+ * @param procName nome do processo
+ */
+
+void InstallCacicSA::stopProc(const std::string &procName)
+{
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry) == TRUE)
+    {
+        while (Process32Next(snapshot, &entry) == TRUE)
+        {
+            std::wstring wexeFile = entry.szExeFile;
+            std::string exeFile(wexeFile.begin(), wexeFile.end());
+            if (_stricmp(exeFile.c_str(), procName.c_str()) == 0)
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, entry.th32ProcessID);
+
+                TerminateProcess(hProcess, 0);
+
+                CloseHandle(hProcess);
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
+}
+
+/**
+ * @brief InstallCacicSA::stopProc
+ *
+ * Para a execução de @numProc processos por nome.
+ * @param procName Array de nomes a serem parados.
+ * @param numProc Quantidade de nomes passados.
+ */
+void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
+{
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry) == TRUE)
+    {
+        while (Process32Next(snapshot, &entry) == TRUE)
+        {
+            std::wstring wexeFile = entry.szExeFile;
+            std::string exeFile(wexeFile.begin(), wexeFile.end());
+            for (int i = 0; i<numProc; i++){
+                if (_stricmp(exeFile.c_str(), procName[i].c_str()) == 0)
+                {
+                    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, entry.th32ProcessID);
+
+                    TerminateProcess(hProcess, 0);
+
+                    CloseHandle(hProcess);
+                }
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
+}
+
+bool InstallCacicSA::removeTPPrograms()
+{
+    return (this->runProgram("msiexec /x {B890C4FA-EDD9-4883-8AA5-F534EE0D3FF6}", " /quiet") &&
+           this->runProgram("msiexec /x {F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}", " /quiet"));
+}
+
 std::string InstallCacicSA::getSo()
 {
     return this->comp.getSo();
@@ -987,6 +1074,11 @@ bool InstallCacicSA::exec()
         this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
 
         return false;
+    }
+
+    //Remove programa de terceiros.
+    if (!this->removeTPPrograms()){
+        this->log("Erro ao remover programas de terceiros.", "ERROR");
     }
 
     if (this->createInstallDir() == "") {
@@ -1050,6 +1142,7 @@ bool InstallCacicSA::exec()
     } else {
         this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
     }
+
 
     //TO DO: MODIFICAR URL DO REGISTRO DO CACIC
     return true;

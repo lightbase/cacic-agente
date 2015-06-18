@@ -49,6 +49,7 @@ private slots:
     void testGetUsuarioSo();
     void testExec();
     void testGetNetworkInfo();
+    void testStopProc();
     void cleanupTestCase();
 };
 
