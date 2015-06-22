@@ -123,7 +123,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     if (nDataLength != SOCKET_ERROR) {
         // Recupera body da requisição
-        std::cout << "Retorno do servidor: " << std::endl << buff << std::endl;
+        //std::cout << "Retorno do servidor: " << std::endl << buff << std::endl;
         std::string body = this->getBody(std::string(buff));
         return body;
     } else {
