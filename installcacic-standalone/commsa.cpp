@@ -108,7 +108,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     std::string str = FormBuffer.str();
 
-    std::cout << str << std::endl;
+//    std::cout << str << std::endl;
 
     send(Socket, str.data(), strlen(str.c_str()), NULL);
 
@@ -123,7 +123,7 @@ std::string CommSA::sendReq(const char* host, const char* route, const char* met
 
     if (nDataLength != SOCKET_ERROR) {
         // Recupera body da requisição
-        std::cout << "Retorno do servidor: " << std::endl << buff << std::endl;
+//        std::cout << "Retorno do servidor: " << std::endl << buff << std::endl;
         std::string body = this->getBody(std::string(buff));
         return body;
     } else {

@@ -63,6 +63,8 @@ public:
     void stopProc(const std::string &procName);
     void stopProc(const std::string *procName, int &numProc);
     bool removeTPPrograms();
+    bool dirExists(const std::string &path);
+    bool setValueToRegistry(const std::string &company, const std::string &software, const std::string &key, const std::string &value);
 
     // Informações do SO
     std::string getSo();

@@ -253,9 +253,9 @@ bool InstallCacicSA::verificaServico()
             message += " para a pasta: ";
             message += fileService;
             this->log(message.c_str(), "DEBUG");
-            if (!MoveFileExA(fileServiceTemp.c_str(),
+            if (!(MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
-                            MOVEFILE_REPLACE_EXISTING) != 0) {
+                            MOVEFILE_REPLACE_EXISTING) != 0)) {
                 this->log("Falha ao mover servico.");
                 return false;
             }
@@ -276,9 +276,9 @@ bool InstallCacicSA::verificaServico()
                     }
                 }
             }
-            if (!MoveFileExA(fileServiceTemp.c_str(),
+            if (!(MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
-                            MOVEFILE_REPLACE_EXISTING) != 0) {
+                            MOVEFILE_REPLACE_EXISTING) != 0)) {
 
                 this->informaGerente("Falha ao mover serviço da pasta temporária.");
                 return false;
@@ -289,11 +289,16 @@ bool InstallCacicSA::verificaServico()
                 return false;
             } else {
                 if (!sc.start()){
-                    if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
+                    if (this->dirExists(dirBin) &&
+                        !PathIsDirectoryEmptyA(dirBin.c_str())) {
                         this->informaGerente("Não foi possível iniciar o serviço.");
                     } else {
                         // 3.2 - Se der erro no serviço, baixa o MSI
-                        this->downloadMsi(this->installDir);
+                        if (this->downloadMsi(this->installDir)) {
+                            if (!this->installCacic(this->installDir + "\\Cacic.msi")){
+                                this->informaGerente("Falha ao instalar MSI durante a verificacao do servico.");
+                            }
+                        }
                     }
                 }
             }
@@ -1050,7 +1055,49 @@ void InstallCacicSA::stopProc(const std::string *procName, int &numProc)
 bool InstallCacicSA::removeTPPrograms()
 {
     return (this->runProgram("msiexec /x {B890C4FA-EDD9-4883-8AA5-F534EE0D3FF6}", " /quiet") &&
-           this->runProgram("msiexec /x {F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}", " /quiet"));
+            this->runProgram("msiexec /x {F4D0C7AF-D1AD-43F1-9C10-952784D1F89E}", " /quiet"));
+}
+
+/**
+ * @brief InstallCacicSA::dirExists
+ * @param path complete path of directory
+ * @return true if path is a directory, false if path is wrong or it's not a directory
+ */
+bool InstallCacicSA::dirExists(const std::string &path)
+{
+    DWORD ftyp = GetFileAttributesA(path.c_str());
+    if (ftyp == INVALID_FILE_ATTRIBUTES)
+        return false;  //something is wrong with your path!
+
+    if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+        return true;   // this is a directory!
+
+    return false;    // this is not a directory!
+}
+
+bool InstallCacicSA::setValueToRegistry(const std::string &company, const std::string &software, const std::string &sKey, const std::string &value)
+{
+    HKEY key;
+    std::string path = "Software\\";
+    path += company;
+    path += "\\";
+    path += software;
+
+    LONG error = RegOpenKeyExA(HKEY_LOCAL_MACHINE, path.c_str() , 0, KEY_ALL_ACCESS, &key);
+    if(ERROR_SUCCESS == error){
+        error = RegSetValueExA(key, sKey.c_str(), 0, REG_SZ,(BYTE*) value.data(), value.size());
+        if(error == ERROR_SUCCESS){
+            RegCloseKey(key);
+            return true;
+        } else {
+//            std::cout << "Error RegsetValue: " << error << "\n";
+        }
+
+        RegCloseKey(key);
+    } else {
+//        std::cout << "Error OpenRegistry: " << error << "\n";
+    }
+    return false;
 }
 
 std::string InstallCacicSA::getSo()
@@ -1080,6 +1127,25 @@ bool InstallCacicSA::exec()
         this->log(1, "", "", "Erro de permissão. Usuário não é administrador", "ERROR");
 
         return false;
+    }
+
+    this->log("Atualizando url no registro.", "DEBUG");
+    if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url)){
+        std::cout << "Registro atualizado!\n";
+        this->log("Registro atualizado!");
+    } else {
+        std::cout << "Falha ao atualizar URL no registro.!\n";
+        this->log("Falha ao atualizar URL no registro.", "ERROR");
+        return false;
+    }
+
+    // TODO: 5 - Remove Cacic 2.6 e 2.8 ainda instalado
+    if (!this->deleteCacicAntigo()) {
+        this->log("Erro no procedimento de remoção das versões antigas do Cacic");
+
+        return false;
+    } else {
+        this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
     }
 
     //Remove programa de terceiros.
@@ -1136,21 +1202,11 @@ bool InstallCacicSA::exec()
 
         return false;
     } else {
-
         this->log("Serviço verificado e atualizado com sucesso!", "INFO");
     }
 
-    // TODO: 5 - Remove Cacic 2.6 e 2.8 ainda instalado
-    if (!this->deleteCacicAntigo()) {
-        this->log("Erro no procedimento de remoção das versões antigas do Cacic");
+    this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url);
 
-        return false;
-    } else {
-        this->log("Fim da remoção de versões antigas do Cacic...", "INFO");
-    }
-
-
-    //TO DO: MODIFICAR URL DO REGISTRO DO CACIC
     return true;
 
 }
