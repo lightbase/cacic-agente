@@ -1132,13 +1132,16 @@ bool InstallCacicSA::exec()
     }
 
     this->log("Atualizando url no registro.", "DEBUG");
-    if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url)){
+    if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url) &&
+        this->setValueToRegistry("Lightbase", "Cacic", "usuario", this->user)       &&
+        this->setValueToRegistry("Lightbase", "Cacic", "password", this->pass)){
+
         std::cout << "Registro atualizado!\n";
         this->log("Registro atualizado!");
     } else {
         std::cout << "Falha ao atualizar URL no registro.!\n";
         this->log("Falha ao atualizar URL no registro.", "ERROR");
-        return false;
+//        return false;
     }
 
     // TODO: 5 - Remove Cacic 2.6 e 2.8 ainda instalado
