@@ -13,7 +13,7 @@ class MapaControl : public QObject
 public:
     explicit MapaControl(QObject *parent = 0);
     ~MapaControl();
-    int run(int argc, char *argv[]);
+    void run(int argc, char *argv[]);
 
 signals:
     void finished();

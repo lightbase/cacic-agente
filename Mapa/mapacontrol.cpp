@@ -11,6 +11,7 @@ MapaControl::MapaControl(QObject *parent) : QObject(parent)
 MapaControl::~MapaControl()
 {
     delete oCacicComm;
+    delete interface;
 }
 
 /**
@@ -92,7 +93,7 @@ bool MapaControl::getMapa(const QString &server)
     return ok;
 }
 
-int MapaControl::run(int argc, char *argv[])
+void MapaControl::run(int argc, char *argv[])
 {
     QMap<QString, QString> param;
 
@@ -126,7 +127,7 @@ int MapaControl::run(int argc, char *argv[])
                 mapa->setComm(getConfigJson["applicationUrl"].toString());
                 interface->show();
             } else {
-                return 0;
+                exit(0);
             }
         } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
             // TODO
@@ -140,7 +141,7 @@ int MapaControl::run(int argc, char *argv[])
             mapa->setComm(getConfigJson["applicationUrl"].toString());
             interface->show();
         } else {
-            return 0;
+            exit(0);
         }
     }
 }
