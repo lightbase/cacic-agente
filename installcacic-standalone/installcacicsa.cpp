@@ -239,11 +239,12 @@ bool InstallCacicSA::verificaServico()
             }
             if(this->fileExists(fileService)){
                 BOOL ok = DeleteFileA(fileService.c_str());
-                if(ok != ERROR_FILE_NOT_FOUND){
+                if(ok == 0){
                     //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
+                    this->log("Erro na exclusão do arquivo do serviço. Aguardando...", "DEBUG");
                     Sleep(3000);
                     ok = DeleteFileA(fileService.c_str());
-                    if (ok != ERROR_FILE_NOT_FOUND){
+                    if (ok == 0){
                         this->informaGerente("Falha ao tentar excluir serviço antigo.");
                     }
                 }
@@ -253,9 +254,9 @@ bool InstallCacicSA::verificaServico()
             message += " para a pasta: ";
             message += fileService;
             this->log(message.c_str(), "DEBUG");
-            if (!(MoveFileExA(fileServiceTemp.c_str(),
+            if (MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
-                            MOVEFILE_REPLACE_EXISTING) != 0)) {
+                            MOVEFILE_REPLACE_EXISTING) == 0) {
                 this->log("Falha ao mover servico.");
                 return false;
             }
@@ -267,18 +268,19 @@ bool InstallCacicSA::verificaServico()
         } else {
             if(this->fileExists(fileService)){
                 BOOL ok = DeleteFileA(fileService.c_str());
-                if(ok != ERROR_FILE_NOT_FOUND){
+                if(ok == 0){
                     //Aguarda pra ter certeza de que o serviço não esteja rodando mais e tenta de novo
-                    Sleep(3000);
+                    this->log("Erro na exclusão do arquivo do serviço. Aguardando...", "DEBUG");
+                    Sleep(3000);                    
                     ok = DeleteFileA(fileService.c_str());
-                    if (ok != ERROR_FILE_NOT_FOUND){
+                    if (ok == 0){
                         this->informaGerente("Falha ao tentar excluir serviço antigo.");
                     }
                 }
             }
-            if (!(MoveFileExA(fileServiceTemp.c_str(),
+            if (MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
-                            MOVEFILE_REPLACE_EXISTING) != 0)) {
+                            MOVEFILE_REPLACE_EXISTING) == 0) {
 
                 this->informaGerente("Falha ao mover serviço da pasta temporária.");
                 return false;
@@ -1130,13 +1132,16 @@ bool InstallCacicSA::exec()
     }
 
     this->log("Atualizando url no registro.", "DEBUG");
-    if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url)){
+    if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url) &&
+        this->setValueToRegistry("Lightbase", "Cacic", "usuario", this->user)       &&
+        this->setValueToRegistry("Lightbase", "Cacic", "password", this->pass)){
+
         std::cout << "Registro atualizado!\n";
         this->log("Registro atualizado!");
     } else {
         std::cout << "Falha ao atualizar URL no registro.!\n";
         this->log("Falha ao atualizar URL no registro.", "ERROR");
-        return false;
+//        return false;
     }
 
     // TODO: 5 - Remove Cacic 2.6 e 2.8 ainda instalado
