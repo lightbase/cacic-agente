@@ -57,7 +57,8 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando dados do Mapa ao gerente."));
         retornoEnvio = oCacicComm->comm(ROTA_MAPA_FORM, &ok, jsonMapa , true);
-        if(retornoEnvio.contains("error")) {
+        if(retornoEnvio.contains("error")||
+                ( retornoEnvio.contains("reply") && retornoEnvio["reply"].toString().isEmpty()) ) {
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar dados do Mapa: " + retornoEnvio["error"].toString()));
         }
     }
@@ -140,7 +141,7 @@ bool Mapa::preencheNomeUsuario()
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
 
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , true);
+        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , false);
 
         if(retornoEnvio.contains("error")) {
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));

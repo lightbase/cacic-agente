@@ -55,6 +55,8 @@ void HttpDaemon::readClient()
 //                "<h1>Nothing to see here</h1>\n"
 //                << QDateTime::currentDateTime().toString() << "\n";
             socket->close();
+//            socket->waitForDisconnected();
+//            socket->disconnectFromHost();
 
             //QtServiceBase::instance()->logMessage("Wrote to client");
 
@@ -165,6 +167,38 @@ QString HttpDaemon::getLdapInfo()
     return retorno;
 }
 
+QString HttpDaemon::getMapa()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"objectClass\": \"getMapa\",\n"
+        "\"col_patrimonio\": true\n"
+        "}\n";
+
+    retorno += "\n";
+
+    return retorno;
+}
+
+QString HttpDaemon::getMapaFormReply()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"objectClass\": \"formReply\",\n"
+        "\"status\": \"formReply\"\n"
+        "}\n";
+
+    retorno += "\n";
+
+    return retorno;
+}
+
 QString HttpDaemon::processRoutes(const QString &rota)
 {
     // Processa a rota definida na variável executando um método para cada rota
@@ -179,6 +213,10 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getDownloadMsi();
     } else if(rota == ROUTE_MAPA_LDAP) {
         return this->getLdapInfo();
+    } else if(rota == ROUTE_MAPA_FORM) {
+        return this->getMapaFormReply();
+    } else if(rota == ROUTE_MAPA_GETMAPA) {
+        return this->getMapa();
     } else {
         return this->getDefaultRoute(rota);
     }
