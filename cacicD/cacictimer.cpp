@@ -295,8 +295,13 @@ QJsonObject CacicTimer::getTest(CacicComm &OCacicComm){
     bool ok;
     QJsonObject as;
     CACIC_Computer OCacic_Computer;
+    QJsonObject jsonresult;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true);
+    if (as["computador"].isNull()){
+        jsonresult["error"] = QJsonValue::fromVariant("Falha ao coletar dados básicos do computador.");
+    } else {
+        jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true);
+    }
     if(!ok){
         jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
     }
@@ -318,8 +323,13 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     bool ok;
     QJsonObject as;
     CACIC_Computer OCacic_Computer;
+    QJsonObject jsonresult;
     as["computador"] = OCacic_Computer.toJsonObject();
-    QJsonObject jsonresult = OCacicComm.comm(ROTA_GETCONFIG, &ok, as, true);
+    if (as["computador"].isNull()){
+        jsonresult["error"] = QJsonValue::fromVariant("Falha ao coletar dados básicos do computador.");
+    } else {
+        jsonresult = OCacicComm.comm(ROTA_GETCONFIG, &ok, as, true);
+    }
     if(jsonresult.contains("error")){
         logcacic->escrever(LogCacic::ErrorLevel, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;

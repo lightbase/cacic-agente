@@ -51,9 +51,15 @@ QJsonObject CACIC_Computer::toJsonObject()
 
     json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
     json["operatingSystem"] = this->oOperatingSystem.toJsonObject();
+    if (json["operatingSystem"].isNull()){
+        return QJsonObject();
+    }
     foreach(QVariantMap auxMap, this->getNetworkInterface()){
         network.append(QJsonObject::fromVariantMap(auxMap));
         count++;
+    }
+    if (network.isEmpty()){
+        return QJsonObject();
     }
     json["networkDevices"] = network;
     json["nmComputador"] = QJsonValue::fromVariant(QString::fromStdString(this->computerName));
