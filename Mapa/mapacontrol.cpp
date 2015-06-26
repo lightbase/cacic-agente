@@ -80,15 +80,18 @@ bool MapaControl::getMapa(const QString &server)
             oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         }
 
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , true);
-
-        if(retornoEnvio.contains("error")) {
+        retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
+qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
+        if(retornoEnvio.contains("error") ||
+               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].toString().isEmpty()) ) {
             return false;
         } else if(!retornoEnvio["objectClass"].isUndefined() &&
                   !retornoEnvio["objectClass"].isNull() &&
                   retornoEnvio["objectClass"] == "getMapa" ) {
+qDebug() << "getMapa: Json correto recebido";
             ok = retornoEnvio["col_patrimonio"].toBool();
         }
+qDebug() << "getMapa: saiu dos ifs";
     }
     return ok;
 }
@@ -114,6 +117,8 @@ void MapaControl::run(int argc, char *argv[])
                     mapa->setComm(param["server"]);
                     interface->show();
                 }
+            } else {
+                exit(0);
             }
         } else if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -ldap
             if(param["ldap"] == "true")
@@ -128,6 +133,8 @@ void MapaControl::run(int argc, char *argv[])
                 interface->show();
             } else {
                 exit(0);
+//                emit finished();
+//                return;
             }
         } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
             // TODO
@@ -144,5 +151,6 @@ void MapaControl::run(int argc, char *argv[])
             exit(0);
         }
     }
+    exit(0);
 }
 

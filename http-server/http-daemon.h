@@ -37,6 +37,8 @@
      QString getDownload();
      QString getDownloadMsi();
      QString getLdapInfo();
+     QString getMapa();
+     QString getMapaFormReply();
 
  private:
      bool disabled;

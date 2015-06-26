@@ -38,7 +38,6 @@ public:
 private:
 
     OperatingSystem oOperatingSystem;
-    int pegarOS();
     std::string pegarUsu();
 
     ConsoleObject console;

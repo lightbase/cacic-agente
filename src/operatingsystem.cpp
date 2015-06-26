@@ -137,12 +137,15 @@ QString OperatingSystem::coletaNomeOs()
 QJsonObject OperatingSystem::toJsonObject()
 {
     //Verifica os dados novamente antes de gerar outro JSON.
-    if (this->nomeOs.isEmpty() || this->nomeOs.isNull())
+    if (this->nomeOs.isEmpty() || this->nomeOs.isNull()){
         this->nomeOs = this->coletaNomeOs();
-    if (this->nomeOs.isEmpty() || this->nomeOs.isNull())
-        return QJsonObject();
-    if (this->idOs == -1)
+    }
+    if (this->idOs == -1){
         this->idOs = this->coletaIdOs();
+    }
+    if (this->nomeOs.isEmpty() || this->nomeOs.isNull()) {
+        return QJsonObject();
+    }
     QJsonObject json;
     json["idOs"] = QJsonValue::fromVariant(QVariant::fromValue(this->idOs));
     json["nomeOs"] = QJsonValue::fromVariant(this->nomeOs);
