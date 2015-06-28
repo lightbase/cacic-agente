@@ -234,7 +234,9 @@ bool InstallCacicSA::verificaServico()
             if (sc.isRunning()){
                 this->log("Servico esta rodando. Parando servico...", "DEBUG");
                 if (!sc.stop()){
-                    this->log("Falha ao parar servico.");
+                    std::string msg = "Falha ao parar servico: ";
+                    msg += sc.getLastError();
+                    this->log(msg.c_str());
                 }
             }
             if(this->fileExists(fileService)){
@@ -245,7 +247,9 @@ bool InstallCacicSA::verificaServico()
                     Sleep(3000);
                     ok = DeleteFileA(fileService.c_str());
                     if (ok == 0){
-                        this->informaGerente("Falha ao tentar excluir serviço antigo.");
+                        std::string msg = "Falha ao tentar excluir serviço antigo. Código: ";
+                        msg += GetLastError();
+                        this->informaGerente(msg);
                     }
                 }
             }
@@ -257,7 +261,9 @@ bool InstallCacicSA::verificaServico()
             if (MoveFileExA(fileServiceTemp.c_str(),
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) == 0) {
-                this->log("Falha ao mover servico.");
+                std::string msg = "Falha ao mover servico. Erro: ";
+                msg += GetLastError();
+                this->informaGerente(msg);
                 return false;
             }
             if (!sc.start()){
@@ -274,7 +280,10 @@ bool InstallCacicSA::verificaServico()
                     Sleep(3000);                    
                     ok = DeleteFileA(fileService.c_str());
                     if (ok == 0){
-                        this->informaGerente("Falha ao tentar excluir serviço antigo.");
+                        std::string msg = "Falha ao tentar excluir serviço antigo. Erro:";
+                        msg += GetLastError();
+                        this->informaGerente(msg);
+                        return false;
                     }
                 }
             }
@@ -282,12 +291,17 @@ bool InstallCacicSA::verificaServico()
                             fileService.c_str(),
                             MOVEFILE_REPLACE_EXISTING) == 0) {
 
-                this->informaGerente("Falha ao mover serviço da pasta temporária.");
+                std::string msg = "Falha ao mover serviço da pasta temporária. Erro: ";
+                msg += GetLastError();
+                this->informaGerente(msg);
+
                 return false;
             }
             // 3.1 - Instala de novo (Baixa o serviço e executa)
             if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
-                this->informaGerente("Falha ao instalar serviço.");
+                std::string msg = "Falha ao instalar serviço. Erro: ";
+                msg += sc.getLastError();
+                this->informaGerente(msg);
                 return false;
             } else {
                 if (!sc.start()){
@@ -310,7 +324,9 @@ bool InstallCacicSA::verificaServico()
             if (!sc.isRunning()){
                 if (!sc.start()){
                     if (!PathIsDirectoryEmptyA(dirBin.c_str())) {
-                        this->informaGerente("Não foi possível iniciar o serviço.");
+                        std::string msg = "Não foi possível iniciar o serviço. Erro: ";
+                        msg += sc.getLastError();
+                        this->informaGerente(msg);
                     } else {
                         // 3.2 - Se der erro no serviço, baixa o MSI
                         this->downloadMsi(this->installDir);
@@ -319,7 +335,9 @@ bool InstallCacicSA::verificaServico()
             }
         } else if (this->fileExists(fileService)) {
             if (!sc.install(L"C:\\Cacic\\cacic-service.exe")){
-                this->informaGerente("Não foi possível instalar o serviço.");
+                std::string msg = "Não foi possível instalar o serviço. Erro: ";
+                msg += sc.getLastError();
+                this->informaGerente(msg);
             }
         }
     }
@@ -1137,7 +1155,7 @@ bool InstallCacicSA::exec()
         this->setValueToRegistry("Lightbase", "Cacic", "password", this->pass)){
 
         std::cout << "Registro atualizado!\n";
-        this->log("Registro atualizado!");
+        this->log("Registro atualizado!", "INFO");
     } else {
         std::cout << "Falha ao atualizar URL no registro.!\n";
         this->log("Falha ao atualizar URL no registro.", "ERROR");
