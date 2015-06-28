@@ -35,7 +35,8 @@ public:
         MAC,
         LINUX_DEBIAN,
         LINUX_UBUNTU,
-        LINUX_ARCH
+        LINUX_ARCH,
+        LINUX_ELEMENTARY
     };
     static const enum OsList OsList;
 

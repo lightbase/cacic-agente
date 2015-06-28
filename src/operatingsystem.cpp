@@ -30,10 +30,12 @@ int OperatingSystem::coletaIdOs(){
         if(line.contains("DISTRIB_DESCRIPTION")){
             if( line.contains("Arch"))
                 return LINUX_ARCH;
-            else if( line.contains("Debian"))
+            else if( line.contains("Debian", Qt::CaseInsensitive))
                 return LINUX_DEBIAN;
-            else if( line.contains("Ubuntu"))
+            else if( line.contains("Ubuntu", Qt::CaseInsensitive))
                 return LINUX_UBUNTU;
+            else if( line.contains("Elementary",Qt::CaseInsensitive))
+                return LINUX_ELEMENTARY;
         }
     }
     return -1;
@@ -116,15 +118,28 @@ QString OperatingSystem::coletaNomeOs()
     QString nomeDistro;
 
     QStringList split = console("cat /etc/*release | grep DISTRIB_DESCRIPTION").split("=");
-    nomeDistro = split[1].mid(1, split[1].trimmed().size()-2 ).trimmed();
+//    nomeDistro = split[1].mid(1, split[1].trimmed().size()-2 ).trimmed();
 
+    if (split.size() > 1) {
+        nomeDistro = split[1].mid(1,split[1].indexOf("\"", split[1].indexOf("\"") + 1) - 1);
+    } else {
+        nomeDistro = "Unknown";
+    }
+//    qDebug() << "----------------" << nomeDistro << "--------------------";
     QStringList consoleOutput = console("uname -i").split("\n");
 
     if(consoleOutput.contains("unknown"))
         consoleOutput = console("uname -m").split("\n");
 
-    nomeDistro.append("-"+consoleOutput.at(0));
-
+    if(consoleOutput.contains("x86_64")){
+        nomeDistro.append("-x86_64");
+    } else if (consoleOutput.contains("i386") ||
+               consoleOutput.contains("i486") ||
+               consoleOutput.contains("i586") ||
+               consoleOutput.contains("i686")  ){
+        nomeDistro.append("-x86");
+    }
+//    qDebug () << ">>>>>>>>>>>>>>>>>>>>>>>>>" << nomeDistro << "<<<<<<<<<<<<<<<<";
     return nomeDistro;
 #endif
     return "";

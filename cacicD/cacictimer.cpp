@@ -513,6 +513,20 @@ bool CacicTimer::realizarEnviodeColeta(){
     bool ok = false;
     QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
+        QJsonObject coletaComp = jsonColeta["computador"].toObject();
+
+        //Pode acontecer de no momento da coleta o computador estar sem internet.
+        //Aqui eu garanto que os dados básicos do computador estejam completos.
+        if (coletaComp["networkDevices"].isNull() ||
+            coletaComp["operatingSystem"].isNull()) {
+            CACIC_Computer oComp;
+            coletaComp = oComp.toJsonObject();
+            if(coletaComp.isEmpty()){
+                return false;
+            } else {
+                jsonColeta["computador"] = coletaComp;
+            }
+        }
         CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
         OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());

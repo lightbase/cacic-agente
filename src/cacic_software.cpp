@@ -65,8 +65,8 @@ QJsonObject cacic_software::coletaLinux()
 
     if( operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH ) {
         return coletaArch();
-    } else if ( operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
-                operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU ) {
+    } else /*if ( operatingSystem.getIdOs() == OperatingSystem::LINUX_DEBIAN ||
+                operatingSystem.getIdOs() == OperatingSystem::LINUX_UBUNTU )*/ {
         return coletaDebian();
     }
 
