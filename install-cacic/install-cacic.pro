@@ -74,7 +74,9 @@ SOURCES +=  main.cpp \
             ../src/identificadores.cpp \
             ../src/servicecontroller.cpp \
             ../src/QLogger.cpp \
-            ../src/logcacic.cpp
+            ../src/logcacic.cpp \
+            ../src/vregistry.cpp \
+            ../src/vqtconvert.cpp \
 
 HEADERS += \
             installcacic.h \
@@ -87,7 +89,9 @@ HEADERS += \
             ../src/identificadores.h \
             ../src/servicecontroller.h \
             ../src/QLogger.h \
-            ../src/logcacic.h
+            ../src/logcacic.h \
+            ../src/vregistry.h \
+            ../src/vqtconvert.h \
 
 INCLUDEPATH += ../src \
 #               ../src/crypto++/include/

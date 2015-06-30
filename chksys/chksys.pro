@@ -47,7 +47,9 @@ SOURCES     += main.cpp \
                ../src/logcacic.cpp \
                ../src/cacicthread.cpp \
                ../src/cacic_comm.cpp \
-               chksystimer.cpp
+               chksystimer.cpp \
+                ../src/vregistry.cpp \
+                ../src/vqtconvert.cpp \
 
 
 HEADERS     += chksys.h \
@@ -58,7 +60,9 @@ HEADERS     += chksys.h \
                ../src/logcacic.h \
                ../src/cacicthread.h \
                ../src/cacic_comm.h \
-               chksystimer.h
+               chksystimer.h \
+                ../src/vregistry.h \
+                ../src/vqtconvert.h \
 
 include(../src/qtservice/src/qtservice.pri)
 
