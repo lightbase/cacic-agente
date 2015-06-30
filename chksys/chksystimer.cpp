@@ -69,7 +69,7 @@ void chksysTimer::onTimerCheckService()
         }
 
         ConsoleObject console;
-        console("/etc/init.d/cacic3 start");
+        console("/etc/init.d/cacic3 start")\;
     }
 #endif
     this->timerCheckService->start();
@@ -167,10 +167,9 @@ bool chksysTimer::verificarModulos()
                     ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
                     if (service->isRunning()) {
                         log->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
-                        QProcess stopService;
-                        QStringList args;
-                        args << "stop" << "cacicdaemon";
-                        stopService.execute("SC", args);
+                        if (!service->stop()) {
+                            log->escrever(LogCacic::ErrorLevel, "Falha ao parar serviço. Info: " service->getLastError());
+                        }
                     }
                     delete service;
 #else
