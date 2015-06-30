@@ -72,9 +72,6 @@ private:
     bool enviarLogs();
     void registrarDataEnvioDeColeta();
     QString getDirProgram() const;
-#ifdef Q_OS_WIN
-    void changeCacicVersion();
-#endif
 
     CacicThread *cacicthread;
     QString cacicMainFolder;

@@ -1152,7 +1152,8 @@ bool InstallCacicSA::exec()
     this->log("Atualizando url no registro.", "DEBUG");
     if (this->setValueToRegistry("Lightbase", "Cacic", "applicationUrl", this->url) &&
         this->setValueToRegistry("Lightbase", "Cacic", "usuario", this->user)       &&
-        this->setValueToRegistry("Lightbase", "Cacic", "password", this->pass)){
+        this->setValueToRegistry("Lightbase", "Cacic", "password", this->pass)      &&
+        this->setValueToRegistry("Lightbase", "Cacic", "mainFolder", this->cacicPath)){
 
         std::cout << "Registro atualizado!\n";
         this->log("Registro atualizado!", "INFO");

@@ -27,6 +27,9 @@ void cacicD::start() {
         Ocacictimer = new CacicTimer(cacicMainFolder);
         QObject::connect(Ocacictimer, SIGNAL(finalizar()), this->application(), SLOT(quit()));
 
+        //Força a atualização da versão do cacic no registro.
+        CCacic::changeCacicVersion();
+
         logcacic->escrever(LogCacic::InfoLevel, QString("Cacic " + Identificadores::AGENTE_VERSAO + "."));
         Ocacictimer->iniciarTimer();
     }catch (...){

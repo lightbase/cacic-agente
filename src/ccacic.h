@@ -11,6 +11,7 @@
 #ifndef CCACIC_H
 #define CCACIC_H
 
+#include <../src/vregistry.h>
 #include <QCoreApplication>
 #include <QProcess>
 #include <QObject>
@@ -59,6 +60,9 @@ namespace CCacic {
     QString getMesFromString(QString mes);
     void salvarVersao(QString modulo);
     bool findProc(const char *name);
+#ifdef Q_OS_WIN
+    bool changeCacicVersion();
+#endif
 
 };
 

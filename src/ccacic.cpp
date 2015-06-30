@@ -422,3 +422,35 @@ bool CCacic::findProc(const char *name)
     return false;
 }
 
+#ifdef Q_OS_WIN
+/**
+ * @brief CCacic::changeCacicVersion
+ * Altera o valor do da versão do cacic no regedit para a versão que está rodando.
+ * @return verdadeiro caso tenha sido encontrado o software cacic encontrado e o valor seja alterado.
+ */
+bool CCacic::changeCacicVersion()
+{
+    bool found = false;
+    using namespace voidrealms::win32;
+    QStringList regedit;
+    //No windows, ele armazena os dados em 2 locais diferentes se for x64. Um para programas x86 e outro pra x64.
+    regedit.append("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+    regedit.append("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+    foreach(QString registry, regedit){
+        VRegistry reg;
+        reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
+        QStringList keys = reg.enum_Keys();
+        foreach(QString key, keys){
+            VRegistry subReg;
+            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
+            if (subReg.get_REG_SZ("DisplayName") == "Cacic"){
+                qDebug() << "REGISTRO DO CACIC ENCONTRADO!!!! <<<<<<";
+                subReg.set_REG_SZ("DisplayVersion", Identificadores::AGENTE_VERSAO);
+                found = true;
+            }
+        }
+        if (found) break;
+    }
+    return found;
+}
+#endif
