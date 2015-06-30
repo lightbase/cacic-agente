@@ -248,7 +248,7 @@ void CacicTimer::iniciarThread(){
             }
         }
         //Deve ser enviado tendo ou não módulos.
-        enviarLogs();
+//        enviarLogs();
     }
 }
 
@@ -424,7 +424,7 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
                 }
 
                 logFile->close();
-                delete logFile;
+//                delete logFile;
 
                 for ( int i = linesList.size()-1; i > linesList.size()-N_LOGS_ENVIO-1; i-- ) {
                     QString timestamp = linesList.at(i).mid(1, linesList.at(i).indexOf("]")-1);

@@ -88,6 +88,7 @@ private slots:
     void testColeta();
     void testLogger();
     void testEnviaColeta();
+    void testEnviaLog();
     void testServiceController();
     void testStopCheckCacicService();
     void cleanupTestCase();

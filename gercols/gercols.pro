@@ -41,7 +41,7 @@ SOURCES += \
     ../src/QLogger.cpp \
     ../src/identificadores.cpp \
     ../src/servicecontroller.cpp \
-    ../src/logcacic.cpp
+    ../src/logcacic.cpp \
 
 HEADERS += \
     ./gercols.h \
@@ -58,7 +58,7 @@ HEADERS += \
     ../src/QLogger.h \
     ../src/identificadores.h \
     ../src/servicecontroller.h \
-    ../src/logcacic.h
+    ../src/logcacic.h \
 
 CONFIG   += console
 CONFIG   -= app_bundle

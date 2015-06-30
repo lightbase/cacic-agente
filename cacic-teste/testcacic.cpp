@@ -455,6 +455,76 @@ void CTestCacic::testEnviaColeta()
     QVERIFY(ok);
 }
 
+void CTestCacic::testEnviaLog()
+{
+    LogCacic *logcacic = new LogCacic("Cacic-Teste", this->testPath + "/Logs/teste");
+    bool ok = false;
+    QStringList logLvls;
+    logLvls.append("ERROR");
+
+    QJsonObject jsonObject;
+    CACIC_Computer oComputer;
+
+    jsonObject["computador"] = oComputer.toJsonObject();
+
+    foreach ( QString stringLvl, logLvls ){
+
+        LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
+
+        if ( level == LogCacic::InfoLevel ||
+             level == LogCacic::ErrorLevel) {
+
+            QFile *logFile;
+            logFile = new QFile(logcacic->resolverEnderecoArquivo(level));
+
+            QJsonArray logLevelArray;
+            if (logFile->exists() &&
+                logFile->open(QIODevice::ReadOnly)) {
+
+                QStringList linesList;
+                QTextStream stream(logFile);
+
+                while ( !stream.atEnd() ) {
+                    linesList.append( stream.readLine() );
+                }
+
+                logFile->close();
+//                delete logFile;
+
+                for ( int i = linesList.size()-1; i > linesList.size()-N_LOGS_ENVIO-1; i-- ) {
+                    QString timestamp = linesList.at(i).mid(1, linesList.at(i).indexOf("]")-1);
+                    QString message = linesList.at(i).mid(linesList.at(i).indexOf("]")+2);
+
+                    QJsonObject lineJson;
+                    lineJson["timestamp"] = QJsonValue::fromVariant(timestamp);
+                    lineJson["message"] = QJsonValue::fromVariant(message);
+                    logLevelArray.append( lineJson );
+
+                }
+            }
+            if( level == LogCacic::InfoLevel )
+                jsonObject["logInfo"] = logLevelArray;
+            if (level == LogCacic::ErrorLevel )
+                jsonObject["logError"] = logLevelArray;
+
+        }
+    }
+
+    if (!jsonObject.isEmpty()){
+
+        CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->testPath);
+        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        QJsonObject retornoColeta;
+
+        logcacic->escrever(LogCacic::InfoLevel, QString("Enviando logs ao gerente."));
+
+        retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonObject , true);
+        QVERIFY(ok);
+    }
+}
+
 void CTestCacic::testGetModulesValues()
 {
     bool ok = true;
