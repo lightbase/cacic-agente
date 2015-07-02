@@ -403,8 +403,12 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
     jsonObject["computador"] = oComputer.toJsonObject();
 
     foreach ( QString stringLvl, logLvls ){
-
-        LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
+        LogCacic::CacicLogLevel level;
+        try{
+            level = logcacic->levelName2Value( stringLvl );
+        } catch(int) {
+            QFAIL("Invalid logLevel.");
+        }
 
         if ( level == LogCacic::InfoLevel ||
              level == LogCacic::ErrorLevel) {

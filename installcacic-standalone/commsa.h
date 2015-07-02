@@ -19,6 +19,7 @@
 #define ROUTE_MAPA_FORM "/ws/neo/mapa/form"
 #define ROUTE_MAPA_GETMAPA "/ws/neo/mapa/getMapa"
 #define ROUTE_ERRO "/ws/instala/erro"
+#define ROUTE_LOG "/ws/neo/log"
 #define CACIC_SERVICE_BIN "cacic-service.exe"
 #define CACIC_MSI "Cacic.msi"
 #define CACIC_VERSION "3.1.15"

@@ -199,6 +199,21 @@ QString HttpDaemon::getMapaFormReply()
     return retorno;
 }
 
+QString HttpDaemon::getLog()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"valor\": \"OK\"}\n";
+
+    retorno += QDateTime::currentDateTime().toString();
+    retorno += "\n";
+
+    return retorno;
+}
+
 QString HttpDaemon::processRoutes(const QString &rota)
 {
     // Processa a rota definida na variável executando um método para cada rota
@@ -217,6 +232,8 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getMapaFormReply();
     } else if(rota == ROUTE_MAPA_GETMAPA) {
         return this->getMapa();
+    } else if(rota == ROUTE_LOG) {
+        return this->getLog();
     } else {
         return this->getDefaultRoute(rota);
     }

@@ -460,7 +460,8 @@ void CTestCacic::testEnviaLog()
     LogCacic *logcacic = new LogCacic("Cacic-Teste", this->testPath + "/Logs/teste");
     bool ok = false;
     QStringList logLvls;
-    logLvls.append("ERROR");
+    logLvls.append("ErrorLevel");
+    logLvls.append("InfoLevel");
 
     QJsonObject jsonObject;
     CACIC_Computer oComputer;
@@ -469,7 +470,12 @@ void CTestCacic::testEnviaLog()
 
     foreach ( QString stringLvl, logLvls ){
 
-        LogCacic::CacicLogLevel level = logcacic->levelName2Value( stringLvl );
+        LogCacic::CacicLogLevel level;
+        try {
+           level = logcacic->levelName2Value( stringLvl );
+        } catch(int) {
+            QFAIL("Invalid logLevel.");
+        }
 
         if ( level == LogCacic::InfoLevel ||
              level == LogCacic::ErrorLevel) {
@@ -513,16 +519,19 @@ void CTestCacic::testEnviaLog()
     if (!jsonObject.isEmpty()){
 
         CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->testPath);
-        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
-        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+        OCacicComm->setUrlGerente("http://teste.cacic.cc");
+//        OCacicComm->setUrlGerente("http://localhost:8080");
+        OCacicComm->setUsuario("cacic");
+        OCacicComm->setPassword("cacic123");
+
         QJsonObject retornoColeta;
 
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando logs ao gerente."));
+        retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonObject , false);
 
-        retornoColeta = OCacicComm->comm(ROTA_LOG, &ok, jsonObject , true);
         QVERIFY(ok);
     }
+
 }
 
 void CTestCacic::testGetModulesValues()

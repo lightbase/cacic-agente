@@ -37,6 +37,7 @@
      QString getDownload();
      QString getDownloadMsi();
      QString getLdapInfo();
+     QString getLog();
      QString getMapa();
      QString getMapaFormReply();
 

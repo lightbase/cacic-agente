@@ -77,6 +77,7 @@ QJsonObject CacicComm::comm(const QString route, bool *ok, const QJsonObject &js
 
     if (reply->error() == QNetworkReply::NoError) {
         //se não houver erro, grava o retorno;
+
         QVariant replyVariant = reply->readAll();
         QJsonDocument replyDocument = QJsonDocument::fromJson(replyVariant.toByteArray());
         jsonObj["reply"] = (!replyDocument.isNull()) ?
