@@ -248,7 +248,7 @@ void CacicTimer::iniciarThread(){
             }
         }
         //Deve ser enviado tendo ou não módulos.
-//        enviarLogs();
+        enviarLogs();
     }
 }
 
@@ -404,11 +404,8 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
 
     foreach ( QString stringLvl, logLvls ){
         LogCacic::CacicLogLevel level;
-        try{
-            level = logcacic->levelName2Value( stringLvl );
-        } catch(int) {
-            QFAIL("Invalid logLevel.");
-        }
+
+        level = logcacic->levelName2Value( stringLvl );
 
         if ( level == LogCacic::InfoLevel ||
              level == LogCacic::ErrorLevel) {
