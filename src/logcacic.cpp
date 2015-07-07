@@ -101,7 +101,7 @@ QString LogCacic::getLevelEmString(LogCacic::CacicLogLevel level){
     return "InfoLevel";
 }
 
-LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName) throw(int){
+LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName){
 
     if (levelName == "TraceLevel")
         return LogCacic::TraceLevel;
@@ -116,7 +116,7 @@ LogCacic::CacicLogLevel LogCacic::levelName2Value(const QString &levelName) thro
     else if (levelName == "FatalLevel")
         return LogCacic::FatalLevel;
     else
-        throw -1;
+        return LogCacic::UnknownLevel;
 
 }
 

@@ -26,13 +26,14 @@ public:
         WarnLevel = 3,
         ErrorLevel = 4,
         FatalLevel = 5,
-        MessageControler = 6
+        MessageControler = 6,
+        UnknownLevel = -1
     };
 
     void escrever(CacicLogLevel level, QString msg);
     QString getLevelEmString(CacicLogLevel level);
     QString resolverEnderecoArquivo(CacicLogLevel level);
-    CacicLogLevel levelName2Value(const QString &levelName) throw(int);
+    CacicLogLevel levelName2Value(const QString &levelName);
 
 private:
     QString identificador;
