@@ -319,7 +319,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
                             foreach(QJsonValue pciChildrenValue, pciChildrenArray) {
                                 QJsonObject pciChildrenObject = pciChildrenValue.toObject();
-                                coletaLinuxPci(hardware, pciChildrenObject); //Aqui não seria picChuldrenObject?!
+                                coletaLinuxPci(hardware, pciChildrenObject);
                             }
 
                         } else if (pciObject["id"] == QJsonValue::fromVariant(QString("storage")) ) {
@@ -495,30 +495,30 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
     }
 
     if ( pciJson["id"] == QJsonValue::fromVariant(QString("multimedia")) ) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Vendor"] = pciJson["vendor"];
 
-        hardware["multimedia"] = pciMember;
+        hardware["Multimedia"] = pciMember;
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) &&
                ( pciJson["description"].toString().contains("Wireless") ||
                  pciJson["product"].toString().contains("Wireless") )) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
-        pciMember["logicalname"] = pciJson["logicalname"];
-        pciMember["serial"] = pciJson["serial"];
-        pciMember["firmware"] = pciJson["configuration"].toObject()["firmware"];
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Vendor"] = pciJson["vendor"];
+        pciMember["Logicalname"] = pciJson["logicalname"];
+        pciMember["Serial"] = pciJson["serial"];
+        pciMember["Firmware"] = pciJson["configuration"].toObject()["firmware"];
 
         pciNetwork.append(pciMember);
         //        hardware["wireless_card"] = pciMember;
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
-        pciMember["logicalname"] = pciJson["logicalname"];
-        pciMember["serial"] = pciJson["serial"];
-        pciMember["capacity"] = QJsonValue::fromVariant(
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Vendor"] = pciJson["vendor"];
+        pciMember["LogicalName"] = pciJson["logicalname"];
+        pciMember["Serial"] = pciJson["serial"];
+        pciMember["Capacity"] = QJsonValue::fromVariant(
                     CCacic::convertDouble(pciJson["capacity"].toDouble(), 0));
 
         //        hardware["ethernet_card"] = pciMember;
@@ -582,7 +582,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     }
 
                     extendedList.append(QJsonValue::fromVariant(newExtended));
-                    newPartition["children"] = extendedList;
+                    newPartition["Children"] = extendedList;
                 }
 
             } else {
