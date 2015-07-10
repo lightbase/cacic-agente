@@ -453,7 +453,6 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
 
     cpu["Family"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    QString aux = console("dmidecode -t processor | grep 'Max Speed'");
     consoleOutput = console("dmidecode -t processor").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
         if (!line.isEmpty()) {
@@ -461,6 +460,7 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
             QStringList auxList;
 
             if(line.contains("Max Speed") || line.contains("Current Speed")) {
+
                 auxList = line.split(" ");
                 if (auxList.size() >= 2) {
                     aux = auxList.at(2);
@@ -495,6 +495,7 @@ void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &co
             break;
         }
     }
+
 //    consoleOutput = console("cat /proc/cpuinfo").split("\n", QString::SkipEmptyParts);
 //    foreach(QString line, consoleOutput){
 //        if(line.contains("family") ){
