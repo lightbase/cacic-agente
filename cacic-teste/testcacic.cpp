@@ -246,6 +246,7 @@ void CTestCacic::testRemoveRegistry()
 void CTestCacic::testChangeVersionRegistry()
 {
 #ifdef Q_OS_WIN
+    //TODO: criar registro falso pro teste.
     QVERIFY(CCacic::changeCacicVersion());
 #else
     QSKIP("Teste desnecessário nessa plataforma");

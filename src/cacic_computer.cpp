@@ -47,7 +47,6 @@ QJsonObject CACIC_Computer::toJsonObject()
     this->coletaDados();
     QJsonObject json;
     QJsonArray network;
-    int count = 1;
 
     json["usuario"] = QJsonValue::fromVariant(QString::fromStdString(this->usuario));
     json["operatingSystem"] = this->oOperatingSystem.toJsonObject();
@@ -56,15 +55,15 @@ QJsonObject CACIC_Computer::toJsonObject()
     }
     foreach(QVariantMap auxMap, this->getNetworkInterface()){
         network.append(QJsonObject::fromVariantMap(auxMap));
-        count++;
     }
     if (network.isEmpty()){
         return QJsonObject();
     }
-    json["networkDevices"] = network;
+    json["networkDevices"] = QJsonValue(network);
     json["nmComputador"] = QJsonValue::fromVariant(QString::fromStdString(this->computerName));
     json["versaoAgente"] = QJsonValue::fromVariant(Identificadores::AGENTE_VERSAO);
     json["versaoGercols"] = QJsonValue::fromVariant(CCacic::getValueFromRegistry("Lightbase", "Cacic", "versao_gercols"));
+//    qDebug() << json;
     return json;
 }
 

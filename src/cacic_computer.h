@@ -22,7 +22,7 @@
 #include "identificadores.h"
 #include "ccacic.h"
 #ifdef Q_OS_LINUX
-#include <sys/utsname.h>
+    #include <sys/utsname.h>
 #endif
 class CACIC_Computer
 {

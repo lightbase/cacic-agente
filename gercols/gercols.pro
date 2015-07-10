@@ -42,6 +42,7 @@ SOURCES += \
     ../src/identificadores.cpp \
     ../src/servicecontroller.cpp \
     ../src/logcacic.cpp \
+    ../src/wcomputer.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -59,6 +60,7 @@ HEADERS += \
     ../src/identificadores.h \
     ../src/servicecontroller.h \
     ../src/logcacic.h \
+    ../src/wcomputer.h
 
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -68,6 +70,9 @@ CONFIG   += static
 
 win32 {
     QT   += axcontainer
+    LIBS += -lws2_32
+    LIBS += -lshlwapi
+    LIBS += -liphlpapi
 #    LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
 } else {
 #    LIBS += -L/usr/lib -lcryptopp

@@ -51,10 +51,16 @@ static {
 #        LIBS += ../lib/libcryptopp.a
         LIBS += ../lib/libQt5Core.a
         LIBS += ../lib/libQt5Network.a
+        LIBS += -lws2_32
+        LIBS += -lshlwapi
+        LIBS += -liphlpapi
 #    }
 
 } else {
     win32 {
+    LIBS += -lws2_32
+    LIBS += -lshlwapi
+    LIBS += -liphlpapi
 #        LIBS += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
         QT += axcontainer
     } else {
@@ -77,6 +83,7 @@ SOURCES +=  main.cpp \
             ../src/logcacic.cpp \
             ../src/vregistry.cpp \
             ../src/vqtconvert.cpp \
+            ../src/wcomputer.cpp
 
 HEADERS += \
             installcacic.h \
@@ -92,6 +99,7 @@ HEADERS += \
             ../src/logcacic.h \
             ../src/vregistry.h \
             ../src/vqtconvert.h \
+            ../src/wcomputer.h
 
 INCLUDEPATH += ../src \
 #               ../src/crypto++/include/

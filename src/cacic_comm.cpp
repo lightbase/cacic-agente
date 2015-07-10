@@ -233,6 +233,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 
 void CacicComm::fileDownloadFinished()
 {
+
     fileHandler->flush();
     reply->close();
     if (reply->error() == QNetworkReply::NoError) {
@@ -259,6 +260,7 @@ void CacicComm::fileDownloadReadyRead()
 {
     if (fileHandler)
         fileHandler->write(reply->readAll());
+
 }
 
 QString CacicComm::getFtpPass() const
@@ -271,10 +273,9 @@ void CacicComm::setFtpPass(const QString &value)
     ftpPass = value;
 }
 
-QNetworkReply::NetworkError *CacicComm::getError()
+QNetworkReply::NetworkError CacicComm::getError()
 {
-    QNetworkReply::NetworkError *retorno = this->lastError;
-    this->lastError = NULL;
+    QNetworkReply::NetworkError retorno = this->lastError;
     return retorno;
 }
 
@@ -282,7 +283,8 @@ void CacicComm::setError(QNetworkReply::NetworkError error)
 {
     logcacic->escrever(LogCacic::ErrorLevel, "Ocorreu um erro ao tentar comunicação com " + this->urlGerente +
                                              ": " + reply->errorString());
-    *this->lastError = error;
+
+    this->lastError = error;
 }
 
 QString CacicComm::getFtpUser() const
