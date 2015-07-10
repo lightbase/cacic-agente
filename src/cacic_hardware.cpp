@@ -741,7 +741,7 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
                                       line.contains("Sub Notebook")) ) {
             notebook["Value"] = QJsonValue::fromVariant(true);
             hardware["IsNotebook"] = notebook;
-            break;
+
             return;
         }
     }
