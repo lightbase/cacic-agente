@@ -69,7 +69,7 @@ void chksysTimer::onTimerCheckService()
         }
 
         ConsoleObject console;
-        console("/etc/init.d/cacic3 start")\;
+        console("/etc/init.d/cacic3 start");
     }
 #endif
     this->timerCheckService->start();

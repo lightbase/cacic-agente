@@ -113,6 +113,9 @@ bool CCacic::deleteFile(QString path)
  */
 bool CCacic::setJsonToFile(QJsonObject json, QString filepath)
 {
+    if (json.isEmpty()){
+        return false;
+    }
     QFile configFile(filepath);
     if (!configFile.open(QIODevice::WriteOnly)){
         return false;

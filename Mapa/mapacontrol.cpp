@@ -28,15 +28,11 @@ MapaControl::~MapaControl()
  * -ldap=true/false               Habilita ou não consulta ao LDAP.
  * @return
  */
-bool MapaControl::args2Map(int argc, char *argv[], QMap<QString, QString> &map)
+bool MapaControl::args2Map(QStringList args, QMap<QString, QString> &map)
 {
     bool hasArgument;
 
-    QStringList args;
-    for (int i = 0; i<argc; i++)
-        args.append(argv[i]);
-
-    for (int i = 0; i<argc; i++){
+    for (int i = 0; i<args.size(); i++){
         QString aux = args[i];
         QStringList auxList = aux.split("=");
         if ((auxList.at(0).at(0) == '-') && (auxList.size() > 1))
@@ -87,7 +83,7 @@ qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
             return false;
         } else if(!retornoEnvio["objectClass"].isUndefined() &&
                   !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"] == "getMapa" ) {
+                  retornoEnvio["objectClass"].toString() == "getMapa" ) {
 qDebug() << "getMapa: Json correto recebido";
             ok = retornoEnvio["col_patrimonio"].toBool();
         }
@@ -96,11 +92,11 @@ qDebug() << "getMapa: saiu dos ifs";
     return ok;
 }
 
-void MapaControl::run(int argc, char *argv[])
+void MapaControl::run(QStringList args)
 {
     QMap<QString, QString> param;
 
-    if ( args2Map(argc, argv, param) ) {
+    if ( args2Map(args, param) ) {
         if ( !param["server"].isEmpty() && !param["server"].isNull() ) { // -server
             if(getMapa(param["server"])){ // Mapa tem permissão do gerente?
                 if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -server e -ldap
@@ -118,6 +114,7 @@ void MapaControl::run(int argc, char *argv[])
                     interface->show();
                 }
             } else {
+                qDebug () << "n tem permissão";
                 exit(0);
             }
         } else if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -ldap
@@ -138,19 +135,23 @@ void MapaControl::run(int argc, char *argv[])
             }
         } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
             // TODO
+            qDebug () << "Parâmetros incorretos.";
+            exit(0);
         }
     } else {
         interface = new Mapa();
 
-        QJsonObject getConfigJson = CCacic::getJsonFromFile("getConfig.json");
-        if ( !getConfigJson.isEmpty()&& getMapa(getConfigJson["applicationUrl"].toString()) ) {
+        QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
+        if ( !getConfigJson.isEmpty()
+             && getMapa(getConfigJson["applicationUrl"].toString())
+             ) {
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());
             interface->show();
         } else {
+            qDebug () << "Falha ao pegar informações do arquivo de configuração.";
             exit(0);
         }
     }
-    exit(0);
 }
 

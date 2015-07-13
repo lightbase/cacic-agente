@@ -238,7 +238,9 @@ void CacicTimer::iniciarThread(){
                     cacicthread->start(QThread::NormalPriority);
                     cacicthread->wait();
                     if(nome.contains("gercols")){
-                        enviarColeta();
+                        if (!enviarColeta()){
+                            logcacic->escrever(LogCacic::InfoLevel, "Falha durante envio de coleta. Verifique erro de log para mais informações.");
+                        }
                     }
                     modulosExecutados[nome] = hash;
                     CCacic::setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
@@ -305,7 +307,7 @@ QJsonObject CacicTimer::getTest(CacicComm &OCacicComm){
     if(!ok){
         jsonresult = OCacicComm.comm(ROTA_GETTEST, &ok, as, true); // mais uma vez pra garantir.
     }
-    if(jsonresult.contains("error")){
+    if(jsonresult.contains("error") || jsonresult.isEmpty()){
         logcacic->escrever(LogCacic::ErrorLevel, "Falha na execução do getTest(). " + jsonresult["error"].toString());
         return jsonresult;
     }
@@ -330,7 +332,7 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
     } else {
         jsonresult = OCacicComm.comm(ROTA_GETCONFIG, &ok, as, true);
     }
-    if(jsonresult.contains("error")){
+    if(jsonresult.contains("error") || jsonresult.isEmpty()){
         logcacic->escrever(LogCacic::ErrorLevel, "Falha na execução do getConfig()." + jsonresult["error"].toString());
         return jsonresult;
     }
@@ -341,7 +343,12 @@ QJsonObject CacicTimer::getConfig(CacicComm &OCacicComm){
         registro["applicationUrl"] = QVariant::fromValue(CCacic::getJsonFromFile(cacicMainFolder + "/getConfig.json")
                                                             ["agentcomputer"].toObject()
                                                             ["applicationUrl"].toString());
-        CCacic::setValueToRegistry("Lightbase", "Cacic", registro);
+        if (!registro["applicationUrl"].isNull() &&
+            !registro["applicationUrl"].toString().isEmpty()){
+            CCacic::setValueToRegistry("Lightbase", "Cacic", registro);
+        } else {
+            logcacic->escrever(LogCacic::ErrorLevel, "Url do gerente vazia no arquivo de configurações.");
+        }
 
         return jsonresult;
     } catch (...) {
@@ -558,7 +565,8 @@ bool CacicTimer::enviarColeta() {
     if(QFile::exists(cacicMainFolder + "/coleta.json")){
         if(!verificaForcarColeta()){
             if (CCacic::getValueFromRegistry("Lightbase", "Cacic", "enviaColeta").toBool()){
-                if(realizarEnviodeColeta()){ // quando a ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
+                if(realizarEnviodeColeta() &&
+                   enviarColetaDiff()){ // quando a ROTA_COLETA_DIFF existir no gerente, mudar para: enviarColetaDiff()
                     registrarDataEnvioDeColeta();
                     return true;
                 }

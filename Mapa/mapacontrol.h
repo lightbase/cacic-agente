@@ -13,14 +13,14 @@ class MapaControl : public QObject
 public:
     explicit MapaControl(QObject *parent = 0);
     ~MapaControl();
-    void run(int argc, char *argv[]);
 
 signals:
     void finished();
 public slots:
+    void run(QStringList args);
 
 private:
-    bool args2Map(int argc, char *argv[], QMap<QString, QString> &map);
+    bool args2Map(QStringList args, QMap<QString, QString> &map);
     bool getMapa(const QString &server);
 
     CacicComm *oCacicComm;

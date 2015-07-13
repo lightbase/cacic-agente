@@ -29,14 +29,14 @@ bool Mapa::checarPreenchimento() const
     if ( ui->lineNomeUsuario->text().isEmpty() ) {
 
         QMessageBox box(QMessageBox::Warning, "Formulário incompleto", "Há campo(s) não preenchido(s).", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok ) {
 
             if(ui->lineNomeUsuario->text().isEmpty())
                 ui->lineNomeUsuario->setFocus();
 
-            return false;
         }
+        return false;
     } else {
         return true;
     }
@@ -45,7 +45,7 @@ bool Mapa::checarPreenchimento() const
 void Mapa::closeEvent(QCloseEvent *event)
 {
     QMessageBox box(QMessageBox::Warning, "Erro", "Não feche a janela. Preencha o formulário e pressione o botão de enviar.", QMessageBox::Ok);
-    box.setWindowFlags(Qt::WindowStaysOnTopHint);
+    box.setWindowFlags(Qt::Popup);
     if( box.exec() == QMessageBox::Ok )
         event->ignore();
 }
@@ -64,7 +64,7 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
     }
 
     QMessageBox box(QMessageBox::Information, "Sucesso!", "Informações obtidas com sucesso.", QMessageBox::Ok);
-    box.setWindowFlags(Qt::WindowStaysOnTopHint);
+    box.setWindowFlags(Qt::Popup);
     if( box.exec() == QMessageBox::Ok )
         qApp->quit();
 
@@ -79,16 +79,15 @@ void Mapa::inicializarAtributos()
 
     oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
 
-    this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
-    this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive );
+    this->setWindowFlags(this->windowFlags() | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
 
-#if defined(Q_OS_WIN)
+    this->setWindowState(this->windowState() | Qt::WindowFullScreen | Qt::WindowActive);
+
     QDesktopWidget desktopWidget;
     QRect screenSize = desktopWidget.frameGeometry();
 
     this->setMinimumSize(screenSize.size());
-#endif
 
     ui->setupUi(this);
 }
@@ -149,7 +148,7 @@ bool Mapa::preencheNomeUsuario()
             return false;
         } else if(!retornoEnvio["objectClass"].isUndefined() &&
                   !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"] == "LDAP_info" ) {
+                  retornoEnvio["objectClass"].toString() == "LDAP_info" ) {
             QJsonObject ldapJson = retornoEnvio["info"].toObject();
 
             ldapBase = ldapJson["base"].toString();
