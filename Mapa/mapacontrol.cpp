@@ -155,9 +155,7 @@ void MapaControl::run(QStringList args)
             exit(0);
         }
     }
-<<<<<<< HEAD
-=======
+
 //    exit(0);
->>>>>>> 4bf8cb6dd983ef33e78a45f9d09efe2eb936ae97
 }
 
