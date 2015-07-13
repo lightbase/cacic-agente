@@ -319,7 +319,7 @@ QJsonObject cacic_hardware::coletaLinux()
 
                             foreach(QJsonValue pciChildrenValue, pciChildrenArray) {
                                 QJsonObject pciChildrenObject = pciChildrenValue.toObject();
-                                coletaLinuxPci(hardware, pciChildrenObject); //Aqui não seria picChuldrenObject?!
+                                coletaLinuxPci(hardware, pciChildrenObject);
                             }
 
                         } else if (pciObject["id"] == QJsonValue::fromVariant(QString("storage")) ) {
@@ -449,39 +449,60 @@ void cacic_hardware::coletaLinuxMem(QJsonObject &hardware, const QJsonObject &co
 void cacic_hardware::coletaLinuxCpu(QJsonObject &hardware, const QJsonObject &component)
 {
     QJsonObject cpu;
+    QStringList consoleOutput;
 
-    cpu["Caption"] = component["product"];
+    cpu["Family"] = component["product"];
     cpu["Manufacturer"] = component["vendor"];
-    QString aux = console("dmidecode -t processor | grep 'Max Speed'");
-    if (!aux.isEmpty()) {
-        QStringList auxList = aux.split("\n", QString::SkipEmptyParts);
-        if (auxList.size() > 0) {
-            aux = auxList.takeFirst();
-            auxList = aux.split(" ");
-            if (auxList.size() >= 2)
-                aux = auxList.takeAt(2);
-            else
-                aux = "";
-        } else {
-            aux = "";
+    consoleOutput = console("dmidecode -t processor").split("\n", QString::SkipEmptyParts);
+    foreach(QString line, consoleOutput){
+        if (!line.isEmpty()) {
+            QString aux;
+            QStringList auxList;
+
+            if(line.contains("Max Speed") || line.contains("Current Speed")) {
+
+                auxList = line.split(" ");
+                if (auxList.size() >= 2) {
+                    aux = auxList.at(2);
+                    if( auxList.size() >=3 ){
+                        aux.append(" ");
+                        aux.append(auxList.at(3));
+                    }
+                } else
+                    aux = "";
+
+                if(line.contains("Current Speed"))
+                    cpu["CurrentClockSpeed"] = QJsonValue::fromVariant(aux);
+                else if(line.contains("Max Speed"))
+                    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(aux);
+            } else if (line.contains("Version")) {
+                auxList = line.split(":");
+
+                if(auxList.size() >= 2)
+                    aux = auxList.at(1).trimmed();
+                else
+                    aux = "";
+
+                cpu["Name"] = QJsonValue::fromVariant(aux);
+            }
         }
     }
-    cpu["MaxClockSpeed"] = QJsonValue::fromVariant(aux);
-    QStringList consoleOutput;
+
     consoleOutput = console("lscpu").split("\n", QString::SkipEmptyParts);
     foreach(QString line, consoleOutput){
         if(line.contains("CPU(s):")){
-            cpu["NumberOfLogicalProcessors"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
+            cpu["NumberOfCores"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
             break;
         }
     }
-    consoleOutput = console("cat /proc/cpuinfo").split("\n", QString::SkipEmptyParts);
-    foreach(QString line, consoleOutput){
-        if(line.contains("family") ){
-            cpu["Family"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
-            break;
-        }
-    }
+
+//    consoleOutput = console("cat /proc/cpuinfo").split("\n", QString::SkipEmptyParts);
+//    foreach(QString line, consoleOutput){
+//        if(line.contains("family") ){
+//            cpu["Family"] = QJsonValue::fromVariant(QString(line.split(" ").takeLast()));
+//            break;
+//        }
+//    }
     hardware["Win32_Processor"] = cpu;
 }
 
@@ -495,30 +516,30 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
     }
 
     if ( pciJson["id"] == QJsonValue::fromVariant(QString("multimedia")) ) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Manufacturer"] = pciJson["vendor"];
 
-        hardware["multimedia"] = pciMember;
+        hardware["Multimedia"] = pciMember;
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) &&
                ( pciJson["description"].toString().contains("Wireless") ||
                  pciJson["product"].toString().contains("Wireless") )) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
-        pciMember["logicalname"] = pciJson["logicalname"];
-        pciMember["serial"] = pciJson["serial"];
-        pciMember["firmware"] = pciJson["configuration"].toObject()["firmware"];
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Manufacturer"] = pciJson["vendor"];
+        pciMember["Logicalname"] = pciJson["logicalname"];
+        pciMember["Serial"] = pciJson["serial"];
+        pciMember["Firmware"] = pciJson["configuration"].toObject()["firmware"];
 
         pciNetwork.append(pciMember);
         //        hardware["wireless_card"] = pciMember;
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("network")) ) {
-        pciMember["description"] = pciJson["description"];
-        pciMember["product"] = pciJson["product"];
-        pciMember["vendor"] = pciJson["vendor"];
-        pciMember["logicalname"] = pciJson["logicalname"];
-        pciMember["serial"] = pciJson["serial"];
-        pciMember["capacity"] = QJsonValue::fromVariant(
+        pciMember["Description"] = pciJson["description"];
+        pciMember["Product"] = pciJson["product"];
+        pciMember["Manufacturer"] = pciJson["vendor"];
+        pciMember["LogicalName"] = pciJson["logicalname"];
+        pciMember["Serial"] = pciJson["serial"];
+        pciMember["Capacity"] = QJsonValue::fromVariant(
                     CCacic::convertDouble(pciJson["capacity"].toDouble(), 0));
 
         //        hardware["ethernet_card"] = pciMember;
@@ -526,7 +547,7 @@ void cacic_hardware::coletaLinuxPci(QJsonObject &hardware, const QJsonObject &pc
     } else if( pciJson["id"] == QJsonValue::fromVariant(QString("display")) ) {
         pciMember["Description"] = pciJson["description"];
         pciMember["Product"] = pciJson["product"];
-        pciMember["Vendor"] = pciJson["vendor"];
+        pciMember["Manufacturer"] = pciJson["vendor"];
         pciMember["Width"] = QJsonValue::fromVariant(CCacic::convertDouble(pciJson["width"].toDouble(),0) );
         pciMember["Clock"] = QJsonValue::fromVariant(CCacic::convertDouble(pciJson["clock"].toDouble(),0) );
 
@@ -582,7 +603,7 @@ void cacic_hardware::coletaLinuxIO(QJsonObject &hardware, const QJsonObject &ioJ
                     }
 
                     extendedList.append(QJsonValue::fromVariant(newExtended));
-                    newPartition["children"] = extendedList;
+                    newPartition["Children"] = extendedList;
                 }
 
             } else {
@@ -658,11 +679,11 @@ void cacic_hardware::coletaLinuxBios(QJsonObject &hardware)
         } else if(line.contains("Release Date:")){
             bios["ReleaseDate"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("Runtime Size:")){
-            bios["runtimeSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            bios["RuntimeSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("ROM Size:")){
-            bios["romSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            bios["RomSize"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         } else if(line.contains("BIOS Revision:")){
-            bios["revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
+            bios["Revision"] = QJsonValue::fromVariant( QString(line.split(":")[1].mid(1)) );
         }
     }
     hardware["Win32_BIOS"] = bios;
@@ -720,7 +741,7 @@ void cacic_hardware::coletaLinuxIsNotebook(QJsonObject &hardware)
                                       line.contains("Sub Notebook")) ) {
             notebook["Value"] = QJsonValue::fromVariant(true);
             hardware["IsNotebook"] = notebook;
-            break;
+
             return;
         }
     }

@@ -25,6 +25,11 @@ QT       -= widgets
 QT       += network
 QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-unused-parameter -fpermissive
 
+win32 {
+    LIBS += -lws2_32
+    LIBS += -lshlwapi
+    LIBS += -liphlpapi
+}
 CONFIG += debug_and_release
 
 TARGET       = chksys

@@ -18,6 +18,7 @@
 #include "console.h"
 #ifdef Q_OS_WIN
     #include "wmi.h"
+    #include "wcomputer.h"
 #endif
 
 class OperatingSystem

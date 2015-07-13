@@ -25,6 +25,8 @@ private:
 
     CacicComm *oCacicComm;
     QMainWindow *interface;
+    QMutex mutex;
+    QWaitCondition wait4finish;
     QString mainFolder;
 };
 

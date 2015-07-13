@@ -39,6 +39,9 @@ INCLUDEPATH += ../src \
 win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     QT      += axcontainer
+    LIBS += -lws2_32
+    LIBS += -lshlwapi
+    LIBS += -liphlpapi
 } else {
 #    LIBS    += -L/usr/lib -lcryptopp
 }
@@ -53,8 +56,12 @@ SOURCES     += main.cpp \
                ../src/cacic_comm.cpp \
                ../src/operatingsystem.cpp \
                ../src/cacicthread.cpp \
-                cacicdeploy.cpp \
-                deploytimer.cpp
+               cacicdeploy.cpp \
+               deploytimer.cpp \
+               ../src/vregistry.cpp \
+               ../src/vqtconvert.cpp \
+               ../src/wmi.cpp \
+               ../src/wcomputer.cpp
 
 
 HEADERS     += cacicd.h \
@@ -68,7 +75,11 @@ HEADERS     += cacicd.h \
                ../src/operatingsystem.h \
                ../src/cacicthread.h \
                cacicdeploy.h \
-               deploytimer.h
+               deploytimer.h \
+               ../src/vregistry.h \
+               ../src/vqtconvert.h \
+               ../src/wmi.h \
+               ../src/wcomputer.h
 
 include(../src/qtservice/src/qtservice.pri)
 

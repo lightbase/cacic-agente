@@ -111,7 +111,17 @@ QString OperatingSystem::coletaNomeOs()
     if (!osName.isNull()){
         QString retorno = osName.toObject()["Name"].toString();
         retorno = retorno.left(retorno.indexOf("|"));
+//        qDebug() << "metodo antigo: " << retorno.trimmed();
         return retorno.trimmed();
+    } else {
+        Computer comp;
+        QString retorno = QString(comp.getSo().c_str());
+//        qDebug() << "metodo novo: " << retorno.trimmed();
+        if (!retorno.isEmpty()){
+            return "";
+        } else {
+            return retorno.trimmed();
+        }
     }
 #elif defined(Q_OS_LINUX)
     ConsoleObject console;

@@ -60,7 +60,7 @@ public:
     void setFtpUser(const QString &value);
     QString getFtpPass() const;
     void setFtpPass(const QString &value);
-    QNetworkReply::NetworkError* getError();
+    QNetworkReply::NetworkError getError();
 
 public slots:
     void setError(QNetworkReply::NetworkError error);
@@ -85,7 +85,7 @@ private:
 
     QFile *fileHandler;
     QNetworkReply *reply;
-    QNetworkReply::NetworkError *lastError;
+    QNetworkReply::NetworkError lastError;
     LogCacic *logcacic;
 
 };

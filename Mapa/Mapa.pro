@@ -31,6 +31,9 @@ win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     LIBS += -lwldap32
     QT      += axcontainer
+    LIBS += -lws2_32
+    LIBS += -lshlwapi
+    LIBS += -liphlpapi
 } else {
 #    LIBS    += -L/usr/lib -lcryptopp
     LIBS += -lldap
@@ -50,7 +53,10 @@ SOURCES += main.cpp\
         ../src/wmi.cpp \
         ../src/servicecontroller.cpp \
         mapacontrol.cpp \
-        ../src/ldaphandler.cpp
+        ../src/ldaphandler.cpp \
+        ../src/vregistry.cpp \
+        ../src/vqtconvert.cpp \
+        ../src/wcomputer.cpp
 
 HEADERS  += mapa.h\
         ../src/cacic_comm.h\
@@ -63,7 +69,10 @@ HEADERS  += mapa.h\
         ../src/wmi.h \
         ../src/servicecontroller.h \
         mapacontrol.h \
-        ../src/ldaphandler.h
+        ../src/ldaphandler.h \
+        ../src/vregistry.h \
+        ../src/vqtconvert.h \
+        ../src/wcomputer.h
 
 FORMS    += \
     mapa_default.ui

@@ -154,7 +154,7 @@ std::string Computer::setSo()
         return so;
     } else {
         std::cout << "SO não identificado" << std::endl;
-        std::string so = "Windows Não Identificado";
+        std::string so = "";
         return so;
     }
 }
@@ -249,58 +249,58 @@ BOOL Computer::GetOsDisplayString(LPTSTR pszOS)
           switch( dwType )
           {
              case PRODUCT_ULTIMATE:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Ultimate Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Ultimate" ));
                 break;
              case 0x00000030:
                 StringCchCat(pszOS, BUFSIZE, TEXT("Professional" ));
                 break;
              case PRODUCT_HOME_PREMIUM:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Home Premium Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Home Premium" ));
                 break;
              case PRODUCT_HOME_BASIC:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Home Basic Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Home Basic" ));
                 break;
              case PRODUCT_ENTERPRISE:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise" ));
                 break;
              case PRODUCT_BUSINESS:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Business Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Business" ));
                 break;
              case PRODUCT_STARTER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Starter Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Starter" ));
                 break;
              case PRODUCT_CLUSTER_SERVER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Cluster Server Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Cluster Server" ));
                 break;
              case PRODUCT_DATACENTER_SERVER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter" ));
                 break;
              case PRODUCT_DATACENTER_SERVER_CORE:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter Edition (core installation)" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter(core installation)" ));
                 break;
              case PRODUCT_ENTERPRISE_SERVER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise" ));
                 break;
              case PRODUCT_ENTERPRISE_SERVER_CORE:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition (core installation)" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise (core installation)" ));
                 break;
              case PRODUCT_ENTERPRISE_SERVER_IA64:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition for Itanium-based Systems" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise for Itanium-based Systems" ));
                 break;
              case PRODUCT_SMALLBUSINESS_SERVER:
                 StringCchCat(pszOS, BUFSIZE, TEXT("Small Business Server" ));
                 break;
              case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Small Business Server Premium Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Small Business Server Premium" ));
                 break;
              case PRODUCT_STANDARD_SERVER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Standard Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Standard" ));
                 break;
              case PRODUCT_STANDARD_SERVER_CORE:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Standard Edition (core installation)" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Standard (core installation)" ));
                 break;
              case PRODUCT_WEB_SERVER:
-                StringCchCat(pszOS, BUFSIZE, TEXT("Web Server Edition" ));
+                StringCchCat(pszOS, BUFSIZE, TEXT("Web Server" ));
                 break;
           }
        }

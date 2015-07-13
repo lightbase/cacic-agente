@@ -78,17 +78,19 @@ bool MapaControl::getMapa(const QString &server)
 
         retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
 qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
-        if(retornoEnvio.contains("error") ||
-               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].toString().isEmpty()) ) {
-            return false;
-        } else if(!retornoEnvio["objectClass"].isUndefined() &&
-                  !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"].toString() == "getMapa" ) {
-qDebug() << "getMapa: Json correto recebido";
-            ok = retornoEnvio["col_patrimonio"].toBool();
+        if( ok == false ) {
+            return ok;
+        } else if(retornoEnvio.contains("error") ||
+               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].isString())  ) {
+            ok = false;
+        } else if(retornoEnvio.contains("reply")) {
+            QJsonObject reply = retornoEnvio["reply"].toObject();
+            if(reply.contains("objectClass") && reply["objectClass"].toString() == "getMapa" ) {
+                ok = reply["col_patrimonio"].toBool();
+            }
         }
-qDebug() << "getMapa: saiu dos ifs";
     }
+
     return ok;
 }
 
@@ -153,5 +155,9 @@ void MapaControl::run(QStringList args)
             exit(0);
         }
     }
+<<<<<<< HEAD
+=======
+//    exit(0);
+>>>>>>> 4bf8cb6dd983ef33e78a45f9d09efe2eb936ae97
 }
 

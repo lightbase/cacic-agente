@@ -168,7 +168,9 @@ bool chksysTimer::verificarModulos()
                     if (service->isRunning()) {
                         log->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
                         if (!service->stop()) {
-                            log->escrever(LogCacic::ErrorLevel, "Falha ao parar serviço. Info: " service->getLastError());
+                            std::string info = "Falha ao parar serviço. Info: ";
+                            info+= service->getLastError();
+                            log->escrever(LogCacic::ErrorLevel, info.c_str());
                         }
                     }
                     delete service;
