@@ -30,7 +30,7 @@ MapaControl::~MapaControl()
  */
 bool MapaControl::args2Map(QStringList args, QMap<QString, QString> &map)
 {
-    bool hasArgument;
+    bool hasArgument = false;
 
     for (int i = 0; i<args.size(); i++){
         QString aux = args[i];
@@ -132,8 +132,6 @@ void MapaControl::run(QStringList args)
                 interface->show();
             } else {
                 exit(0);
-//                emit finished();
-//                return;
             }
         } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
             // TODO
@@ -145,7 +143,7 @@ void MapaControl::run(QStringList args)
 
         QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
         if ( !getConfigJson.isEmpty()
-             && getMapa(getConfigJson["applicationUrl"].toString())
+//             && getMapa(getConfigJson["applicationUrl"].toString())
              ) {
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());
