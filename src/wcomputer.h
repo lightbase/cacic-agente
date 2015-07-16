@@ -1,3 +1,4 @@
+#ifdef Q_OS_WIN
 #ifndef COMPUTER_H
 #define COMPUTER_H
 
@@ -56,3 +57,4 @@ private:
 
 
 #endif // COMPUTER_H
+#endif

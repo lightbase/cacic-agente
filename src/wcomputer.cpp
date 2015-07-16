@@ -1,3 +1,4 @@
+#ifdef Q_OS_WIN
 #include "wcomputer.h"
 
 Computer::Computer()
@@ -418,3 +419,4 @@ BOOL Computer::GetOsDisplayString(LPTSTR pszOS)
     }
 }
 
+#endif
