@@ -56,11 +56,14 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
     if (!jsonMapa.isEmpty()){
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando dados do Mapa ao gerente."));
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_FORM, &ok, jsonMapa , true);
+        retornoEnvio = oCacicComm->comm(ROTA_COLETA, &ok, jsonMapa , true);
         if(retornoEnvio.contains("error")||
                 ( retornoEnvio.contains("reply") && retornoEnvio["reply"].toString().isEmpty()) ) {
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar dados do Mapa: " + retornoEnvio["error"].toString()));
         }
+//        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "coleta.json");
+//        coleta["mapa"] = jsonMapa["mapa"];
+//        CCacic::setJsonToFile(coleta, this->mainFolder + "coleta.json");
     }
 
     return ok;
@@ -97,10 +100,12 @@ void Mapa::on_okButton_clicked()
             QJsonObject jsonMapa;
             jsonMapa["computador"] = computer.toJsonObject();
 
+            QJsonObject patrimonio;
             QPair<QString,QString> linePair;
             foreach( linePair, listaValores)
-                jsonMapa[linePair.first] = QJsonValue::fromVariant(linePair.second);
+                patrimonio[linePair.first] = QJsonValue::fromVariant(linePair.second);
 
+            jsonMapa["mapa"] = patrimonio;
             QMessageBox *box;
             if (enviarInfo(jsonMapa)){
                 box = new QMessageBox(QMessageBox::Information, "Sucesso!", "Informações obtidas com sucesso.", QMessageBox::Ok);

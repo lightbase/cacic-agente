@@ -85,8 +85,8 @@ qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
             ok = false;
         } else if(retornoEnvio.contains("reply")) {
             QJsonObject reply = retornoEnvio["reply"].toObject();
-            if(reply.contains("objectClass") && reply["objectClass"].toString() == "getMapa" ) {
-                ok = reply["col_patrimonio"].toBool();
+            if(reply.contains("col_patr")) {
+                ok = reply["col_patr"].toBool();
             }
         }
     }
@@ -143,7 +143,7 @@ void MapaControl::run(QStringList args)
 
         QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
         if ( !getConfigJson.isEmpty()
-//             && getMapa(getConfigJson["applicationUrl"].toString())
+             && getMapa(getConfigJson["applicationUrl"].toString())
              ) {
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());
