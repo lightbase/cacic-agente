@@ -153,7 +153,5 @@ void MapaControl::run(QStringList args)
             exit(0);
         }
     }
-
-//    exit(0);
 }
 

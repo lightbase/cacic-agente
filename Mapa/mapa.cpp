@@ -158,6 +158,12 @@ bool Mapa::preencheNomeUsuario()
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
 
             return false;
+
+            /*TODO:
+             * Retirar essa tag objectClass, pois é desnecessária.
+             * preparar essas informações para virem tudo no getMapa, em uma única comunicação.
+             */
+
         } else if(!retornoEnvio["objectClass"].isUndefined() &&
                   !retornoEnvio["objectClass"].isNull() &&
                   retornoEnvio["objectClass"].toString() == "LDAP_info" ) {
