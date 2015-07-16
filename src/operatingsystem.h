@@ -16,7 +16,7 @@
 #include <QSysInfo>
 #include "ccacic.h"
 #include "console.h"
-#ifdef Q_OS_WIN
+#ifdef __WIN32
     #include "wmi.h"
     #include "wcomputer.h"
 #endif

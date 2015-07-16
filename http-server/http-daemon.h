@@ -40,6 +40,7 @@
      QString getLog();
      QString getMapa();
      QString getMapaFormReply();
+     QString getColeta();
 
  private:
      bool disabled;

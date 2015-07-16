@@ -6,7 +6,7 @@ void HttpService::start()
 
     //quint16 port = (app->argc() > 1) ?
     //        QString::fromLocal8Bit(app->argv()[1]).toUShort() : 8080;
-    quint16 port = 8080;
+    quint16 port = 80;
     daemon = new HttpDaemon(port, app);
 
     if (!daemon->isListening()) {

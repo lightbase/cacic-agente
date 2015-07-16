@@ -57,9 +57,11 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
         QJsonObject retornoEnvio;
         logcacic->escrever(LogCacic::InfoLevel, QString("Enviando dados do Mapa ao gerente."));
         retornoEnvio = oCacicComm->comm(ROTA_COLETA, &ok, jsonMapa , true);
-        if(retornoEnvio.contains("error")||
-                ( retornoEnvio.contains("reply") && retornoEnvio["reply"].toString().isEmpty()) ) {
+        if (!ok || retornoEnvio.contains("error") ||
+            (retornoEnvio.contains("reply") && (retornoEnvio["reply"].isNull() || retornoEnvio.isEmpty()))){
             logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar dados do Mapa: " + retornoEnvio["error"].toString()));
+        } else {
+
         }
 //        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "coleta.json");
 //        coleta["mapa"] = jsonMapa["mapa"];

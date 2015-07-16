@@ -174,8 +174,17 @@ QString HttpDaemon::getMapa()
     retorno = "HTTP/1.0 200 Ok\r\n"
         "Content-Type: application/json; charset=\"utf-8\"\r\n"
         "\r\n"
-        "{\"objectClass\": \"getMapa\",\n"
-        "\"col_patrimonio\": true\n"
+        "{"
+            "\"col_patr\":true,\n"
+            "\"ldap\":{\n"
+                "\"ldapBase\":\"ou=usuario,dc=dominio,dc=com,dc=br\",\n"
+                "\"ldapFilter\":[\n"
+                    "\"uid\"\n"
+                "],\n"
+                "\"ldapLogin\":\"cn=Admin,ou=usuarios,dc=dominio,dc=com,dc=br\",\n"
+                "\"ldapPass\":\"pass\",\n"
+                "\"ldapServer\":\"teste.ldap.ex\"\n"
+            "}\n"
         "}\n";
 
     retorno += "\n";
@@ -194,6 +203,21 @@ QString HttpDaemon::getMapaFormReply()
         "\"status\": \"formReply\"\n"
         "}\n";
 
+    retorno += "\n";
+
+    return retorno;
+}
+
+QString HttpDaemon::getColeta()
+{
+    QString retorno;
+
+    retorno = "HTTP/1.0 200 Ok\r\n"
+        "Content-Type: application/json; charset=\"utf-8\"\r\n"
+        "\r\n"
+        "{\"valor\": \"OK\"}\n";
+
+    retorno += QDateTime::currentDateTime().toString();
     retorno += "\n";
 
     return retorno;
@@ -234,6 +258,8 @@ QString HttpDaemon::processRoutes(const QString &rota)
         return this->getMapa();
     } else if(rota == ROUTE_LOG) {
         return this->getLog();
+    } else if(rota == ROUTE_COLETA) {
+        return this->getColeta();
     } else {
         return this->getDefaultRoute(rota);
     }

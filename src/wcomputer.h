@@ -1,4 +1,4 @@
-#ifdef Q_OS_WIN
+#ifdef __WIN32
 #ifndef COMPUTER_H
 #define COMPUTER_H
 
