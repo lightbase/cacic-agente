@@ -30,7 +30,7 @@ MapaControl::~MapaControl()
  */
 bool MapaControl::args2Map(QStringList args, QMap<QString, QString> &map)
 {
-    bool hasArgument;
+    bool hasArgument = false;
 
     for (int i = 0; i<args.size(); i++){
         QString aux = args[i];
@@ -132,8 +132,6 @@ void MapaControl::run(QStringList args)
                 interface->show();
             } else {
                 exit(0);
-//                emit finished();
-//                return;
             }
         } else if (!param["custom"].isEmpty() && !param["custom"].isNull() ) {
             // TODO

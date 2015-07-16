@@ -63,11 +63,6 @@ bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
         }
     }
 
-    QMessageBox box(QMessageBox::Information, "Sucesso!", "Informações obtidas com sucesso.", QMessageBox::Ok);
-    box.setWindowFlags(Qt::Popup);
-    if( box.exec() == QMessageBox::Ok )
-        qApp->quit();
-
     return ok;
 }
 
@@ -98,7 +93,7 @@ void Mapa::on_okButton_clicked()
     if ( checarPreenchimento() ) {
         QList<QPair<QString,QString> > listaValores;
         if( validarCampos(listaValores) ) {
-
+            this->hide();
             QJsonObject jsonMapa;
             jsonMapa["computador"] = computer.toJsonObject();
 
@@ -106,7 +101,19 @@ void Mapa::on_okButton_clicked()
             foreach( linePair, listaValores)
                 jsonMapa[linePair.first] = QJsonValue::fromVariant(linePair.second);
 
-            enviarInfo(jsonMapa);
+            QMessageBox *box;
+            if (enviarInfo(jsonMapa)){
+                box = new QMessageBox(QMessageBox::Information, "Sucesso!", "Informações obtidas com sucesso.", QMessageBox::Ok);
+            } else {
+                box = new QMessageBox(QMessageBox::Warning, "Erro!",
+                                "Falha ao enviar as informações.\nUma nova tentativa será realizada posteriormente.",
+                                QMessageBox::Ok);
+            }
+            box->setWindowFlags(Qt::Popup);
+
+            if( box->exec() == QMessageBox::Ok )
+//                emit finished();
+                exit(0);
         }
     }
 }

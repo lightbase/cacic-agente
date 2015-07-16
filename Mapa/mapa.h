@@ -57,6 +57,8 @@ private:
     LogCacic *logcacic;
     QString mainFolder;
     Ui::Mapa *ui;
+signals:
+    void finished();
 };
 
 #endif // MAPA_H
