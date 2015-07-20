@@ -78,14 +78,23 @@ bool MapaControl::getMapa(const QString &server)
 
         retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
 qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
-        if( ok == false ) {
-            return ok;
+        if( !ok ) {
+            return false;
         } else if(retornoEnvio.contains("error") ||
                ( retornoEnvio.contains("reply") && retornoEnvio["reply"].isString())  ) {
             ok = false;
         } else if(retornoEnvio.contains("reply")) {
             QJsonObject reply = retornoEnvio["reply"].toObject();
             if(reply.contains("col_patr")) {
+                if (reply.contains("ldap")){
+                    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
+                    if(!configs.isEmpty()){
+                        QJsonObject agent = configs["agentcomputer"].toObject();
+                        agent["ldap"] = reply["ldap"];
+                        configs["agentcomputer"] = agent;
+                        CCacic::setJsonToFile(configs,this->mainFolder + "getConfig,json");
+                    }
+                }
                 ok = reply["col_patr"].toBool();
             }
         }
@@ -143,7 +152,7 @@ void MapaControl::run(QStringList args)
 
         QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
         if ( !getConfigJson.isEmpty()
-             && getMapa(getConfigJson["applicationUrl"].toString())
+//             && getMapa(getConfigJson["applicationUrl"].toString())
              ) {
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());

@@ -36,7 +36,6 @@ class Mapa : public QMainWindow
 
 public:
     explicit Mapa(QWidget *parent = 0);
-    explicit Mapa(const bool &consultaLdap, QWidget *parent = 0);
     ~Mapa();
     void setComm(const QString &server);
 
@@ -48,8 +47,8 @@ private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
     bool enviarInfo(const QJsonObject &jsonMapa);
-    void preencheCampos(bool consultaLdap);
-    bool preencheNomeUsuario();
+    void preencheCampos();
+    QString preencheNomeUsuario();
     bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;

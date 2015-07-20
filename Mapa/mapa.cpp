@@ -5,15 +5,7 @@ Mapa::Mapa(QWidget *parent) :
     ui(new Ui::Mapa)
 {
     inicializarAtributos();
-    preencheCampos(false);
-}
-
-Mapa::Mapa(const bool &consultaLdap, QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::Mapa)
-{
-    inicializarAtributos();
-    preencheCampos(consultaLdap);
+    preencheCampos();
 }
 
 Mapa::~Mapa()
@@ -125,58 +117,44 @@ void Mapa::on_okButton_clicked()
     }
 }
 
-void Mapa::preencheCampos(bool consultaLdap)
+void Mapa::preencheCampos()
 {
     QJsonObject computerJson = computer.toJsonObject();
 
     ui->lineIdUsuario->setText(computerJson["usuario"].toString());
     ui->lineNomeComputador->setText(computerJson["nmComputador"].toString());
-    ui->lineEnderecoIp->setText(computerJson["networkDevices"].toArray().last().toObject()["ipv4"].toString());
+    ui->lineEnderecoIp->setText(computerJson["networkDevices"].toArray().first().toObject()["ipv4"].toString());
 
     ui->lineIdUsuario->setDisabled(true);
     ui->lineNomeComputador->setDisabled(true);
     ui->lineEnderecoIp->setDisabled(true);
 
-    if( consultaLdap )
-        preencheNomeUsuario();
+    preencheNomeUsuario();
 }
 
-bool Mapa::preencheNomeUsuario()
+QString Mapa::preencheNomeUsuario()
 {
-
-    bool ok = false;
-    QJsonObject sentJson;
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
+    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
 
-    sentJson["computador"] = computer.toJsonObject();
-    sentJson["request"] = QJsonValue::fromVariant(QString("ldapInfo"));
-    if (!sentJson.isEmpty()){
-        QJsonObject retornoEnvio;
-        logcacic->escrever(LogCacic::InfoLevel, QString("Requisitando informações de LDAP ao gerente"));
+    if (!configs.isEmpty() && !configs["agentcomputer"].isNull()){
+        QJsonObject ldap = configs["agentcomputer"].toObject()["ldap"].toObject();
+        if(!ldap.isEmpty()) {
+            ldapBase = ldap["base"].toString();
 
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_LDAP, &ok, sentJson , false);
+            //ARRUMAR ESSA LINHA DEPOIS
+            ldapFilter = ldap["filter"].toArray().first().toString();
 
-        if(retornoEnvio.contains("error")) {
-            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha na requisição de infos do LDAP: " + retornoEnvio["error"].toString()));
-
-            return false;
-
-            /*TODO:
-             * Retirar essa tag objectClass, pois é desnecessária.
-             * preparar essas informações para virem tudo no getMapa, em uma única comunicação.
-             */
-
-        } else if(!retornoEnvio["objectClass"].isUndefined() &&
-                  !retornoEnvio["objectClass"].isNull() &&
-                  retornoEnvio["objectClass"].toString() == "LDAP_info" ) {
-            QJsonObject ldapJson = retornoEnvio["info"].toObject();
-
-            ldapBase = ldapJson["base"].toString();
-            ldapFilter = ldapJson["filter"].toString();
-            ldapLogin = ldapJson["login"].toString();
-            ldapPass = ldapJson["pass"].toString();
-            ldapServer = ldapJson["server"].toString();
+            ldapLogin = ldap["login"].toString();
+            ldapPass = ldap["pass"].toString();
+            ldapServer = ldap["server"].toString();
+        } else {
+            logcacic->escrever("Info", "Não há dados de configurações LDAP, usuário deverá digitar o nome.");
+            return QString();
         }
+    } else {
+        logcacic->escrever("Error", "Não foi possível pegar informações do arquivo de configurações.");
+        return QString();
     }
 
 //    ldapBase = "ou=usuarios,dc=lightbase,dc=com,dc=br";
@@ -187,9 +165,9 @@ bool Mapa::preencheNomeUsuario()
     LdapHandler ldapHandler(ldapServer);
 
     if ( ldapHandler.inicializar() )
-        ui->lineNomeUsuario->setText(ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter));
+        return ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter);
 
-    return true;
+    return QString();
 }
 
 void Mapa::setComm(const QString &server)
