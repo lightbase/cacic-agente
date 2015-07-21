@@ -56,7 +56,8 @@ SOURCES += main.cpp\
         ../src/ldaphandler.cpp \
         ../src/vregistry.cpp \
         ../src/vqtconvert.cpp \
-        ../src/wcomputer.cpp
+        ../src/wcomputer.cpp \
+    keypresseater.cpp
 
 HEADERS  += mapa.h\
         ../src/cacic_comm.h\
@@ -72,7 +73,8 @@ HEADERS  += mapa.h\
         ../src/ldaphandler.h \
         ../src/vregistry.h \
         ../src/vqtconvert.h \
-        ../src/wcomputer.h
+        ../src/wcomputer.h \
+    keypresseater.h
 
 FORMS    += \
     mapa_default.ui

@@ -25,9 +25,11 @@
 #include "string"
 #include "ui_mapa_default.h"
 #include "ldaphandler.h"
+#include "keypresseater.h"
+#include <QListView>
 
 namespace Ui {
-class Mapa;
+    class Mapa;
 }
 
 class Mapa : public QMainWindow
@@ -56,6 +58,7 @@ private:
     LogCacic *logcacic;
     QString mainFolder;
     Ui::Mapa *ui;
+    KeyPressEater *keyPressEater ;
 signals:
     void finished();
 };

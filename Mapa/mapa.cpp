@@ -81,6 +81,11 @@ void Mapa::inicializarAtributos()
 
     this->setMinimumSize(screenSize.size());
 
+    keyPressEater = new KeyPressEater();
+
+    this->installEventFilter(keyPressEater);
+    this->setFocusPolicy(Qt::ClickFocus);
+
     ui->setupUi(this);
 }
 
@@ -129,7 +134,11 @@ void Mapa::preencheCampos()
     ui->lineNomeComputador->setDisabled(true);
     ui->lineEnderecoIp->setDisabled(true);
 
-    preencheNomeUsuario();
+    QString nome = preencheNomeUsuario();
+    if (!nome.isNull() && !nome.isEmpty()){
+        ui->lineNomeUsuario->setText(nome);
+        ui->lineNomeUsuario->setDisabled(true);
+    }
 }
 
 QString Mapa::preencheNomeUsuario()
@@ -149,11 +158,16 @@ QString Mapa::preencheNomeUsuario()
             ldapPass = ldap["pass"].toString();
             ldapServer = ldap["server"].toString();
         } else {
-            logcacic->escrever("Info", "Não há dados de configurações LDAP, usuário deverá digitar o nome.");
+            logcacic->escrever(LogCacic::InfoLevel, "Não há dados de configurações LDAP, usuário deverá digitar o nome.");
+            QMessageBox box(QMessageBox::Information, "Atenção!", "Não foi possível recuperar o seu nome, por gentileza insira-o.", QMessageBox::Ok);
+            box.setWindowFlags(Qt::Popup);
+
+            if( box.exec() == QMessageBox::Ok )
+//                emit finished();
             return QString();
         }
     } else {
-        logcacic->escrever("Error", "Não foi possível pegar informações do arquivo de configurações.");
+        logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível pegar informações do arquivo de configurações.");
         return QString();
     }
 
@@ -196,49 +210,49 @@ bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
         ui->lineNomeUsuario->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Nome deve ao menos 3 caracteres.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !regAlfa.exactMatch(nomeUsuario) ) {
         ui->lineNomeUsuario->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Nome deve conter apenas letras.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !coordenacao.isEmpty() && coordenacao.size() < 2) {
         ui->lineCoordenacao->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Coordenação deve ter ao menos 2 caracteres.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !sala.isEmpty() && sala.toInt() == 0) {
         ui->lineSala->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Sala deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !patrimonioComputador.isEmpty() && patrimonioComputador.toInt() == 0) {
         ui->linePatrimonioComputador->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Computador deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !patrimonioMonitor1.isEmpty() && patrimonioMonitor1.toInt() == 0) {
         ui->linePatrimonioMonitor1->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Monitor 1 deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     } else if( !patrimonioMonitor2.isEmpty() && patrimonioMonitor2.toInt() == 0) {
         ui->linePatrimonioMonitor2->setFocus();
 
         QMessageBox box(QMessageBox::Warning, "Preenchimento inválido.", "Campo de Patrimônio Monitor 2 deve conter dígitos numéricos diferentes de 0.", QMessageBox::Ok);
-        box.setWindowFlags(Qt::WindowStaysOnTopHint);
+        box.setWindowFlags(Qt::Popup);
         if( box.exec() == QMessageBox::Ok )
             return false;
     }

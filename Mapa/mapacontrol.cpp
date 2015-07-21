@@ -26,7 +26,7 @@ MapaControl::~MapaControl()
  *                                para consulta. Se não setada, a informação
  *                                é buscada no getConfig.json.
  * -ldap=true/false               Habilita ou não consulta ao LDAP.
- * @return
+ * @return true caso tenha argumentos.
  */
 bool MapaControl::args2Map(QStringList args, QMap<QString, QString> &map)
 {
@@ -112,14 +112,14 @@ void MapaControl::run(QStringList args)
             if(getMapa(param["server"])){ // Mapa tem permissão do gerente?
                 if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -server e -ldap
                     if(param["ldap"] == "true")
-                        interface = new Mapa(true);
+                        interface = new Mapa();
                     else
-                        interface = new Mapa(false);
+                        interface = new Mapa();
                     Mapa* mapa = static_cast<Mapa*>(interface);
                     mapa->setComm(param["server"]);
                     interface->show();
                 } else { // -server sem -ldap
-                    interface = new Mapa(false);
+                    interface = new Mapa();
                     Mapa* mapa = static_cast<Mapa*>(interface);
                     mapa->setComm(param["server"]);
                     interface->show();
@@ -130,9 +130,9 @@ void MapaControl::run(QStringList args)
             }
         } else if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -ldap
             if(param["ldap"] == "true")
-                interface = new Mapa(true);
+                interface = new Mapa();
             else
-                interface = new Mapa(false);
+                interface = new Mapa();
 
             QJsonObject getConfigJson = CCacic::getJsonFromFile("getConfig.json");
             if ( !getConfigJson.isEmpty() && getMapa(getConfigJson["applicationUrl"].toString()) ) {
@@ -148,12 +148,11 @@ void MapaControl::run(QStringList args)
             exit(0);
         }
     } else {
-        interface = new Mapa();
-
         QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
         if ( !getConfigJson.isEmpty()
 //             && getMapa(getConfigJson["applicationUrl"].toString())
              ) {
+            interface = new Mapa();
             Mapa* mapa = static_cast<Mapa*>(interface);
             mapa->setComm(getConfigJson["applicationUrl"].toString());
             interface->show();
