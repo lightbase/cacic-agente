@@ -31,6 +31,8 @@ win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     LIBS += -lwldap32
     QT      += axcontainer
+    LIBS += -lws2_32
+    LIBS += -liphlpapi
 } else {
 #    LIBS    += -L/usr/lib -lcryptopp
     LIBS += -lldap
