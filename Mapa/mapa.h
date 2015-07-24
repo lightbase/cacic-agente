@@ -16,7 +16,6 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QMessageBox>
-#include "cacic_comm.h"
 #include "ccacic.h"
 #include "cacic_computer.h"
 #include "logcacic.h"
@@ -39,7 +38,6 @@ class Mapa : public QMainWindow
 public:
     explicit Mapa(QWidget *parent = 0);
     ~Mapa();
-    void setComm(const QString &server);
 
     void inicializarAtributos();
 private slots:
@@ -48,13 +46,12 @@ private slots:
 private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
-    bool enviarInfo(const QJsonObject &jsonMapa);
+    bool salvarInfo(const QJsonObject &jsonMapa);
     void preencheCampos();
     QString preencheNomeUsuario();
     bool validarCampos(QList< QPair<QString,QString> > &listaValores);
 
     CACIC_Computer computer;
-    CacicComm *oCacicComm;
     LogCacic *logcacic;
     QString mainFolder;
     Ui::Mapa *ui;

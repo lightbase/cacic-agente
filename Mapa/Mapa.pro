@@ -11,7 +11,7 @@
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
 VERSION_MINOR = 1
-VERSION_BUILD = 16
+VERSION_BUILD = 17
 DEFINES += VERSION_MAJOR=$$VERSION_MAJOR \
            VERSION_MINOR=$$VERSION_MINOR \
            VERSION_BUILD=$$VERSION_BUILD
@@ -31,9 +31,6 @@ win32 {
 #    LIBS    += -LC:\devel\cacic-agente\src\crypto++\lib -lcryptopp
     LIBS += -lwldap32
     QT      += axcontainer
-    LIBS += -lws2_32
-    LIBS += -lshlwapi
-    LIBS += -liphlpapi
 } else {
 #    LIBS    += -L/usr/lib -lcryptopp
     LIBS += -lldap
@@ -43,7 +40,6 @@ INCLUDEPATH += ../src
 
 SOURCES += main.cpp\
         mapa.cpp\
-        ../src/cacic_comm.cpp\
         ../src/ccacic.cpp\
         ../src/cacic_computer.cpp\
         ../src/operatingsystem.cpp\
@@ -60,7 +56,6 @@ SOURCES += main.cpp\
     keypresseater.cpp
 
 HEADERS  += mapa.h\
-        ../src/cacic_comm.h\
         ../src/ccacic.h\
         ../src/cacic_computer.h\
         ../src/operatingsystem.h\

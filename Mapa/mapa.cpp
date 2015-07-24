@@ -11,7 +11,6 @@ Mapa::Mapa(QWidget *parent) :
 Mapa::~Mapa()
 {
     delete ui;
-    delete oCacicComm;
     delete logcacic;
 
 }
@@ -42,22 +41,18 @@ void Mapa::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
-bool Mapa::enviarInfo(const QJsonObject &jsonMapa)
+bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
 {
     bool ok = false;
-    if (!jsonMapa.isEmpty()){
-        QJsonObject retornoEnvio;
-        logcacic->escrever(LogCacic::InfoLevel, QString("Enviando dados do Mapa ao gerente."));
-        retornoEnvio = oCacicComm->comm(ROTA_COLETA, &ok, jsonMapa , true);
-        if (!ok || retornoEnvio.contains("error") ||
-            (retornoEnvio.contains("reply") && (retornoEnvio["reply"].isNull() || retornoEnvio.isEmpty()))){
-            logcacic->escrever(LogCacic::ErrorLevel,  QString("Falha ao enviar dados do Mapa: " + retornoEnvio["error"].toString()));
-        } else {
+    if (!jsonMapa.isEmpty() && !jsonMapa["patrimonio"].toObject().isEmpty()){
 
-        }
-//        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "coleta.json");
-//        coleta["mapa"] = jsonMapa["mapa"];
-//        CCacic::setJsonToFile(coleta, this->mainFolder + "coleta.json");
+        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "coleta.json");
+        coleta["patrimonio"] = jsonMapa["patrimonio"];
+        ok = CCacic::setJsonToFile(coleta, this->mainFolder + "coleta.json");
+
+        QVariantMap enviaColeta;
+        enviaColeta["enviaColeta"] = ok;
+        CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
     }
 
     return ok;
@@ -68,8 +63,6 @@ void Mapa::inicializarAtributos()
     QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
     logcacic = new LogCacic(LOG_MAPA, mainFolder + "/Logs");
-
-    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
 
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
     this->setWindowFlags(this->windowFlags() | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
@@ -104,14 +97,14 @@ void Mapa::on_okButton_clicked()
             foreach( linePair, listaValores)
                 patrimonio[linePair.first] = QJsonValue::fromVariant(linePair.second);
 
-            jsonMapa["mapa"] = patrimonio;
+            jsonMapa["patrimonio"] = patrimonio;
             QMessageBox *box;
-            if (enviarInfo(jsonMapa)){
-                box = new QMessageBox(QMessageBox::Information, "Sucesso!", "Informações obtidas com sucesso.", QMessageBox::Ok);
+            if (salvarInfo(jsonMapa)){
+                box = new QMessageBox(QMessageBox::Information, "Sucesso!", "Informações salvas com sucesso.", QMessageBox::Ok);
+                logcacic->escrever(LogCacic::InfoLevel, "Dados patrimoniais salvos com sucesso.");
             } else {
-                box = new QMessageBox(QMessageBox::Warning, "Erro!",
-                                "Falha ao enviar as informações.\nUma nova tentativa será realizada posteriormente.",
-                                QMessageBox::Ok);
+                box = new QMessageBox(QMessageBox::Warning, "Erro!", "Falha ao salvar as informações.", QMessageBox::Ok);
+                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao salvar as informações patrimoniais.");
             }
             box->setWindowFlags(Qt::Popup);
 
@@ -147,7 +140,7 @@ QString Mapa::preencheNomeUsuario()
     QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
 
     if (!configs.isEmpty() && !configs["agentcomputer"].isNull()){
-        QJsonObject ldap = configs["agentcomputer"].toObject()["ldap"].toObject();
+        QJsonObject ldap = configs["agentcomputer"].toObject()["mapa"].toObject()["ldap"].toObject();
         if(!ldap.isEmpty()) {
             ldapBase = ldap["base"].toString();
 
@@ -182,16 +175,6 @@ QString Mapa::preencheNomeUsuario()
         return ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter);
 
     return QString();
-}
-
-void Mapa::setComm(const QString &server)
-{
-    oCacicComm->setUrlGerente(server);
-
-    if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
-        oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-        oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-    }
 }
 
 bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)

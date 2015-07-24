@@ -225,10 +225,8 @@ void CacicTimer::iniciarThread(){
             //executado E o patrimônio estiver executado, iniciar a thread.
             if((!nome.contains("cacic-service")  &&
                 !nome.contains("install-cacic")  &&
-                !nome.contains("mapacacic")         ) ||
-                    (nome.contains("mapacacic") &&
-                     CCacic::getValueFromRegistry("Lightbase", "Cacic", nome).isNull() &&
-                     agenteConfigJson["actions"].toObject()["col_patr"].toBool())){
+                !nome.contains("mapacacic")    ) ||
+                (nome.contains("mapacacic") && this->getMapa())){
                 if (QFile::exists(getDirProgram())) {
                     if (var > 0) this->cMutex->lock();
 
@@ -514,7 +512,61 @@ bool CacicTimer::enviarLogs(){
 //            }
 //        }
 //    }
-//    return false;
+    //    return false;
+}
+
+bool CacicTimer::getMapa()
+{
+    bool ok = false;
+    CACIC_Computer computer;
+    QJsonObject sentJson;
+    QJsonObject configs = CCacic::getJsonFromFile(this->cacicMainFolder + "getConfig.json");
+    CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
+
+    sentJson["computador"] = computer.toJsonObject();
+    sentJson["request"] = QJsonValue::fromVariant(QString("getMapa"));
+    if (!sentJson.isEmpty()){
+        QJsonObject retornoEnvio;
+        QString server = CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
+        if( server.isNull() || server.isEmpty() ) {
+            server = configs["agentcomputer"].toObject()["applicationUrl"].toString();
+            if (!server.isNull() && !server.isEmpty()) {
+            } else {
+                logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível recuperar a url para comunicação."
+                                   "Para consertar, é necessário executar o comando a seguir no terminal/cmd: install-cacic -configure -host=nova_url");
+                logcacic->escrever(LogCacic::ErrorLevel, "Problemas ao recuperar url para comunicação.");
+                return false;
+            }
+        }
+        OCacicComm->setUrlGerente(server);
+        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+
+        retornoEnvio = OCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
+//qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
+        if( !ok ) {
+            return false;
+        } else if(retornoEnvio.contains("error") ||
+               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].isString())  ) {
+            ok = false;
+        } else if(retornoEnvio.contains("reply")) {
+            QJsonObject reply = retornoEnvio["reply"].toObject();
+            if(reply.contains("col_patr")) {
+                if (reply.contains("ldap")){
+                    if(!configs.isEmpty()){
+                        QJsonObject agent = configs["agentcomputer"].toObject();
+                        agent["ldap"] = reply["ldap"];
+                        configs["agentcomputer"] = agent;
+                        CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig,json");
+                    }
+                }
+                ok = reply["col_patr"].toBool();
+            }
+        }
+    }
+
+    return ok;
+
 }
 
 bool CacicTimer::realizarEnviodeColeta(){

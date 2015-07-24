@@ -4,13 +4,10 @@ MapaControl::MapaControl(QObject *parent) : QObject(parent)
 {
     QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
-
-    oCacicComm = new CacicComm(LOG_MAPA, this->mainFolder);
 }
 
 MapaControl::~MapaControl()
 {
-    delete oCacicComm;
     delete interface;
 }
 
@@ -59,48 +56,19 @@ bool MapaControl::args2Map(QStringList args, QMap<QString, QString> &map)
  *
  * @return
  */
-bool MapaControl::getMapa(const QString &server)
+bool MapaControl::getMapa()
 {
-    bool ok = false;
-    CACIC_Computer computer;
-    QJsonObject sentJson;
+    QJsonObject retornoEnvio = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
 
-    sentJson["computador"] = computer.toJsonObject();
-    sentJson["request"] = QJsonValue::fromVariant(QString("getMapa"));
-    if (!sentJson.isEmpty()){
-        QJsonObject retornoEnvio;
+    if(retornoEnvio.contains("agentcomputer")) {
+        QJsonObject mapa = retornoEnvio["agentcomputer"].toObject()["mapa"].toObject();
 
-        oCacicComm->setUrlGerente(server);
-        if( !CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").isNull() ) {
-            oCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
-            oCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
-        }
-
-        retornoEnvio = oCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
-qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
-        if( !ok ) {
-            return false;
-        } else if(retornoEnvio.contains("error") ||
-               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].isString())  ) {
-            ok = false;
-        } else if(retornoEnvio.contains("reply")) {
-            QJsonObject reply = retornoEnvio["reply"].toObject();
-            if(reply.contains("col_patr")) {
-                if (reply.contains("ldap")){
-                    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
-                    if(!configs.isEmpty()){
-                        QJsonObject agent = configs["agentcomputer"].toObject();
-                        agent["ldap"] = reply["ldap"];
-                        configs["agentcomputer"] = agent;
-                        CCacic::setJsonToFile(configs,this->mainFolder + "getConfig,json");
-                    }
-                }
-                ok = reply["col_patr"].toBool();
-            }
+        if(mapa.contains("col_patr")) {
+            return mapa["col_patr"].toBool();
         }
     }
 
-    return ok;
+    return false;
 }
 
 void MapaControl::run(QStringList args)
@@ -109,19 +77,15 @@ void MapaControl::run(QStringList args)
 
     if ( args2Map(args, param) ) {
         if ( !param["server"].isEmpty() && !param["server"].isNull() ) { // -server
-            if(getMapa(param["server"])){ // Mapa tem permissão do gerente?
+            if(getMapa()){ // Mapa tem permissão do gerente?
                 if (!param["ldap"].isEmpty() && !param["ldap"].isNull()) { // -server e -ldap
                     if(param["ldap"] == "true")
                         interface = new Mapa();
                     else
                         interface = new Mapa();
-                    Mapa* mapa = static_cast<Mapa*>(interface);
-                    mapa->setComm(param["server"]);
                     interface->show();
                 } else { // -server sem -ldap
                     interface = new Mapa();
-                    Mapa* mapa = static_cast<Mapa*>(interface);
-                    mapa->setComm(param["server"]);
                     interface->show();
                 }
             } else {
@@ -135,9 +99,7 @@ void MapaControl::run(QStringList args)
                 interface = new Mapa();
 
             QJsonObject getConfigJson = CCacic::getJsonFromFile("getConfig.json");
-            if ( !getConfigJson.isEmpty() && getMapa(getConfigJson["applicationUrl"].toString()) ) {
-                Mapa* mapa = static_cast<Mapa*>(interface);
-                mapa->setComm(getConfigJson["applicationUrl"].toString());
+            if ( !getConfigJson.isEmpty() && getMapa() ) {
                 interface->show();
             } else {
                 exit(0);
@@ -150,11 +112,9 @@ void MapaControl::run(QStringList args)
     } else {
         QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
         if ( !getConfigJson.isEmpty()
-//             && getMapa(getConfigJson["applicationUrl"].toString())
+             && getMapa()
              ) {
             interface = new Mapa();
-            Mapa* mapa = static_cast<Mapa*>(interface);
-            mapa->setComm(getConfigJson["applicationUrl"].toString());
             interface->show();
         } else {
             qDebug () << "Falha ao pegar informações do arquivo de configuração.";

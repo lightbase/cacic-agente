@@ -21,12 +21,9 @@ public slots:
 
 private:
     bool args2Map(QStringList args, QMap<QString, QString> &map);
-    bool getMapa(const QString &server);
+    bool getMapa();
 
-    CacicComm *oCacicComm;
     QMainWindow *interface;
-    QMutex mutex;
-    QWaitCondition wait4finish;
     QString mainFolder;
 };
 

@@ -70,6 +70,7 @@ private:
     bool enviarColetaDiff();
     bool enviarColeta();
     bool enviarLogs();
+    bool getMapa();
     void registrarDataEnvioDeColeta();
     QString getDirProgram() const;
 
