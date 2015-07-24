@@ -552,13 +552,18 @@ bool CacicTimer::getMapa()
         } else if(retornoEnvio.contains("reply")) {
             QJsonObject reply = retornoEnvio["reply"].toObject();
             if(reply.contains("col_patr")) {
-                if (reply.contains("ldap")){
-                    if(!configs.isEmpty()){
-                        QJsonObject agent = configs["agentcomputer"].toObject();
-                        agent["ldap"] = reply["ldap"];
-                        configs["agentcomputer"] = agent;
-                        CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig,json");
+                if(!configs.isEmpty()){
+                    QJsonObject agent = configs["agentcomputer"].toObject();
+                    QJsonObject mapa;
+                    if (reply.contains("ldap")){
+                        mapa["ldap"] = reply["ldap"];
                     }
+                    mapa["col_patr"] = reply["col_patr"];
+                    agent["mapa"] = mapa;
+                    configs["agentcomputer"] = agent;
+                    CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig,json");
+                } else {
+                    logcacic->escrever(LogCacic::ErrorLevel, "Falha ao ler arquivo de configurações.");
                 }
                 ok = reply["col_patr"].toBool();
             }
