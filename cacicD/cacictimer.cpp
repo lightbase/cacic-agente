@@ -235,7 +235,8 @@ void CacicTimer::iniciarThread(){
                     cacicthread->setModuloDirPath(getDirProgram());
                     cacicthread->start(QThread::NormalPriority);
                     cacicthread->wait();
-                    if(nome.contains("gercols")){
+                    if(nome.contains("gercols") ||
+                       nome.contains("mapa")){
                         if (!enviarColeta()){
                             logcacic->escrever(LogCacic::InfoLevel, "Falha durante envio de coleta. Verifique erro de log para mais informações.");
                         }
@@ -578,19 +579,22 @@ bool CacicTimer::realizarEnviodeColeta(){
     bool ok = false;
     QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
-        QJsonObject coletaComp = jsonColeta["computador"].toObject();
+        CACIC_Computer comp;
+        QJsonObject coletaComp = comp.toJsonObject();
 
-        //Pode acontecer de no momento da coleta o computador estar sem internet.
-        //Aqui eu garanto que os dados básicos do computador estejam completos.
-        if (coletaComp["networkDevices"].isNull() ||
-            coletaComp["operatingSystem"].isNull()) {
-            CACIC_Computer oComp;
-            coletaComp = oComp.toJsonObject();
-            if(coletaComp.isEmpty()){
-                return false;
-            } else {
-                jsonColeta["computador"] = coletaComp;
+        jsonColeta["computador"] = coletaComp;
+        if (coletaComp["networkDevices"].isNull()  ||
+            coletaComp["operatingSystem"].isNull() ||
+            coletaComp["operatingSystem"].toObject()["nomeOs"].isNull()) {
+            logcacic->escrever(LogCacic::InfoLevel, "Não foi possível recuperar as informações básicas do computador.");
+            if (coletaComp["networkDevices"].isNull()){
+                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao recuperar os dados de rede.");
             }
+            if (coletaComp["operatingSystem"].isNull() ||
+                coletaComp["operatingSystem"].toObject()["nomeOs"].isNull()){
+                logcacic->escrever(LogCacic::ErrorLevel, "Falha ao recuperar os dados do Sistema Operacional.");
+            }
+            return false;
         }
         CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
         OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
