@@ -1,15 +1,32 @@
 #include "ldaphandler.h"
 
+/**
+ * @brief LdapHandler::LdapHandler
+ */
 LdapHandler::LdapHandler()
 {
 }
 
+/**
+ * @brief LdapHandler::LdapHandler
+ * @param ldapServer
+ */
 LdapHandler::LdapHandler(const QString &ldapServer)
 {
     this->ldapServer = ldapServer;
 }
 
 #if defined(Q_OS_UNIX)
+/**
+ * @brief LdapHandler::busca
+ * @param loginLdap QString&
+ * @param passLdap QString&
+ * @param baseLdap QString&
+ * @param filterLdap QString&
+ * @return QString com resultado de busca
+ *
+ * Realiza uma busca LDAP.
+ */
 QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap)
 {
     std::string login = loginLdap.toStdString();
@@ -89,6 +106,16 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
 #endif
 
 #if defined(Q_OS_WIN)
+/**
+ * @brief LdapHandler::busca
+ * @param loginLdap QString&
+ * @param passLdap QString&
+ * @param baseLdap QString&
+ * @param filterLdap QString&
+ * @return QString com resultado de busca
+ *
+ * Realiza uma busca LDAP.
+ */
 QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap)
 {
 
@@ -180,6 +207,12 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
 }
 #endif
 
+/**
+ * @brief LdapHandler::inicializar
+ * @return bool
+ *
+ * Inicializa interface com o servidor do LDAP.
+ */
 bool LdapHandler::inicializar()
 {
 
@@ -205,6 +238,12 @@ bool LdapHandler::inicializar()
     return true;
 }
 
+/**
+ * @brief LdapHandler::setServer
+ * @param ldapServer QString&
+ *
+ * Seta endereço do servidor LDAP.
+ */
 void LdapHandler::setServer(const QString &ldapServer)
 {
     this->ldapServer = ldapServer;

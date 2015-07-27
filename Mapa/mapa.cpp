@@ -1,5 +1,9 @@
 #include "mapa.h"
 
+/**
+ * @brief Mapa::Mapa
+ * @param parent
+ */
 Mapa::Mapa(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
@@ -8,13 +12,21 @@ Mapa::Mapa(QWidget *parent) :
     preencheCampos();
 }
 
+/**
+ * @brief Mapa::~Mapa
+ */
 Mapa::~Mapa()
 {
     delete ui;
     delete logcacic;
-
 }
 
+/**
+ * @brief Mapa::checarPreenchimento
+ * @return bool com true se o form tiver preenchido
+ *
+ * Checa se os campos obrigatórios do formulário estão preenchidos.
+ */
 bool Mapa::checarPreenchimento() const
 {
     if ( ui->lineNomeUsuario->text().isEmpty() ) {
@@ -33,6 +45,13 @@ bool Mapa::checarPreenchimento() const
     }
 }
 
+/**
+ * @brief Mapa::closeEvent
+ * @param event
+ *
+ * Lida com o evento de fechamento de janela, evitando que o usuário
+ * feche o Mapa sem ter feito as operações necessárias.
+ */
 void Mapa::closeEvent(QCloseEvent *event)
 {
     QMessageBox box(QMessageBox::Warning, "Erro", "Não feche a janela. Preencha o formulário e pressione o botão de enviar.", QMessageBox::Ok);
@@ -41,14 +60,21 @@ void Mapa::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
+/**
+ * @brief Mapa::salvarInfo
+ * @param jsonMapa QJsonObject&
+ * @return bool true se salvou
+ *
+ * Salva as informações do Mapa no arquivo de coleta.
+ */
 bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
 {
     bool ok = false;
     if (!jsonMapa.isEmpty() && !jsonMapa["patrimonio"].toObject().isEmpty()){
 
-        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "coleta.json");
+        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "/coleta.json");
         coleta["patrimonio"] = jsonMapa["patrimonio"];
-        ok = CCacic::setJsonToFile(coleta, this->mainFolder + "coleta.json");
+        ok = CCacic::setJsonToFile(coleta, this->mainFolder + "/coleta.json");
 
         QVariantMap enviaColeta;
         enviaColeta["enviaColeta"] = ok;
@@ -58,6 +84,11 @@ bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
     return ok;
 }
 
+/**
+ * @brief Mapa::inicializarAtributos
+ *
+ * Inicializa atributos e objetos necessários, e seta o modo de operação da janela.
+ */
 void Mapa::inicializarAtributos()
 {
     QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
@@ -82,9 +113,14 @@ void Mapa::inicializarAtributos()
     ui->setupUi(this);
 }
 
+/**
+ * @brief Mapa::on_okButton_clicked
+ *
+ * Lida com o clique do usuário para finalizar o Mapa através do botão Ok,
+ * salvando as informações se corretamente preenchidas.
+ */
 void Mapa::on_okButton_clicked()
 {
-
     if ( checarPreenchimento() ) {
         QList<QPair<QString,QString> > listaValores;
         if( validarCampos(listaValores) ) {
@@ -115,6 +151,12 @@ void Mapa::on_okButton_clicked()
     }
 }
 
+/**
+ * @brief Mapa::preencheCampos
+ *
+ * Preenche os campos com as informações que podem ser obtidas
+ * sem intervenção do usuário.
+ */
 void Mapa::preencheCampos()
 {
     QJsonObject computerJson = computer.toJsonObject();
@@ -134,22 +176,29 @@ void Mapa::preencheCampos()
     }
 }
 
+/**
+ * @brief Mapa::preencheNomeUsuario
+ * @return QString retornada da consulta.
+ *
+ * Realiza uma busca do Nome de Usuário através dos parâmetros
+ * configurados para a busca em LDAP.
+ */
 QString Mapa::preencheNomeUsuario()
 {
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
-    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "getConfig.json");
+    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "/getConfig.json");
 
     if (!configs.isEmpty() && !configs["agentcomputer"].isNull()){
-        QJsonObject ldap = configs["agentcomputer"].toObject()["mapa"].toObject()["ldap"].toObject();
-        if(!ldap.isEmpty()) {
-            ldapBase = ldap["base"].toString();
+        QJsonObject ldapJson = configs["agentcomputer"].toObject()["mapa"].toObject()["ldap"].toObject();
+        if(!ldapJson.isEmpty()) {
+            ldapBase = ldapJson["base"].toString();
 
             //ARRUMAR ESSA LINHA DEPOIS
-            ldapFilter = ldap["filter"].toArray().first().toString();
+            ldapFilter = ldapJson["filter"].toArray().first().toString();
 
-            ldapLogin = ldap["login"].toString();
-            ldapPass = ldap["pass"].toString();
-            ldapServer = ldap["server"].toString();
+            ldapLogin = ldapJson["login"].toString();
+            ldapPass = ldapJson["pass"].toString();
+            ldapServer = ldapJson["server"].toString();
         } else {
             logcacic->escrever(LogCacic::InfoLevel, "Não há dados de configurações LDAP, usuário deverá digitar o nome.");
             QMessageBox box(QMessageBox::Information, "Atenção!", "Não foi possível recuperar o seu nome, por gentileza insira-o.", QMessageBox::Ok);
@@ -164,11 +213,6 @@ QString Mapa::preencheNomeUsuario()
         return QString();
     }
 
-//    ldapBase = "ou=usuarios,dc=lightbase,dc=com,dc=br";
-//    ldapFilter = "(&(objectClass=*)(uid=thiagop))";
-//    ldapLogin = "cn=System Administrator-gosa-admin,ou=usuarios,dc=lightbase,dc=com,dc=br";
-//    ldapPass = "brlight2012";
-//    ldapServer = "ldap.lightbase";
     LdapHandler ldapHandler(ldapServer);
 
     if ( ldapHandler.inicializar() )
@@ -177,6 +221,14 @@ QString Mapa::preencheNomeUsuario()
     return QString();
 }
 
+/**
+ * @brief Mapa::validarCampos
+ * @param listaValores
+ * @return bool se os campos tem valores válidos.
+ *
+ * Verifica se os campos possuem valores válidos para aquela informação,
+ * e retorna uma lista com pares campo e valor do campo.
+ */
 bool Mapa::validarCampos(QList<QPair<QString,QString> > &listaValores)
 {
     QString nomeUsuario = ui->lineNomeUsuario->text();

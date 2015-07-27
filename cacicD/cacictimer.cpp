@@ -520,7 +520,7 @@ bool CacicTimer::getMapa()
     bool ok = false;
     CACIC_Computer computer;
     QJsonObject sentJson;
-    QJsonObject configs = CCacic::getJsonFromFile(this->cacicMainFolder + "getConfig.json");
+    QJsonObject configs = CCacic::getJsonFromFile(this->cacicMainFolder + "/getConfig.json");
     CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
 
     sentJson["computador"] = computer.toJsonObject();
