@@ -543,7 +543,7 @@ bool CacicTimer::getMapa()
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
 
-        retornoEnvio = OCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , false);
+        retornoEnvio = OCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , true);
 //qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
         if( !ok ) {
             return false;
@@ -562,7 +562,7 @@ bool CacicTimer::getMapa()
                     mapa["col_patr"] = reply["col_patr"];
                     agent["mapa"] = mapa;
                     configs["agentcomputer"] = agent;
-                    CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig,json");
+                    CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig.json");
                 } else {
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao ler arquivo de configurações.");
                 }
