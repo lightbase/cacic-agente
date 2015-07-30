@@ -4,11 +4,11 @@
  * @brief Mapa::Mapa
  * @param parent
  */
-Mapa::Mapa(QWidget *parent) :
+Mapa::Mapa(const QJsonObject &getMapaJson, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Mapa)
 {
-    inicializarAtributos();
+    inicializarAtributos(getMapaJson);
     preencheCampos();
 }
 
@@ -61,27 +61,41 @@ void Mapa::closeEvent(QCloseEvent *event)
 }
 
 /**
- * @brief Mapa::salvarInfo
- * @param jsonMapa QJsonObject&
- * @return bool true se salvou
+ * @brief Mapa::geraNovosCampos
  *
- * Salva as informações do Mapa no arquivo de coleta.
+ * Gera novos campos para inserção de texto no formulário a partir
+ * do que é passado pelo gerente no campo "properties" do getMapa.
  */
-bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
+void Mapa::geraNovosCampos()
 {
-    bool ok = false;
-    if (!jsonMapa.isEmpty() && !jsonMapa["patrimonio"].toObject().isEmpty()){
+//    qDebug() << ui->formLayout_3->rowCount();
+//    QWidget *labelTeste01 = new QLabel("TesteLabel");
+//    QWidget *lineTeste = new QLineEdit("TesteLineEdit");
+//    ui->formLayout_3->addRow(labelTeste01,lineTeste);
+//    qDebug() << ui->formLayout_3->rowCount();
+//    lineTeste->setDisabled(true);
 
-        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "/coleta.json");
-        coleta["patrimonio"] = jsonMapa["patrimonio"];
-        ok = CCacic::setJsonToFile(coleta, this->mainFolder + "/coleta.json");
+    if (mapaJson.contains("properties")) {
+        QJsonObject campos = mapaJson["properties"].toObject();
 
-        QVariantMap enviaColeta;
-        enviaColeta["enviaColeta"] = ok;
-        CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+        foreach(QString keyJson, campos.keys()) {
+            NovoCampo novo;
+
+            novo.setTitle(keyJson);
+            novo.setLabel(campos[keyJson].toObject()["name"].toString());
+            novo.setDescription(campos[keyJson].toObject()["description"].toString());
+
+            novo.setLabelWidget(new QLabel(novo.getLabel()));
+            novo.setLineWidget(new QLineEdit(novo.getDescription()));
+
+            if( ui->formLayout_3->rowCount() <= ui->formLayout_4->rowCount())
+                ui->formLayout_3->addRow(novo.getLabelWidget(),novo.getLineWidget());
+            else
+                ui->formLayout_4->addRow(novo.getLabelWidget(),novo.getLineWidget());
+
+            listNovosCampos.push_back(novo);
+        }
     }
-
-    return ok;
 }
 
 /**
@@ -89,11 +103,13 @@ bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
  *
  * Inicializa atributos e objetos necessários, e seta o modo de operação da janela.
  */
-void Mapa::inicializarAtributos()
+void Mapa::inicializarAtributos(const QJsonObject &getMapaJson)
 {
     QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     mainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
     logcacic = new LogCacic(LOG_MAPA, mainFolder + "/Logs");
+
+    this->mapaJson = getMapaJson;
 
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowCloseButtonHint);
     this->setWindowFlags(this->windowFlags() | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
@@ -111,6 +127,8 @@ void Mapa::inicializarAtributos()
     this->setFocusPolicy(Qt::ClickFocus);
 
     ui->setupUi(this);
+
+    geraNovosCampos();
 }
 
 /**
@@ -185,20 +203,24 @@ void Mapa::preencheCampos()
  */
 QString Mapa::preencheNomeUsuario()
 {
-    QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter;
-    QJsonObject configs = CCacic::getJsonFromFile(this->mainFolder + "/getConfig.json");
+    QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter, ldapAttr;
 
-    if (!configs.isEmpty() && !configs["agentcomputer"].isNull()){
-        QJsonObject ldapJson = configs["agentcomputer"].toObject()["mapa"].toObject()["ldap"].toObject();
+    if (!mapaJson.isEmpty()){
+        QJsonObject ldapJson = mapaJson["ldap"].toObject();
         if(!ldapJson.isEmpty()) {
             ldapBase = ldapJson["base"].toString();
-
-            //ARRUMAR ESSA LINHA DEPOIS
-            ldapFilter = ldapJson["filter"].toArray().first().toString();
-
             ldapLogin = ldapJson["login"].toString();
             ldapPass = ldapJson["pass"].toString();
             ldapServer = ldapJson["server"].toString();
+
+            //ARRUMAR DEPOIS PARA DAR SUPORTE A MAIS DE UM FILTRO E ATTR
+            ldapFilter = ldapJson["filter"].toArray().first().toString();
+            if(ldapFilter == "uid"){
+               ldapFilter = "(&(objectClass=*)(uid=";
+               ldapFilter.append(ui->lineIdUsuario->text());
+               ldapFilter.append("))");
+            }
+            ldapAttr = ldapJson["attr"].toObject()["name"].toString();
         } else {
             logcacic->escrever(LogCacic::InfoLevel, "Não há dados de configurações LDAP, usuário deverá digitar o nome.");
             QMessageBox box(QMessageBox::Information, "Atenção!", "Não foi possível recuperar o seu nome, por gentileza insira-o.", QMessageBox::Ok);
@@ -216,9 +238,33 @@ QString Mapa::preencheNomeUsuario()
     LdapHandler ldapHandler(ldapServer);
 
     if ( ldapHandler.inicializar() )
-        return ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter);
+        return ldapHandler.busca(ldapLogin,ldapPass,ldapBase,ldapFilter,ldapAttr);
 
     return QString();
+}
+
+/**
+ * @brief Mapa::salvarInfo
+ * @param jsonMapa QJsonObject&
+ * @return bool true se salvou
+ *
+ * Salva as informações do Mapa no arquivo de coleta.
+ */
+bool Mapa::salvarInfo(const QJsonObject &jsonMapa)
+{
+    bool ok = false;
+    if (!jsonMapa.isEmpty() && !jsonMapa["patrimonio"].toObject().isEmpty()){
+
+        QJsonObject coleta = CCacic::getJsonFromFile(this->mainFolder + "/coleta.json");
+        coleta["patrimonio"] = jsonMapa["patrimonio"];
+        ok = CCacic::setJsonToFile(coleta, this->mainFolder + "/coleta.json");
+
+        QVariantMap enviaColeta;
+        enviaColeta["enviaColeta"] = ok;
+        CCacic::setValueToRegistry("Lightbase", "Cacic", enviaColeta);
+    }
+
+    return ok;
 }
 
 /**

@@ -55,7 +55,8 @@ SOURCES += main.cpp\
         ../src/vregistry.cpp \
         ../src/vqtconvert.cpp \
         ../src/wcomputer.cpp \
-    keypresseater.cpp
+        keypresseater.cpp \
+        novocampo.cpp
 
 HEADERS  += mapa.h\
         ../src/ccacic.h\
@@ -71,7 +72,8 @@ HEADERS  += mapa.h\
         ../src/vregistry.h \
         ../src/vqtconvert.h \
         ../src/wcomputer.h \
-    keypresseater.h
+        keypresseater.h \
+        novocampo.h
 
 FORMS    += \
     mapa_default.ui
