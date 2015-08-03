@@ -47,6 +47,7 @@ private slots:
 private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
+    void geraCampoMensagem();
     void geraNovosCampos();
     bool salvarInfo(const QJsonObject &jsonMapa);
     void preencheCampos();

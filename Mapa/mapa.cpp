@@ -61,6 +61,22 @@ void Mapa::closeEvent(QCloseEvent *event)
 }
 
 /**
+ * @brief Mapa::geraCampoMensagem
+ */
+void Mapa::geraCampoMensagem()
+{
+    if (mapaJson.contains("message") &&
+            !mapaJson["message"].isNull() &&
+            mapaJson["message"].isString() &&
+            !mapaJson["message"].toString().isEmpty()) {
+
+        QString strMessage = mapaJson["message"].toString();
+        ui->label->setText(strMessage);
+//        ui->labelMessage->setText(strMessage);
+    }
+}
+
+/**
  * @brief Mapa::geraNovosCampos
  *
  * Gera novos campos para inserção de texto no formulário a partir
@@ -68,22 +84,23 @@ void Mapa::closeEvent(QCloseEvent *event)
  */
 void Mapa::geraNovosCampos()
 {
-//    qDebug() << ui->formLayout_3->rowCount();
-//    QWidget *labelTeste01 = new QLabel("TesteLabel");
-//    QWidget *lineTeste = new QLineEdit("TesteLineEdit");
-//    ui->formLayout_3->addRow(labelTeste01,lineTeste);
-//    qDebug() << ui->formLayout_3->rowCount();
-//    lineTeste->setDisabled(true);
-
-    if (mapaJson.contains("properties")) {
+    if (mapaJson.contains("properties") &&
+            !mapaJson["properties"].isNull() &&
+            !mapaJson["properties"].toObject().isEmpty()) {
         QJsonObject campos = mapaJson["properties"].toObject();
 
         foreach(QString keyJson, campos.keys()) {
             NovoCampo novo;
 
+            QString strLabel = campos[keyJson].toObject()["name"].isString() ?
+                        campos[keyJson].toObject()["name"].toString() :
+                        "";
+            QString strDescription = campos[keyJson].toObject()["description"].isString() ?
+                        campos[keyJson].toObject()["description"].toString() :
+                        "";
             novo.setTitle(keyJson);
-            novo.setLabel(campos[keyJson].toObject()["name"].toString());
-            novo.setDescription(campos[keyJson].toObject()["description"].toString());
+            novo.setLabel(strLabel);
+            novo.setDescription(strDescription);
 
             novo.setLabelWidget(new QLabel(novo.getLabel()));
             novo.setLineWidget(new QLineEdit(novo.getDescription()));
@@ -129,6 +146,7 @@ void Mapa::inicializarAtributos(const QJsonObject &getMapaJson)
     ui->setupUi(this);
 
     geraNovosCampos();
+    geraCampoMensagem();
 }
 
 /**
@@ -138,7 +156,7 @@ void Mapa::inicializarAtributos(const QJsonObject &getMapaJson)
  * salvando as informações se corretamente preenchidas.
  */
 void Mapa::on_okButton_clicked()
-{
+{//TODO: Incluir as informações preenchidas na listNovosCampos ao jsonMapa.
     if ( checarPreenchimento() ) {
         QList<QPair<QString,QString> > listaValores;
         if( validarCampos(listaValores) ) {
@@ -150,6 +168,13 @@ void Mapa::on_okButton_clicked()
             QPair<QString,QString> linePair;
             foreach( linePair, listaValores)
                 patrimonio[linePair.first] = QJsonValue::fromVariant(linePair.second);
+
+            foreach(NovoCampo customEntry, listNovosCampos) {
+                QLineEdit *editLine = dynamic_cast<QLineEdit*>(customEntry.getLineWidget());
+
+                if(!editLine->text().isNull() && editLine->text().isEmpty() )
+                    patrimonio[customEntry.getTitle()] = QJsonValue::fromVariant(editLine->text());
+            }
 
             jsonMapa["patrimonio"] = patrimonio;
             QMessageBox *box;
@@ -206,7 +231,10 @@ QString Mapa::preencheNomeUsuario()
     QString ldapServer, ldapLogin, ldapPass, ldapBase, ldapFilter, ldapAttr;
 
     if (!mapaJson.isEmpty()){
-        QJsonObject ldapJson = mapaJson["ldap"].toObject();
+        QJsonObject ldapJson;
+        if(mapaJson.contains("ldap"))
+            ldapJson = mapaJson["ldap"].toObject();
+
         if(!ldapJson.isEmpty()) {
             ldapBase = ldapJson["base"].toString();
             ldapLogin = ldapJson["login"].toString();

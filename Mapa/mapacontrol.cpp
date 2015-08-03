@@ -81,6 +81,9 @@ bool MapaControl::getMapa()
  */
 void MapaControl::run(QStringList args)
 {
+//    getMapaP();
+
+qDebug() << "MapaControl::run():" + mainFolder + "getConfig.json";
     QJsonObject getConfigJson = CCacic::getJsonFromFile(mainFolder + "getConfig.json");
     if ( !getConfigJson.isEmpty()
          && getMapa()
@@ -92,3 +95,64 @@ void MapaControl::run(QStringList args)
         exit(0);
     }
 }
+
+bool MapaControl::getMapaP()
+{
+    bool ok = false;
+    CACIC_Computer computer;
+    QJsonObject sentJson;
+    QJsonObject configs = CCacic::getJsonFromFile(mainFolder + "/getConfig.json");
+    CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, mainFolder);
+
+    sentJson["computador"] = computer.toJsonObject();
+    sentJson["request"] = QJsonValue::fromVariant(QString("getMapa"));
+    if (!sentJson.isEmpty()){
+        QJsonObject retornoEnvio;
+        QString server = CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
+        if( server.isNull() || server.isEmpty() ) {
+            server = configs["agentcomputer"].toObject()["applicationUrl"].toString();
+            if (!server.isNull() && !server.isEmpty()) {
+            } else {
+//                logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível recuperar a url para comunicação."
+//                                   "Para consertar, é necessário executar o comando a seguir no terminal/cmd: install-cacic -configure -host=nova_url");
+//                logcacic->escrever(LogCacic::ErrorLevel, "Problemas ao recuperar url para comunicação.");
+                return false;
+            }
+        }
+        OCacicComm->setUrlGerente(server);
+        OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
+        OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
+
+        retornoEnvio = OCacicComm->comm(ROTA_MAPA_GETMAPA, &ok, sentJson , true);
+qDebug() << "getMapa: resposta da comunicacao\n\t" << retornoEnvio;
+        if( !ok ) {
+            return false;
+        } else if(retornoEnvio.contains("error") ||
+               ( retornoEnvio.contains("reply") && retornoEnvio["reply"].isString())  ) {
+            ok = false;
+        } else if(retornoEnvio.contains("reply")) {
+            QJsonObject reply = retornoEnvio["reply"].toObject();
+            if(reply.contains("col_patr")) {
+                if(!configs.isEmpty()){
+                    QJsonObject agent = configs["agentcomputer"].toObject();
+                    QJsonObject mapa;
+                    if (reply.contains("ldap")){
+                        mapa["ldap"] = reply["ldap"];
+                    }
+                    mapa["col_patr"] = reply["col_patr"];
+                    agent["mapa"] = mapa;
+                    configs["agentcomputer"] = agent;
+                    CCacic::setJsonToFile(configs,mainFolder + "getConfig.json");
+qDebug() << mainFolder + "getConfig.json";
+                } else {
+//                    logcacic->escrever(LogCacic::ErrorLevel, "Falha ao ler arquivo de configurações.");
+                }
+                ok = reply["col_patr"].toBool();
+            }
+        }
+    }
+
+    return ok;
+
+}
+
