@@ -71,7 +71,10 @@ void Mapa::geraCampoMensagem()
             !mapaJson["message"].toString().isEmpty()) {
 
         QString strMessage = mapaJson["message"].toString();
+
         ui->labelMessage->setText(strMessage);
+    } else {
+        ui->labelMessage->setHidden(true);
     }
 }
 
