@@ -71,8 +71,7 @@ void Mapa::geraCampoMensagem()
             !mapaJson["message"].toString().isEmpty()) {
 
         QString strMessage = mapaJson["message"].toString();
-        ui->label->setText(strMessage);
-//        ui->labelMessage->setText(strMessage);
+        ui->labelMessage->setText(strMessage);
     }
 }
 
@@ -171,8 +170,8 @@ void Mapa::on_okButton_clicked()
 
             foreach(NovoCampo customEntry, listNovosCampos) {
                 QLineEdit *editLine = dynamic_cast<QLineEdit*>(customEntry.getLineWidget());
-
-                if(!editLine->text().isNull() && editLine->text().isEmpty() )
+qDebug() << editLine->text();
+                if(!editLine->text().isNull() && !editLine->text().isEmpty() )
                     patrimonio[customEntry.getTitle()] = QJsonValue::fromVariant(editLine->text());
             }
 
