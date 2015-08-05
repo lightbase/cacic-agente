@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QWidget>
 #include "mapa.h"
+#include "cacic_comm.h"
 
 class MapaControl : public QObject
 {
@@ -22,6 +23,7 @@ public slots:
 private:
     bool args2Map(QStringList args, QMap<QString, QString> &map);
     bool getMapa();
+    bool getMapaP();
 
     QMainWindow *interface;
     QString mainFolder;

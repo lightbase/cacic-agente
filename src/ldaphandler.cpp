@@ -116,13 +116,14 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
  *
  * Realiza uma busca LDAP.
  */
-QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap)
+QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap, const QString &attrLdap)
 {
 
     char *login = (char*)loginLdap.toStdString().c_str();
     char *passwd = (char*)passLdap.toStdString().c_str();
     char *base = (char*)baseLdap.toStdString().c_str();
     char *filter = (char*)filterLdap.toStdString().c_str();
+    char *attribute = (char*)attrLdap.toStdString().c_str();
 
     ulong rc; // Variável a ser usada para retorno
     ulong version = LDAP_VERSION3; // Versão do LDAP
@@ -136,7 +137,7 @@ QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,cons
     PCHAR *attrValue = NULL; //Valor do atributo
 
     attrs[0] = new char[3];
-    strcpy(attrs[0],"cn");
+    strcpy(attrs[0],attribute);
     attrs[1] = NULL;
 
     wantedAttr = new char[3];

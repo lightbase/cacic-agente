@@ -23,7 +23,7 @@ public:
     LdapHandler();
     LdapHandler(const QString &ldapServer);
 
-    QString busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap);
+    QString busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap, const QString &attrLdap);
     bool inicializar();
     void setServer(const QString &ldapServer);
 

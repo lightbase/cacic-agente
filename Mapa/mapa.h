@@ -25,6 +25,7 @@
 #include "ui_mapa_default.h"
 #include "ldaphandler.h"
 #include "keypresseater.h"
+#include "novocampo.h"
 #include <QListView>
 
 namespace Ui {
@@ -36,16 +37,18 @@ class Mapa : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Mapa(QWidget *parent = 0);
+    explicit Mapa(const QJsonObject &getMapaJson, QWidget *parent = 0);
     ~Mapa();
 
-    void inicializarAtributos();
+    void inicializarAtributos(const QJsonObject &getMapaJson);
 private slots:
     void on_okButton_clicked();
 
 private:
     bool checarPreenchimento() const;
     void closeEvent(QCloseEvent *event);
+    void geraCampoMensagem();
+    void geraNovosCampos();
     bool salvarInfo(const QJsonObject &jsonMapa);
     void preencheCampos();
     QString preencheNomeUsuario();
@@ -53,11 +56,14 @@ private:
 
     CACIC_Computer computer;
     LogCacic *logcacic;
+    QJsonObject mapaJson;
+    QList<NovoCampo> listNovosCampos;
     QString mainFolder;
     Ui::Mapa *ui;
     KeyPressEater *keyPressEater ;
 signals:
     void finished();
 };
+
 
 #endif // MAPA_H

@@ -24,7 +24,7 @@ CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = mapa
+TARGET = mapacacic
 TEMPLATE = app
 
 win32 {
@@ -44,6 +44,7 @@ SOURCES += main.cpp\
         mapa.cpp\
         ../src/ccacic.cpp\
         ../src/cacic_computer.cpp\
+../src/cacic_comm.cpp\
         ../src/operatingsystem.cpp\
         ../src/QLogger.cpp\
         ../src/logcacic.cpp\
@@ -55,11 +56,13 @@ SOURCES += main.cpp\
         ../src/vregistry.cpp \
         ../src/vqtconvert.cpp \
         ../src/wcomputer.cpp \
-    keypresseater.cpp
+        keypresseater.cpp \
+        novocampo.cpp
 
 HEADERS  += mapa.h\
         ../src/ccacic.h\
         ../src/cacic_computer.h\
+../src/cacic_comm.h\
         ../src/operatingsystem.h\
         ../src/QLogger.h\
         ../src/logcacic.h\
@@ -71,7 +74,8 @@ HEADERS  += mapa.h\
         ../src/vregistry.h \
         ../src/vqtconvert.h \
         ../src/wcomputer.h \
-    keypresseater.h
+        keypresseater.h \
+        novocampo.h
 
 FORMS    += \
     mapa_default.ui
