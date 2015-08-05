@@ -72,6 +72,7 @@ private:
     bool enviarLogs();
     bool getMapa();
     void registrarDataEnvioDeColeta();
+    QString getApplicationUrl();
     QString getDirProgram() const;
 
     CacicThread *cacicthread;

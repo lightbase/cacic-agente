@@ -262,7 +262,11 @@ bool CacicTimer::comunicarGerente(){
     CacicComm *OCacicComm;
     OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
     //Sempre recuperar as informações aqui caso mude.
-    OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+    QString server = this->getApplicationUrl();
+    if (server.isEmpty() || server.isNull()){
+        return false;
+    }
+    OCacicComm->setUrlGerente(server);
     OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
     OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
     logcacic->escrever(LogCacic::InfoLevel, QString("Realizando comunicação em: " + OCacicComm->getUrlGerente()));
@@ -378,7 +382,12 @@ bool CacicTimer::enviarColetaDiff(){
         QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coletaDiff.json");
         if (!jsonColeta.isEmpty()){
             CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
-            OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+
+            QString server = this->getApplicationUrl();
+            if (server.isEmpty() || server.isNull()){
+                return false;
+            }
+            OCacicComm->setUrlGerente(server);
             OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
             OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
             QJsonObject retornoColeta;
@@ -455,7 +464,11 @@ bool CacicTimer::realizarEnvioDeLogs(const QStringList &logLvls) {
     if (!jsonObject.isEmpty()){
 
         CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
-        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+        QString server = this->getApplicationUrl();
+        if (server.isEmpty() || server.isNull()){
+            return false;
+        }
+        OCacicComm->setUrlGerente(server);
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
@@ -528,16 +541,9 @@ bool CacicTimer::getMapa()
     sentJson["request"] = QJsonValue::fromVariant(QString("getMapa"));
     if (!sentJson.isEmpty()){
         QJsonObject retornoEnvio;
-        QString server = CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
-        if( server.isNull() || server.isEmpty() ) {
-            server = configs["agentcomputer"].toObject()["applicationUrl"].toString();
-            if (!server.isNull() && !server.isEmpty()) {
-            } else {
-                logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível recuperar a url para comunicação."
-                                   "Para consertar, é necessário executar o comando a seguir no terminal/cmd: install-cacic -configure -host=nova_url");
-                logcacic->escrever(LogCacic::ErrorLevel, "Problemas ao recuperar url para comunicação.");
-                return false;
-            }
+        QString server = this->getApplicationUrl();
+        if (server.isEmpty() || server.isNull()){
+            return false;
         }
         OCacicComm->setUrlGerente(server);
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
@@ -597,7 +603,13 @@ bool CacicTimer::realizarEnviodeColeta(){
             return false;
         }
         CacicComm *OCacicComm = new CacicComm(LOG_DAEMON, this->cacicMainFolder);
-        OCacicComm->setUrlGerente(CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString());
+
+        QString server = this->getApplicationUrl();
+        if (server.isEmpty() || server.isNull()){
+            return false;
+        }
+
+        OCacicComm->setUrlGerente(server);
         OCacicComm->setUsuario(CCacic::getValueFromRegistry("Lightbase", "Cacic", "usuario").toString());
         OCacicComm->setPassword(CCacic::getValueFromRegistry("Lightbase", "Cacic", "password").toString());
         QJsonObject retornoColeta;
@@ -674,6 +686,25 @@ void CacicTimer::registrarDataEnvioDeColeta(){
     QVariantMap qvm;
     qvm["dataColetaEnviada"] = QDate::currentDate().toString("dd/MM/yyyy");
     CCacic::setValueToRegistry("Lightbase", "Cacic", qvm);
+}
+
+QString CacicTimer::getApplicationUrl()
+{
+    QString server = CCacic::getValueFromRegistry("Lightbase", "Cacic", "applicationUrl").toString();
+    if( server.isNull() || server.isEmpty() ) {
+        server = CCacic::getJsonFromFile(this->cacicMainFolder + "/getConfig.json")["agentcomputer"].toObject()
+                 ["applicationUrl"].toString();
+        if (!server.isNull() && !server.isEmpty()) {
+            return server;
+        } else {
+            logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível recuperar a url para comunicação."
+                               "Para consertar, é necessário executar o comando a seguir no terminal/cmd: install-cacic -configure -host=nova_url");
+            logcacic->escrever(LogCacic::ErrorLevel, "Problemas ao recuperar url para comunicação.");
+            return QString();
+        }
+    } else {
+        return server;
+    }
 }
 
 QString CacicTimer::getDirProgram() const
