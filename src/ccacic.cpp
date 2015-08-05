@@ -133,11 +133,22 @@ bool CCacic::setJsonToFile(QJsonObject json, QString filepath)
 QJsonObject CCacic::getJsonFromFile(QString filepath)
 {
     QFile configFile(filepath);
+    QJsonDocument jsonDoc;
     QJsonObject json;
+    QJsonParseError error;
+
     if (!configFile.open(QIODevice::ReadOnly)){
         return json;
     }
-    json = QJsonDocument::fromJson(configFile.readAll()).object();
+
+    jsonDoc = QJsonDocument::fromJson(configFile.readAll(),&error);
+    if( error.error == QJsonParseError::NoError){
+        json = jsonDoc.object();
+    } else {
+        qDebug() << "Erro no parsing do arquivo json:" + filepath;
+        qDebug() << error.errorString();
+        exit(1);
+    }
     return json;
 }
 
