@@ -446,6 +446,22 @@ void CTestCacic::testStopCheckCacicService()
 #endif
 }
 
+void CTestCacic::testStartProcess()
+{
+    QString modulo = "/usr/share/cacic/mapacacic";
+    QString workDir= "/usr/share/cacic/";
+    QMutex *mutex;
+    mutex = new QMutex(QMutex::Recursive);
+    mutex->lock();
+    CacicThread *cacicthread = new CacicThread(workDir);
+    cacicthread->setCMutex(mutex);
+    cacicthread->setModuloDirPath(modulo);
+    cacicthread->setNomeModulo(modulo.split("/").last());
+    cacicthread->run();
+    qDebug() << cacicthread->getLastError();
+    QVERIFY(true);
+}
+
 void CTestCacic::testEnviaColeta()
 {
     bool ok;

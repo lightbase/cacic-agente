@@ -235,18 +235,16 @@ void CacicTimer::iniciarThread(){
                     cacicthread->setModuloDirPath(getDirProgram());
                     cacicthread->start(QThread::NormalPriority);
                     cacicthread->wait();
-                    if(nome.contains("gercols") ||
-                       nome.contains("mapa")){
-                        if (!enviarColeta()){
-                            logcacic->escrever(LogCacic::InfoLevel, "Falha durante envio de coleta. Verifique erro de log para mais informações.");
-                        }
-                    }
+                    
                     modulosExecutados[nome] = hash;
                     CCacic::setValueToRegistry("Lightbase", "Cacic", modulosExecutados);
                 } else {
                     logcacic->escrever(LogCacic::InfoLevel, "Modulo \""+ nome + "\" não foi encontrado para execução.");
                 }
             }
+        }
+        if (!enviarColeta()){
+            logcacic->escrever(LogCacic::InfoLevel, "Falha durante envio de coleta. Verifique erro de log para mais informações.");
         }
         //Deve ser enviado tendo ou não módulos.
         enviarLogs();
@@ -573,6 +571,11 @@ bool CacicTimer::getMapa()
                     logcacic->escrever(LogCacic::ErrorLevel, "Falha ao ler arquivo de configurações.");
                 }
                 ok = reply["col_patr"].toBool();
+                if (ok) {
+                    logcacic->escrever(LogCacic::InfoLevel, "Execução do Mapa solicitado.");
+                } else {
+                    logcacic->escrever(LogCacic::InfoLevel, "Execução do Mapa não solicitada.");
+                }
             }
         }
     }

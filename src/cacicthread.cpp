@@ -24,28 +24,38 @@ void CacicThread::iniciarModulo()
     if (QFile::exists(this->moduloDirPath)){
         registraInicioExecucao();
         QDir::setCurrent(this->applicationDirPath);
-        QProcess proc;
-        proc.setWorkingDirectory(this->applicationDirPath);
+        QProcess *proc = new QProcess(this);
+        proc->setProgram(this->moduloDirPath);
+        proc->setWorkingDirectory(this->applicationDirPath);
         if (this->timeoutSec > 0)
-            QTimer::singleShot(this->timeoutSec, &proc, SLOT(kill()));
+            QTimer::singleShot(this->timeoutSec, proc, SLOT(kill()));
 #ifndef Q_OS_WIN
-        if (this->moduloDirPath.split("/").last().contains("chksys"))
-            proc.startDetached(this->moduloDirPath);
+        if (this->moduloDirPath.split("/").last().contains("chksys") ||
+            this->moduloDirPath.split("/").last().contains("mapacacic"))
+            //não abre applicações visuais quando iniciado pelo init
+            if (!proc->startDetached(this->moduloDirPath)){
+                logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível iniciar o processo do módulo " +
+                                   this->moduloDirPath);
+            }
         else
 #endif
-            proc.execute(this->moduloDirPath);
-        if((proc.atEnd()) && (proc.exitStatus() == QProcess::NormalExit)){
-            registraExecucao(true, proc.errorString());
+        proc->start();
+        proc->waitForFinished(this->timeoutSec > 0 ? this->timeoutSec + 1000 : -1);
+        if((proc->atEnd()) && (proc->exitStatus() == QProcess::NormalExit)){
+            registraExecucao(true, proc->errorString());
         }else{
-            if(!proc.atEnd()){
-                registraExecucao(false, proc.errorString());
-                proc.kill();
+            if(!proc->atEnd()){
+                registraExecucao(false, proc->errorString());
+                proc->kill();
+            } else {
+                logcacic->escrever(LogCacic::ErrorLevel, "Problemas durante execução do módulo \"" + moduloDirPath + "\".");
+                logcacic->escrever(LogCacic::ErrorLevel, "Erro: " + proc->errorString());
             }
         }
         //parece que signals são somente privados. Confirmar quando voltar.
-        setLastStatus(proc.exitStatus());
-        setLastError(proc.errorString());
-        proc.close();
+        setLastStatus(proc->exitStatus());
+        setLastError(proc->errorString());
+        proc->close();
     } else {
         logcacic->escrever(LogCacic::InfoLevel, QString("Módulo inexistente ou já em execucao."));
         logcacic->escrever(LogCacic::ErrorLevel, QString("Módulo "+ this->moduloDirPath.split("/").last()+

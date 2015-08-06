@@ -29,6 +29,7 @@
 #include <logcacic.h>
 #include <checkmodules.h>
 #include <servicecontroller.h>
+#include <cacicthread.h>
 
 class CTestCacic : public QObject
 {
@@ -91,6 +92,7 @@ private slots:
     void testEnviaLog();
     void testServiceController();
     void testStopCheckCacicService();
+    void testStartProcess();
     void cleanupTestCase();
 };
 

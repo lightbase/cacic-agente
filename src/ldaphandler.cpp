@@ -27,7 +27,7 @@ LdapHandler::LdapHandler(const QString &ldapServer)
  *
  * Realiza uma busca LDAP.
  */
-QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap)
+QString LdapHandler::busca(const QString &loginLdap,const QString &passLdap,const QString &baseLdap,const QString &filterLdap, const QString &attrLdap = QString())
 {
     std::string login = loginLdap.toStdString();
     std::string passwd = passLdap.toStdString();
