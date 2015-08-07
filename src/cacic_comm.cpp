@@ -162,7 +162,13 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
         return false;
     }
 
-    QUrl url(urlGerente);
+    QRegExp rx("/\/app.*.php/");
+    QString urlDownload = urlGerente;
+    urlDownload.replace(rx, "");
+
+
+    QUrl url(urlDownload);
+
     url.setScheme(mode);
     url.setPath(path);
     if (!this->ftpUser.isEmpty())

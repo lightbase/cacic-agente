@@ -11,7 +11,7 @@
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
 VERSION_MINOR = 1
-VERSION_BUILD = 17
+VERSION_BUILD = 18
 DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
            "VERSION_MINOR=$$VERSION_MINOR"\
            "VERSION_BUILD=$$VERSION_BUILD"
@@ -52,7 +52,8 @@ SOURCES += \
     ../src/servicecontroller.cpp \
     ../src/identificadores.cpp \
     ../src/logcacic.cpp \
-    ../src/wcomputer.cpp
+    ../src/wcomputer.cpp \
+    ../src/cacicthread.cpp \
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -78,7 +79,8 @@ HEADERS += \
     ../src/servicecontroller.h \
     ../src/identificadores.h \
     ../src/logcacic.h \
-    ../src/wcomputer.h
+    ../src/wcomputer.h \
+    ../src/cacicthread.h \
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \
