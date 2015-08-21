@@ -154,9 +154,8 @@ bool CacicComm::fileDownload(const QString &mode, const QString &path, const QSt
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloadFinished(QNetworkReply*)) );
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()) );
 
-    QStringList splitPath = path.split("/");
 
-    fileHandler = new QFile(pathDownload + splitPath[splitPath.size() - 1]);
+    fileHandler = new QFile(pathDownload + path.split("/").last());
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
         logcacic->escrever(LogCacic::InfoLevel, "fileDownload: Não foi possível abrir o arquivo para escrita.");
         return false;
@@ -194,6 +193,7 @@ bool CacicComm::fileDownload(const QString &mode, const QString &urlServer, cons
 {
     QStringList splitPath = path.split("/");
     QString fileName = (!pathDownload.isEmpty() ? pathDownload + "/" : "") + splitPath[splitPath.size() - 1];
+
     fileHandler = new QFile(fileName);
     fileHandler->isReadable();
     if( !fileHandler->open(QIODevice::WriteOnly) ) {
@@ -359,5 +359,3 @@ void CacicComm::setUsuario(const QString &value)
 {
     this->usuario = value;
 }
-
-

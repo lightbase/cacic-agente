@@ -14,6 +14,7 @@
 #include <cacic_comm.h>
 #include <cacic_computer.h>
 #include "logcacic.h"
+#include <cmodulearray.h>
 
 class CheckModules
 {
@@ -22,13 +23,13 @@ public:
     ~CheckModules();
     //    QStringList verificaModulos();
     bool start();
-    QVariantMap getModules() const;
+    CModuleArray getModules() const;
 private:
 
     QString applicationUrl;
     QString cacicMainFolder;
-    QVariantMap modules; //modules["name"] = hash;
-    bool verificaModulo(const QString &moduloName, const QString &moduloHash);
+    CModuleArray modules;
+    bool verificaModulo(const QString &moduloName, const QString &moduloHash, const QString &moduloUrl);
     //    void lerArquivoConfig(const QJsonObject& jsonConfig);
     LogCacic *logcacic;
 };

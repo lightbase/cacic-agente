@@ -11,7 +11,7 @@
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
 VERSION_MINOR = 1
-VERSION_BUILD = 18
+VERSION_BUILD = 19
 DEFINES += VERSION_MAJOR=$$VERSION_MAJOR \
            VERSION_MINOR=$$VERSION_MINOR \
            VERSION_BUILD=$$VERSION_BUILD
@@ -62,7 +62,9 @@ SOURCES     += main.cpp \
                ../src/logcacic.cpp \
                 ../src/vregistry.cpp \
                 ../src/vqtconvert.cpp \
-                ../src/wcomputer.cpp
+                ../src/wcomputer.cpp \
+    ../src/cmodulearray.cpp \
+    ../src/cmodule.cpp
 
 
 HEADERS     += cacicd.h \
@@ -81,7 +83,9 @@ HEADERS     += cacicd.h \
                ../src/logcacic.h \
                ../src/vregistry.h \
                ../src/vqtconvert.h \
-               ../src/wcomputer.h
+               ../src/wcomputer.h \
+    ../src/cmodulearray.h \
+    ../src/cmodule.h
 
 include(../src/qtservice/src/qtservice.pri)
 

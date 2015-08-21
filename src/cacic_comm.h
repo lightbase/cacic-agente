@@ -26,6 +26,7 @@
 #include "QLogger.h"
 #include "identificadores.h"
 #include <logcacic.h>
+#include <iostream>
 
 class CacicComm : public QObject{
 
@@ -47,6 +48,7 @@ public:
     bool httpDownload(const QString &urlServer, const QString &path,const QString &pathDownload);
     bool fileDownload(const QString &mode, const QString &path, const QString &pathDownload);
     bool fileDownload(const QString &mode, const QString &urlServer, const QString &path, const QString &pathDownload);
+    bool fileDownload(QUrl &fullUrl, const QString &moduloName, const QString &pathDownload);
 
     QString getUrlSsl ();
     void setUrlSsl(const QString &value);
