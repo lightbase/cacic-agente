@@ -147,6 +147,7 @@ QJsonObject CCacic::getJsonFromFile(QString filepath)
     } else {
         qDebug() << "Erro no parsing do arquivo json:" + filepath;
         qDebug() << error.errorString();
+
         exit(1);
     }
     return json;
