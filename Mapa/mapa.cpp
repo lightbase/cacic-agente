@@ -173,7 +173,7 @@ void Mapa::on_okButton_clicked()
 
             foreach(NovoCampo customEntry, listNovosCampos) {
                 QLineEdit *editLine = dynamic_cast<QLineEdit*>(customEntry.getLineWidget());
-qDebug() << editLine->text();
+
                 if(!editLine->text().isNull() && !editLine->text().isEmpty() )
                     patrimonio[customEntry.getTitle()] = QJsonValue::fromVariant(editLine->text());
             }
