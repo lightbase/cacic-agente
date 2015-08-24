@@ -559,12 +559,7 @@ bool CacicTimer::getMapa()
             if(reply.contains("col_patr")) {
                 if(!configs.isEmpty()){
                     QJsonObject agent = configs["agentcomputer"].toObject();
-                    QJsonObject mapa;
-                    if (reply.contains("ldap")){
-                        mapa["ldap"] = reply["ldap"];
-                    }
-                    mapa["col_patr"] = reply["col_patr"];
-                    agent["mapa"] = mapa;
+                    agent["mapa"] = reply;
                     configs["agentcomputer"] = agent;
                     CCacic::setJsonToFile(configs,this->cacicMainFolder + "getConfig.json");
                 } else {
