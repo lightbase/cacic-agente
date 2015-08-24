@@ -85,6 +85,8 @@ private slots:
     void testGetTest();
     void testGetConfig();
     void testDownload();
+    void testCModule();
+    void testCModuleArray();
     void testGetModulesValues();
     void testColeta();
     void testLogger();

@@ -31,16 +31,18 @@ void CacicThread::iniciarModulo()
             QTimer::singleShot(this->timeoutSec, proc, SLOT(kill()));
 #ifndef Q_OS_WIN
         if (this->moduloDirPath.split("/").last().contains("chksys") ||
-            this->moduloDirPath.split("/").last().contains("mapacacic"))
+            this->moduloDirPath.split("/").last().contains("mapacacic")){
             //não abre applicações visuais quando iniciado pelo init
             if (!proc->startDetached(this->moduloDirPath)){
                 logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível iniciar o processo do módulo " +
                                    this->moduloDirPath);
             }
-        else
+        } else {
+        #endif
+            proc->execute(this->moduloDirPath);
+#ifndef Q_OS_WIN
+        }
 #endif
-        proc->start();
-        proc->waitForFinished(this->timeoutSec > 0 ? this->timeoutSec + 1000 : -1);
         if((proc->atEnd()) && (proc->exitStatus() == QProcess::NormalExit)){
             registraExecucao(true, proc->errorString());
         }else{

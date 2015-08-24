@@ -54,6 +54,8 @@ SOURCES += \
     ../src/logcacic.cpp \
     ../src/wcomputer.cpp \
     ../src/cacicthread.cpp \
+    ../src/cmodule.cpp \
+    ../src/cmodulearray.cpp
 #    ../src/qtservice/src/qtservice.cpp \
 #    ../src/qtservice/src/qtservice_unix.cpp \
 #    ../src/qtservice/src/qtservice_win.cpp \
@@ -81,6 +83,8 @@ HEADERS += \
     ../src/logcacic.h \
     ../src/wcomputer.h \
     ../src/cacicthread.h \
+    ../src/cmodule.h \
+    ../src/cmodulearray.h
 #    ../src/qtservice/src/qtservice.h \
 #    ../src/qtservice/src/qtservice_p.h \
 #    ../src/qtservice/src/qtunixserversocket.h \

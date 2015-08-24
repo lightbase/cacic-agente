@@ -223,17 +223,17 @@ void CacicTimer::iniciarThread(){
             definirDirModulo(getApplicationDirPath(), nome);
             //Se não for cacic-service, nem install cacic, nem mapa OU Se for Mapa, não tiver sido
             //executado E o patrimônio estiver executado, iniciar a thread.
-            if((!nome.contains("cacic-service")  &&
-                !nome.contains("install-cacic")  &&
-                !nome.contains("mapacacic")    ) ||
-                (nome.contains("mapacacic") && this->getMapa())){
+            if(!nome.contains("cacic-service")
+                && !nome.contains("install-cacic")
+                && !nome.contains("mapacacic")
+                || (nome.contains("mapacacic") && this->getMapa())){
                 if (QFile::exists(getDirProgram())) {
                     if (var > 0) this->cMutex->lock();
 
                     cacicthread->setCMutex(cMutex);
                     cacicthread->setNomeModulo(nome);
                     cacicthread->setModuloDirPath(getDirProgram());
-                    cacicthread->start(QThread::NormalPriority);
+                    cacicthread->run();
                     cacicthread->wait();
                     
                     modulosExecutados[nome] = hash;

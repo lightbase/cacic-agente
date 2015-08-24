@@ -9,10 +9,10 @@ CTestCacic::CTestCacic(QObject *parent) :
 
 void CTestCacic::initTestCase()
 {
-    this->OCacicComm = new CacicComm("Cacic Teste", this->testPath);
     this->testPath = QDir::currentPath() + "/teste";
     this->testIniPath = testPath + "/teste.ini";
 
+    this->OCacicComm = new CacicComm("Cacic Teste", this->testPath);
     OCacicComm->setUrlGerente("http://teste.cacic.cc");
     OCacicComm->setUsuario("cacic");
     OCacicComm->setPassword("cacic123");
@@ -287,8 +287,10 @@ void CTestCacic::testGetConfig()
 
 void CTestCacic::testColeta()
 {
-    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_soft"].toBool() &&
-        CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["actions"].toObject()["col_hard"].toBool()){
+    if (CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
+                                ["actions"].toObject()["col_soft"].toBool()
+        && CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
+                                ["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
         oColeta.run();
         oColeta.waitToCollect();
@@ -350,14 +352,19 @@ void CTestCacic::testDownload()
 {
     QJsonObject ftp;
 
+    if(!QFile::exists("getConfig.json")){
+        this->testGetConfig();
+    }
     if(QFile::exists("getConfig.json")){
-        ftp = CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()["metodoDownload"].toObject();
+        ftp = CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
+              ["metodoDownload"].toObject();
         if (!ftp.isEmpty()) {
             OCacicComm->setFtpPass(ftp["senha"].toString());
             OCacicComm->setFtpUser(ftp["usuario"].toString());
             OCacicComm->fileDownload(ftp["tipo"].toString(),
                                      ftp["url"].toString(),
-                                     (ftp["path"].toString().endsWith("/") ? ftp["path"].toString() : ftp["path"].toString() +"/") +
+                                     (ftp["path"].toString().endsWith("/") ?
+                                      ftp["path"].toString() : ftp["path"].toString() +"/") +
 #ifndef Q_OS_WIN
                                      "cacic-service",
 #else
@@ -380,6 +387,8 @@ void CTestCacic::testDownload()
         QVERIFY2(false, "Não existe o arquivo de configuração.");
     }
 }
+
+
 
 void CTestCacic::testServiceController()
 {
@@ -457,7 +466,8 @@ void CTestCacic::testStartProcess()
     cacicthread->setCMutex(mutex);
     cacicthread->setModuloDirPath(modulo);
     cacicthread->setNomeModulo(modulo.split("/").last());
-    cacicthread->run();
+//    cacicthread->run();
+    cacicthread->start(QThread::NormalPriority);
     qDebug() << cacicthread->getLastError();
     QVERIFY(true);
 }
@@ -551,23 +561,62 @@ void CTestCacic::testEnviaLog()
 
 }
 
+void CTestCacic::testCModule()
+{
+    if (!QFile::exists("getConfig.json")){
+        this->testGetConfig();
+    }
+    QJsonObject configs = CCacic::getJsonFromFile("getConfig.json");
+    configs = configs["agentcomputer"].toObject()["modulos"].toObject();
+    CModule modules;
+    int error = modules.loadFromJsonObject(configs["cacic"].toArray().
+                first().toObject());
+//    qDebug() << modules.name() << modules.urlDownload() << modules.hash()
+//             << modules.version();
+    QVERIFY(error == CModule::Success);
+}
+
+void CTestCacic::testCModuleArray()
+{
+    if (!QFile::exists("getConfig.json")){
+        this->testGetConfig();
+    }
+    QJsonObject configs = CCacic::getJsonFromFile("getConfig.json");
+    configs = configs["agentcomputer"].toObject()["modulos"].toObject();
+    CModuleArray modules;
+    int error = modules.loadFromJsonArray(configs["cacic"].toArray());
+//    if (error == CModuleArray::Success){
+//        for(int i = 0; i<modules.size(); i++){
+//            qDebug() << "Name:    " + modules[i].name();
+//            qDebug() << "Url:     " + modules[i].urlDownload();
+//            qDebug() << "Hash:    " + modules[i].hash();
+//            qDebug() << "Version: " + modules[i].version();
+//        }
+//    }
+    QVERIFY(error == CModule::Success);
+
+}
+
 void CTestCacic::testGetModulesValues()
 {
     bool ok = true;
+    if(!QFile::exists("getConfig.json")){
+        this->testGetConfig();
+    }
+    QFile::copy("getConfig.json", this->testPath + "/getConfig.json");
     oCheckModules = new CheckModules(this->testPath, "teste");
     oCheckModules->start();
-    QVariantMap modules = oCheckModules->getModules();
-    QVariantMap::const_iterator i = modules.constBegin();
-    if (!modules.empty()) {
-        do {
-            QFile modulo(this->testPath + "/" + i.key());
-//            qDebug() << i.key() << " exists: " << modulo.exists();
-            ok = modulo.exists() && ok;
-            i++;
-        } while (i!=modules.constEnd());
-    }
+    CModuleArray modules = oCheckModules->getModules();
 
-    QVERIFY(ok);
+    if (modules.size() > 0) {
+        for (int i = 0; i<modules.size() ; i++) {
+            QFile modulo(this->testPath + "/" + modules[i].name());
+            ok = modulo.exists() && ok;
+        }
+        QVERIFY(ok);
+    } else {
+        QVERIFY2(ok, "Sem modulos.");
+    }
 }
 
 void CTestCacic::cleanupTestCase()
