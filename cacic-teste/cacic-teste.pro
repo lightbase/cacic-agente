@@ -94,3 +94,6 @@ INCLUDEPATH += ../src \
                ../src/crypto++/include/
 
 include(../src/qtservice/src/qtservice.pri)
+
+RESOURCES += \
+    resource.qrc

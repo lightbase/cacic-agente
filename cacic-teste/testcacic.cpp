@@ -263,6 +263,40 @@ void CTestCacic::testConvertDouble()
     QVERIFY(converted.toDouble() == number);
 }
 
+void CTestCacic::testSystemTray()
+{
+    if(QSystemTrayIcon::isSystemTrayAvailable()) {
+        if(sysTray == NULL)
+            return;
+
+        sysTray = new QSystemTrayIcon(this);
+
+        sysTray->setIcon(QIcon(":/cacic-logo.png"));
+        sysTray->setToolTip("Cacic");
+
+        QMenu *menu;
+        QAction* action;
+
+        menu = new QMenu();
+        menu->addAction("generica");
+        menu->addSeparator();
+        action = new QAction(QString("alvo"),this);
+        connect(action,&QAction::triggered,this,&CTestCacic::actionClicked);
+        menu->addAction(action);
+        QMenu *newMenu = menu->addMenu("submenu");
+
+        sysTray->setContextMenu(menu);
+
+        sysTray->show();
+
+        connect(sysTray,&QSystemTrayIcon::activated,this,&CTestCacic::sysTrayClicked);
+
+        emit sysTray->activated(QSystemTrayIcon::Trigger);
+
+    } else
+        QVERIFY(false);
+}
+
 void CTestCacic::testGetTest()
 {
     bool ok;
@@ -623,4 +657,19 @@ void CTestCacic::cleanupTestCase()
 {
     CCacic::deleteFile("getConfig.json");
     CCacic::deleteFolder(this->testPath);
+}
+
+void CTestCacic::sysTrayClicked(QSystemTrayIcon::ActivationReason reason)
+{
+    qDebug() << "sysTrayClicked" << endl;
+    QMenu* menu = sysTray->contextMenu();
+
+    QAction* actionPressed = menu->exec(sysTray->geometry().topLeft());
+    actionPressed->activate(QAction::Trigger);
+}
+
+void CTestCacic::actionClicked()
+{
+    qDebug() << "actionClicked" << endl;
+    QVERIFY(true);
 }

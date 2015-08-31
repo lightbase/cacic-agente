@@ -20,8 +20,10 @@
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QList>
+#include <QMenu>
 #include <QProcess>
 #include <QStringList>
+#include <QSystemTrayIcon>
 #include <iostream>
 #include <QtNetwork/QtNetwork>
 #include <QJsonObject>
@@ -48,6 +50,7 @@ private:
     QString cripTeste;
     CColeta oColeta;
     CheckModules *oCheckModules;
+    QSystemTrayIcon *sysTray;
 //    cacicD OcacicD;
 
 signals:
@@ -82,6 +85,7 @@ private slots:
     void testRemoveRegistry();
     void testChangeVersionRegistry();
     void testConvertDouble();
+    void testSystemTray();
     void testGetTest();
     void testGetConfig();
     void testDownload();
@@ -96,6 +100,9 @@ private slots:
     void testStopCheckCacicService();
     void testStartProcess();
     void cleanupTestCase();
+
+    void sysTrayClicked(QSystemTrayIcon::ActivationReason reason);
+    void actionClicked();
 };
 
 #endif // TESTEINSTALLCACIC_H
