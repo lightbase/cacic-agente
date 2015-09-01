@@ -37,7 +37,7 @@
 #define LOG_SOCKET_LISTENER "Cacic Daemon (Socket Listener)"
 #define LOG_CHECKMODULES "CheckModules"
 #define LOG_CACIC_MESSAGE "Cacic Message"
-#define CACIC_SERVICE_NAME "cacicdaemon"
+#define CACIC_SERVICE_NAME "CacicDaemon"
 #define N_LOGS_ENVIO 10
 
 class Identificadores
