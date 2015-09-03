@@ -174,6 +174,7 @@ bool chksysTimer::verificarModulos()
                         }
                     }
                     delete service;
+                    service = NULL;
 #else
                     ConsoleObject console;
                     if (CCacic::findProc("cacic-service")) console("killall -9 \"cacic-service\"");
