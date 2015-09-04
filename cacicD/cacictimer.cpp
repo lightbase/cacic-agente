@@ -5,6 +5,7 @@ CacicTimer::CacicTimer(QString dirpath)
     setApplicationDirPath(dirpath);
     iniciarInstancias();
     logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
+
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
 }
 
@@ -33,6 +34,7 @@ void CacicTimer::reiniciarTimer(){
 void CacicTimer::iniciarTimer()
 {
     CCacic::salvarVersao("cacic-service");
+
     //iniciar em 2 minutos devido à placa de rede que às vezes não sobe à tempo.
     setPeriodicidadeExecucao(1* 60000);
     timer->start(getPeriodicidadeExecucao());
@@ -40,6 +42,8 @@ void CacicTimer::iniciarTimer()
 
 //Slot que será iniciado sempre der a contagem do timer.
 void CacicTimer::mslot(){
+
+    sysTray = new CacicSysTray(this->applicationDirPath);
     if(comunicarGerente()){
         if ( QFile(cacicMainFolder + "/cacic280.exe" ).exists() ||
              QFile(cacicMainFolder + "/cacic260.exe" ).exists() ) {
@@ -828,3 +832,4 @@ void CacicTimer::setPeriodicidadeExecucao(int value)
 {
     this->periodicidadeExecucao = value;
 }
+

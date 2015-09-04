@@ -32,6 +32,7 @@ public:
     void stop();
 
 private:
+
     QLocalServer *serverListener;
     QString cacicMainFolder;
     LogCacic *logcacic;

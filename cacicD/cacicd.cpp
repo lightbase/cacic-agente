@@ -6,6 +6,7 @@ cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     cacicMainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;
     logcacic = new LogCacic(LOG_DAEMON, cacicMainFolder + "/Logs");
     this->createApplication(argc, argv);
+
 }
 
 cacicD::~cacicD()

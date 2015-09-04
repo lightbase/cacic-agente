@@ -24,6 +24,7 @@
 #include "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
+#include "cacicsystray.h"
 #include <servicecontroller.h>
 #ifdef Q_OS_WIN
     #include "vqtconvert.h"
@@ -79,6 +80,7 @@ private:
     QString cacicMainFolder;
     QString dirProgram;
     QString applicationDirPath;
+    CacicSysTray *sysTray;
     QJsonObject jsonConfig;
     LogCacic *logcacic;
     int periodicidadeExecucao = 0;

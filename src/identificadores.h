@@ -32,6 +32,7 @@
 #define LOG_CACIC_COMM "Cacic Comm"
 #define LOG_GERCOLS "Gercols"
 #define LOG_GERCOLS_HARDWARE "Gercols (hardware)"
+#define LOG_SYSTRAY "System Tray Icon"
 #define LOG_INSTALL_CACIC "Install Cacic"
 #define LOG_MAPA "Mapa"
 #define LOG_SOCKET_LISTENER "Cacic Daemon (Socket Listener)"

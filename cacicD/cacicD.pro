@@ -64,7 +64,8 @@ SOURCES     += main.cpp \
                 ../src/vqtconvert.cpp \
                 ../src/wcomputer.cpp \
     ../src/cmodulearray.cpp \
-    ../src/cmodule.cpp
+    ../src/cmodule.cpp \
+    cacicsystray.cpp
 
 
 HEADERS     += cacicd.h \
@@ -85,7 +86,11 @@ HEADERS     += cacicd.h \
                ../src/vqtconvert.h \
                ../src/wcomputer.h \
     ../src/cmodulearray.h \
-    ../src/cmodule.h
+    ../src/cmodule.h \
+    cacicsystray.h
 
 include(../src/qtservice/src/qtservice.pri)
+
+RESOURCES += \
+    resource.qrc
 
