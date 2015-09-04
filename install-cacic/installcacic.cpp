@@ -135,7 +135,7 @@ void InstallCacic::updateService()
             std::cout << "Serviço não instalado, reinstalando...\n";
             logcacic->escrever(LogCacic::InfoLevel, QString("Serviço não instalado, reinstalando..."));
             if(!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
-                                L"Cacic Daemon")){
+                                L"CacicDaemon")){
                 std::cout << "Não foi possível instalar o serviço: " + service.getLastError() +"\n";
                 logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível instalar o serviço: " +
                                                                                QString::fromStdString(service.getLastError())));
@@ -287,7 +287,7 @@ void InstallCacic::install()
             if (fileService.exists()){
                 if (!service.isInstalled()){
                     if (!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
-                                         QString("Cacic Daemon").toStdWString())){
+                                         QString(CACIC_SERVICE_NAME).toStdWString())){
                         logcacic->escrever(LogCacic::ErrorLevel, "Falha ao reinstalar o serviço: " +
                                                                                 QString::fromStdString(service.getLastError()));
                         uninstall();
@@ -343,7 +343,7 @@ void InstallCacic::install()
 void InstallCacic::forcaColeta()
 {
     QLocalSocket socket;
-    socket.setServerName("CacicDaemon");
+    socket.setServerName(CACIC_SERVICE_NAME);
     socket.connectToServer();
     if (socket.isOpen()){
         socket.write("Coletar");

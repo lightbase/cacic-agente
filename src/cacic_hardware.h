@@ -16,6 +16,7 @@
 #include <cmath>
 #include <console.h>
 #include <operatingsystem.h>
+#include <QStringList>
 #include "logcacic.h"
 #ifdef Q_OS_WIN
     #include <wmi.h>
@@ -30,6 +31,7 @@ public:
     ~cacic_hardware();
     void iniciaColeta();
     QJsonObject toJsonObject();
+    void setExceptionClasses(const QMap<QString, QStringList> &value);
 
 private:
 #ifdef Q_OS_WIN
@@ -53,6 +55,7 @@ private:
 
     QJsonObject coletaHardware;
     LogCacic *logcacic;
+    QMap<QString, QStringList> _exceptionsClasses;
 };
 
 #endif // CACIC_HARDWARE_H

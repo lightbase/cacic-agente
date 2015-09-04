@@ -1,6 +1,6 @@
 #include "cacicd.h"
 
-cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, "CacicDaemon")
+cacicD::cacicD(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, CACIC_SERVICE_NAME)
 {
     QString folder = CCacic::getValueFromRegistry("Lightbase", "Cacic", "mainFolder").toString();
     cacicMainFolder = !folder.isEmpty() && !folder.isNull() ? folder : Identificadores::ENDERECO_PATCH_CACIC;

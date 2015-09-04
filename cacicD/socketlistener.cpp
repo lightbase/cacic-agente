@@ -7,7 +7,7 @@ SocketListener::SocketListener(QString DirPath, QObject *parent) :
     server = new QLocalServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     logcacic = new LogCacic(LOG_SOCKET_LISTENER, DirPath+"/Logs");
-    if(!server->listen("CacicDaemon")) {
+    if(!server->listen(CACIC_SERVICE_NAME)) {
         logcacic->escrever(LogCacic::ErrorLevel, QString("Erro ao iniciar escuta de socket."));
     }
 }

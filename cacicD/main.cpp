@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
     cacicD service(argc, argv);
-    service.setServiceDescription("Cacic Daemon");
+    service.setServiceDescription(CACIC_SERVICE_NAME);
     service.setStartupType(QtServiceController::AutoStartup);
     service.setServiceFlags(cacicD::Default);
 

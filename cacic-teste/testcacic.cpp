@@ -326,8 +326,18 @@ void CTestCacic::testColeta()
         && CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
                                 ["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
+
+        QMap<QString, QStringList> exceptions;
+        exceptions["Win32_BIOS"] = QStringList();
+        exceptions["Win32_DiskDrive"] = QStringList() << "Model" << "Size";
+
+        //A classe Win32_BIOS não será coletada e a DiskDrive serão excluídos os atributos model e size.
+        oColeta.setHardwareExceptionClasses(exceptions);
+
         oColeta.run();
         oColeta.waitToCollect();
+        qDebug() << oColeta.toJsonObject()["hardware"].toObject()["Win32_BIOS"]
+                 << oColeta.toJsonObject()["hardware"].toObject()["Win32_DiskDrive"];
         QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
                 !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     } else

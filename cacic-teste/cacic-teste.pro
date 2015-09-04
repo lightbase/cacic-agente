@@ -19,6 +19,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
 QT += testlib
 QT += network
+QT += widgets
 QT -= gui
 TARGET = cacic-teste
 
@@ -95,5 +96,5 @@ INCLUDEPATH += ../src \
 
 include(../src/qtservice/src/qtservice.pri)
 
-RESOURCES += \
-    resource.qrc
+#RESOURCES += \
+#    resource.qrc
