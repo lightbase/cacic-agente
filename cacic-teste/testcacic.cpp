@@ -327,7 +327,7 @@ void CTestCacic::testColeta()
                                 ["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
 
-        QMap<QString, QStringList> exceptions;
+        QHash<QString, QStringList> exceptions;
         exceptions["Win32_BIOS"] = QStringList();
         exceptions["Win32_DiskDrive"] = QStringList() << "Model" << "Size";
 
@@ -336,8 +336,7 @@ void CTestCacic::testColeta()
 
         oColeta.run();
         oColeta.waitToCollect();
-        qDebug() << oColeta.toJsonObject()["hardware"].toObject()["Win32_BIOS"]
-                 << oColeta.toJsonObject()["hardware"].toObject()["Win32_DiskDrive"];
+        qDebug() << oColeta.toJsonObject()["hardware"].toObject();
         QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
                 !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     } else
@@ -661,6 +660,14 @@ void CTestCacic::testGetModulesValues()
     } else {
         QVERIFY2(ok, "Sem modulos.");
     }
+}
+
+void CTestCacic::testHardwareClasses()
+{
+    HardwareClasses hclass;
+    hclass.init();
+    qDebug() << hclass.classes();
+    QVERIFY(false);
 }
 
 void CTestCacic::cleanupTestCase()

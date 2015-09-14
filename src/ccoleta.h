@@ -41,7 +41,7 @@ public:
     cacic_hardware getOHardware() const;
     bool waitToCollect();
     QJsonObject toJsonObject();
-    void setHardwareExceptionClasses(const QMap<QString, QStringList> &exceptions);
+    void setHardwareExceptionClasses(const QHash<QString, QStringList> &exceptions);
 
 public slots:
     void coletaHardware();

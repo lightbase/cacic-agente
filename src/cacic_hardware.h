@@ -18,6 +18,8 @@
 #include <operatingsystem.h>
 #include <QStringList>
 #include "logcacic.h"
+#include <hardwareclasses.h>
+
 #ifdef Q_OS_WIN
     #include <wmi.h>
 #elif defined(Q_OS_LINUX)
@@ -31,7 +33,7 @@ public:
     ~cacic_hardware();
     void iniciaColeta();
     QJsonObject toJsonObject();
-    void setExceptionClasses(const QMap<QString, QStringList> &value);
+    void setExceptionClasses(const QHash<QString, QStringList> &value);
 
 private:
 #ifdef Q_OS_WIN
@@ -55,7 +57,7 @@ private:
 
     QJsonObject coletaHardware;
     LogCacic *logcacic;
-    QMap<QString, QStringList> _exceptionsClasses;
+    QHash<QString, QStringList> _exceptionsClasses;
 };
 
 #endif // CACIC_HARDWARE_H

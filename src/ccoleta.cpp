@@ -78,7 +78,7 @@ QJsonObject CColeta::toJsonObject()
     return coletaJson;
 }
 
-void CColeta::setHardwareExceptionClasses(const QMap<QString, QStringList> &exceptions)
+void CColeta::setHardwareExceptionClasses(const QHash<QString, QStringList> &exceptions)
 {
     this->oHardware.setExceptionClasses(exceptions);
 }

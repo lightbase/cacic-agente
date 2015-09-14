@@ -42,7 +42,8 @@ SOURCES += \
     ../src/identificadores.cpp \
     ../src/servicecontroller.cpp \
     ../src/logcacic.cpp \
-    ../src/wcomputer.cpp
+    ../src/wcomputer.cpp \
+    ../src/hardwareclasses.cpp
 
 HEADERS += \
     ./gercols.h \
@@ -60,7 +61,8 @@ HEADERS += \
     ../src/identificadores.h \
     ../src/servicecontroller.h \
     ../src/logcacic.h \
-    ../src/wcomputer.h
+    ../src/wcomputer.h \
+    ../src/hardwareclasses.h
 
 CONFIG   += console
 CONFIG   -= app_bundle

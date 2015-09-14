@@ -32,6 +32,7 @@
 #include <checkmodules.h>
 #include <servicecontroller.h>
 #include <cacicthread.h>
+#include <hardwareclasses.h>
 
 class CTestCacic : public QObject
 {
@@ -92,6 +93,7 @@ private slots:
     void testCModule();
     void testCModuleArray();
     void testGetModulesValues();
+    void testHardwareClasses();
     void testColeta();
     void testLogger();
     void testEnviaColeta();
