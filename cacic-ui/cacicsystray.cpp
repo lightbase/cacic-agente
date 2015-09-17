@@ -1,18 +1,22 @@
 #include "cacicsystray.h"
 
-CacicSysTray::CacicSysTray()
-{
-    iniciarSysTray();
-}
-
-CacicSysTray::CacicSysTray(QString dirpath)
+CacicSysTray::CacicSysTray(const QString &dirpath, QWidget *parent) :
+    QWidget(parent)
 {
     if(!dirpath.isEmpty()) {
         this->mainFolder = dirpath;
-        logcacic = new LogCacic(LOG_SYSTRAY, mainFolder+"/Logs");
-        logcacic->escrever(LogCacic::InfoLevel,QStrin("SystemTray constructor."));
+        logcacic = new LogCacic(LOG_CACICINTERFACE, mainFolder+"/Logs");
+        logcacic->escrever(LogCacic::InfoLevel,QString("CacicInterface constructor."));
+    } else {
+        logcacic = new LogCacic(LOG_CACICINTERFACE, dirpath+"/Logs");
+        logcacic->escrever(LogCacic::InfoLevel,QString("Deu pala. Else no construtor de CacicInterface."));
     }
-    iniciarSysTray();
+}
+
+CacicSysTray::~CacicSysTray()
+{
+    delete sysTray;
+    delete logcacic;
 }
 
 void CacicSysTray::iniciarSysTray()
@@ -22,9 +26,15 @@ void CacicSysTray::iniciarSysTray()
             logcacic->escrever(LogCacic::InfoLevel,QString("Inicializando SystemTray"));
 
         sysTray = new QSystemTrayIcon(this);
+if(logcacic != NULL)
+    logcacic->escrever(LogCacic::InfoLevel,QString("Objeto QSystemTrayIcon instanciado."));
 
-        sysTray->setIcon(QIcon(":/cacic-logo.png"));
-        sysTray->setToolTip("Cacic");
+        sysTray->setToolTip(QString("Cacic"));
+if(logcacic != NULL)
+logcacic->escrever(LogCacic::InfoLevel,QString("ToolTip setado."));
+        sysTray->setIcon(QIcon(":/icon/cacic-logo.png"));
+if(logcacic != NULL)
+logcacic->escrever(LogCacic::InfoLevel,QString("Ícone setado."));
 
         QMenu *menu;
         QAction* action;
@@ -36,10 +46,16 @@ void CacicSysTray::iniciarSysTray()
         connect(action,&QAction::triggered,this,&CacicSysTray::actionClicked);
         menu->addAction(action);
         QMenu *newMenu = menu->addMenu("submenu");
+if(logcacic != NULL)
+    logcacic->escrever(LogCacic::InfoLevel,QString("Menus e actions inicializadas."));
 
         sysTray->setContextMenu(menu);
+if(logcacic != NULL)
+    logcacic->escrever(LogCacic::InfoLevel,QString("SetContextMenu feito."));
 
         sysTray->show();
+if(logcacic != NULL)
+    logcacic->escrever(LogCacic::InfoLevel,QString("SysTray showed."));
 
         connect(sysTray,&QSystemTrayIcon::activated,this,&CacicSysTray::sysTrayClicked);
 
@@ -55,7 +71,8 @@ void CacicSysTray::sysTrayClicked(QSystemTrayIcon::ActivationReason reason)
     QMenu* menu = sysTray->contextMenu();
 
     QAction* actionPressed = menu->exec(sysTray->geometry().topLeft());
-    actionPressed->activate(QAction::Trigger);
+    if(actionPressed != 0)
+        actionPressed->activate(QAction::Trigger);
 }
 
 void CacicSysTray::actionClicked()

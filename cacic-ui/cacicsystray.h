@@ -1,18 +1,22 @@
 #ifndef CACICSYSTRAY_H
 #define CACICSYSTRAY_H
 
-#include <QObject>
+#include <QMainWindow>
+#include <QtCore>
+#include <QCloseEvent>
+#include <QDesktopWidget>
+#include <QMessageBox>
 #include <QMenu>
 #include <QSystemTrayIcon>
-#include "logcacic.h"
-#include "identificadores.h"
+#include "../src/logcacic.h"
+#include "../src/identificadores.h"
 
-class CacicSysTray: public QObject
+class CacicSysTray: public QWidget
 {
     Q_OBJECT
 public:
-    CacicSysTray();
-    CacicSysTray(QString dirpath);
+    explicit CacicSysTray(const QString &dirpath, QWidget *parent =0);
+    ~CacicSysTray();
     void iniciarSysTray();
 
 public slots:
