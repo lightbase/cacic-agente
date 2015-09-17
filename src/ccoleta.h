@@ -42,6 +42,9 @@ public:
     bool waitToCollect();
     QJsonObject toJsonObject();
     void setHardwareExceptionClasses(const QHash<QString, QStringList> &exceptions);
+    void setHardwareExceptionClasses(const QJsonObject &exceptions);
+    void setSoftwareExceptionClasses(const QHash<QString, QStringList> &exceptions);
+    void setSoftwareExceptionClasses(const QJsonObject &exceptions);
 
 public slots:
     void coletaHardware();

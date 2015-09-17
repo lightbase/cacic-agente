@@ -48,6 +48,7 @@ void CColeta::run()
 
     //se for pra coletar hardware...
     if( actions.contains("col_hard") && actions["col_hard"].toBool()){
+        this->setHardwareExceptionClasses(coleta["agentcomputer"].toObject()["exceptionClasses"].toObject()["hardware"].toObject());
         logcacic->escrever(LogCacic::InfoLevel, QString("Iniciando coleta de hardware."));
         this->hardwareIsFinish = false;
         emit beginHardware();
@@ -56,6 +57,7 @@ void CColeta::run()
 
     //se for pra coletar software...
     if ( actions.contains("col_soft") && actions["col_soft"].toBool()){
+        this->setSoftwareExceptionClasses(coleta["agentcomputer"].toObject()["exceptionClasses"].toObject()["software"].toObject());
         logcacic->escrever(LogCacic::InfoLevel, QString("Iniciando coleta de software."));
         this->softwareIsFinish = false;
         emit beginSoftware();
@@ -83,6 +85,40 @@ void CColeta::setHardwareExceptionClasses(const QHash<QString, QStringList> &exc
     this->oHardware.setExceptionClasses(exceptions);
 }
 
+void CColeta::setHardwareExceptionClasses(const QJsonObject &exceptions)
+{
+    if(!exceptions.isEmpty()){
+        QHash<QString, QStringList> hard;
+        for (QJsonObject::const_iterator i = exceptions.constBegin(); i != exceptions.constEnd(); i++){
+            QStringList tmp;
+            foreach(QJsonValue value, i.value().toArray()){
+                tmp.append(value.toString());
+            }
+            hard[i.key()] = tmp;
+        }
+        this->oHardware.setExceptionClasses(hard);
+    }
+}
+
+void CColeta::setSoftwareExceptionClasses(const QHash<QString, QStringList> &exceptions)
+{
+    this->oSoftware.setExceptionClasses(exceptions);
+}
+
+void CColeta::setSoftwareExceptionClasses(const QJsonObject &exceptions)
+{
+    if(!exceptions.isEmpty()){
+        QHash<QString, QStringList> soft;
+        for (QJsonObject::const_iterator i = exceptions.constBegin(); i != exceptions.constEnd(); i++){
+            QStringList tmp;
+            foreach(QJsonValue value, i.value().toArray()){
+                tmp.append(value.toString());
+            }
+            soft[i.key()] = tmp;
+        }
+        this->oSoftware.setExceptionClasses(soft);
+    }
+}
 void CColeta::hardwareReady()
 {
     this->hardwareIsFinish = true;

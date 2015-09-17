@@ -26,6 +26,9 @@ public:
     void iniciaColeta();
     QJsonObject toJsonObject();
 
+    QHash<QString, QStringList> exceptions() const;
+    void setExceptionClasses(const QHash<QString, QStringList> &exceptions);
+
 private:
 #ifdef Q_OS_WIN
     QJsonObject coletaWin();
@@ -36,6 +39,7 @@ private:
 #endif
 
     QJsonObject coletaSoftware;
+    QHash<QString, QStringList> _exceptions;
 };
 
 #endif // CACIC_SOFTWARE_H

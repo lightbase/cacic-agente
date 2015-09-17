@@ -326,17 +326,27 @@ void CTestCacic::testColeta()
         && CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
                                 ["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
+        QJsonObject exceptions;
+        QJsonObject hard, soft;
+        QJsonArray classes;
+        classes.append(QJsonValue::fromVariant(QString("Model")));
+        classes.append(QJsonValue::fromVariant(QString("Size")));
+        hard["Win32_DiskDrive"] = classes;
+        hard["Win32_BIOS"] = QJsonArray();
 
-        QHash<QString, QStringList> exceptions;
-        exceptions["Win32_BIOS"] = QStringList();
-        exceptions["Win32_DiskDrive"] = QStringList() << "Model" << "Size";
+        classes.replace(0, QJsonValue::fromVariant(QString("installLocation")));
+        soft["apt"] = classes;
+        soft["vim"] = QJsonArray();
+
 
         //A classe Win32_BIOS não será coletada e a DiskDrive serão excluídos os atributos model e size.
-        oColeta.setHardwareExceptionClasses(exceptions);
+        oColeta.setHardwareExceptionClasses(hard);
+        oColeta.setSoftwareExceptionClasses(soft);
 
         oColeta.run();
         oColeta.waitToCollect();
-        qDebug() << oColeta.toJsonObject()["hardware"].toObject();
+        qDebug() << oColeta.toJsonObject()["software"].toObject().contains("vim");
+        qDebug() << oColeta.toJsonObject()["software"].toObject()["apt"];
         QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
                 !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     } else

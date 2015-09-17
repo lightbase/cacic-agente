@@ -31,27 +31,34 @@ QJsonObject cacic_software::coletaWin()
         reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
         QStringList keys = reg.enum_Keys();
         foreach(QString key, keys){
-            QVariantMap software;
-            VRegistry subReg;
-            subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
-            if (!subReg.get_REG_SZ("DisplayName").isEmpty())
-                software["description"] = subReg.get_REG_SZ("DisplayName");
-            if (!subReg.get_REG_SZ("Publisher").isEmpty())
-                software["publisher"] = subReg.get_REG_SZ("Publisher");
-            if (!subReg.get_REG_SZ("InstallLocation").isEmpty())
-                software["installLocation"] = subReg.get_REG_SZ("InstallLocation");
-            if (!subReg.get_REG_SZ("InstallDate").isEmpty())
-                software["installDate"] = subReg.get_REG_SZ("InstallDate");
-            if (!subReg.get_REG_SZ("URLInfoAbout").isEmpty())
-                software["url"] = subReg.get_REG_SZ("URLInfoAbout");
-            if (!subReg.get_REG_EXPAND_SZ("UninstallString").isEmpty())
-                software["uninstallString"] = subReg.get_REG_EXPAND_SZ("UninstallString");
-            if (!subReg.get_REG_EXPAND_SZ("QuietUninstallString").isEmpty())
-                software["quietUninstallString"] = subReg.get_REG_EXPAND_SZ("QuietUninstallString");
-            if (!subReg.get_REG_SZ("DisplayVersion").isEmpty())
-                software["version"] = subReg.get_REG_SZ("DisplayVersion");
-            software["name"] = key;
-            softwaresJson[key] = QJsonObject::fromVariantMap(software);
+            if(!(_exceptions.contains(key) && _exceptions[key].isEmpty())){
+                QVariantMap software;
+                VRegistry subReg;
+                subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
+                if (!subReg.get_REG_SZ("DisplayName").isEmpty())
+                    software["description"] = subReg.get_REG_SZ("DisplayName");
+                if (!subReg.get_REG_SZ("Publisher").isEmpty())
+                    software["publisher"] = subReg.get_REG_SZ("Publisher");
+                if (!subReg.get_REG_SZ("InstallLocation").isEmpty())
+                    software["installLocation"] = subReg.get_REG_SZ("InstallLocation");
+                if (!subReg.get_REG_SZ("InstallDate").isEmpty())
+                    software["installDate"] = subReg.get_REG_SZ("InstallDate");
+                if (!subReg.get_REG_SZ("URLInfoAbout").isEmpty())
+                    software["url"] = subReg.get_REG_SZ("URLInfoAbout");
+                if (!subReg.get_REG_EXPAND_SZ("UninstallString").isEmpty())
+                    software["uninstallString"] = subReg.get_REG_EXPAND_SZ("UninstallString");
+                if (!subReg.get_REG_EXPAND_SZ("QuietUninstallString").isEmpty())
+                    software["quietUninstallString"] = subReg.get_REG_EXPAND_SZ("QuietUninstallString");
+                if (!subReg.get_REG_SZ("DisplayVersion").isEmpty())
+                    software["version"] = subReg.get_REG_SZ("DisplayVersion");
+                software["name"] = key;
+
+                if(_exceptions.contains(key)){
+                    foreach(QString value, _exceptions[key])
+                        software.remove(value);
+                }
+                softwaresJson[key] = QJsonObject::fromVariantMap(software);
+            }
         }
     }
     return softwaresJson;
@@ -60,7 +67,6 @@ QJsonObject cacic_software::coletaWin()
 #elif defined(Q_OS_LINUX)
 QJsonObject cacic_software::coletaLinux()
 {
-
     OperatingSystem operatingSystem;
 
     if( operatingSystem.getIdOs() == OperatingSystem::LINUX_ARCH ) {
@@ -82,43 +88,57 @@ QJsonObject cacic_software::coletaArch()
 
     foreach(QString package, packages) {
         QString packageName = package.split(" ")[0];
-        QJsonObject packageJson;
+        if (!(packageName.isEmpty() || packageName.isNull()) &&
+                (!_exceptions.contains(packageName)
+                || !(_exceptions.contains(packageName)
+                && _exceptions[packageName].isEmpty()))){
+            QJsonObject packageJson;
 
-        QStringList packageInfo = console(QString("pacman -Qi ").append(packageName)).split("\n");
+            QStringList packageInfo = console(QString("pacman -Qi ").append(packageName)).split("\n");
 
-        packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
-        foreach(QString line, packageInfo) {
-            if(line.contains("Version"))
-                packageJson["version"] = line.split(":")[1].mid(1);
-            if(line.contains("Description"))
-                packageJson["description"] = line.split(":")[1].mid(1);
-            if(line.contains("URL")) {
-                QStringList url = line.split(":");
-                QString urlString;
+            packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
+            foreach(QString line, packageInfo) {
+                if(line.contains("Version") &&
+                        !(_exceptions.contains(packageName)
+                        && _exceptions[packageName].contains("version")))
+                    packageJson["version"] = line.split(":")[1].mid(1);
+                if(line.contains("Description") &&
+                        !(_exceptions.contains(packageName)
+                        && _exceptions[packageName].contains("description")))
+                    packageJson["description"] = line.split(":")[1].mid(1);
+                if(line.contains("URL")) {
+                    QStringList url = line.split(":");
+                    QString urlString;
 
-                for(int i = 1 ; i < url.size() ; ++i){
-                    urlString.append(url[i]);
-                    if(i == 1 ) urlString.append(":");
+                    for(int i = 1 ; i < url.size() ; ++i){
+                        urlString.append(url[i]);
+                        if(i == 1 ) urlString.append(":");
+                    }
+                    if(!(_exceptions.contains(packageName)
+                         && _exceptions[packageName].contains("url")))
+                        packageJson["url"] = urlString.mid(1);
+                    if (!(_exceptions.contains(packageName)
+                          && _exceptions[packageName].contains("publisher")))
+                        packageJson["publisher"] = urlString.mid(1);
                 }
-
-                packageJson["url"] = urlString.mid(1);
-                packageJson["publisher"] = urlString.mid(1);
-            }
-//            installSize não existe na coleta do Windows.
-//            if(line.contains("Installed size"))
-//                packageJson["installSize"] = line.split(":")[1].mid(1);
-            if(line.contains("Install Date"))
-                packageJson["installDate"] = line.split(":")[1].mid(1);
-        }
-
-        if (!packageName.isEmpty()) {
-
-            QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
-            if(!location.split(":").at(1).isEmpty()) {
-                location = location.split(":").at(1).mid(1);
-                packageJson["installLocation"] = location;
+    //            installSize não existe na coleta do Windows.
+    //            if(line.contains("Installed size"))
+    //                packageJson["installSize"] = line.split(":")[1].mid(1);
+                if(line.contains("Install Date") &&
+                        !(_exceptions.contains(packageName)
+                        && _exceptions[packageName].contains("installDate")))
+                    packageJson["installDate"] = line.split(":")[1].mid(1);
             }
 
+            if (!(_exceptions.contains(packageName)
+                  && _exceptions[packageName].contains("installLocation"))) {
+
+                QString location = console(QString("whereis ").append(packageName)).split("\n").at(0);
+                if(!location.split(":").at(1).isEmpty()) {
+                    location = location.split(":").at(1).mid(1);
+                    packageJson["installLocation"] = location;
+                }
+            }
             softwaresJson[packageName] = packageJson;
         }
     }
@@ -134,45 +154,60 @@ QJsonObject cacic_software::coletaDebian()
 
     foreach(QString package, packages) {
         QString packageName = package.split("\t")[0];
-        QJsonObject packageJson;
+        if (!(packageName.isEmpty() || packageName.isNull()) &&
+                (!_exceptions.contains(packageName)
+                || !(_exceptions.contains(packageName)
+                && _exceptions[packageName].isEmpty()))){
+            QJsonObject packageJson;
 
-        QStringList packageInfo = console(QString("apt-cache show ").append(packageName)).split("\n");
+            QStringList packageInfo = console(QString("apt-cache show ").append(packageName)).split("\n");
 
-        packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
-        foreach(QString line, packageInfo) {
-            if(line.contains("Version:"))
-                packageJson["version"] = line.split(":")[1].mid(1);
-            if(line.contains("Description-en:"))
-                packageJson["description"] = line.split(":")[1].mid(1);
-            if(line.contains("Homepage:")) {
-                QStringList url = line.split(":");
-                QString urlString;
-
-                for(int i = 1 ; i < url.size() ; ++i){
-                    urlString.append(url[i]);
-                    if(i == 1 ) urlString.append(":");
+            packageJson["name"] = QJsonValue::fromVariant(QString(packageName));
+            foreach(QString line, packageInfo) {
+                if(line.contains("Version:") &&
+                        !(_exceptions.contains(packageName)
+                        && _exceptions[packageName].contains("version")))
+                    packageJson["version"] = line.split(":")[1].mid(1);
+                if(line.contains("Description-en:") &&
+                        !(_exceptions.contains(packageName)
+                        && _exceptions[packageName].contains("description"))){
+                    packageJson["description"] = line.split(":")[1].mid(1);
                 }
+                if(line.contains("Homepage:")) {
+                    QStringList url = line.split(":");
+                    QString urlString;
 
-                packageJson["url"] = urlString.mid(1);
-                packageJson["publisher"] = urlString.mid(1);
+                    for(int i = 1 ; i < url.size() ; ++i){
+                        urlString.append(url[i]);
+                        if(i == 1 ) urlString.append(":");
+                    }
+
+                    if (!(_exceptions.contains(packageName)
+                          && _exceptions[packageName].contains("url")))
+                        packageJson["url"] = urlString.mid(1);
+                    if (!(_exceptions.contains(packageName)
+                          && _exceptions[packageName].contains("publisher")))
+                        packageJson["publisher"] = urlString.mid(1);
+                }
+    //            installSize não existe na coleta do Windows.
+    //            if(line.contains("Installed-Size:"))
+    //                packageJson["installSize"] = line.split(":")[1].mid(1);
+
             }
-//            installSize não existe na coleta do Windows.
-//            if(line.contains("Installed-Size:"))
-//                packageJson["installSize"] = line.split(":")[1].mid(1);
 
-        }
+            if (!packageName.isEmpty() &&
+                    !(_exceptions.contains(packageName)
+                    && _exceptions[packageName].contains("installLocation"))){
+                QString treatedPackageName = packageName;
+                if(treatedPackageName.contains("amd64") || treatedPackageName.contains("i386"))
+                    treatedPackageName = treatedPackageName.split(":").at(0);
 
-        if (!packageName.isEmpty()) {
-            QString treatedPackageName = packageName;
-            if(treatedPackageName.contains("amd64") || treatedPackageName.contains("i386"))
-                treatedPackageName = treatedPackageName.split(":").at(0);
-
-            QString location = console(QString("whereis ").append(treatedPackageName)).split("\n").at(0);
-            if(!location.split(":").at(1).isEmpty()) {
-                location = location.split(":").at(1).mid(1);
-                packageJson["installLocation"] = location;
+                QString location = console(QString("whereis ").append(treatedPackageName)).split("\n").at(0);
+                if(!location.split(":").at(1).isEmpty()) {
+                    location = location.split(":").at(1).mid(1);
+                    packageJson["installLocation"] = location;
+                }
             }
-
             softwaresJson[packageName] = packageJson;
         }
 
@@ -181,6 +216,16 @@ QJsonObject cacic_software::coletaDebian()
 
     return softwaresJson;
 }
+QHash<QString, QStringList> cacic_software::exceptions() const
+{
+    return _exceptions;
+}
+
+void cacic_software::setExceptionClasses(const QHash<QString, QStringList> &exceptions)
+{
+    _exceptions = exceptions;
+}
+
 #endif
 
 QJsonObject cacic_software::toJsonObject()
