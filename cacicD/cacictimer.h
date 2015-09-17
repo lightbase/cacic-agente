@@ -24,11 +24,15 @@
 #include "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
-#include "cacicsystray.h"
 #include <servicecontroller.h>
 #ifdef Q_OS_WIN
     #include "vqtconvert.h"
     #include "vregistry.h"
+    #include "winprocess.h"
+
+#include <AccCtrl.h>
+#include <Aclapi.h>
+#include <stdio.h>
 #endif
 
 class CacicTimer : public QObject
@@ -57,6 +61,9 @@ private:
     bool verificarModulos();
     void reiniciarTimer();
     void iniciarInstancias();
+#ifdef Q_OS_WIN
+    bool iniciarCacicUiWin();
+#endif
     bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
     void definirDirModulo(QString appDirPath, QString nome);
@@ -80,7 +87,6 @@ private:
     QString cacicMainFolder;
     QString dirProgram;
     QString applicationDirPath;
-    CacicSysTray *sysTray;
     QJsonObject jsonConfig;
     LogCacic *logcacic;
     int periodicidadeExecucao = 0;

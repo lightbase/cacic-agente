@@ -28,9 +28,9 @@
 //#include "../src/crypto++/include/base64.h"
 //#include "../src/crypto++/include/modes.h"
 #include <QCryptographicHash>
-#include <console.h>
-#include <servicecontroller.h>
-#include <identificadores.h>
+#include "../src/console.h"
+#include "../src/servicecontroller.h"
+#include "../src/identificadores.h"
 
 namespace CCacic {
 
