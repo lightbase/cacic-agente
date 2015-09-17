@@ -326,27 +326,27 @@ void CTestCacic::testColeta()
         && CCacic::getJsonFromFile("getConfig.json")["agentcomputer"].toObject()
                                 ["actions"].toObject()["col_hard"].toBool()){
         oColeta.configuraColetas();
-        QJsonObject exceptions;
-        QJsonObject hard, soft;
-        QJsonArray classes;
-        classes.append(QJsonValue::fromVariant(QString("Model")));
-        classes.append(QJsonValue::fromVariant(QString("Size")));
-        hard["Win32_DiskDrive"] = classes;
-        hard["Win32_BIOS"] = QJsonArray();
 
-        classes.replace(0, QJsonValue::fromVariant(QString("installLocation")));
-        soft["apt"] = classes;
-        soft["vim"] = QJsonArray();
+//        QJsonObject hard, soft;
+//        QJsonArray classes;
+//        classes.append(QJsonValue::fromVariant(QString("Model")));
+//        classes.append(QJsonValue::fromVariant(QString("Size")));
+//        hard["Win32_DiskDrive"] = classes;
+//        hard["Win32_BIOS"] = QJsonArray();
+
+//        classes.replace(0, QJsonValue::fromVariant(QString("installLocation")));
+//        soft["Git_is1"] = classes;
+//        soft["Fontcore"] = QJsonArray();
 
 
-        //A classe Win32_BIOS não será coletada e a DiskDrive serão excluídos os atributos model e size.
-        oColeta.setHardwareExceptionClasses(hard);
-        oColeta.setSoftwareExceptionClasses(soft);
+//        //A classe Win32_BIOS não será coletada e a DiskDrive serão excluídos os atributos model e size.
+//        oColeta.setHardwareExceptionClasses(hard);
+//        oColeta.setSoftwareExceptionClasses(soft);
 
         oColeta.run();
         oColeta.waitToCollect();
-        qDebug() << oColeta.toJsonObject()["software"].toObject().contains("vim");
-        qDebug() << oColeta.toJsonObject()["software"].toObject()["apt"];
+        qDebug() << oColeta.toJsonObject()["software"].toObject().contains("Fontcore");
+        qDebug() << oColeta.toJsonObject()["software"].toObject()["Git_is1"];
         QVERIFY(!oColeta.toJsonObject()["software"].toObject().isEmpty() &&
                 !oColeta.toJsonObject()["hardware"].toObject().isEmpty());
     } else

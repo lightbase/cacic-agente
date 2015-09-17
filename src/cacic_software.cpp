@@ -30,8 +30,10 @@ QJsonObject cacic_software::coletaWin()
         VRegistry reg;
         reg.OpenKey(HKEY_LOCAL_MACHINE, registry);
         QStringList keys = reg.enum_Keys();
+        qDebug() << _exceptions;
         foreach(QString key, keys){
-            if(!(_exceptions.contains(key) && _exceptions[key].isEmpty())){
+            if(!_exceptions.contains(key) ||
+               (_exceptions.contains(key) && !_exceptions[key].isEmpty())){
                 QVariantMap software;
                 VRegistry subReg;
                 subReg.OpenKey(HKEY_LOCAL_MACHINE, registry + key);
@@ -54,8 +56,10 @@ QJsonObject cacic_software::coletaWin()
                 software["name"] = key;
 
                 if(_exceptions.contains(key)){
-                    foreach(QString value, _exceptions[key])
+                    foreach(QString value, _exceptions[key]){
+                        qDebug() << value;
                         software.remove(value);
+                    }
                 }
                 softwaresJson[key] = QJsonObject::fromVariantMap(software);
             }
@@ -216,6 +220,7 @@ QJsonObject cacic_software::coletaDebian()
 
     return softwaresJson;
 }
+#endif
 QHash<QString, QStringList> cacic_software::exceptions() const
 {
     return _exceptions;
@@ -226,7 +231,6 @@ void cacic_software::setExceptionClasses(const QHash<QString, QStringList> &exce
     _exceptions = exceptions;
 }
 
-#endif
 
 QJsonObject cacic_software::toJsonObject()
 {
