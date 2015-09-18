@@ -30,6 +30,9 @@
     #include "vregistry.h"
     #include "winprocess.h"
 
+#include <wtsapi32.h>
+#include <winbase.h>
+
 #include <AccCtrl.h>
 #include <Aclapi.h>
 #include <stdio.h>
@@ -62,7 +65,7 @@ private:
     void reiniciarTimer();
     void iniciarInstancias();
 #ifdef Q_OS_WIN
-    bool iniciarCacicUiWin();
+    void iniciarCacicUiWin();
 #endif
     bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);

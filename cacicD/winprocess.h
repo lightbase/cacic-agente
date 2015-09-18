@@ -6,33 +6,21 @@
 #ifdef Q_OS_WIN
 
 #include <windows.h>
-#include <tchar.h>
 #include <tlhelp32.h>
+namespace WinProcess {
 
-#pragma comment(lib, "advapi32.lib")
+    typedef enum STARTPROCESS_ERROR {
+        NOT_ERROR,
+        OPENPROCESS_ERROR,
+        OPENPROCESSTOKEN_ERROR,
+        DUPLICATETOKENEX_ERROR,
+        CREATEPROCESSASUSER_ERROR
+    } STARTPROCESS_ERROR;
 
-#define DESKTOP_ALL (DESKTOP_READOBJECTS | DESKTOP_CREATEWINDOW | \
-DESKTOP_CREATEMENU | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALRECORD | \
-DESKTOP_JOURNALPLAYBACK | DESKTOP_ENUMERATE | DESKTOP_WRITEOBJECTS | \
-DESKTOP_SWITCHDESKTOP | STANDARD_RIGHTS_REQUIRED)
-
-#define WINSTA_ALL (WINSTA_ENUMDESKTOPS | WINSTA_READATTRIBUTES | \
-WINSTA_ACCESSCLIPBOARD | WINSTA_CREATEDESKTOP | \
-WINSTA_WRITEATTRIBUTES | WINSTA_ACCESSGLOBALATOMS | \
-WINSTA_EXITWINDOWS | WINSTA_ENUMERATE | WINSTA_READSCREEN | \
-STANDARD_RIGHTS_REQUIRED)
-
-#define GENERIC_ACCESS (GENERIC_READ | GENERIC_WRITE | \
-GENERIC_EXECUTE | GENERIC_ALL)
-
-#define __leave return false;
-
-    BOOL AddAceToWindowStation(HWINSTA hwinsta, PSID psid);
-    BOOL AddAceToDesktop(HDESK hdesk, PSID psid);
-    BOOL GetLogonSID (HANDLE hToken, PSID *ppsid);
     DWORD FindProcessId(const std::wstring& processName,const DWORD& dwSessionId);
-    VOID FreeLogonSID (PSID *ppsid);
+    int StartProcessInSession(const DWORD& originPid, QString &errorCodeString);
 
+}
 #endif //ifdef Q_OS_WIN
 
 #endif // WINPROCESS

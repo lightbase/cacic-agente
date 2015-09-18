@@ -7,12 +7,7 @@ CacicTimer::CacicTimer(QString dirpath)
     logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
 
 #ifdef Q_OS_WIN
-    if(iniciarCacicUiWin())
-        logcacic->escrever(LogCacic::InfoLevel,QString("IniciarCacicUiWin foi executado com sucesso."));
-    else {
-        QString errorNumber = QString::number(GetLastError());
-        logcacic->escrever(LogCacic::InfoLevel,"Erro em IniciarCacicUiWin: " + errorNumber);
-    }
+    iniciarCacicUiWin();
 #endif
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
 }
@@ -741,7 +736,13 @@ void CacicTimer::iniciarInstancias(){
 }
 
 #ifdef Q_OS_WIN
-bool CacicTimer::iniciarCacicUiWin()
+
+/**
+ * @brief CacicTimer::iniciarCacicUiWin
+ *
+ * Iniciar novo processo iterativo ( que suporta GUI), mas com permissões de administrador.
+ */
+void CacicTimer::iniciarCacicUiWin()
 {
     // obtain the currently active session id; every logged on
     // User in the system has a unique session id
@@ -750,110 +751,29 @@ bool CacicTimer::iniciarCacicUiWin()
     // obtain the process id of the winlogon process that
     // is running within the currently active session
     QString processName("winlogon.exe");
-    DWORD winlogonPID = FindProcessId(processName.toStdWString(),dwSessionId);
+    DWORD winlogonPID = WinProcess::FindProcessId(processName.toStdWString(),dwSessionId);
     if( winlogonPID != 0 ) {
-        HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, winlogonPID);
-        HANDLE hToken;
-        OpenProcessToken(hProcess,TOKEN_READ,&hToken);
-
-        // Security attibute structure used in DuplicateTokenEx and CreateProcessAsUser
-        SECURITY_ATTRIBUTES sa;
-        sa.nLength = static_cast<DWORD>(sizeof(SECURITY_ATTRIBUTES));
-
-        // copy the access token of the winlogon process;
-        // the newly created token will be a primary token
-        HANDLE hUserTokenDup;
-        if (!DuplicateTokenEx(hToken,MAXIMUM_ALLOWED,&sa,
-                                SecurityIdentification,TokenPrimary,&hUserTokenDup)) {
-            CloseHandle(hProcess);
-            CloseHandle(hToken);
-            return false;
+        QString errorString = QString();
+        switch (WinProcess::StartProcessInSession(winlogonPID, errorString)) {
+            case WinProcess::OPENPROCESS_ERROR:
+                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcess "+errorString);
+                break;
+            case WinProcess::OPENPROCESSTOKEN_ERROR:
+                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcessToken "+errorString);
+                break;
+            case WinProcess::DUPLICATETOKENEX_ERROR:
+                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: DuplicateTokenEx "+errorString);
+                break;
+            case WinProcess::CREATEPROCESSASUSER_ERROR:
+                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: CreateProcessAsUser "+errorString);
+                break;
+            default:
+                logcacic->escrever(LogCacic::InfoLevel,"CacicUi iniciado.");
+                break;
         }
-
-        // Get Handle to the interactive window station
-        HWINSTA hwinsta = NULL;
-        hwinsta = OpenWindowStation(
-               _T(L"winsta0"),                   // the interactive window station
-               FALSE,                       // handle is not inheritable
-               READ_CONTROL | WRITE_DAC);   // rights to read/write the DACL
-        if(hwinsta == NULL)
-            return false;
-
-        // To get the correct default desktop, set the caller's
-        // window station to the interactive window station.
-        if (!SetProcessWindowStation(hwinsta))
-            return false;
-
-        // Get a handle to the interactive desktop.
-        HDESK hdesk = NULL;
-        hdesk = OpenDesktop(
-              _T(L"default"),     // the interactive window station
-              0,             // no interaction with other desktop processes
-              FALSE,         // handle is not inheritable
-              READ_CONTROL | // request the rights to read and write the DACL
-              WRITE_DAC |
-              DESKTOP_WRITEOBJECTS |
-              DESKTOP_READOBJECTS);
-        if(hdesk == NULL)
-            return false;
-
-        // Get the SID for the client's logon session.
-        PSID pSid = NULL;
-        if (!GetLogonSID(hUserTokenDup, &pSid))
-              return false;
-
-        // Allow logon SID full access to interactive window station.
-        if (!AddAceToWindowStation(hwinsta, pSid) )
-              return false;
-
-        // Allow logon SID full access to interactive desktop.
-        if (!AddAceToDesktop(hdesk, pSid) )
-              return false;
-
-        // Impersonate client to ensure access to executable file.
-        if (!ImpersonateLoggedOnUser(hUserTokenDup) )
-              return false;
-
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-        ZeroMemory(&si, sizeof(STARTUPINFO));
-        si.cb = static_cast<DWORD>(sizeof(STARTUPINFO));
-
-        // interactive window station parameter; basically this indicates
-        // that the process created can display a GUI on the desktop
-        wchar_t auxBuffer[16] = L"winsta0\\default";
-        si.lpDesktop = auxBuffer;
-
-        // flags that specify the priority and creation method of the process
-        int dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_BREAKAWAY_FROM_JOB;
-
-        // create a new process in the current User's logon session
-        bool result = CreateProcessAsUser(hUserTokenDup,  // client's access token
-                                        L"cacic-ui.exe",             // file to execute
-                                        NULL,  // command line
-                                        &sa,           // pointer to process SECURITY_ATTRIBUTES
-                                        &sa,           // pointer to thread SECURITY_ATTRIBUTES
-                                        false,            // handles are not inheritable
-                                        dwCreationFlags,  // creation flags
-                                        NULL,      // pointer to new environment block
-                                        NULL,             // name of current directory
-                                        &si,           // pointer to STARTUPINFO structure
-                                        &pi      // receives information about new process
-                                        );
-
-        if (pSid)
-              FreeLogonSID(&pSid);
-        if (hdesk)
-              CloseDesktop(hdesk);
-        if (hwinsta)
-              CloseWindowStation(hwinsta);
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-        return result;
+    } else {
+        logcacic->escrever(LogCacic::ErrorLevel,"Erro ao recuperar PID de winlogon.");
     }
-
-    return false;
-
 }
 
 #endif
