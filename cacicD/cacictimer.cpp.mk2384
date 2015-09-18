@@ -4,14 +4,11 @@ CacicTimer::CacicTimer(QString dirpath)
 {
     setApplicationDirPath(dirpath);
     iniciarInstancias();
-
     logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
-    server->iniciarServer();
 
 #ifdef Q_OS_WIN
     iniciarCacicUiWin();
 #endif
-
     connect(timer,SIGNAL(timeout()),this,SLOT(mslot()));
 }
 
@@ -734,18 +731,64 @@ void CacicTimer::iniciarInstancias(){
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
-    server = new ServiceServer(cacicMainFolder,this);
 //    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
 
 }
 
 #ifdef Q_OS_WIN
+//void CacicTimer::iniciarCacicUiWin()
+//{
+//    DWORD sessionId = 0;
+//    HANDLE hToken = NULL;
 
-/**
- * @brief CacicTimer::iniciarCacicUiWin
- *
- * Iniciar novo processo iterativo ( que suporta GUI), mas com permissões de administrador.
- */
+//    sessionId = WTSGetActiveConsoleSessionId();
+//    logcacic->escrever(LogCacic::InfoLevel,"SSID: "+QString::number(sessionId));
+//    if(!WTSQueryUserToken((ULONG)sessionId,&hToken)){
+//        QString errorString = QString::number(GetLastError());
+//        logcacic->escrever(LogCacic::InfoLevel,"Erro em OpenProcess: " + errorString);
+//        CloseHandle(hToken);
+//        return;
+//    }
+
+//    SECURITY_ATTRIBUTES sa;
+//    ZeroMemory(&sa, sizeof(SECURITY_ATTRIBUTES));
+//    sa.nLength = static_cast<DWORD>(sizeof(SECURITY_ATTRIBUTES));
+
+//    int dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_BREAKAWAY_FROM_JOB;
+
+//    STARTUPINFO si;
+//    ZeroMemory(&si, sizeof(STARTUPINFO));
+//    si.cb = static_cast<DWORD>(sizeof(STARTUPINFO));
+//    wchar_t auxBuffer[16] = L"winsta0\\default";
+//    si.lpDesktop = auxBuffer;
+
+//    PROCESS_INFORMATION pi;
+//    ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+
+//    bool result = CreateProcessAsUser(hToken,  // client's access token
+//                                    L"c://cacic//mapacacic.exe",             // file to execute
+//                                    NULL,  // command line
+//                                    &sa,           // pointer to process SECURITY_ATTRIBUTES
+//                                    &sa,           // pointer to thread SECURITY_ATTRIBUTES
+//                                    false,            // handles are not inheritable
+//                                    dwCreationFlags,  // creation flags
+//                                    NULL,      // pointer to new environment block
+//                                    NULL,             // name of current directory
+//                                    &si,           // pointer to STARTUPINFO structure
+//                                    &pi      // receives information about new process
+//                                    );
+//    if(!result) {
+//        QString errorString = QString::number(GetLastError());
+//        logcacic->escrever(LogCacic::InfoLevel,"Erro em CreateProcessAsUser: " + errorString);
+//    }
+
+//    CloseHandle(hToken);
+//    CloseHandle(pi.hThread);
+//    CloseHandle(pi.hProcess);
+
+//    logcacic->escrever(LogCacic::InfoLevel,"SUCESSO ATE AGORA RAPAZ: ");
+//}
+
 void CacicTimer::iniciarCacicUiWin()
 {
     // obtain the currently active session id; every logged on
@@ -755,29 +798,88 @@ void CacicTimer::iniciarCacicUiWin()
     // obtain the process id of the winlogon process that
     // is running within the currently active session
     QString processName("winlogon.exe");
-    DWORD winlogonPID = WinProcess::FindProcessId(processName.toStdWString(),dwSessionId);
+    DWORD winlogonPID = FindProcessId(processName.toStdWString(),dwSessionId);
     if( winlogonPID != 0 ) {
-        QString errorString = QString();
-        switch (WinProcess::StartProcessInSession(winlogonPID, errorString)) {
-            case WinProcess::OPENPROCESS_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcess "+errorString);
-                break;
-            case WinProcess::OPENPROCESSTOKEN_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcessToken "+errorString);
-                break;
-            case WinProcess::DUPLICATETOKENEX_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: DuplicateTokenEx "+errorString);
-                break;
-            case WinProcess::CREATEPROCESSASUSER_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: CreateProcessAsUser "+errorString);
-                break;
-            default:
-                logcacic->escrever(LogCacic::InfoLevel,"CacicUi iniciado.");
-                break;
+        HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, winlogonPID);
+        if(hProcess == NULL) {
+            QString errorString = QString::number(GetLastError());
+            logcacic->escrever(LogCacic::InfoLevel,"Erro em OpenProcess: " + errorString);
+            return;
         }
+
+        HANDLE hToken;
+        if(OpenProcessToken(hProcess,TOKEN_READ,&hToken) == 0) {
+            QString errorString = QString::number(GetLastError());
+            logcacic->escrever(LogCacic::InfoLevel,"Erro em OpenProcessToken: " + errorString);
+            return;
+        }
+
+        // Security attibute structure used in DuplicateTokenEx and CreateProcessAsUser
+        SECURITY_ATTRIBUTES sa = initializeSA();
+//        ZeroMemory(&sa, sizeof(SECURITY_ATTRIBUTES));
+//        sa.nLength = static_cast<DWORD>(sizeof(SECURITY_ATTRIBUTES));
+//        SECURITY_DESCRIPTOR *secDescriptor = NULL;
+//        InitializeSecurityDescriptor(secDescriptor,SECURITY_DESCRIPTOR_REVISION);
+//        sa.bInheritHandle = FALSE;
+//        sa.lpSecurityDescriptor = secDescriptor;
+
+        // copy the access token of the winlogon process;
+        // the newly created token will be a primary token
+        HANDLE hUserTokenDup;
+        if (!DuplicateTokenEx(hToken,MAXIMUM_ALLOWED,NULL,
+                                SecurityIdentification,TokenPrimary,&hUserTokenDup)) {
+            QString errorString = QString::number(GetLastError());
+            logcacic->escrever(LogCacic::InfoLevel,"Erro em DuplicateTokenEx: " + errorString);
+            CloseHandle(hProcess);
+            CloseHandle(hToken);
+            return;
+        }
+
+//        STARTUPINFO si;
+//        PROCESS_INFORMATION pi;
+//        ZeroMemory(&si, sizeof(STARTUPINFO));
+//        ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+//        si.cb = static_cast<DWORD>(sizeof(STARTUPINFO));
+
+        // interactive window station parameter; basically this indicates
+        // that the process created can display a GUI on the desktop
+        wchar_t auxBuffer[16] = L"winsta0\\default";
+        si.lpDesktop = auxBuffer;
+
+        // flags that specify the priority and creation method of the process
+        int dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_BREAKAWAY_FROM_JOB;
+
+        // create a new process in the current User's logon session
+        bool result = CreateProcessAsUser(hUserTokenDup,  // client's access token
+                                        L"c://cacic//cacic-ui.exe",             // file to execute
+                                        NULL,  // command line
+                                        NULL,           // pointer to process SECURITY_ATTRIBUTES
+                                        NULL,           // pointer to thread SECURITY_ATTRIBUTES
+                                        false,            // handles are not inheritable
+                                        dwCreationFlags,  // creation flags
+                                        NULL,      // pointer to new environment block
+                                        NULL,             // name of current directory
+                                        &si,           // pointer to STARTUPINFO structure
+                                        &pi      // receives information about new process
+                                        );
+
+        if(!result) {
+            QString errorString = QString::number(GetLastError());
+            logcacic->escrever(LogCacic::InfoLevel,"Erro em CreateProcessAsUser: " + errorString);
+            CloseHandle(hProcess);
+            CloseHandle(hToken);
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+            return;
+        }
+
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+        return;
     } else {
-        logcacic->escrever(LogCacic::ErrorLevel,"Erro ao recuperar PID de winlogon.");
+        logcacic->escrever(LogCacic::InfoLevel,"Erro ao recuperar PID de winlogon.");
     }
+
 }
 
 #endif

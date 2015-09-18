@@ -65,7 +65,9 @@ SOURCES     += main.cpp \
                 ../src/wcomputer.cpp \
                 ../src/cmodulearray.cpp \
                 ../src/cmodule.cpp \
-                winprocess.cpp
+                winprocess.cpp \
+    serviceserver.cpp \
+    serverthread.cpp
 
 
 HEADERS     += cacicd.h \
@@ -87,7 +89,9 @@ HEADERS     += cacicd.h \
                ../src/wcomputer.h \
                 ../src/cmodulearray.h \
                 ../src/cmodule.h \
-                winprocess.h
+                winprocess.h \
+    serviceserver.h \
+    serverthread.h
 
 include(../src/qtservice/src/qtservice.pri)
 

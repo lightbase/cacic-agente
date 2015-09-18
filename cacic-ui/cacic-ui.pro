@@ -20,6 +20,7 @@ VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 ##############################################################################
 
 QT       += core gui
+QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,7 +28,6 @@ TARGET = cacic-ui
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        widget.cpp\
         ../src/identificadores.cpp \
         ../src/logcacic.cpp \
         ../src/QLogger.cpp \
@@ -35,9 +35,10 @@ SOURCES += main.cpp\
         ../src/servicecontroller.cpp\
         ../src/vregistry.cpp\
         ../src/vqtconvert.cpp \
-    cacicsystray.cpp
+    cacicsystray.cpp \
+    cacicwidget.cpp
 
-HEADERS  += widget.h\
+HEADERS  +=\
             ../src/identificadores.h \
             ../src/logcacic.h \
             ../src/QLogger.h \
@@ -46,7 +47,8 @@ HEADERS  += widget.h\
             ../src/console.h \
             ../src/vregistry.h\
             ../src/vqtconvert.h \
-    cacicsystray.h
+    cacicsystray.h \
+    cacicwidget.h
 
 FORMS    += widget.ui
 

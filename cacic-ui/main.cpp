@@ -1,10 +1,10 @@
-#include "widget.h"
+#include "cacicwidget.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Widget w;
+    CacicWidget w;
 
     return a.exec();
 }

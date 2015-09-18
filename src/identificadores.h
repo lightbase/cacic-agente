@@ -38,9 +38,11 @@
 #define LOG_SOCKET_LISTENER "Cacic Daemon (Socket Listener)"
 #define LOG_CHECKMODULES "CheckModules"
 #define LOG_CACIC_MESSAGE "Cacic Message"
-#define LOG_CACICINTERFACE "Cacic Interface"
+#define LOG_CACICUI "CacicUi"
 #define CACIC_SERVICE_NAME "CacicDaemon"
 #define N_LOGS_ENVIO 10
+#define CACICDAEMON_PORT 6340
+#define CACICUI_PORT 6341
 
 class Identificadores
 {

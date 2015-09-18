@@ -24,18 +24,16 @@
 #include "cacicthread.h"
 #include "checkmodules.h"
 #include "identificadores.h"
+#include "serviceserver.h"
 #include <servicecontroller.h>
 #ifdef Q_OS_WIN
     #include "vqtconvert.h"
     #include "vregistry.h"
     #include "winprocess.h"
 
-#include <wtsapi32.h>
-#include <winbase.h>
+//#include <wtsapi32.h>
+//#include <winbase.h>
 
-#include <AccCtrl.h>
-#include <Aclapi.h>
-#include <stdio.h>
 #endif
 
 class CacicTimer : public QObject
@@ -92,6 +90,7 @@ private:
     QString applicationDirPath;
     QJsonObject jsonConfig;
     LogCacic *logcacic;
+    ServiceServer *server;
     int periodicidadeExecucao = 0;
     int periodicidadeExecucaoAnterior = 0;
     static const int periodicidadeExecucaoPadrao = 240; // Tempo default de execução em minutos.
