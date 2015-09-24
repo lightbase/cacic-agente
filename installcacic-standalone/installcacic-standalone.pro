@@ -29,6 +29,15 @@ LIBS += -liphlpapi
 
 TEMPLATE = app
 
+CONFIG += static
+
+static {
+    CONFIG += static
+    CONFIG += release
+    DEFINES += STATIC #Equivalent to "#define STATIC" in source code
+    message("Static build.")
+}
+
 SOURCES += main.cpp \
     installcacicsa.cpp \
     commsa.cpp \
