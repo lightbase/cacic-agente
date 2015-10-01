@@ -6,6 +6,7 @@
 #include "cacicsystray.h"
 #include "../src/ccacic.h"
 #include "../src/logcacic.h"
+#include "uiclient.h"
 
 namespace Ui {
 class Widget;
@@ -18,24 +19,16 @@ class CacicWidget : public QWidget
 public:
     explicit CacicWidget(QWidget *parent = 0);
     ~CacicWidget();
-    bool isConnected();
 
 private slots:
-    void socketBytesWritten(qint64 bytes);
-    void socketConnected();
-    void socketDisconnected();
-    void socketReadyRead();
-    void setupWidget();
+    void on_infosClicked();
 
 private:
-    void setupSocketConnection();
-
-    bool connected;
     LogCacic *logcacic;
     Ui::Widget *ui;
     QString cacicMainFolder;
     CacicSysTray *cacicSysTray;
-    QTcpSocket *socket;
+    UiClient *cliente;
 };
 
 #endif // WIDGET_H

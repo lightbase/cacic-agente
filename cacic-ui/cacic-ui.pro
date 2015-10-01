@@ -10,8 +10,8 @@
 ##############################################################################
 #SEMPRE MUDAR A VERSÃO DE BUILD (o terceiro número) AO REALIZAR QUALQUER BUILD.#
 VERSION_MAJOR = 3
-VERSION_MINOR = 1
-VERSION_BUILD = 19
+VERSION_MINOR = 2
+VERSION_BUILD = 0
 DEFINES += VERSION_MAJOR=$$VERSION_MAJOR \
            VERSION_MINOR=$$VERSION_MINOR \
            VERSION_BUILD=$$VERSION_BUILD
@@ -36,7 +36,10 @@ SOURCES += main.cpp\
         ../src/vregistry.cpp\
         ../src/vqtconvert.cpp \
     cacicsystray.cpp \
-    cacicwidget.cpp
+    cacicwidget.cpp \
+    uiserver.cpp \
+    uiserverthread.cpp \
+    uiclient.cpp
 
 HEADERS  +=\
             ../src/identificadores.h \
@@ -48,7 +51,10 @@ HEADERS  +=\
             ../src/vregistry.h\
             ../src/vqtconvert.h \
     cacicsystray.h \
-    cacicwidget.h
+    cacicwidget.h \
+    uiserver.h \
+    uiserverthread.h \
+    uiclient.h
 
 FORMS    += widget.ui
 

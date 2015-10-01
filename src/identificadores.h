@@ -41,8 +41,15 @@
 #define LOG_CACICUI "CacicUi"
 #define CACIC_SERVICE_NAME "CacicDaemon"
 #define N_LOGS_ENVIO 10
-#define CACICDAEMON_PORT 6340
-#define CACICUI_PORT 6341
+#define PORT_CACICDAEMON 6340
+#define PORT_CACICUI 6341
+#define MSG_ACK "ACK"
+#define MSG_LENGTH_ACK 3
+#define MSG_END "\r\n"
+#define MSG_UIFORCAR "FORCAR"
+#define MSG_LENGTH_UIFORCAR 6
+#define MSG_UIFINALIZAR "FINALIZAR"
+#define MSG_LENGTH_UIFINALIZAR 9
 
 class Identificadores
 {

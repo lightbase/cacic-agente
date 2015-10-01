@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QTcpServer>
-#include "serverthread.h"
+#include "serviceserverthread.h"
 #include "../src/logcacic.h"
 #include "../src/identificadores.h"
 
@@ -15,7 +15,8 @@ public:
     void iniciarServer();
 
 signals:
-
+    void forcarColeta();
+    void finalizarCacic();
 public slots:
 
 protected:

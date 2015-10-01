@@ -67,7 +67,7 @@ SOURCES     += main.cpp \
                 ../src/cmodule.cpp \
                 winprocess.cpp \
     serviceserver.cpp \
-    serverthread.cpp
+    serviceserverthread.cpp
 
 
 HEADERS     += cacicd.h \
@@ -91,7 +91,7 @@ HEADERS     += cacicd.h \
                 ../src/cmodule.h \
                 winprocess.h \
     serviceserver.h \
-    serverthread.h
+    serviceserverthread.h
 
 include(../src/qtservice/src/qtservice.pri)
 

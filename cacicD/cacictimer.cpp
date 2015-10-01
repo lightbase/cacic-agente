@@ -6,7 +6,11 @@ CacicTimer::CacicTimer(QString dirpath)
     iniciarInstancias();
 
     logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
-    server->iniciarServer();
+
+    connect(serviceServer,&ServiceServer::forcarColeta,this,&CacicTimer::realizarEnviodeColeta);
+    connect(serviceServer,&ServiceServer::finalizarCacic,this,&CacicTimer::finalizar);
+
+    serviceServer->iniciarServer();
 
 #ifdef Q_OS_WIN
     iniciarCacicUiWin();
@@ -734,7 +738,7 @@ void CacicTimer::iniciarInstancias(){
     timer = new QTimer(this);
     cMutex = new QMutex(QMutex::Recursive);
     cacicthread = new CacicThread(this->applicationDirPath);
-    server = new ServiceServer(cacicMainFolder,this);
+    serviceServer = new ServiceServer(cacicMainFolder,this);
 //    ccacic->setChaveCrypt(ccacic->getValueFromRegistry("Lightbase", "Cacic", "key").toString());
 
 }

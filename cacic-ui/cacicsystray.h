@@ -8,32 +8,32 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QSystemTrayIcon>
-#include <QTcpSocket>
-#include <QAbstractSocket>
 #include "../src/logcacic.h"
 #include "../src/identificadores.h"
+#include "uiclient.h"
 
 class CacicSysTray: public QWidget
 {
     Q_OBJECT
 public:
-    explicit CacicSysTray(const QString &dirpath, QTcpSocket * const socket, QWidget *parent =0);
+    explicit CacicSysTray(const QString &dirpath, QWidget *parent = 0);
     ~CacicSysTray();
     void iniciarSysTray();
 
     QMenu* setupMenu();
 
-public slots:
-    void sysTrayClicked(QSystemTrayIcon::ActivationReason reason);
+signals:
     void infosClicked();
     void forcarClicked();
     void finalizarClicked();
+
+private slots:
+    void on_activated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     LogCacic *logcacic;
     QString mainFolder;
     QSystemTrayIcon *sysTray;
-    QTcpSocket *socket;
 };
 
 #endif // CACICSYSTRAY_H
