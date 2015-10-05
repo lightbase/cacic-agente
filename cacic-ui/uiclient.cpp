@@ -14,6 +14,17 @@ UiClient::UiClient(const QString &dirpath, QWidget *parent):
     setupSocketConnection();
 }
 
+QByteArray UiClient::formatData(QString message, int messageLength)
+{
+    QByteArray data;
+    data.append(QString::number(messageLength));
+    data.append(" ");
+    data.append(message);
+    data.append(MSG_END);
+
+    return data;
+}
+
 bool UiClient::isConnected()
 {
     return connected;
@@ -27,6 +38,7 @@ void UiClient::on_bytesWritten(qint64 bytes)
 void UiClient::on_connected()
 {
     connected = true;
+    canSend = true;
     logcacic->escrever(LogCacic::InfoLevel,"Socket conectado.");
 }
 
@@ -38,37 +50,30 @@ void UiClient::on_disconnected()
 
 void UiClient::on_forcarClicked()
 {
-    // TODO: enviar comando para forçar coleta no serviço
-    if(connected) {
+    if(canSend) {
+        if(connected) {
+            QByteArray data = formatData(MSG_UIFORCAR, MSG_LENGTH_UIFORCAR);
+            lastDataWritten = data;
+            socket->write(data,data.size());
+            socket->flush();
+        } else
+            logcacic->escrever(LogCacic::ErrorLevel,QString("forcarClicked: socket disconnected."));
 
-        QByteArray data;
-        data.append(QString::number(MSG_LENGTH_UIFORCAR));
-        data.append(" ");
-        data.append(MSG_UIFORCAR);
-        data.append(MSG_END);
-
-        socket->write(data);
-//        timeout2Ack();
-    } else
-        logcacic->escrever(LogCacic::ErrorLevel,QString("forcarClicked: socket disconnected."));
+        canSend = false;
+    }
 
 }
 
 void UiClient::on_finalizarClicked()
 {
-    // TODO: enviar comando para finalizar os serviços do Cacic
-    if(connected) {
-
-        QByteArray data;
-        data.append(QString::number(MSG_LENGTH_UIFINALIZAR));
-        data.append(" ");
-        data.append(MSG_UIFINALIZAR);
-        data.append(MSG_END);
-
-        socket->write(data);
-//        timeout2Ack(data);
-    } else
-        logcacic->escrever(LogCacic::ErrorLevel,QString("finalizarClicked: socket disconnected."));
+    if(canSend) {
+        if(connected) {
+            QByteArray data = formatData(MSG_UIFINALIZAR,MSG_LENGTH_UIFINALIZAR);
+            lastDataWritten = data;
+            socket->write(data,data.size());
+        } else
+            logcacic->escrever(LogCacic::ErrorLevel,QString("finalizarClicked: socket disconnected."));
+    }
 }
 
 void UiClient::on_readyRead()
@@ -89,7 +94,9 @@ void UiClient::parseData(const QString &dataReceived)
         if(ok) {
             QString message = dataReceived.mid(numberOfChars.size()+1,messageLength);
             if( message == MSG_ACK ) {
-//                stopTimer();
+                canSend = true;
+                if(lastDataWritten == formatData(MSG_UIFINALIZAR,MSG_LENGTH_UIFINALIZAR))
+                    emit finalizar();
             }
         }
     }
@@ -112,14 +119,3 @@ void UiClient::setupSocketConnection()
 
 }
 
-//void UiClient::stopTimer()
-//{
-//    // Para o timer e limpa o timeoutBuffer
-//}
-
-//void UiClient::timeout2Ack(QByteArray& dataSent)
-//{
-//    timeoutBuffer = dataSent;
-//    //Seta um timer com um pequeno timeout para receber um ACK,
-//    //se acabar o tempo envia o que esta em timeoutBuffer
-//}

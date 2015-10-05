@@ -55,16 +55,16 @@ QMenu* CacicSysTray::setupMenu()
     menu = new QMenu();
 
     infos = new QAction(QString("Visualizar Informações"),this);
-    connect(infos,&QAction::triggered,this,&CacicSysTray::infosClicked);
+    connect(infos,&QAction::triggered,this,&CacicSysTray::infosClicked,Qt::UniqueConnection);
     menu->addAction(infos);
 
     forcarColeta = new QAction(QString("Forçar Coleta"),this);
-    connect(forcarColeta,&QAction::triggered,this,&CacicSysTray::forcarClicked);
+    connect(forcarColeta,&QAction::triggered,this,&CacicSysTray::forcarClicked,Qt::UniqueConnection);
     menu->addAction(forcarColeta);
 
     menu->addSeparator();
     finalizar = new QAction(QString("Finalizar Serviço"),this);
-    connect(finalizar,&QAction::triggered,this,&CacicSysTray::finalizarClicked);
+    connect(finalizar,&QAction::triggered,this,&CacicSysTray::finalizarClicked,Qt::UniqueConnection);
     menu->addAction(finalizar);
 
     return menu;
@@ -79,5 +79,3 @@ void CacicSysTray::on_activated(QSystemTrayIcon::ActivationReason reason)
     if(actionPressed != 0)
         actionPressed->activate(QAction::Trigger);
 }
-
-

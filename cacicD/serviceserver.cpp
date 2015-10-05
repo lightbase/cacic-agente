@@ -3,7 +3,7 @@
 ServiceServer::ServiceServer(const QString &dir,QObject *parent) :
     QTcpServer(parent),cacicMainFolder(dir)
 {
-    logcacic = new LogCacic(LOG_DAEMON,cacicMainFolder + "/Logs");
+    logcacic = new LogCacic(LOG_DAEMON_TIMER,cacicMainFolder + "/Logs");
 
 }
 

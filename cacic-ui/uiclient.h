@@ -15,6 +15,8 @@ public:
     UiClient(const QString &dirpath,QWidget *parent =0);
     bool isConnected();
 
+signals:
+    void finalizar();
 public slots:
     void on_forcarClicked();
     void on_finalizarClicked();
@@ -26,13 +28,14 @@ private slots:
     void on_readyRead();
 
 private:
+    QByteArray formatData(QString message, int messageLength);
     void parseData(const QString &dataReceived);
     void setupSocketConnection();
-//    void timeout2Ack(QByteArray &dataSent);
 
     bool connected;
+    bool canSend;
     LogCacic *logcacic;
-//    QByteArray timeoutBuffer;
+    QByteArray lastDataWritten;
     QString mainFolder;
     QTcpSocket *socket;
 };

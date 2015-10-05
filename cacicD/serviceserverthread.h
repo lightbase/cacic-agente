@@ -24,7 +24,7 @@ private slots:
 
 private:
     void parseData(const QString &dataReceived);
-//    void sendAck();
+    void sendAck();
 
     int socketDescriptor;
     LogCacic *logcacic;

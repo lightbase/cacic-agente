@@ -593,6 +593,7 @@ bool CacicTimer::getMapa()
 }
 
 bool CacicTimer::realizarEnviodeColeta(){
+logcacic->escrever(LogCacic::InfoLevel, "SLOT RealizarEnvioDeColeta called.");
     bool ok = false;
     QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){

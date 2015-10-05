@@ -13,9 +13,10 @@ CacicWidget::CacicWidget(QWidget *parent) :
     cliente = new UiClient(cacicMainFolder,this);
     cacicSysTray = new CacicSysTray(cacicMainFolder,this);
 
-    connect(cacicSysTray,&CacicSysTray::infosClicked,this,&CacicWidget::on_infosClicked);
-    connect(cacicSysTray,&CacicSysTray::forcarClicked,cliente,&UiClient::on_forcarClicked);
-    connect(cacicSysTray,&CacicSysTray::finalizarClicked,cliente,&UiClient::on_finalizarClicked);
+    connect(cacicSysTray,&CacicSysTray::infosClicked,this,&CacicWidget::on_infosClicked,Qt::UniqueConnection);
+    connect(cacicSysTray,&CacicSysTray::forcarClicked,cliente,&UiClient::on_forcarClicked,Qt::UniqueConnection);
+    connect(cacicSysTray,&CacicSysTray::finalizarClicked,cliente,&UiClient::on_finalizarClicked,Qt::UniqueConnection);
+    connect(cliente,&UiClient::finalizar,this,&CacicWidget::on_finalizar,Qt::QueuedConnection);
 
     cacicSysTray->iniciarSysTray();
 
@@ -26,6 +27,11 @@ CacicWidget::~CacicWidget()
 {
     delete ui;
     delete cacicSysTray;
+}
+
+void CacicWidget::on_finalizar()
+{
+    exit(0);
 }
 
 void CacicWidget::on_infosClicked()

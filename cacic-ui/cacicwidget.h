@@ -21,6 +21,7 @@ public:
     ~CacicWidget();
 
 private slots:
+    void on_finalizar();
     void on_infosClicked();
 
 private:
