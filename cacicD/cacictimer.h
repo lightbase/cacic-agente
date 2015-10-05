@@ -74,9 +74,9 @@ private:
     bool removeCacicAnterior();
     bool verificarseModuloJaFoiExecutado(QString nome, QString hash);
     bool verificaForcarColeta();
+    bool realizarEnviodeColeta();
     bool realizarEnvioDeLogs(const QStringList &logLvls);
     bool enviarColetaDiff();
-    bool enviarColeta();
     bool enviarLogs();
     bool getMapa();
     void registrarDataEnvioDeColeta();
@@ -96,7 +96,7 @@ private:
 
 private slots:
     void mslot();
-    bool realizarEnviodeColeta();
+    bool enviarColeta();
 
 public slots:
     void iniciarThread();

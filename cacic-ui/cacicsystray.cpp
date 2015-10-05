@@ -54,11 +54,11 @@ QMenu* CacicSysTray::setupMenu()
 
     menu = new QMenu();
 
-    infos = new QAction(QString("Visualizar Informações"),this);
-    connect(infos,&QAction::triggered,this,&CacicSysTray::infosClicked,Qt::UniqueConnection);
-    menu->addAction(infos);
+//    infos = new QAction(QString("Visualizar Informações"),this);
+//    connect(infos,&QAction::triggered,this,&CacicSysTray::infosClicked,Qt::UniqueConnection);
+//    menu->addAction(infos);
 
-    forcarColeta = new QAction(QString("Forçar Coleta"),this);
+    forcarColeta = new QAction(QString("Forçar envio de Coleta"),this);
     connect(forcarColeta,&QAction::triggered,this,&CacicSysTray::forcarClicked,Qt::UniqueConnection);
     menu->addAction(forcarColeta);
 

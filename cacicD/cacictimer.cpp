@@ -7,7 +7,7 @@ CacicTimer::CacicTimer(QString dirpath)
 
     logcacic = new LogCacic(LOG_DAEMON_TIMER, dirpath+"/Logs");
 
-    connect(serviceServer,&ServiceServer::forcarColeta,this,&CacicTimer::realizarEnviodeColeta);
+    connect(serviceServer,&ServiceServer::forcarColeta,this,&CacicTimer::enviarColeta);
     connect(serviceServer,&ServiceServer::finalizarCacic,this,&CacicTimer::finalizar);
 
     serviceServer->iniciarServer();
@@ -593,7 +593,6 @@ bool CacicTimer::getMapa()
 }
 
 bool CacicTimer::realizarEnviodeColeta(){
-logcacic->escrever(LogCacic::InfoLevel, "SLOT RealizarEnvioDeColeta called.");
     bool ok = false;
     QJsonObject jsonColeta = CCacic::getJsonFromFile(this->applicationDirPath + "/coleta.json");
     if (!jsonColeta.isEmpty()){
