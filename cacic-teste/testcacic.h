@@ -51,7 +51,7 @@ private:
     QString cripTeste;
     CColeta oColeta;
     CheckModules *oCheckModules;
-    QSystemTrayIcon *sysTray;
+//    QSystemTrayIcon *sysTray;
 //    cacicD OcacicD;
 
 signals:
@@ -86,14 +86,14 @@ private slots:
     void testRemoveRegistry();
     void testChangeVersionRegistry();
     void testConvertDouble();
-    void testSystemTray();
+//    void testSystemTray();
     void testGetTest();
     void testGetConfig();
     void testDownload();
     void testCModule();
     void testCModuleArray();
     void testGetModulesValues();
-    void testHardwareClasses();
+//    void testHardwareClasses();
     void testColeta();
     void testLogger();
     void testEnviaColeta();
@@ -103,8 +103,8 @@ private slots:
     void testStartProcess();
     void cleanupTestCase();
 
-    void sysTrayClicked(QSystemTrayIcon::ActivationReason reason);
-    void actionClicked();
+//    void sysTrayClicked(QSystemTrayIcon::ActivationReason reason);
+//    void actionClicked();
 };
 
 #endif // TESTEINSTALLCACIC_H
