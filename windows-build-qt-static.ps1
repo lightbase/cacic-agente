@@ -75,7 +75,7 @@
 
 [CmdletBinding()]
 param(
-    $QtSrcUrl = "http://download.qt.io/official_releases/qt/5.5/5.5.0/single/qt-everywhere-opensource-src-5.5.0.7z",
+    $QtSrcUrl = "http://download.qt.io/official_releases/qt/5.3/5.3.2/single/qt-everywhere-opensource-src-5.3.2.7z",
     $QtStaticDir = "C:\Qt\Static",
     $QtVersion = "",
     $MingwDir = "",
@@ -83,7 +83,7 @@ param(
 )
 
 # PowerShell execution policy.
-Set-StrictMode -Version 3
+Set-StrictMode -Version Latest
 
 #-----------------------------------------------------------------------------
 # Main code
@@ -95,7 +95,8 @@ function Main
     [void] (Get-7zip)
 
     # Get Qt source file name from URL.
-    $QtSrcFileName = Split-Path -Leaf $QtSrcUrl
+	$QtUri = [uri]$QtSrcUrl
+    $QtSrcFileName = Split-Path -Leaf $QtUri.LocalPath
 
     # If Qt version is not specified on the command line, try to extract the value.
     if (-not $QtVersion) {
@@ -114,7 +115,8 @@ function Main
     # Get MinGW root directory, if not specified on the command line.
     if (-not $MingwDir) {
         # Search all instances of gcc.exe from C:\Qt prebuilt environment.
-        $GccList = @(Get-ChildItem -Path C:\Qt\*\Tools\mingw*\bin\gcc.exe | ForEach-Object FullName | Sort-Object)
+        #$GccList = @(Get-ChildItem -Path C:\Qt\Tools\mingw*\bin\gcc.exe | ForEach-Object Name | Sort-Object)
+		$GccList = @(Get-ChildItem -Path C:\Qt\Tools\mingw*\bin\gcc.exe | Sort-Object)
         if ($GccList.Length -eq 0) {
             Exit-Script "MinGW environment not found, no Qt prebuilt version?"
         }
@@ -189,7 +191,7 @@ function Exit-Script ([string]$Message = "")
         $Code = 1
     }
     if (-not $NoPause) {
-        pause
+        cmd /c "pause"
     }
     exit $Code
 }
@@ -210,7 +212,9 @@ function Create-Directory ([string]$Directory)
 
 function Download-File ([string]$Url, [string]$OutputFile)
 {
-    $FileName = Split-Path $Url -Leaf
+	$FullUrl = [uri]$Url
+    $UrlPath = Split-Path -Leaf $FullUrl.LocalPath
+    #$FileName = Split-Path $Url -Leaf
     if (-not (Test-Path $OutputFile)) {
         # Local file not present, start download.
         Write-Output "Downloading $Url ..."
