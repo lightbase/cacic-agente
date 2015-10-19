@@ -71,8 +71,12 @@ void UiClient::on_finalizarClicked()
             QByteArray data = formatData(MSG_UIFINALIZAR,MSG_LENGTH_UIFINALIZAR);
             lastDataWritten = data;
             socket->write(data,data.size());
-        } else
+        } else {
+            canSend = false;
             logcacic->escrever(LogCacic::ErrorLevel,QString("finalizarClicked: socket disconnected."));
+            logcacic->escrever(LogCacic::ErrorLevel,"Serviço não respondeu ao Finalizar. Fechando UI.");
+            emit finalizar();
+        }
     }
 }
 

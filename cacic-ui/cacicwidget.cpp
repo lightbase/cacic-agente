@@ -29,6 +29,12 @@ CacicWidget::~CacicWidget()
     delete cacicSysTray;
 }
 
+void CacicWidget::closeEvent(QCloseEvent *event)
+{
+        event->ignore();
+        this->hide();
+}
+
 void CacicWidget::on_finalizar()
 {
     exit(0);
@@ -37,4 +43,41 @@ void CacicWidget::on_finalizar()
 void CacicWidget::on_infosClicked()
 {
     logcacic->escrever(LogCacic::InfoLevel,"SetupWidget here");
+
+    QJsonObject coleta = CCacic::getJsonFromFile(cacicMainFolder + "/coleta.json");
+
+    if(!coleta.isEmpty()) {
+        setupTabGeral(coleta);
+        setupTabHardware(coleta);
+        setupTabSoftware(coleta);
+    }
+
+    this->show();
+}
+
+void CacicWidget::setupTabGeral(const QJsonObject &coleta)
+{
+    if( coleta.contains("computador") && coleta["computador"].isObject() ) {
+        QJsonObject computador = coleta["computador"].toObject();
+
+        if( computador.contains("nmComputador") )
+            ui->lineNomeComputador->setText(computador["nmComputador"].toString());
+        if( computador.contains("usuario") )
+            ui->lineUsuario->setText(computador["usuario"].toString());
+        if( computador.contains("versaoAgente") )
+            ui->lineVersaoAgente->setText(computador["versaoAgente"].toString());
+        if( computador.contains("versaoGercols") )
+            ui->lineVersaoGercols->setText(computador["versaoGercols"].toString());
+
+    }
+}
+
+void CacicWidget::setupTabHardware(const QJsonObject &coleta)
+{
+
+}
+
+void CacicWidget::setupTabSoftware(const QJsonObject &coleta)
+{
+
 }

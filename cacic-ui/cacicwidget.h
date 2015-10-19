@@ -25,6 +25,11 @@ private slots:
     void on_infosClicked();
 
 private:
+    void closeEvent(QCloseEvent *event);
+    void setupTabGeral(const QJsonObject &coleta);
+    void setupTabHardware(const QJsonObject &coleta);
+    void setupTabSoftware(const QJsonObject &coleta);
+
     LogCacic *logcacic;
     Ui::Widget *ui;
     QString cacicMainFolder;
