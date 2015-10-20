@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     cacicwidget.cpp \
     uiserver.cpp \
     uiserverthread.cpp \
-    uiclient.cpp
+    uiclient.cpp \
+    netdevtab.cpp
 
 HEADERS  +=\
             ../src/identificadores.h \
@@ -54,9 +55,11 @@ HEADERS  +=\
     cacicwidget.h \
     uiserver.h \
     uiserverthread.h \
-    uiclient.h
+    uiclient.h \
+    netdevtab.h
 
-FORMS    += widget.ui
+FORMS    += widget.ui \
+    netdevtab.ui
 
 RESOURCES += \
     resource.qrc

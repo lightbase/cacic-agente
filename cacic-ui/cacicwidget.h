@@ -7,6 +7,7 @@
 #include "../src/ccacic.h"
 #include "../src/logcacic.h"
 #include "uiclient.h"
+#include "netdevtab.h"
 
 namespace Ui {
 class Widget;
@@ -30,6 +31,7 @@ private:
     void setupTabHardware(const QJsonObject &coleta);
     void setupTabSoftware(const QJsonObject &coleta);
 
+    bool windowOpen;
     LogCacic *logcacic;
     Ui::Widget *ui;
     QString cacicMainFolder;
