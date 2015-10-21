@@ -89,6 +89,12 @@ void CacicWidget::setupTabGeral(const QJsonObject &coleta)
         }
 
         if( computador.contains("networkDevices") && computador["networkDevices"].isArray() ) {
+            while(ui->tabNetDevs->currentIndex() != -1) {
+                QWidget *currentTab = ui->tabNetDevs->currentWidget();
+                ui->tabNetDevs->removeTab(ui->tabNetDevs->currentIndex());
+                delete currentTab;
+            }
+
             if( !computador["networkDevices"].toArray().isEmpty() ) {
                 QJsonArray networkDevices = computador["networkDevices"].toArray();
 
