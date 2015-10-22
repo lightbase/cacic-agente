@@ -1,13 +1,21 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#include <QWidget>
+#include <QFormLayout>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QString>
+#include <QWidget>
 #include "cacicsystray.h"
 #include "../src/ccacic.h"
 #include "../src/logcacic.h"
 #include "uiclient.h"
 #include "netdevtab.h"
+#include "netadapterconfigtab.h"
+#include "cddrivetab.h"
+#include "logicaldisktab.h"
+#include "pointdevicetab.h"
+#include "printertab.h"
 
 namespace Ui {
 class Widget;
@@ -22,6 +30,7 @@ public:
     ~CacicWidget();
 
 private slots:
+    void hardwareItemActivated(QListWidgetItem *item);
     void on_finalizar();
     void on_infosClicked();
 

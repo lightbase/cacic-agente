@@ -40,7 +40,12 @@ SOURCES += main.cpp\
     uiserver.cpp \
     uiserverthread.cpp \
     uiclient.cpp \
-    netdevtab.cpp
+    netdevtab.cpp \
+    netadapterconfigtab.cpp \
+    cddrivetab.cpp \
+    logicaldisktab.cpp \
+    pointdevicetab.cpp \
+    printertab.cpp
 
 HEADERS  +=\
             ../src/identificadores.h \
@@ -56,10 +61,20 @@ HEADERS  +=\
     uiserver.h \
     uiserverthread.h \
     uiclient.h \
-    netdevtab.h
+    netdevtab.h \
+    netadapterconfigtab.h \
+    cddrivetab.h \
+    logicaldisktab.h \
+    pointdevicetab.h \
+    printertab.h
 
 FORMS    += widget.ui \
-    netdevtab.ui
+    netdevtab.ui \
+    netadapterconfigtab.ui \
+    cddrivetab.ui \
+    logicaldisktab.ui \
+    pointdevicetab.ui \
+    printertab.ui
 
 RESOURCES += \
     resource.qrc
