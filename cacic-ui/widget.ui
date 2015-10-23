@@ -48,7 +48,7 @@
       <bool>false</bool>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabComputador">
       <attribute name="title">
@@ -327,241 +327,243 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <widget class="QLabel" name="labelHardwareProperties">
-             <property name="text">
-              <string>Lista de propriedades</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QListWidget" name="hardwarePropertiesList">
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
-              <property name="text">
-               <string>É Notebook?</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
+              <widget class="QLabel" name="labelHardwareProperties">
+               <property name="text">
+                <string>Lista de propriedades</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <property name="text">
-               <string>Configuração do Adaptador de Rede</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Sistema Operacional</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>BIOS</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Placa base</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Drive CDROM</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Sistema do Computador</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Monitor Desktop</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Drive de disco</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Teclado</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Discos lógicos</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Mouse</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Impressora</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Processador</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Controladora SCSI</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Gabinete do sistema</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Controladora USB</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Controladora de vídeo</string>
-              </property>
-              <property name="flags">
-               <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="Line" name="line_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
-            <spacer name="horizontalSpacer_8">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>588</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <item>
-              <spacer name="verticalSpacer_4">
+              <spacer name="horizontalSpacer_7">
                <property name="orientation">
-                <enum>Qt::Vertical</enum>
+                <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>20</width>
-                 <height>40</height>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QListWidget" name="hardwarePropertiesList">
+               <item>
+                <property name="text">
+                 <string>É Notebook?</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Configuração do Adaptador de Rede</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Sistema Operacional</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>BIOS</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Placa base</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Drive CDROM</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Sistema do Computador</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Monitor Desktop</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Drive de disco</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Teclado</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Discos lógicos</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Mouse</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Impressora</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Processador</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Controladora SCSI</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Gabinete do sistema</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Controladora USB</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Controladora de vídeo</string>
+                </property>
+                <property name="flags">
+                 <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <spacer name="horizontalSpacer_8">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>588</width>
+                 <height>20</height>
                 </size>
                </property>
               </spacer>
              </item>
              <item>
-              <widget class="QWidget" name="hardwareInfoWidget" native="true">
-               <zorder>verticalSpacer_4</zorder>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QWidget" name="hardwareInfoWidget" native="true"/>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
@@ -575,6 +577,108 @@
       <attribute name="title">
        <string>Software</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_15">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="labelSoftwareList">
+               <property name="text">
+                <string>Lista de Softwares detectados:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QListWidget" name="softwareList"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <widget class="Line" name="line_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_14">
+             <item>
+              <spacer name="horizontalSpacer_11">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>588</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <item>
+                <spacer name="verticalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QWidget" name="softwareInfoWidget" native="true"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

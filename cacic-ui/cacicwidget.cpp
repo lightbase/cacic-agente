@@ -37,7 +37,8 @@ void CacicWidget::closeEvent(QCloseEvent *event)
         this->hide();
         windowOpen = false;
 }
-void CacicWidget::hardwareItemActivated(QListWidgetItem *item)
+
+void CacicWidget::hardwareItemPressed(QListWidgetItem *item)
 {
     QJsonObject hardware = CCacic::getJsonFromFile(cacicMainFolder + "/coleta.json")["hardware"].toObject();
     qDeleteAll(ui->hardwareInfoWidget->children());
@@ -806,7 +807,7 @@ void CacicWidget::setupTabHardware(const QJsonObject &coleta)
     if( coleta.contains("hardware") && coleta["hardware"].isObject() ) {
         QJsonObject hardware = coleta["hardware"].toObject();
 
-        connect(ui->hardwarePropertiesList,&QListWidget::itemPressed,this,&CacicWidget::hardwareItemActivated,Qt::UniqueConnection);
+        connect(ui->hardwarePropertiesList,&QListWidget::itemPressed,this,&CacicWidget::hardwareItemPressed,Qt::UniqueConnection);
 
     } else {
         QLabel *newLabel = new QLabel("Não foi possível recuperar as informações de Hardware.");
@@ -820,5 +821,70 @@ void CacicWidget::setupTabHardware(const QJsonObject &coleta)
 
 void CacicWidget::setupTabSoftware(const QJsonObject &coleta)
 {
+    if( coleta.contains("software") && coleta["software"].isObject() ) {
+        QJsonObject software = coleta["software"].toObject();
 
+        QJsonObject::const_iterator it;
+        for(it = software.begin(); it != software.end(); it++) {
+            if( it.value().isObject() && !it.value().toObject().isEmpty() ) {
+                ui->softwareList->addItem(it.key());
+            }
+        }
+
+        connect(ui->softwareList,&QListWidget::itemPressed,this,&CacicWidget::softwareItemPressed,Qt::UniqueConnection);
+
+    } else {
+        QLabel *newLabel = new QLabel("Não foi possível recuperar as informações de Hardware.");
+        QLayout *layout = new QVBoxLayout();
+        layout->addWidget(newLabel);
+
+        ui->tabHardware->setLayout(layout);
+    }
+}
+
+void CacicWidget::softwareItemPressed(QListWidgetItem *item)
+{
+    QJsonObject software = CCacic::getJsonFromFile(cacicMainFolder + "/coleta.json")["software"].toObject();
+    qDeleteAll(ui->softwareInfoWidget->children());
+
+    if(software.contains(item->text()) && software[item->text()].isObject()) {
+        QJsonObject softObj = software[item->text()].toObject();
+        QFormLayout *formLayout = new QFormLayout;
+
+        QJsonObject::const_iterator it;
+        for(it = softObj.begin(); it != softObj.end(); it++) {
+            if( it.value().isString() ) {
+                QLineEdit *lineValue = new QLineEdit;
+                lineValue->setText(it.value().toString());
+                lineValue->setReadOnly(true);
+                lineValue->setAlignment(Qt::AlignRight);
+
+                if( it.key() == "description")
+                    formLayout->addRow("Descrição",lineValue);
+                else if( it.key() == "installDate")
+                    formLayout->addRow("Data de instalação",lineValue);
+                else if( it.key() == "installLocation")
+                    formLayout->addRow("Local de instalação",lineValue);
+                else if( it.key() == "name")
+                    formLayout->addRow("Nome",lineValue);
+                else if( it.key() == "publisher")
+                    formLayout->addRow("Empresa",lineValue);
+                else if( it.key() == "quietUninstallString")
+                    formLayout->addRow("String de desinstalação silenciosa",lineValue);
+                else if( it.key() == "uninstallString")
+                    formLayout->addRow("tring de desinstalação",lineValue);
+                else if( it.key() == "url")
+                    formLayout->addRow("URL",lineValue);
+                else if( it.key() == "version")
+                    formLayout->addRow("Versão",lineValue);
+            }
+        }
+
+        ui->softwareInfoWidget->setLayout(formLayout);
+    } else {
+        QLabel *newLabel = new QLabel("Não foi possível recuperar a informação do software.");
+        QLayout *layout = new QVBoxLayout();
+        layout->addWidget(newLabel);
+        ui->softwareInfoWidget->setLayout(layout);
+    }
 }

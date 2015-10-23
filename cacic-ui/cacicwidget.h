@@ -30,7 +30,8 @@ public:
     ~CacicWidget();
 
 private slots:
-    void hardwareItemActivated(QListWidgetItem *item);
+    void hardwareItemPressed(QListWidgetItem *item);
+    void softwareItemPressed(QListWidgetItem *item);
     void on_finalizar();
     void on_infosClicked();
 
