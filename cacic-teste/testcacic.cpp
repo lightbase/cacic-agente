@@ -254,6 +254,19 @@ void CTestCacic::testChangeVersionRegistry()
 
 }
 
+void CTestCacic::testSalvarVersao()
+{
+#ifdef Q_OS_WIN
+    //TODO: criar registro falso pro teste.
+
+    CCacic::salvarVersao("teste");
+    QCOMPARE(CCacic::getValueFromRegistry("Lightbase","Cacic","versao_teste").toString(),
+             Identificadores::AGENTE_VERSAO);
+#else
+    QSKIP("Teste desnecessário nessa plataforma");
+#endif
+}
+
 void CTestCacic::testConvertDouble()
 {
     double number = 4.0905;

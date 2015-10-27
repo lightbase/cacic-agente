@@ -85,6 +85,7 @@ private slots:
     void testGetValueFromRegistry();
     void testRemoveRegistry();
     void testChangeVersionRegistry();
+    void testSalvarVersao();
     void testConvertDouble();
 //    void testSystemTray();
     void testGetTest();
