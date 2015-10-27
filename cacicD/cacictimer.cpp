@@ -752,35 +752,110 @@ void CacicTimer::iniciarInstancias(){
  */
 void CacicTimer::iniciarCacicUiWin()
 {
-    // obtain the currently active session id; every logged on
-    // User in the system has a unique session id
-    uint dwSessionId = WTSGetActiveConsoleSessionId();
+    if( cacicUiExiste() ) {
+        // obtain the currently active session id; every logged on
+        // User in the system has a unique session id
+        uint dwSessionId = WTSGetActiveConsoleSessionId();
 
-    // obtain the process id of the winlogon process that
-    // is running within the currently active session
-    QString processName("winlogon.exe");
-    DWORD winlogonPID = WinProcess::FindProcessId(processName.toStdWString(),dwSessionId);
-    if( winlogonPID != 0 ) {
-        QString errorString = QString();
-        switch (WinProcess::StartProcessInSession(winlogonPID, errorString)) {
-            case WinProcess::OPENPROCESS_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcess "+errorString);
-                break;
-            case WinProcess::OPENPROCESSTOKEN_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcessToken "+errorString);
-                break;
-            case WinProcess::DUPLICATETOKENEX_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: DuplicateTokenEx "+errorString);
-                break;
-            case WinProcess::CREATEPROCESSASUSER_ERROR:
-                logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: CreateProcessAsUser "+errorString);
-                break;
-            default:
-                logcacic->escrever(LogCacic::InfoLevel,"CacicUi iniciado.");
-                break;
+        // obtain the process id of the winlogon process that
+        // is running within the currently active session
+        QString processName("winlogon.exe");
+        DWORD winlogonPID = WinProcess::FindProcessId(processName.toStdWString(),dwSessionId);
+        if( winlogonPID != 0 ) {
+            QString errorString = QString();
+            switch (WinProcess::StartProcessInSession(winlogonPID, errorString)) {
+                case WinProcess::OPENPROCESS_ERROR:
+                    logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcess "+errorString);
+                    break;
+                case WinProcess::OPENPROCESSTOKEN_ERROR:
+                    logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: OpenProcessToken "+errorString);
+                    break;
+                case WinProcess::DUPLICATETOKENEX_ERROR:
+                    logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: DuplicateTokenEx "+errorString);
+                    break;
+                case WinProcess::CREATEPROCESSASUSER_ERROR:
+                    logcacic->escrever(LogCacic::ErrorLevel,"Erro ao iniciar CacicUi: CreateProcessAsUser "+errorString);
+                    break;
+                default:
+                    logcacic->escrever(LogCacic::InfoLevel,"CacicUi iniciado.");
+                    break;
+            }
+        } else {
+            logcacic->escrever(LogCacic::ErrorLevel,"Erro ao recuperar PID de winlogon.");
         }
     } else {
-        logcacic->escrever(LogCacic::ErrorLevel,"Erro ao recuperar PID de winlogon.");
+        logcacic->escrever(LogCacic::ErrorLevel,"Problemas ao localizar executável cacic-ui.");
+    }
+}
+
+/**
+ * @brief CacicTimer::cacicUiExiste
+ *
+ * Verifica se arquivo cacic-ui.exe existe, e se não, tenta fazer o download.
+ * @return
+ */
+bool CacicTimer::cacicUiExiste()
+{
+    QFile *modulo;
+    bool downloadOk = false;
+    //pega o arquivo do módulo selecionado
+
+    QString moduloName = "cacic-ui.exe";
+    modulo = new QFile(this->cacicMainFolder + "/" + moduloName);
+    modulo->open(QFile::ReadOnly);
+
+    QJsonObject metodoDownload;
+    //verifica o tipo de download e tenta baixar o módulo para a pasta temporária.
+    metodoDownload = CCacic::getJsonFromFile(this->cacicMainFolder + "/getConfig.json")
+            ["agentcomputer"].toObject()
+            ["metodoDownload"].toObject();
+
+    if (!metodoDownload.isEmpty()){
+        //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
+        if (modulo->exists()){
+            if (modulo->size() < 0 && !modulo->remove()){
+              logcacic->escrever(LogCacic::ErrorLevel, "Falha ao remover " + moduloName + " corrompido.");
+            }
+
+
+            CacicComm *oCacicComm = new CacicComm(CHKSYS, this->cacicMainFolder);
+            oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+            oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+
+            downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
+                                                  metodoDownload["url"].toString(),
+                                                  metodoDownload["path"].toString() +
+                                                  (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName),
+                                                  this->cacicMainFolder);
+
+            if (downloadOk){
+                QFile *novoModulo;
+                novoModulo = new QFile(this->cacicMainFolder + "/" + moduloName);
+
+                //faz uma verificação do novo módulo.
+                if (!(novoModulo->exists() && novoModulo->size()>1)){
+                    logcacic->escrever(LogCacic::ErrorLevel,
+                                       QString("Falha ao baixar " + moduloName +
+                                               "("+metodoDownload["tipo"].toString()+ "://" +
+                                       metodoDownload["url"].toString() + metodoDownload["path"].toString() +
+                            (metodoDownload["path"].toString().endsWith("/") ? moduloName : "/" + moduloName)+")"));
+                    novoModulo->remove();
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                logcacic->escrever(LogCacic::ErrorLevel, QString("Problemas durante o download de " + moduloName));
+                return false;
+            }
+        } else {
+            return true;
+        }
+    } else {
+        logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível recuperar json de " +
+                                                         this->cacicMainFolder + "/getConfig.json ao tentar baixar " +
+                                                         moduloName));
+        return false;
     }
 }
 

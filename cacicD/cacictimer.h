@@ -64,6 +64,7 @@ private:
     void iniciarInstancias();
 #ifdef Q_OS_WIN
     void iniciarCacicUiWin();
+    bool cacicUiExiste();
 #endif
     bool verificarPeriodicidade();
     void lerArquivoConfig( const QJsonObject &jsonConfig);
