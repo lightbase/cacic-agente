@@ -23,7 +23,7 @@
 #define ROUTE_COLETA "/ws/neo/coleta"
 #define CACIC_SERVICE_BIN "cacic-service.exe"
 #define CACIC_MSI "Cacic.msi"
-#define CACIC_VERSION "3.1.15"
+#define CACIC_VERSION "3.2.0"
 
 class CommSA
 {
