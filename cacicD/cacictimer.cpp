@@ -238,6 +238,7 @@ void CacicTimer::iniciarThread(){
             //executado E o patrimônio estiver executado, iniciar a thread.
             if(!nome.contains("cacic-service")
                 && !nome.contains("install-cacic")
+                && !nome.contains("cacic-ui")
                 && !nome.contains("mapacacic")
                 || (nome.contains("mapacacic") && this->getMapa())){
                 if (QFile::exists(getDirProgram())) {
@@ -811,14 +812,15 @@ bool CacicTimer::cacicUiExiste()
             ["metodoDownload"].toObject();
 
     if (!metodoDownload.isEmpty()){
+
+        if (modulo->size() < 0 && !modulo->remove()){
+          logcacic->escrever(LogCacic::ErrorLevel, "Falha ao remover " + moduloName + " corrompido.");
+        }
+
         //verifica se já possuía o módulo atualizado na pasta temporária, se não baixa um novo.
-        if (modulo->exists()){
-            if (modulo->size() < 0 && !modulo->remove()){
-              logcacic->escrever(LogCacic::ErrorLevel, "Falha ao remover " + moduloName + " corrompido.");
-            }
+        if (!modulo->exists()){
 
-
-            CacicComm *oCacicComm = new CacicComm(CHKSYS, this->cacicMainFolder);
+            CacicComm *oCacicComm = new CacicComm(LOG_DAEMON_TIMER, this->cacicMainFolder);
             oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
             oCacicComm->setFtpPass(metodoDownload["senha"].toString());
 

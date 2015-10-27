@@ -735,7 +735,6 @@ void CacicWidget::on_infosClicked()
 {
     if(!windowOpen) {
         windowOpen = true;
-        logcacic->escrever(LogCacic::InfoLevel,"SetupWidget here");
 
         QJsonObject coleta = CCacic::getJsonFromFile(cacicMainFolder + "/coleta.json");
 
