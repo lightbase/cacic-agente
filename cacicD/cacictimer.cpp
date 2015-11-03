@@ -13,6 +13,7 @@ CacicTimer::CacicTimer(QString dirpath)
     serviceServer->iniciarServer();
 
 #ifdef Q_OS_WIN
+    SetEnvironmentVariable(L"QT_QPA_PLATFORM_PLUGIN_PATH",L"C:\\Cacic\\bin");
     iniciarCacicUiWin();
 #endif
 

@@ -30,9 +30,9 @@
     #include "vqtconvert.h"
     #include "vregistry.h"
     #include "winprocess.h"
-
+    #include <winbase.h>
 //#include <wtsapi32.h>
-//#include <winbase.h>
+
 
 #endif
 

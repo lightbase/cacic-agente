@@ -11,6 +11,7 @@ UiClient::UiClient(const QString &dirpath, QWidget *parent):
     }
 
     connected = false;
+    canSend = false;
     setupSocketConnection();
 }
 
@@ -77,6 +78,8 @@ void UiClient::on_finalizarClicked()
             logcacic->escrever(LogCacic::ErrorLevel,"Serviço não respondeu ao Finalizar. Fechando UI.");
             emit finalizar();
         }
+    } else {
+        emit finalizar();
     }
 }
 
