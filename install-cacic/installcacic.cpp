@@ -10,11 +10,12 @@ InstallCacic::InstallCacic(QObject *parent) :
         cacicMainFolder = Identificadores::ENDERECO_PATCH_CACIC;
     }
 
-    logcacic = new LogCacic(LOG_INSTALL_CACIC, cacicMainFolder+"/Logs");
     QDir dir(cacicMainFolder);
     if (!dir.exists()){
         CCacic::createFolder(cacicMainFolder);
     }
+
+    logcacic = new LogCacic(LOG_INSTALL_CACIC, cacicMainFolder+"/Logs");
 }
 
 InstallCacic::~InstallCacic()
@@ -58,14 +59,14 @@ void InstallCacic::run(QStringList argv, int argc) {
 //---------MÉTODOS-----------
 
 void InstallCacic::parametrosIncorretos(){
-    std::cout << "\nInstalador do Agente Cacic.\n\n"
-              << "Parametros incorretos/incompletos. (<obrigatorios> [opcional])\n\n"
-              << "Instalação: <-host=url_gerente> <-user=usuario> <-pass=senha>\n"
-              << "Desinstalar: <-uninstall>\n"
-              << "Configurar: <-configure> [-user=usuario] [-pass=senha] [-host=url_gerente]\n\n"
-              << "  -host=url_gerente       url_gerente: Caminho para a aplicação do gerente.\n"
-              << "  -user=usuario           usuario: usuário de login no gerente.\n"
-              << "  -pass=senha             senha: senha de login no gerente\n";
+    std::cout << "\nInstalador do Agente Cacic.\n" << std::endl;
+    std::cout << "Parametros incorretos/incompletos. (<obrigatorios> [opcional])\n" << std::endl;
+    std::cout << "Instalação: <-host=url_gerente> <-user=usuario> <-pass=senha>" << std::endl;
+    std::cout << "Desinstalar: <-uninstall>" << std::endl;
+    std::cout << "Configurar: <-configure> [-user=usuario] [-pass=senha] [-host=url_gerente]\n" << std::endl;
+    std::cout << "  -host=url_gerente       url_gerente: Caminho para a aplicação do gerente." << std::endl;
+    std::cout << "  -user=usuario           usuario: usuário de login no gerente." << std::endl;
+    std::cout << "  -pass=senha             senha: senha de login no gerente" << std::endl;
 }
 
 /*---------------------------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ void InstallCacic::updateService()
 #ifdef Q_OS_WIN
                 if(service.isRunning()){
                     if (!service.stop()){
-                        std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
+                        std::cout << "Não foi possível parar o serviço: " + service.getLastError() << std::endl;
                         logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível parar o serviço: " +
                                                                                        QString::fromStdString(service.getLastError())));
                     }
@@ -132,20 +133,20 @@ void InstallCacic::updateService()
         logcacic->escrever(LogCacic::InfoLevel, "Iniciando o serviço cacic.");
 #ifdef Q_OS_WIN
         if(!service.isInstalled()){
-            std::cout << "Serviço não instalado, reinstalando...\n";
+            std::cout << "Serviço não instalado, reinstalando..." << std::endl;
             logcacic->escrever(LogCacic::InfoLevel, QString("Serviço não instalado, reinstalando..."));
             if(!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
                                 L"CacicDaemon")){
-                std::cout << "Não foi possível instalar o serviço: " + service.getLastError() +"\n";
+                std::cout << "Não foi possível instalar o serviço: " + service.getLastError() +"" << std::endl;
                 logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível instalar o serviço: " +
                                                                                QString::fromStdString(service.getLastError())));
             } else {
-                std::cout << "Serviço reinstalado com sucesso.\n";
+                std::cout << "Serviço reinstalado com sucesso." << std::endl;
                 logcacic->escrever(LogCacic::InfoLevel, QString("Serviço reinstalado com sucesso."));
             }
         } else {
             if (!service.start()){
-                std::cout << "Não foi possível iniciar o serviço: " + service.getLastError() +"\n";
+                std::cout << "Não foi possível iniciar o serviço: " + service.getLastError() << std::endl;
                 logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível iniciar o serviço: " +
                                                                                QString::fromStdString(service.getLastError())));
             }
@@ -167,21 +168,21 @@ void InstallCacic::configurar(const QMap<QString, QString> &param)
         if (param.contains("host")){
             reg["applicationUrl"] = param["host"];
             logcacic->escrever(LogCacic::InfoLevel, QString("Host alterado para " + param["host"]));
-            std::cout << "Url alterada para \"" << param["host"].toStdString() << "\"\n";
+            std::cout << "Url alterada para \"" << param["host"].toStdString() << "\"" << std::endl;
         }
         if (param.contains("user")){
             reg["usuario"] = param["user"];
             logcacic->escrever(LogCacic::InfoLevel, QString("Usuário alterado para " + param["user"]));
-            std::cout << "Usuário alterado para \"" << param["user"].toStdString() << "\"\n";
+            std::cout << "Usuário alterado para \"" << param["user"].toStdString() << "\"" << std::endl;
         }
         if (param.contains("pass")){
             reg["senha"] = param["pass"];
             logcacic->escrever(LogCacic::InfoLevel, QString("Senha alterada."));
-            std::cout << "Senha alterada.\n";
+            std::cout << "Senha alterada." << std::endl;
         }
         if (reg.size() > 0) {
             CCacic::setValueToRegistry("Lightbase", "Cacic", reg);
-            std::cout << "\nRegistro atualizado.\n\n";
+            std::cout << "\nRegistro atualizado.\n" << std::endl;
         }
     } else {
         parametrosIncorretos();
@@ -196,16 +197,16 @@ void InstallCacic::install()
 {
     bool ok;
     //logcacic->escrever(LogCacic::InfoLevel, QString("Inicio de instalacao"));
-    std::cout << " - - INSTALL CACIC - -\n";
+    std::cout << " - - INSTALL CACIC - -" << std::endl;
     oCacicComm->setUrlGerente(this->argumentos["host"]);
     oCacicComm->setUsuario(this->argumentos["user"]);
     oCacicComm->setPassword(this->argumentos["pass"]);
-    std::cout << "Realizando login...\n";
+    std::cout << "Realizando login..." << std::endl;
 
     //logcacic->escrever(LogCacic::InfoLevel, "Realizando login...");
     QJsonObject jsonLogin = oCacicComm->login(&ok);
     if (ok){
-        std::cout << "Login realizado com sucesso...\n";
+        std::cout << "Login realizado com sucesso..." << std::endl;
         logcacic->escrever(LogCacic::InfoLevel, "Login realizado com sucesso!");
         QJsonObject jsonComm;
         QLogger::QLog_Debug("Install", "Login: " + jsonLogin["reply"].toObject()["chavecript"].toString());
@@ -213,7 +214,7 @@ void InstallCacic::install()
         //oCacic.setChaveCrypt(jsonLogin["reply"].toObject()["chavecript"].toString());
 
         jsonComm["computador"] = oCacicComputer.toJsonObject();
-        std::cout << "Pegando informações do gerente...\n";
+        std::cout << "Pegando informações do gerente..." << std::endl;
         logcacic->escrever(LogCacic::InfoLevel, "Pegando informações do gerente...");
         QJsonObject configs = oCacicComm->comm(ROTA_GETCONFIG, &ok, jsonComm, true);
         if (ok){
@@ -229,7 +230,7 @@ void InstallCacic::install()
             registro["mainFolder"] = cacicMainFolder;
             registro["applicationUrl"] = oCacicComm->getUrlGerente();
             CCacic::setValueToRegistry("Lightbase", "Cacic", registro);
-            std::cout << "Sucesso, salvando configurações em arquivo...\n";
+            std::cout << "Sucesso, salvando configurações em arquivo..." << std::endl;
             logcacic->escrever(LogCacic::InfoLevel, "Sucesso! Salvando configurações em arquivo...");
             CCacic::setJsonToFile(configs["reply"].toObject(), cacicMainFolder + "/getConfig.json");
 
@@ -241,7 +242,7 @@ void InstallCacic::install()
             oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
 
             logcacic->escrever(LogCacic::InfoLevel, "Verificando serviço...");
-            std::cout << "Verificando serviço...\n";
+            std::cout << "Verificando serviço..." << std::endl;
 #ifdef Q_OS_WIN
             //verifica e start o serviço
 
@@ -294,7 +295,7 @@ void InstallCacic::install()
                     }
                 }
                 if (service.start()){
-                    std::cout << "Instalação realizada com sucesso." << "\n";
+                    std::cout << "Instalação realizada com sucesso." << std::endl;;
                     logcacic->escrever(LogCacic::InfoLevel, QString("Instalação realizada com sucesso."));
                 } else {
                     logcacic->escrever(LogCacic::InfoLevel, "Falha ao iniciar o serviço. Reinicie o computador!");
@@ -315,12 +316,12 @@ void InstallCacic::install()
 
             QFile fileService(cacicMainFolder+"/cacic-service");
             if ((!fileService.exists() || !fileService.size() > 0)) {
-                std::cout << "Falha ao baixar arquivo.\n";
+                std::cout << "Falha ao baixar arquivo."  << std::endl;
                 logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar o serviço...");
                 this->uninstall();
                 fileService.close();
             } else {
-                std::cout << "Iniciando serviço...\n";
+                std::cout << "Iniciando serviço..." << std::endl;
                 ConsoleObject console;
                 std::cout << console("/etc/init.d/cacic3 start").toStdString();
             }
@@ -328,14 +329,14 @@ void InstallCacic::install()
 #endif          
 
         } else {
-            std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString() << "\n";
+            std::cout << "Falha ao pegar configurações: " << configs["error"].toString().toStdString() << std::endl;
             logcacic->escrever(LogCacic::ErrorLevel, QString("Falha ao pegar configurações: ") + configs["error"].toString());
         }
 
     } else {
-        std::cout << "Nao foi possivel realizar o login.\n"
-                  << "  Código: " << jsonLogin["codestatus"].toString().toStdString() << "\n"
-                  << "  " << jsonLogin["error"].toString().toStdString() << "\n";
+        std::cout << "Nao foi possivel realizar o login." << std::endl;
+        std::cout << "  Código: " << jsonLogin["codestatus"].toString().toStdString() << std::endl;
+        std::cout << "  " << jsonLogin["error"].toString().toStdString() << std::endl;
         logcacic->escrever(LogCacic::ErrorLevel, QString("Falha no login: ") + jsonLogin["error"].toString());
     }
 }
@@ -388,7 +389,7 @@ void InstallCacic::uninstall()
     if (service.isInstalled()){
         logcacic->escrever(LogCacic::InfoLevel, QString("Desinstalando o serviço..."));
         if (!service.uninstall()){
-            std::cout << "Não foi possível parar o serviço: " + service.getLastError() +"\n";
+            std::cout << "Não foi possível parar o serviço: " + service.getLastError() << std::endl;
             logcacic->escrever(LogCacic::ErrorLevel, QString("Não foi possível parar o serviço: " +
                                                                            QString::fromStdString(service.getLastError())));
         }
@@ -451,7 +452,7 @@ void InstallCacic::uninstall()
         }
     }
 
-    std::cout << "\nCacic desinstalado com sucesso.\n";
+    std::cout << "\nCacic desinstalado com sucesso." << std::endl;
 }
 
 QMap<QString, QString> InstallCacic::getArgumentos()
