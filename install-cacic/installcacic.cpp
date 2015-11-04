@@ -238,8 +238,15 @@ void InstallCacic::install()
 
             QJsonObject metodoDownload;
             metodoDownload = configsJson["metodoDownload"].toObject();
-            oCacicComm->setFtpPass(metodoDownload["senha"].toString());
-            oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+            if(metodoDownload.contains("tipo")
+                    && metodoDownload["tipo"].isString()
+                    && metodoDownload["tipo"].toString() == "ftp") {
+
+                if (!metodoDownload["usuario"].isNull())
+                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                if (!metodoDownload["senha"].isNull())
+                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+            }
 
             logcacic->escrever(LogCacic::InfoLevel, "Verificando serviço...");
             std::cout << "Verificando serviço..." << std::endl;
@@ -276,8 +283,10 @@ void InstallCacic::install()
                     }
                 }
             }
+
             logcacic->escrever(LogCacic::InfoLevel, "Realizando download do servico.");
             QThread::sleep(2);
+
             oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                     metodoDownload["url"].toString(),
                     metodoDownload["path"].toString() +
@@ -285,6 +294,7 @@ void InstallCacic::install()
                         "cacic-service.exe",
                     cacicMainFolder);
             QThread::sleep(1);
+
             if (fileService.exists()){
                 if (!service.isInstalled()){
                     if (!service.install(QString(cacicMainFolder+"/cacic-service.exe").toStdWString(),
@@ -306,7 +316,7 @@ void InstallCacic::install()
                 logcacic->escrever(LogCacic::InfoLevel, "Falha ao baixar servico.");
                 logcacic->escrever(LogCacic::ErrorLevel, "Falha ao baixar servico.");
             }
-    #else
+#else
 
             oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                     metodoDownload["url"].toString(),

@@ -822,8 +822,15 @@ bool CacicTimer::cacicUiExiste()
         if (!modulo->exists()){
 
             CacicComm *oCacicComm = new CacicComm(LOG_DAEMON_TIMER, this->cacicMainFolder);
-            oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-            oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+            if(metodoDownload.contains("tipo")
+                    && metodoDownload["tipo"].isString()
+                    && metodoDownload["tipo"].toString() == "ftp") {
+
+                if (!metodoDownload["usuario"].isNull())
+                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                if (!metodoDownload["senha"].isNull())
+                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+            }
 
             downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                                                   metodoDownload["url"].toString(),
