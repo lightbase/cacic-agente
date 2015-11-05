@@ -82,18 +82,26 @@ Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin"; Flags: restartreplace
 Source: "dll\qwindows.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
 Source: "dll\ssleay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
 
-; Instala todas as dependências
-Source: "dependencies\WindowsXP-KB961503-x86-PTB.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('WindowsXP-KB961503-x86-PTB.exe');
-Source: "dependencies\vcredist_x86_2005.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('vcredist_x86_2005.exe');
-Source: "dependencies\vcredist_x86_2008.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('vcredist_x86_2008.exe');
-Source: "dependencies\vcredist_x86.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('vcredist_x86.exe');
-Source: "dependencies\Win32OpenSSL_Light-1_0_1j.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('Win32OpenSSL_Light-1_0_1j.exe');
+; Copia as dependências
+Source: "dependencies\WindowsXP-KB961503-x86-PTB.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
+Source: "dependencies\vcredist_x86_2005.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
+Source: "dependencies\vcredist_x86_2008.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
+Source: "dependencies\vcredist_x86.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
+Source: "dependencies\Win32OpenSSL_Light-1_0_1j.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
 
 ; Só precisa do install-cacic
-Source: "bin\install-cacic.exe"; DestDir: "{app}" 
+Source: "bin\install-cacic.exe"; DestDir: "{app}\bin" 
 
 [Run]
-Filename: "{app}\install-cacic.exe"; Parameters: "{code:GetBatchParams}"
+; Instala as dependências
+Filename: "{app}\bin\WindowsXP-KB961503-x86-PTB.exe"; Parameters: "/q /norestart"
+Filename: "{app}\bin\vcredist_x86_2005.exe"; Parameters: "/Q"
+Filename: "{app}\bin\vcredist_x86_2008.exe"; Parameters: "/q /norestart"
+Filename: "{app}\bin\vcredist_x86.exe"; Parameters: "/q /norestart"
+Filename: "{app}\bin\Win32OpenSSL_Light-1_0_1j.exe"; Parameters: "/q /norestart"
+
+; Instala o Cacic
+Filename: "{app}\bin\install-cacic.exe"; Parameters: "{code:GetBatchParams}"
 
 [InstallDelete]
 Type: files; Name: "{app}\cacic-service.exe"
@@ -241,7 +249,7 @@ procedure Install(Module: string);
 var
   ResultCode: Integer;
 begin
-  if not Exec(ExpandConstant('{tmp}\') + Module, '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  if not Exec(ExpandConstant('{app}\bin\') + Module, '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
   begin
     // you can interact with the user that the installation failed
     MsgBox('A instalação do módulo ' + Module + ' falhou com o código: ' + IntToStr(ResultCode) + '. Mensagem: ' + SysErrorMessage(ResultCode) ,
