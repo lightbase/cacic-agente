@@ -113,10 +113,16 @@ bool CheckModules::verificaModulo(const QString &moduloName, const QString &modu
             if ((!moduloTemp->exists() || !CCacic::Md5IsEqual(moduloTemp->readAll(), moduloHash))){
                 moduloTemp->close();
                 CacicComm *oCacicComm = new CacicComm(LOG_CHECKMODULES, this->cacicMainFolder);
-                if (!metodoDownload["usuario"].isNull())
-                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-                if (!metodoDownload["senha"].isNull())
-                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+
+                if(metodoDownload.contains("tipo")
+                        && metodoDownload["tipo"].isString()
+                        && metodoDownload["tipo"].toString() == "ftp") {
+
+                    if (!metodoDownload["usuario"].isNull())
+                        oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                    if (!metodoDownload["senha"].isNull())
+                        oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+                }
 
                 if (!moduloUrl.isEmpty() && !moduloUrl.isNull()){
                     QUrl url(moduloUrl);

@@ -29,25 +29,25 @@ public:
     ~InstallCacic();
 
     QMap<QString, QString> getArgumentos();
-    void setArgumentos(QMap<QString, QString> value);
-    QMap<QString, QString> validaParametros(QStringList argv, int argc, bool *ok);
-    bool startProcess(QString pathprogram, bool wait, QStringList arguments);
     void registro();
+    void setArgumentos(QMap<QString, QString> value);
+    bool startProcess(QString pathprogram, bool wait, QStringList arguments);
+    QMap<QString, QString> validaParametros(QStringList argv, int argc, bool *ok);
 
 private:
-    LogCacic *logcacic;
+    void configurar(const QMap<QString, QString> &param);
+    void forcaColeta();
+    void install();
+    void parametrosIncorretos();
     void uninstall();
+    void updateService();
+
+    LogCacic *logcacic;
     QMap<QString, QString> argumentos;
     CacicComm *oCacicComm;
     CACIC_Computer oCacicComputer;
     QString applicationDirPath;
     QString cacicMainFolder;
-    void parametrosIncorretos();
-    void updateService();
-    void configurar(const QMap<QString, QString> &param);
-    void install();
-    void forcaColeta();
-
 signals:
     void finished();
 

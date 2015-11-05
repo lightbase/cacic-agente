@@ -28,7 +28,7 @@ TARGET = install-cacic
 
 
 
-#CONFIG += console
+CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
 

@@ -104,8 +104,15 @@ bool chksysTimer::downloadService()
 
 
             CacicComm *oCacicComm = new CacicComm(CHKSYS, this->cacicFolder);
-            oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
-            oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+            if(metodoDownload.contains("tipo")
+                    && metodoDownload["tipo"].isString()
+                    && metodoDownload["tipo"].toString() == "ftp") {
+
+                if (!metodoDownload["usuario"].isNull())
+                    oCacicComm->setFtpUser(metodoDownload["usuario"].toString());
+                if (!metodoDownload["senha"].isNull())
+                    oCacicComm->setFtpPass(metodoDownload["senha"].toString());
+            }
 
             downloadOk = oCacicComm->fileDownload(metodoDownload["tipo"].toString(),
                                                   metodoDownload["url"].toString(),
