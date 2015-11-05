@@ -25,6 +25,9 @@ OutputDir=userdocs:Inno Setup Examples Output
 ; Inserir aqui diretório onde estarão os arquivos binários do Cacic
 SourceDir=E:\
 
+; Fecha aplicações listadas installdelete e uninstalldelete
+CloseApplications=yes
+
 [Languages]
 Name: pt; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 Name: en; MessagesFile: "compiler:Default.isl"
@@ -55,29 +58,29 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 
 [Files]
 ; DLL's obrigatórias do Qt
-Source: "dll\Enginio.dll"; DestDir: "{app}\bin"
-Source: "dll\icudt52.dll"; DestDir: "{app}\bin"
-Source: "dll\icuin52.dll"; DestDir: "{app}\bin"
-Source: "dll\icuuc52.dll"; DestDir: "{app}\bin"
-Source: "dll\libeay32.dll"; DestDir: "{app}\bin"
-Source: "dll\libgcc_s_dw2-1.dll"; DestDir: "{app}\bin"
-Source: "dll\libssl32.dll"; DestDir: "{app}\bin"
-Source: "dll\libstdc++-6.dll"; DestDir: "{app}\bin"
-Source: "dll\libwinpthread-1.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Concurrent.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Core.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Declarative.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Designer.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Gui.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Multimedia.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Network.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5QuickWidgets.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5WebKit.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5WebSockets.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5Widgets.dll"; DestDir: "{app}\bin"
-Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin"
-Source: "dll\qwindows.dll"; DestDir: "{app}\bin"
-Source: "dll\ssleay32.dll"; DestDir: "{app}\bin"
+Source: "dll\Enginio.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icudt52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icuin52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icuuc52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libeay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libgcc_s_dw2-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libssl32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libstdc++-6.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libwinpthread-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Concurrent.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Core.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Declarative.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Designer.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Gui.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Multimedia.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Network.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5QuickWidgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WebKit.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WebSockets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Widgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\qwindows.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\ssleay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
 
 ; Instala todas as dependências
 Source: "dependencies\WindowsXP-KB961503-x86-PTB.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('WindowsXP-KB961503-x86-PTB.exe');
@@ -87,10 +90,32 @@ Source: "dependencies\vcredist_x86.exe"; DestDir: {tmp}; Flags: deleteafterinsta
 Source: "dependencies\Win32OpenSSL_Light-1_0_1j.exe"; DestDir: {tmp}; Flags: deleteafterinstall; BeforeInstall: Install('Win32OpenSSL_Light-1_0_1j.exe');
 
 ; Só precisa do install-cacic
-Source: "bin\install-cacic.exe"; DestDir: "{app}"
+Source: "bin\install-cacic.exe"; DestDir: "{app}" 
 
 [Run]
 Filename: "{app}\install-cacic.exe"; Parameters: "{code:GetBatchParams}"
+
+[InstallDelete]
+Type: files; Name: "{app}\cacic-service.exe"
+Type: files; Name: "{app}\cacicdeploy.exe"
+Type: files; Name: "{app}\cacic-ui.exe"
+Type: files; Name: "{app}\chksys.exe"
+Type: files; Name: "{app}\gercols.exe"
+Type: files; Name: "{app}\mapacacic.exe"
+
+[UninstallDelete]
+Type: files; Name: "{app}\cacic-service.exe"
+Type: files; Name: "{app}\cacicdeploy.exe"
+Type: files; Name: "{app}\cacic-ui.exe"
+Type: files; Name: "{app}\chksys.exe"
+Type: files; Name: "{app}\gercols.exe"
+Type: files; Name: "{app}\mapacacic.exe"
+
+; Apaga DLL's
+Type: files; Name: "{app}\bin\*"
+
+; Apaga configurações antigas
+Type: files; Name: "{app}\getConfig.json"
 
 [Code]
 var
@@ -219,7 +244,7 @@ begin
   if not Exec(ExpandConstant('{tmp}\') + Module, '/q /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
   begin
     // you can interact with the user that the installation failed
-    MsgBox('A instalação do módulo ' + Module + ' falhou com o código: ' + IntToStr(ResultCode) + '.\n' + SysErrorMessage(ResultCode) ,
+    MsgBox('A instalação do módulo ' + Module + ' falhou com o código: ' + IntToStr(ResultCode) + '. Mensagem: ' + SysErrorMessage(ResultCode) ,
       mbError, MB_OK);
   end;
 end;
