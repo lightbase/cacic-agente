@@ -321,7 +321,7 @@ begin
         CloseServiceHandle(SCMHandle);
     end;
   except
-    ShowExceptionMessage;
+    Log(GetExceptionMessage());
   end;
 end;
 
@@ -361,7 +361,7 @@ begin
         CloseServiceHandle(SCMHandle);
     end;
   except
-    ShowExceptionMessage;
+    Log(GetExceptionMessage());
   end;
 end;
 
@@ -390,7 +390,7 @@ begin
         CloseServiceHandle(SCMHandle);
     end;
   except
-    ShowExceptionMessage;
+    Log(GetExceptionMessage());
   end;
 end;
 
@@ -426,7 +426,7 @@ begin
         CloseServiceHandle(SCMHandle);
     end;
   except
-    ShowExceptionMessage;
+    Log(GetExceptionMessage());
   end;
 end;
 
@@ -462,6 +462,6 @@ begin
         CloseServiceHandle(SCMHandle);
     end;
   except
-    ShowExceptionMessage;
+    Log(GetExceptionMessage());
   end;
 end;

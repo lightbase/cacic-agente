@@ -11,10 +11,10 @@ var
 begin
   //If service is installed, it needs to be start
   if ServiceExists(SvcName) then begin
-    MsgBox('Buscando o serviço o serviço ' + svcName, mbInformation, MB_OK);
+    //MsgBox('Buscando o serviço o serviço ' + svcName, mbInformation, MB_OK);
     S:= SimpleQueryService(SvcName);
     if S = SERVICE_STOPPED then begin
-      MsgBox('Iniciando o serviço ' + svcName, mbInformation, MB_OK);
+      //MsgBox('Iniciando o serviço ' + svcName, mbInformation, MB_OK);
       SimpleStartService(SvcName, True, True);
     end;
   end;
@@ -26,10 +26,10 @@ var
   S: Longword;
 begin
   if ServiceExists(SvcName) then begin
-    MsgBox('Buscando o serviço o serviço ' + svcName, mbInformation, MB_OK);
+    //MsgBox('Buscando o serviço o serviço ' + svcName, mbInformation, MB_OK);
     S:= SimpleQueryService(SvcName);
     if S <> SERVICE_STOPPED then begin
-      MsgBox('Parando o serviço ' + svcName, mbInformation, MB_OK);
+      //MsgBox('Parando o serviço ' + svcName, mbInformation, MB_OK);
       SimpleStopService(SvcName, True, True);
     end;
   end;

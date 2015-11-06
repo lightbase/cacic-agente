@@ -8,6 +8,7 @@ DefaultGroupName={cm:MyAppName}
 VersionInfoDescription=Módulo Agente do Software Cacic
 VersionInfoProductName=Cacic Agente
 OutputDir=userdocs:Inno Setup Examples Output
+SetupLogging=yes
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
 ;ShowLanguageDialog=no
@@ -135,6 +136,10 @@ Type: filesandordirs; Name: "{app}\bin\"
 
 ; Apaga configurações antigas
 Type: files; Name: "{app}\getConfig.json"
+
+[UninstallRun]
+; A única forma é matar manualmente essa parada
+Filename: "{cmd}"; Parameters: "/C ""taskkill /im cacic-ui.exe /f /t"
 
 [UninstallDelete]
 Type: files; Name: "{app}\chksys.exe"
