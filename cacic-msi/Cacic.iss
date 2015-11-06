@@ -54,53 +54,29 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 
 [Files]
 ; DLL's obrigatórias do Qt
-;Source: "dll\Enginio.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\icudt52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\icuin52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\icuuc52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\libeay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\libgcc_s_dw2-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\libssl32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\libstdc++-6.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\libwinpthread-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Concurrent.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Core.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Declarative.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Designer.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Gui.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Multimedia.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Network.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5QuickWidgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5WebKit.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5WebSockets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5Widgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\qwindows.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-;Source: "dll\ssleay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
-
-Source: "dll\Enginio.dll"; DestDir: "{app}\bin";
-Source: "dll\icudt52.dll"; DestDir: "{app}\bin";
-Source: "dll\icuin52.dll"; DestDir: "{app}\bin";
-Source: "dll\icuuc52.dll"; DestDir: "{app}\bin";
-Source: "dll\libeay32.dll"; DestDir: "{app}\bin";
-Source: "dll\libgcc_s_dw2-1.dll"; DestDir: "{app}\bin";
-Source: "dll\libssl32.dll"; DestDir: "{app}\bin";
-Source: "dll\libstdc++-6.dll"; DestDir: "{app}\bin";
-Source: "dll\libwinpthread-1.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Concurrent.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Core.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Declarative.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Designer.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Gui.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Multimedia.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Network.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5QuickWidgets.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5WebKit.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5WebSockets.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5Widgets.dll"; DestDir: "{app}\bin";
-Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin";
-Source: "dll\qwindows.dll"; DestDir: "{app}\bin";
-Source: "dll\ssleay32.dll"; DestDir: "{app}\bin";
+Source: "dll\Enginio.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icudt52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icuin52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\icuuc52.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libeay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libgcc_s_dw2-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libssl32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libstdc++-6.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\libwinpthread-1.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Concurrent.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Core.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Declarative.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Designer.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Gui.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Multimedia.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Network.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5QuickWidgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WebKit.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WebSockets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5Widgets.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\Qt5WinExtras.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\qwindows.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
+Source: "dll\ssleay32.dll"; DestDir: "{app}\bin"; Flags: restartreplace 
 
 ; Copia as dependências
 Source: "dependencies\WindowsXP-KB961503-x86-PTB.exe"; DestDir: "{app}\bin"; Flags: deleteafterinstall;
