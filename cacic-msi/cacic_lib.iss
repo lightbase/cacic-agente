@@ -5,9 +5,10 @@ var
   UserPage: TInputQueryWizardPage; 
 
 
-procedure StartIfExists(SvcName: String);
+procedure StartIfExists(SvcName: String; FileName: String);
 var
   S: Longword;
+  Status: Boolean;
 begin
   //If service is installed, it needs to be start
   if ServiceExists(SvcName) then begin
@@ -17,6 +18,21 @@ begin
       //MsgBox('Iniciando o serviço ' + svcName, mbInformation, MB_OK);
       SimpleStartService(SvcName, True, True);
     end;
+  end else begin
+    //Cria o serviço
+    Status := SimpleCreateService(
+      SvcName,                                    //Nome do serviço
+      '',                                         //Display name do serviço
+      FileName,  //Arquivo do serviço
+      SERVICE_BOOT_START,                         //Tipo de inicialiação
+      '',                                         //Usuário
+      '',                                         //Senha
+      True,                                       //Serviço internativo?
+      True                                        //Ignora erro caso já exista
+    );
+    if Status then begin
+      SimpleStartService(SvcName, True, True);
+    end;  
   end;
 
 end;
@@ -41,6 +57,11 @@ begin
     { Para os serviços obrigatórios }
     StopIfExists('CheckCacic');
     StopIfExists('CacicDaemon');
+  end;
+  
+  // Inicia o serviço após a instalação
+  if curStep = ssDone then begin
+    StartIfExists('CacicDaemon', ExpandConstant('{app}\cacic-service.exe'));
   end;
 end;
 

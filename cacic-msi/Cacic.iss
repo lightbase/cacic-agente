@@ -4,10 +4,10 @@ AppId=Cacic
 AppVersion=3.2.0
 DefaultDirName=C:\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
-;UninstallDisplayIcon={app}\install-cacic.exe
+UninstallDisplayIcon=E:\dll\cacic.ico
 VersionInfoDescription=Módulo Agente do Software Cacic
 VersionInfoProductName=Cacic Agente
-OutputDir=userdocs:Inno Setup Examples Output
+OutputDir=E:\build
 SetupLogging=yes
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -23,6 +23,15 @@ SourceDir=E:\
 
 ; Fecha aplicações listadas installdelete e uninstalldelete
 CloseApplications=yes
+OutputBaseFilename=Cacic
+VersionInfoVersion=3.2.0
+VersionInfoCompany=Lightbase
+VersionInfoTextVersion=Cacic 3.2.0
+AppPublisher=Lightbase
+AppPublisherURL=http://lightbase.com.br
+AppSupportURL=http://cacic.com.br
+AppContact=suporte@cacic.com.br
+SetupIconFile=E:\dll\cacic.ico
 
 [Languages]
 Name: pt; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
