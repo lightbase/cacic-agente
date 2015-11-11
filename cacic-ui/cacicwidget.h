@@ -4,6 +4,7 @@
 #include <QFormLayout>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QLockFile>
 #include <QString>
 #include <QWidget>
 #include "cacicsystray.h"
@@ -42,6 +43,7 @@ private:
     void setupTabSoftware(const QJsonObject &coleta);
 
     bool windowOpen;
+    QLockFile *lock;
     LogCacic *logcacic;
     Ui::Widget *ui;
     QString cacicMainFolder;

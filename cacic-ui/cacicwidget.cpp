@@ -10,6 +10,19 @@ CacicWidget::CacicWidget(QWidget *parent) :
 
     logcacic = new LogCacic(LOG_CACICUI, cacicMainFolder+"/Logs");
 
+    QString lockPath = cacicMainFolder;
+    if (lockPath.endsWith("/"))
+        lockPath.append("ui.lock");
+    else
+        lockPath.append("/ui.lock");
+
+    lock = new QLockFile(lockPath);
+    lock->setStaleLockTime(0);
+    if(!lock->tryLock()) {
+        logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível iniciar CacicUi. Já existe um processo rodando.");
+        exit(1);
+    }
+
     windowOpen = false;
 
     cliente = new UiClient(cacicMainFolder,this);
@@ -728,6 +741,7 @@ void CacicWidget::hardwareItemPressed(QListWidgetItem *item)
 
 void CacicWidget::on_finalizar()
 {
+    lock->unlock();
     exit(0);
 }
 

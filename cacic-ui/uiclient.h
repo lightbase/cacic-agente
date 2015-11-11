@@ -3,6 +3,7 @@
 
 #include <QAbstractSocket>
 #include <QString>
+#include <QTimer>
 #include <QTcpSocket>
 #include <QWidget>
 #include "../src/logcacic.h"
@@ -26,17 +27,18 @@ private slots:
     void on_connected();
     void on_disconnected();
     void on_readyRead();
+    void setupSocketConnection();
 
 private:
     QByteArray formatData(QString message, int messageLength);
     void parseData(const QString &dataReceived);
-    void setupSocketConnection();
 
     bool connected;
     bool canSend;
     LogCacic *logcacic;
     QByteArray lastDataWritten;
     QString mainFolder;
+    QTimer *reconnectTimer;
     QTcpSocket *socket;
 };
 

@@ -10,6 +10,9 @@ UiClient::UiClient(const QString &dirpath, QWidget *parent):
         logcacic = new LogCacic(LOG_CACICUI, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
     }
 
+    reconnectTimer = new QTimer(this);
+    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(setupSocketConnection()));
+
     connected = false;
     canSend = false;
     setupSocketConnection();
@@ -41,12 +44,17 @@ void UiClient::on_connected()
     connected = true;
     canSend = true;
     logcacic->escrever(LogCacic::InfoLevel,"Socket conectado.");
+
+    if(reconnectTimer->isActive())
+        reconnectTimer->stop();
 }
 
 void UiClient::on_disconnected()
 {
     connected = false;
     logcacic->escrever(LogCacic::InfoLevel,"Socket desconectado.");
+
+    reconnectTimer->start(2000);
 }
 
 void UiClient::on_forcarClicked()
