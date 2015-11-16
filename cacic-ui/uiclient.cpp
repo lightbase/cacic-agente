@@ -54,7 +54,7 @@ void UiClient::on_disconnected()
     connected = false;
     logcacic->escrever(LogCacic::InfoLevel,"Socket desconectado.");
 
-    reconnectTimer->start(2000);
+    reconnectTimer->start(3000);
 }
 
 void UiClient::on_forcarClicked()
@@ -129,8 +129,13 @@ void UiClient::setupSocketConnection()
     socket->connectToHost("127.0.0.1",PORT_CACICDAEMON);
 
     if(!socket->waitForConnected(1000)) {
-        logcacic->escrever(LogCacic::ErrorLevel, "Erro ao conectar ao Cacic-service.");
-    }
+        logcacic->escrever(LogCacic::ErrorLevel, "Erro ao conectar ao Cacic-service. Tentativa " + QString::number(connectionTrials));
 
+        if(connectionTrials >= 3) {
+            logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível reestabelecer conexão com o Cacic-service. Finalizando Ui");
+            emit finalizar();
+        }
+        connectionTrials++;
+    }
 }
 

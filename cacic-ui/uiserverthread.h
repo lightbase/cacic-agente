@@ -15,12 +15,16 @@ public:
     void run();
 
 signals:
+    void finalizarUi();
 
 private slots:
     void readyRead();
     void disconnected();
 
 private:
+    void parseData(const QString &dataReceived);
+    void sendAck();
+
     int socketDescriptor;
     LogCacic *logcacic;
     QString cacicMainFolder;

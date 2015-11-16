@@ -35,6 +35,7 @@ private:
 
     bool connected;
     bool canSend;
+    int connectionTrials = 0;
     LogCacic *logcacic;
     QByteArray lastDataWritten;
     QString mainFolder;

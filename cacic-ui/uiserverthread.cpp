@@ -21,20 +21,55 @@ void UiServerThread::run()
     connect(socket,&QTcpSocket::readyRead,this,&UiServerThread::readyRead,Qt::DirectConnection);
     connect(socket,&QTcpSocket::disconnected,this,&UiServerThread::disconnected,Qt::DirectConnection);
 
-    logcacic->escrever(LogCacic::InfoLevel,"UiServerThread "+QString::number(socketDescriptor));
-
     exec();
 }
 
 void UiServerThread::disconnected()
 {
+logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> disconnected()"));
     socket->deleteLater();
     exit(0);
 }
 
+void UiServerThread::sendAck()
+{
+logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> sendAck()"));
+    QByteArray data;
+    data.append(QString::number(MSG_LENGTH_ACK));
+    data.append(" ");
+    data.append(MSG_ACK);
+    data.append(MSG_END);
+    socket->write(data);
+}
+
+void UiServerThread::parseData(const QString &dataReceived)
+{
+logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> parseData()"));
+    QStringList splitData = dataReceived.split(" ");
+
+    if(splitData.size() > 1) {
+        QString numberOfChars = splitData.at(0);
+
+        bool ok;
+        int messageLength = numberOfChars.toInt(&ok);
+        if(ok) {
+            QString message = dataReceived.mid(numberOfChars.size()+1,messageLength);
+            if( message == MSG_DAEMONSTOPUI ) {
+logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> parseData(): msg == STOPUI"));
+                sendAck();
+                emit finalizarUi();
+            }
+        }
+    }
+}
+
 void UiServerThread::readyRead()
 {
+    QString dataReceived(socket->readLine());
+
     logcacic->escrever(LogCacic::InfoLevel,QString::number(socketDescriptor)
                        + " Data received: "
                        + QString(socket->readLine()));
+
+    parseData(dataReceived);
 }
