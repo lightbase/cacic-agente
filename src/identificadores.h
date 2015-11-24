@@ -24,8 +24,9 @@
 #define ROTA_MAPA_FORM "/ws/neo/mapa/form"
 #define ROTA_MAPA_LDAP "/ws/neo/mapa/ldap"
 #define ROTA_MAPA_GETMAPA "/ws/neo/mapa/config"
+
 #define LOG_DAEMON "Cacic Daemon"
-#define CHKSYS "Check Cacic"
+#define LOG_CHKSYS "Check Cacic"
 #define LOG_CACICDEPLOY "Cacic Deploy"
 #define LOG_DAEMON_THREAD "Cacic Daemon (Thread)"
 #define LOG_DAEMON_TIMER "Cacic Daemon (Timer)"
@@ -39,8 +40,12 @@
 #define LOG_CHECKMODULES "CheckModules"
 #define LOG_CACIC_MESSAGE "Cacic Message"
 #define LOG_CACICUI "CacicUi"
+
 #define CACIC_SERVICE_NAME "CacicDaemon"
+#define CHKSYS_NAME "CheckCacic"
+
 #define N_LOGS_ENVIO 10
+
 #define PORT_CACICDAEMON 6340
 #define PORT_CACICUI 6341
 #define MSG_ACK "ACK"

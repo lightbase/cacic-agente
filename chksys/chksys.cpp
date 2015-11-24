@@ -6,7 +6,7 @@ chksys::chksys(int argc, char **argv) : QtService<QCoreApplication>(argc, argv, 
     if (this->cacicFolder.isEmpty() || this->cacicFolder.isNull())
         this->cacicFolder = Identificadores::ENDERECO_PATCH_CACIC;
     if (!this->cacicFolder.endsWith("/")) this->cacicFolder.append("/");
-    logcacic = new LogCacic(CHKSYS, this->cacicFolder+"/Logs");
+    logcacic = new LogCacic(LOG_CHKSYS, this->cacicFolder+"/Logs");
     this->createApplication(argc, argv);
 }
 

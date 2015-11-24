@@ -11,6 +11,8 @@
 #define CACICD_H
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QMutex>
+#include <QWaitCondition>
 #include "qtservice.h"
 #include "cacictimer.h"
 #include "identificadores.h"
@@ -18,9 +20,11 @@
 #include "socketlistener.h"
 #include <qlocalserver.h>
 #include "logcacic.h"
+#include "serviceclient.h"
 
-class cacicD : public QtService<QCoreApplication>
+class cacicD : public QObject, public QtService<QCoreApplication>
 {
+    Q_OBJECT
 public:
     //    QCoreApplication *app;
 
@@ -31,8 +35,18 @@ public:
     void resume();
     void stop();
 
-private:
+signals:
+    void sendStopUiMsg();
 
+private slots:
+    void on_uiStopped();
+    void on_finalizar();
+
+private:
+    QByteArray formatData(QString message, int messageLength);
+
+    QMutex *mutex;
+    QWaitCondition *ackReceived;
     QLocalServer *serverListener;
     QString cacicMainFolder;
     LogCacic *logcacic;

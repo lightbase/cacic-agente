@@ -23,5 +23,6 @@ void UiServer::incomingConnection(int socketDescriptor)
 
     UiServerThread *thread = new UiServerThread(socketDescriptor,cacicMainFolder,this);
     connect(thread,&UiServerThread::finished,thread,&UiServerThread::deleteLater);
+    connect(thread,&UiServerThread::finalizarUi,this,&UiServer::finalizar);
     thread->start();
 }

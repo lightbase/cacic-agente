@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
     chksys service(argc, argv);
-    service.setServiceDescription(CHKSYS);
+    service.setServiceDescription(CHKSYS_NAME);
     service.setStartupType(QtServiceController::AutoStartup);
     service.setServiceFlags(chksys::Default);
 

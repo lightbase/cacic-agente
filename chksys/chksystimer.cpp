@@ -7,7 +7,7 @@ chksysTimer::chksysTimer(QObject *parent) :
 
 chksysTimer::chksysTimer(QString cacicFolder){
     this->cacicFolder = cacicFolder;
-    log = new LogCacic(CHKSYS, this->cacicFolder+"/Logs");
+    log = new LogCacic(LOG_CHKSYS, this->cacicFolder+"/Logs");
 
     timerCheckService = new QTimer();
     QObject::connect(timerCheckService, SIGNAL(timeout()), this, SLOT(onTimerCheckService()));
@@ -171,7 +171,7 @@ bool chksysTimer::verificarModulos()
 #endif
                 if (list.at(i).fileName().contains("cacic-service")){
 #ifdef Q_OS_WIN
-                    ServiceController *service = new ServiceController(QString("cacicdaemon").toStdWString());
+                    ServiceController *service = new ServiceController(QString(CACIC_SERVICE_NAME).toStdWString());
                     if (service->isRunning()) {
                         log->escrever(LogCacic::InfoLevel, "Serviço rodando.. parando servico");
                         if (!service->stop()) {

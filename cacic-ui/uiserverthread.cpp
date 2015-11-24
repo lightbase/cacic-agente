@@ -26,14 +26,12 @@ void UiServerThread::run()
 
 void UiServerThread::disconnected()
 {
-logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> disconnected()"));
     socket->deleteLater();
     exit(0);
 }
 
 void UiServerThread::sendAck()
 {
-logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> sendAck()"));
     QByteArray data;
     data.append(QString::number(MSG_LENGTH_ACK));
     data.append(" ");
@@ -44,7 +42,6 @@ logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> sendAck()")
 
 void UiServerThread::parseData(const QString &dataReceived)
 {
-logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> parseData()"));
     QStringList splitData = dataReceived.split(" ");
 
     if(splitData.size() > 1) {
@@ -55,7 +52,6 @@ logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> parseData()
         if(ok) {
             QString message = dataReceived.mid(numberOfChars.size()+1,messageLength);
             if( message == MSG_DAEMONSTOPUI ) {
-logcacic->escrever(LogCacic::InfoLevel, QString("UISERVERTHREAD: >>> parseData(): msg == STOPUI"));
                 sendAck();
                 emit finalizarUi();
             }
@@ -69,7 +65,7 @@ void UiServerThread::readyRead()
 
     logcacic->escrever(LogCacic::InfoLevel,QString::number(socketDescriptor)
                        + " Data received: "
-                       + QString(socket->readLine()));
+                       + dataReceived);
 
     parseData(dataReceived);
 }

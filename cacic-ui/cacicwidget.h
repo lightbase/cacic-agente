@@ -11,6 +11,7 @@
 #include "../src/ccacic.h"
 #include "../src/logcacic.h"
 #include "uiclient.h"
+#include "uiserver.h"
 #include "netdevtab.h"
 #include "netadapterconfigtab.h"
 #include "cddrivetab.h"
@@ -49,6 +50,7 @@ private:
     QString cacicMainFolder;
     CacicSysTray *cacicSysTray;
     UiClient *cliente;
+    UiServer *servidor;
 };
 
 #endif // WIDGET_H

@@ -35,6 +35,7 @@ SOURCES += main.cpp\
         ../src/servicecontroller.cpp\
         ../src/vregistry.cpp\
         ../src/vqtconvert.cpp \
+        ../src/workerthread.cpp \
     cacicsystray.cpp \
     cacicwidget.cpp \
     uiserver.cpp \
@@ -56,6 +57,7 @@ HEADERS  +=\
             ../src/console.h \
             ../src/vregistry.h\
             ../src/vqtconvert.h \
+            ../src/workerthread.h \
     cacicsystray.h \
     cacicwidget.h \
     uiserver.h \

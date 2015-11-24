@@ -8,12 +8,13 @@
 #include <QWidget>
 #include "../src/logcacic.h"
 #include "../src/identificadores.h"
+#include "../src/workerthread.h"
 
 class UiClient: public QWidget
 {
     Q_OBJECT
 public:
-    UiClient(const QString &dirpath,QWidget *parent =0);
+    static UiClient *Instance(const QString &dirpath, QWidget *parent = 0);
     bool isConnected();
 
 signals:
@@ -30,6 +31,11 @@ private slots:
     void setupSocketConnection();
 
 private:
+    UiClient(QWidget *parent = 0);
+    UiClient(const QString &dirpath,QWidget *parent =0);
+    UiClient(UiClient const &ref, QWidget *parent = 0);
+    UiClient operator=(UiClient const &ref);
+
     QByteArray formatData(QString message, int messageLength);
     void parseData(const QString &dataReceived);
 
@@ -39,8 +45,18 @@ private:
     LogCacic *logcacic;
     QByteArray lastDataWritten;
     QString mainFolder;
+    QTimer *connectTimer;
     QTimer *reconnectTimer;
     QTcpSocket *socket;
+
+    static int const CONNECTION_TIMEOUT;
+    static int const CONNECT_TIMER_TIMEOUT;
+    static int const MAX_CONNECTION_TRIALS;
+    static int const MAX_MSGBUFFER_SIZE;
+    static int const RECONNECT_TIMER_TIMEOUT;
+
+    static WorkerThread *workerThread;
+    static UiClient *pInstance;
 };
 
 #endif // UICLIENT_H

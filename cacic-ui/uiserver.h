@@ -15,6 +15,7 @@ public:
     void iniciarServer();
 
 signals:
+    void finalizar();
 
 public slots:
 

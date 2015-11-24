@@ -1,5 +1,14 @@
 #include "uiclient.h"
 
+int const UiClient::CONNECTION_TIMEOUT = 1000;
+int const UiClient::CONNECT_TIMER_TIMEOUT = 10000;
+int const UiClient::MAX_CONNECTION_TRIALS = 3;
+int const UiClient::MAX_MSGBUFFER_SIZE = 2;
+int const UiClient::RECONNECT_TIMER_TIMEOUT = 3000;
+
+UiClient* UiClient::pInstance = NULL;
+WorkerThread* UiClient::workerThread = NULL;
+
 UiClient::UiClient(const QString &dirpath, QWidget *parent):
     QWidget(parent)
 {
@@ -10,11 +19,14 @@ UiClient::UiClient(const QString &dirpath, QWidget *parent):
         logcacic = new LogCacic(LOG_CACICUI, Identificadores::ENDERECO_PATCH_CACIC+"/Logs");
     }
 
+    connectTimer = new QTimer(this);
+    connect(connectTimer, SIGNAL(timeout()), this, SLOT(setupSocketConnection()));
     reconnectTimer = new QTimer(this);
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(setupSocketConnection()));
 
     connected = false;
     canSend = false;
+
     setupSocketConnection();
 }
 
@@ -27,6 +39,21 @@ QByteArray UiClient::formatData(QString message, int messageLength)
     data.append(MSG_END);
 
     return data;
+}
+
+UiClient* UiClient::Instance(const QString &dirpath, QWidget *parent)
+{
+    if(!pInstance) {
+        pInstance = new UiClient(dirpath,parent);
+        workerThread = new WorkerThread();
+        pInstance->moveToThread(workerThread);
+        workerThread->start();
+    } else {
+        if(!workerThread->isRunning())
+            workerThread->start();
+    }
+
+    return pInstance;
 }
 
 bool UiClient::isConnected()
@@ -54,7 +81,7 @@ void UiClient::on_disconnected()
     connected = false;
     logcacic->escrever(LogCacic::InfoLevel,"Socket desconectado.");
 
-    reconnectTimer->start(3000);
+    reconnectTimer->start(RECONNECT_TIMER_TIMEOUT);
 }
 
 void UiClient::on_forcarClicked()
@@ -64,7 +91,6 @@ void UiClient::on_forcarClicked()
             QByteArray data = formatData(MSG_UIFORCAR, MSG_LENGTH_UIFORCAR);
             lastDataWritten = data;
             socket->write(data,data.size());
-            socket->flush();
         } else
             logcacic->escrever(LogCacic::ErrorLevel,QString("forcarClicked: socket disconnected."));
 
@@ -110,8 +136,9 @@ void UiClient::parseData(const QString &dataReceived)
             QString message = dataReceived.mid(numberOfChars.size()+1,messageLength);
             if( message == MSG_ACK ) {
                 canSend = true;
-                if(lastDataWritten == formatData(MSG_UIFINALIZAR,MSG_LENGTH_UIFINALIZAR))
+                if(lastDataWritten == formatData(MSG_UIFINALIZAR,MSG_LENGTH_UIFINALIZAR)) {
                     emit finalizar();
+                }
             }
         }
     }
@@ -128,11 +155,19 @@ void UiClient::setupSocketConnection()
 
     socket->connectToHost("127.0.0.1",PORT_CACICDAEMON);
 
-    if(!socket->waitForConnected(1000)) {
+    if(!socket->waitForConnected(CONNECTION_TIMEOUT)) {
         logcacic->escrever(LogCacic::ErrorLevel, "Erro ao conectar ao Cacic-service. Tentativa " + QString::number(connectionTrials));
 
-        if(connectionTrials >= 3) {
-            logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível reestabelecer conexão com o Cacic-service. Finalizando Ui");
+        if(connectionTrials == 0) {
+            connectTimer->start(CONNECT_TIMER_TIMEOUT);
+        } else if(connectionTrials >= MAX_CONNECTION_TRIALS) {
+            logcacic->escrever(LogCacic::ErrorLevel, "Não foi possível estabelecer conexão com o Cacic-service. Finalizando Ui");
+
+            if(connectTimer->isActive())
+                connectTimer->stop();
+            if(reconnectTimer->isActive())
+                reconnectTimer->stop();
+
             emit finalizar();
         }
         connectionTrials++;

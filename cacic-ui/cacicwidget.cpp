@@ -25,7 +25,13 @@ CacicWidget::CacicWidget(QWidget *parent) :
 
     windowOpen = false;
 
-    cliente = new UiClient(cacicMainFolder,this);
+    servidor = new UiServer(cacicMainFolder,this);
+
+    connect(servidor,&UiServer::finalizar,this,&CacicWidget::on_finalizar,Qt::QueuedConnection);
+
+    servidor->iniciarServer();
+
+    cliente = UiClient::Instance(cacicMainFolder,this);
     cacicSysTray = new CacicSysTray(cacicMainFolder,this);
 
     connect(cacicSysTray,&CacicSysTray::infosClicked,this,&CacicWidget::on_infosClicked,Qt::UniqueConnection);
@@ -42,6 +48,8 @@ CacicWidget::~CacicWidget()
 {
     delete ui;
     delete cacicSysTray;
+    delete cliente;
+    delete servidor;
 }
 
 void CacicWidget::closeEvent(QCloseEvent *event)
