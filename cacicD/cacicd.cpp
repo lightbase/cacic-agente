@@ -92,6 +92,7 @@ void cacicD::on_uiStopped()
 
 void cacicD::on_finalizar()
 {
+#ifdef Q_OS_WIN
     ServiceController *service = new ServiceController(QString(CHKSYS_NAME).toStdWString());
     if (service->isRunning()) {
         logcacic->escrever(LogCacic::InfoLevel, "CheckCacic rodando. Parando servico do mesmo.");
@@ -101,6 +102,10 @@ void cacicD::on_finalizar()
             logcacic->escrever(LogCacic::ErrorLevel, info.c_str());
         }
     }
+#else
+                    ConsoleObject console;
+                    if (CCacic::findProc("chksys")) console("killall -9 \"cacic-service\"");
+#endif
 
     logcacic->escrever(LogCacic::InfoLevel, QString("Serviço parado."));
     this->application()->quit();

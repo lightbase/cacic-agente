@@ -90,6 +90,7 @@ void ServiceClient::on_readyRead()
     parseData(dataReceived);
 }
 
+#ifdef Q_OS_WIN
 void ServiceClient::on_sendStopUiMsg()
 {
     if(canSend) {
@@ -107,6 +108,7 @@ void ServiceClient::on_sendStopUiMsg()
     }
 
 }
+#endif
 
 void ServiceClient::parseData(const QString &dataReceived)
 {
@@ -121,9 +123,11 @@ void ServiceClient::parseData(const QString &dataReceived)
             QString message = dataReceived.mid(numberOfChars.size()+1,messageLength);
             if( message == MSG_ACK ) {
                 canSend = true;
+#ifdef Q_OS_WIN
                 if(lastDataWritten == formatData(MSG_DAEMONSTOPUI,MSG_LENGTH_DAEMONSTOPUI)) {
                     emit uiStopped();
                 }
+#endif
             }
         }
     }
