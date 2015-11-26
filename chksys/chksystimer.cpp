@@ -103,7 +103,7 @@ bool chksysTimer::downloadService()
             }
 
 
-            CacicComm *oCacicComm = new CacicComm(CHKSYS, this->cacicFolder);
+            CacicComm *oCacicComm = new CacicComm(LOG_CHKSYS, this->cacicFolder);
             if(metodoDownload.contains("tipo")
                     && metodoDownload["tipo"].isString()
                     && metodoDownload["tipo"].toString() == "ftp") {
